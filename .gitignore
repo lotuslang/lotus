@@ -1,0 +1,9 @@
+# VS Code
+.vscode/
+
+.git/
+
+bin/
+
+#Tests.cs
+obj/

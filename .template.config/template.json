@@ -1,0 +1,8 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Blokyk",
+    "classifications": [ "Language", "Console" ],
+    "identity": "sample-tokenizer",
+    "name": "Language Tokenizer",
+    "shortName": "langtokenizer"
+}

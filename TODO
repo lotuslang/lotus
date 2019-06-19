@@ -1,0 +1,3 @@
+- Handle unary operators (either in the tokenizer or in ToPostFix)
+- Finish Parser.ConsumeValue
+- Finish the Parser

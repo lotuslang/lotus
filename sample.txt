@@ -1,0 +1,9 @@
+var greeting = "hi";
+var name = "Mark";
+
+print(greeting + " " + name + "!");
+
+greeting = "hello";
+name = "world";
+
+print(greeting + " " + name);

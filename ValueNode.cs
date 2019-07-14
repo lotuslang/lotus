@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 
 
-[System.Diagnostics.DebuggerDisplay("{representation}")]
+[System.Diagnostics.DebuggerDisplay("{Representation}")]
 public class ValueNode : StatementNode
 {
-    /// <summary>
+    //// <summary>
     /// The value of this ValueNode
     /// </summary>
     /// <value></value>
@@ -23,7 +23,7 @@ public class ValueNode : StatementNode
             // If it is an OperationNode, returns its value (which needs to be calculated).
             if (this is OperationNode)
             {
-                return ((OperationNode)this).Value;
+                //return ((OperationNode)this).Value;
             }
 
             // Otherwise, returns the string representation of this object
@@ -42,24 +42,14 @@ public class ValueNode : StatementNode
 
 public class OperationNode : ValueNode
 {
-    protected Func<ValueNode[], dynamic> op;
-
-    /// <summary>
-    /// The operation that this OperationNode represents.
-    /// </summary>
-    /// <value>A delegate that takes in an array of ValueNode as argument and returns the result of that operation.</value>
-    public Func<ValueNode[], dynamic> Operation {
-        get => op;
-    }
-
-    protected ValueNode[] operands;
+    protected List<ValueNode> operands;
 
     /// <summary>
     /// The operands of this operation
     /// </summary>
-    /// <value>An array of ValueNode[]</value>
+    /// <value>An array of ValueNode</value>
     public ValueNode[] Operands {
-        get => operands;
+        get => operands.ToArray();
     }
 
     protected string opType;
@@ -72,19 +62,9 @@ public class OperationNode : ValueNode
         get => opType;
     }
 
-    /// <summary>
-    /// Basically applies the operation to the operands.
-    /// </summary>
-    /// <value>The value of the operation this object represents.</value>
-    public new dynamic Value
+    public OperationNode(string rep, ValueNode[] operands, string opType) : base(rep)
     {
-        get => op(operands);
-    }
-
-    public OperationNode(string rep, ValueNode[] operands, Func<ValueNode[], dynamic> operation, string opType) : base(rep)
-    {
-        op = operation;
-        this.operands = operands;
+        this.operands = new List<ValueNode>(operands);
         this.opType = opType.ToLower();
     }
 
@@ -94,60 +74,11 @@ public class OperationNode : ValueNode
     /// <param name="operandList">The array of operands to add.</param>
     public void Add(params ValueNode[] operandList)
     {
-        // Create a list based on the current operands.
-        var temp = new List<ValueNode>(operands);
-
-        // For each operand in operandList, add it to that list
+        // For each operand in operandList, add it to the operands list
         foreach (var operand in operandList)
         {
-            temp.Add(operand);
+            operands.Add(operand);
         }
-
-        // Set the operands list to the temp list made earlier.
-        operands = temp.ToArray();
-    }
-
-    /// <summary>
-    /// A human-readable version of this operation.
-    /// </summary>
-    /// <returns>Returns a human-friendly string representing this operation.</returns>
-    public override string ToText()
-    {
-        // Create a new string builder
-        var strBuilder = new StringBuilder();
-
-        // If this operation is unary
-        if (operands.Length == 1)
-        {
-            // Append a representation with the operator in front of the only operand
-            strBuilder.Append(rep + operands[0].ToText());
-        }
-
-        // If this operation is binary
-        if (operands.Length == 2)
-        {
-            // If the first operand is an operation
-            if (Operands[0] is OperationNode)
-                // Put its representation in parenthesis
-                strBuilder.Append("(" + operands[0].ToText() + ")");
-            else
-                // Otherwise (its a NumberNode), append its representation
-                strBuilder.Append(operands[0].Representation);
-
-            // Append the representation (preceeded and followed by spaces)
-            strBuilder.Append(" " + rep + " ");
-
-            // If the second operand is an operation
-            if (operands[1] is OperationNode)
-                // Put its representation in parenthesis
-                strBuilder.Append("(" + operands[1].ToText() + ")");
-            else
-                // Otherwise, (its a NumberNode), append its representation
-                strBuilder.Append(operands[1].Representation);
-        }
-
-        // returns the string builder
-        return strBuilder.ToString();
     }
 }
 
@@ -192,8 +123,11 @@ public class IdentNode : ValueNode
 {
     protected string varName;
 
-    public string Value {
-        get => varName;
+    protected ValueNode value;
+
+    public new ValueNode Value {
+        get => value;
+        set => this.value = value;
     }
 
     public IdentNode(string varName) : base(varName)

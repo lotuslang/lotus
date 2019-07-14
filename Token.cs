@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 [System.Diagnostics.DebuggerDisplay("{loc} {kind} : {rep.ToString()}")]
 public class Token
@@ -34,6 +35,10 @@ public class Token
         rep.Append(representation);
         this.kind = kind;
         loc = location;
+    }
+
+    public override string ToString() {
+        return rep.ToString();
     }
 
     public static implicit operator TokenKind(Token token) {
@@ -107,6 +112,22 @@ public class OperatorToken : Token
     public OperatorToken(char representation, int precedence, bool isLeftAssociative, Location? location)
         : this(representation.ToString(), precedence, isLeftAssociative, location)
     { }
+}
+
+[System.Diagnostics.DebuggerDisplay("{rep.ToString()}({args.Count} args)")]
+public class FunctionToken : ComplexToken
+{
+    protected List<Token> args;
+
+    public Token[] Arguments {
+        get => args.ToArray();
+    }
+
+    public FunctionToken(string representation, IEnumerable<Token> arguments, Location? location)
+        : base(representation, TokenKind.function, location)
+    {
+        args = new List<Token>(arguments);
+    }
 }
 
 public enum TokenKind {

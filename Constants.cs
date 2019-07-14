@@ -59,8 +59,41 @@ public static class Operators
         var operand1 = operands[0];
         var operand2 = operands[1];
 
+        if (operand1 is IdentNode)
+        {
+
+        }
+
+        if (operand1 is StringNode)
+        {
+            if (operand2 is StringNode)
+            {
+                return ((StringNode)operand1).Value + ((StringNode)operand2).Value;
+            }
+
+            if (operand2 is IdentNode)
+            {
+                //return (())
+            }
+
+            if (operand2 is NumberNode)
+            {
+                return ((StringNode)operand1).Value + ((NumberNode)operand2).Value.ToString();
+            }
+
+            if (operand2 is OperationNode)
+            {
+                return ((StringNode)operand1).Value + ((OperationNode)operand2).Value.ToString();
+            }
+        }
+
         if (operand1 is NumberNode)
         {
+            if (operand2 is StringNode)
+            {
+                return ((NumberNode)operand1).Value.ToString() + ((StringNode)operand2).Value;
+            }
+
             if (operand2 is NumberNode)
             {
                 return ((NumberNode)operand1).Value + ((NumberNode)operand2).Value;
@@ -74,6 +107,10 @@ public static class Operators
 
         if (operand1 is OperationNode)
         {
+            if (operand2 is StringNode)
+            {
+                return ((OperationNode)operand1).Value.ToString() + ((StringNode)operand2).Value;
+            }
             if (operand2 is NumberNode)
             {
                 return ((OperationNode)operand1).Value + ((NumberNode)operand2).Value;
@@ -85,7 +122,7 @@ public static class Operators
             }
         }
 
-        throw new NotImplementedException("Unknow ValueNode type");
+        throw new Exception("Cannot apply operator + to operands of type " + operand1.GetType().Name + " and " + operand2.GetType().Name);
     };
 
     public readonly static Func<ValueNode[], dynamic> substract = delegate (ValueNode[] operands)
@@ -125,7 +162,7 @@ public static class Operators
             }
         }
 
-        throw new NotImplementedException("Unknow ValueNode type");
+       throw new Exception("Cannot apply operator - to operands of type " + operand1.GetType().Name + " and " + operand2.GetType().Name);
     };
 
     public readonly static Func<ValueNode[], dynamic> multiply = delegate (ValueNode[] operands)
@@ -164,7 +201,7 @@ public static class Operators
             }
         }
 
-        throw new NotImplementedException("Unknow ValueNode type");
+        throw new Exception("Cannot apply operator * to operands of type " + operand1.GetType().Name + " and " + operand2.GetType().Name);
     };
 
     public readonly static Func<ValueNode[], dynamic> divide = delegate (ValueNode[] operands)
@@ -177,10 +214,9 @@ public static class Operators
         var operand1 = operands[0];
         var operand2 = operands[1];
 
-        if (operand1.Representation == "0" || operand2.Representation == "0")
+        if (operand2.Representation == "0")
         {
-            Console.WriteLine("Dividing by zero is not possible");
-            return null;
+            throw new Exception("Cannot divide by zero");
         }
 
         if (operand1 is NumberNode)
@@ -209,7 +245,7 @@ public static class Operators
             }
         }
 
-        throw new NotImplementedException("Unknow ValueNode type");
+        throw new Exception("Cannot apply operator / to operands of type " + operand1.GetType().Name + " and " + operand2.GetType().Name);
     };
 
     public readonly static Func<ValueNode[], dynamic> power = delegate (ValueNode[] operands)
@@ -249,6 +285,6 @@ public static class Operators
             }
         }
 
-        throw new NotImplementedException("Unknow ValueNode type");
+        throw new Exception("Cannot apply operator ^ to operands of type " + operand1.GetType().Name + " and " + operand2.GetType().Name);
     };
 }

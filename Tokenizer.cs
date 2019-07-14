@@ -7,13 +7,13 @@ using System.Collections.Generic;
 
 public class Tokenizer : IConsumer<Token>
 {
-    private bool reconsumeLastToken;
-
     protected Token current;
 
     public Token Current {
         get => current;
     }
+
+    private Queue<Token> reconsumeQueue;
 
     protected int position;
 
@@ -26,17 +26,38 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(StringConsumer consumer)
     {
         this.consumer = consumer;
+
+        reconsumeQueue = new Queue<Token>();
     }
 
-    public Tokenizer(IEnumerable<char> collection) {
-        consumer = new StringConsumer(collection);
-    }
+    public Tokenizer(System.IO.FileInfo fileInfo) : this(new StringConsumer(fileInfo))
+    { }
 
-    public Tokenizer(IEnumerable<string> collection) {
-        consumer = new StringConsumer(collection);
-    }
+    public Tokenizer(IEnumerable<char> collection) : this(new StringConsumer(collection))
+    { }
 
-    public void Reconsume() => reconsumeLastToken = true;
+    public Tokenizer(IEnumerable<string> collection) : this(new StringConsumer(collection))
+    { }
+
+    public void Reconsume() => reconsumeQueue.Enqueue(current);
+
+    public Token Peek() => Peek(1)[0];
+
+    public List<Token> Peek(int n=1) {
+        // create a new (dee-copy of) tokenizer from this one
+        var tokenizer = new Tokenizer(new StringConsumer(this.consumer));
+
+        // the output list
+        var output = new List<Token>();
+
+        // consume `n` tokens and add them to the output
+        for (int i = 0; i < n; i++)
+        {
+            output.Add(tokenizer.Consume());
+        }
+
+        return output;
+    }
 
     public Token Consume(out bool success) {
         var token = Consume();
@@ -49,9 +70,8 @@ public class Tokenizer : IConsumer<Token>
     public Token Consume() {
 
         // If we are instructed to reconsume the last token, then return the last token consumed
-        if (reconsumeLastToken) {
-            reconsumeLastToken = false;
-            return current;
+        if (reconsumeQueue.Count != 0) {
+            return reconsumeQueue.Dequeue();
         }
 
         // Updates the position
@@ -66,6 +86,7 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
+        // although, you'll also need to modify Parser.ConsumeValue or Parser.ToPostFixNotation because they might not correctly detect function calls
 
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
         if (currChar == '\u0003' || currChar == '\0') return new Token(currChar, TokenKind.EOF, consumer.Position);
@@ -83,20 +104,8 @@ public class Tokenizer : IConsumer<Token>
             return current;
         }
 
-        // If the character is '+' or '-' and the last token consumed was a number,
-        // then it's probably an operation without whitespace (which is annoying).
-        if ((currChar == '+' || currChar == '-') && current is NumberToken) {
-
-            // return a new operator token with precedence 2
-            current = new OperatorToken(currChar, 2, true, consumer.Position);
-
-            return current;
-        }
-
         // If the character is '+', '-', or '.', followed by a digit
-        if ((currChar == '+'
-        ||  currChar == '-'
-        ||  currChar == '.') && Char.IsDigit(consumer.Peek()))
+        if (currChar == '.' && Char.IsDigit(consumer.Peek()))
         {
             // Reconsume the current character
             consumer.Reconsume();
@@ -130,6 +139,15 @@ public class Tokenizer : IConsumer<Token>
         // If the character is '+' or '-'
         if (currChar == '+' || currChar == '-') {
 
+            // if the next character is the same as now ('+' and '+' for example), then it is either an increment or a decrement ("++" and "--")
+            if (consumer.Peek() == currChar) {
+
+                // return a new operator token with precedence 7
+                current = new OperatorToken(currChar +""+ consumer.Consume(), 7, false, consumer.Position);
+
+                return current;
+            }
+
             // return a new operator token with precedence 2
             current = new OperatorToken(currChar, 2, true, consumer.Position);
 
@@ -150,6 +168,41 @@ public class Tokenizer : IConsumer<Token>
 
             // return a new operator token with precedence 4
             current = new OperatorToken(currChar, 4, false, consumer.Position);
+
+            return current;
+        }
+
+        // if the character is '!'
+        if (currChar == '!') {
+
+            // return a new operator token with precedence 5
+            current = new OperatorToken(currChar, 5, false, consumer.Position);
+
+            return current;
+        }
+
+        // if the current and next character form "&&"
+        if (currChar == '&' && consumer.Peek() == '&') {
+
+            // return a new operator token with precedence 5
+            current = new OperatorToken(currChar +""+ consumer.Consume(), 5, true, consumer.Position);
+
+            return current;
+        }
+
+        // if the current and next character form "||"
+        if (currChar == '|' && consumer.Peek() == '|') {
+
+            // return a new operator token with precedence 5
+            current = new OperatorToken(currChar +""+ consumer.Consume(), 5, true, consumer.Position);
+
+            return current;
+        }
+
+        // if the current and next character for "=="
+        if (currChar == '=' && consumer.Peek() == '=') {
+
+            current = new OperatorToken(currChar +""+ consumer.Consume(), 6, true, consumer.Position);
 
             return current;
         }
@@ -221,16 +274,6 @@ public class Tokenizer : IConsumer<Token>
         // the output token
         var output = new NumberToken("", consumer.Position);
 
-        // if the character is a '+' or '-'
-        if (currChar == '+' || currChar == '-') {
-
-            // add it to the value of output
-            output.Add(currChar);
-
-            // consume a character
-            currChar = consumer.Consume();
-        }
-
         // while the current character is a digit
         while (Char.IsDigit(currChar)) {
 
@@ -274,26 +317,6 @@ public class Tokenizer : IConsumer<Token>
             // if the character is a '+' or a '-'
             if (currChar == '+' || currChar == '-') {
 
-                // add it to the value of output
-                output.Add(currChar);
-
-                // consume a character
-                currChar = consumer.Consume();
-            }
-
-            // while the current character is a digit
-            while (Char.IsDigit(currChar)) {
-
-                // add it to the value of output
-                output.Add(currChar);
-
-                // consume a character
-                currChar = consumer.Consume();
-            }
-
-            // if the character is '.'
-            if (currChar == '.')
-            {
                 // add it to the value of output
                 output.Add(currChar);
 

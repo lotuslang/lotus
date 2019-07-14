@@ -1,5 +1,6 @@
 var greeting = "hi";
 var name = "Mark";
+var test = max(6, sin(5 / pi)) + test.Name + print(87);
 
 print(greeting + " " + name + "!");
 

@@ -21,11 +21,13 @@ public class StringConsumer : IConsumer<char>
     protected int line;
     protected int column;
 
+    protected string file;
+
     public Location Position {
-        get => new Location(line, column);
+        get => new Location(line, column, file);
     }
 
-    public StringConsumer(IConsumer<char> consumer) {
+    public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") {
         stack = new Stack<char>();
 
         var success = true;
@@ -38,18 +40,29 @@ public class StringConsumer : IConsumer<char>
 
         line = 1;
         column = 1;
+        file = fileName;
     }
 
-    public StringConsumer(IEnumerable<char> collection) {
+    public StringConsumer(StringConsumer consumer) {
+        stack = new Stack<char>(consumer.stack.Reverse());
+
+        line = consumer.line;
+        column = consumer.column;
+        file = consumer.file;
+    }
+
+    public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") {
         stack = new Stack<char>(collection.Reverse());
 
         line = 1;
         column = 1;
+        file = fileName;
     }
 
-    public StringConsumer(string path) : this(File.ReadAllLines(path)) { }
+    public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
+    { }
 
-    public StringConsumer(IEnumerable<string> lines) {
+    public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") {
         stack = new Stack<char>();
 
         foreach (var line in lines)
@@ -66,9 +79,11 @@ public class StringConsumer : IConsumer<char>
 
         line = 1;
         column = 1;
+        file = fileName;
     }
 
-    public StringConsumer(StreamReader stream) : this(stream.ReadToEnd().Split('\n')) { }
+    public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)
+    { }
 
     public void Reconsume() {
         stack.Push(current);

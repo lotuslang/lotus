@@ -28,6 +28,8 @@ public class Tokenizer : IConsumer<Token>
         this.consumer = consumer;
 
         reconsumeQueue = new Queue<Token>();
+
+        current = new Token('\0', TokenKind.delim, consumer.Position);
     }
 
     public Tokenizer(System.IO.FileInfo fileInfo) : this(new StringConsumer(fileInfo))
@@ -86,7 +88,8 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
-        // although, you'll also need to modify Parser.ConsumeValue or Parser.ToPostFixNotation because they might not correctly detect function calls
+        // although, you'll also need to modify the parser (in particular Parser.ConsumeValue or Parser.ToPostFixNotation)
+        // because it might not correctly detect function calls and a lot of other thing
 
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
         if (currChar == '\u0003' || currChar == '\0') return new Token(currChar, TokenKind.EOF, consumer.Position);
@@ -143,13 +146,13 @@ public class Tokenizer : IConsumer<Token>
             if (consumer.Peek() == currChar) {
 
                 // return a new operator token with precedence 7
-                current = new OperatorToken(currChar +""+ consumer.Consume(), 7, false, consumer.Position);
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Unary, false, consumer.Position);
 
                 return current;
             }
 
             // return a new operator token with precedence 2
-            current = new OperatorToken(currChar, 2, true, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Addition, true, consumer.Position);
 
             return current;
         }
@@ -158,7 +161,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '*' || currChar == '/') {
 
             // return a new operator token with precedence 3
-            current = new OperatorToken(currChar, 3, true, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Division, true, consumer.Position);
 
             return current;
         }
@@ -167,7 +170,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '^') {
 
             // return a new operator token with precedence 4
-            current = new OperatorToken(currChar, 4, false, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Power, false, consumer.Position);
 
             return current;
         }
@@ -175,8 +178,14 @@ public class Tokenizer : IConsumer<Token>
         // if the character is '!'
         if (currChar == '!') {
 
+            if (consumer.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.NotEqual, false, consumer.Position);
+
+                return current;
+            }
+
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar, 5, false, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Unary, false, consumer.Position);
 
             return current;
         }
@@ -185,7 +194,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '&' && consumer.Peek() == '&') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ consumer.Consume(), 5, true, consumer.Position);
+            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalAND, true, consumer.Position);
 
             return current;
         }
@@ -194,15 +203,47 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '|' && consumer.Peek() == '|') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ consumer.Consume(), 5, true, consumer.Position);
+            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalOR, true, consumer.Position);
 
             return current;
         }
 
         // if the current and next character for "=="
-        if (currChar == '=' && consumer.Peek() == '=') {
+        if (currChar == '=') {
 
-            current = new OperatorToken(currChar +""+ consumer.Consume(), 6, true, consumer.Position);
+            if (consumer.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Equal, true, consumer.Position);
+
+                return current;
+            }
+
+            current = new OperatorToken(currChar, Precedence.Assignement, false, consumer.Position);
+
+            return current;
+        }
+
+        if (currChar == '>') {
+
+            if (consumer.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.GreaterThanOrEqual, true, consumer.Position);
+
+                return current;
+            }
+
+            current = new OperatorToken(currChar, Precedence.GreaterThan, true, consumer.Position);
+
+            return current;
+        }
+
+        if (currChar == '<') {
+
+            if (consumer.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LessThanOrEqual, true, consumer.Position);
+
+                return current;
+            }
+
+            current = new OperatorToken(currChar, Precedence.LessThan, true, consumer.Position);
 
             return current;
         }

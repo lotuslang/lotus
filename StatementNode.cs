@@ -55,7 +55,7 @@ public class AssignementNode : StatementNode
 
     protected ComplexToken varName;
 
-    public ComplexToken VariableName {
+    public ComplexToken Name {
         get => varName;
     }
 
@@ -68,5 +68,27 @@ public class AssignementNode : StatementNode
 
     public override string ToString() {
         return varName + " = " + value.ToText();
+    }
+}
+
+public class FunctionNode : ValueNode
+{
+    protected ValueNode value;
+
+    public new ValueNode Value {
+        get => value;
+    }
+
+    protected ComplexToken functionName;
+
+    public ComplexToken Name {
+        get => functionName;
+    }
+
+    public FunctionNode(ValueNode value, ComplexToken functionName) : base(functionName + "(...)") {
+        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier");
+
+        this.functionName = functionName;
+        this.value = value;
     }
 }

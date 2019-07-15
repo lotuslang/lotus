@@ -22,7 +22,7 @@ class Program
 
         var parser = new Parser(tokenizer);
 
-        var expr = "sin (-58 * -(69 * MINVAL), rnd.next()) * math.const.pi + - (max('hello'.length, indexer.val++)).toStr()";
+        /* var expr = "a = 5 + 6 * (max (lo, fi + 6) ^ 2)";
         Console.WriteLine(expr);
         Console.WriteLine(String.Join(" ", Parser.ToPostfixNotation(new Tokenizer(expr)).ConvertAll(t => {
             if (t == "++" || t == "--") {
@@ -32,11 +32,16 @@ class Program
             return (t.Representation);
         })));
 
-        var val = new Parser(new Tokenizer(expr)).ConsumeValue();
+        var val = new Parser(new Tokenizer(expr)).ConsumeValue();*/
 
         var g = new Graph("G");
 
-        g.AddNode(val.ToGraphNode());
+        var val = parser.Consume();
+
+        while (val != null) {
+            g.AddNode(ToGraphNode((dynamic)val));
+            val = parser.Consume();
+        }
 
         Console.WriteLine(g.ToText());
 
@@ -46,5 +51,56 @@ class Program
 
         // Initializes the parser with the (reseted) tokenizer
         //var parser = new Parser(tokenizer);
+    }
+
+    public static GraphNode ToGraphNode(ValueNode node) => new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
+
+    public static GraphNode ToGraphNode(StringNode node) => new GraphNode(node.GetHashCode().ToString(), "\"'" + node.Representation + "'\"");
+
+    public static GraphNode ToGraphNode(StatementNode node) => new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
+
+    public static GraphNode ToGraphNode(OperationNode node) {
+        var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
+
+        if (node.Representation == "++" || node.Representation == "--") {
+            root = new GraphNode(node.GetHashCode().ToString(), ((node as OperationNode).OperationType.EndsWith("post") ? "\"(postfix)" : "\"(prefix)") + node.Representation + "\"");
+        }
+
+        if (node.Representation == "_") {
+            root = new GraphNode(node.GetHashCode().ToString(), "\"-\"");
+        }
+
+        foreach (var child in (node as OperationNode).Operands)
+        {
+            root.AddNode(ToGraphNode((dynamic)child));
+        }
+
+        return root;
+    }
+
+    public static GraphNode ToGraphNode(AssignementNode node) {
+        var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Name + "\"");
+
+        root.AddNode(ToGraphNode((dynamic)node.Value));
+
+        return root;
+    }
+
+    public static GraphNode ToGraphNode(DeclarationNode node) {
+        var root = new GraphNode(node.GetHashCode().ToString(), "\"var\"");
+
+        root.AddNode(new GraphNode(node.VariableName.GetHashCode().ToString(), "\"" + node.VariableName + "\""));
+
+        root.AddNode(ToGraphNode((dynamic)node.Value));
+
+        return root;
+    }
+
+    public static GraphNode ToGraphNode(FunctionNode node) {
+        var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Name + "()\"");
+
+        root.AddNode(ToGraphNode((dynamic)node.Value));
+
+        return root;
     }
 }

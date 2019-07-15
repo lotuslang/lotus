@@ -89,9 +89,9 @@ public class NumberToken : ComplexToken
 [System.Diagnostics.DebuggerDisplay("{loc} {kind} : {rep.ToString()} with precedence {precedence}")]
 public class OperatorToken : Token
 {
-    protected int precedence;
+    protected Precedence precedence;
 
-    public int Precedence {
+    public Precedence Precedence {
         get => precedence;
     }
 
@@ -102,32 +102,16 @@ public class OperatorToken : Token
     }
 
 
-    public OperatorToken(string representation, int precedence, bool isLeftAssociative, Location? location)
+    public OperatorToken(string representation, Precedence precedence, bool isLeftAssociative, Location? location)
         : base(representation, TokenKind.@operator, location)
     {
         this.precedence = precedence;
         isLeft = isLeftAssociative;
     }
 
-    public OperatorToken(char representation, int precedence, bool isLeftAssociative, Location? location)
+    public OperatorToken(char representation, Precedence precedence, bool isLeftAssociative, Location? location)
         : this(representation.ToString(), precedence, isLeftAssociative, location)
     { }
-}
-
-[System.Diagnostics.DebuggerDisplay("{rep.ToString()}({args.Count} args)")]
-public class FunctionToken : ComplexToken
-{
-    protected List<Token> args;
-
-    public Token[] Arguments {
-        get => args.ToArray();
-    }
-
-    public FunctionToken(string representation, IEnumerable<Token> arguments, Location? location)
-        : base(representation, TokenKind.function, location)
-    {
-        args = new List<Token>(arguments);
-    }
 }
 
 public enum TokenKind {

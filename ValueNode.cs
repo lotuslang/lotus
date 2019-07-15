@@ -10,25 +10,8 @@ public class ValueNode : StatementNode
     /// The value of this ValueNode
     /// </summary>
     /// <value></value>
-    public dynamic Value
-    {
-        get
-        {
-            // If it is a NumberNode, returns its value.
-            if (this is NumberNode)
-            {
-                return ((NumberNode)this).Value;
-            }
-
-            // If it is an OperationNode, returns its value (which needs to be calculated).
-            if (this is OperationNode)
-            {
-                //return ((OperationNode)this).Value;
-            }
-
-            // Otherwise, returns the string representation of this object
-            return rep;
-        }
+    public virtual string Value {
+        get => rep;
     }
 
     public ValueNode(string rep) : base(rep) { }
@@ -62,7 +45,13 @@ public class OperationNode : ValueNode
         get => opType;
     }
 
-    public OperationNode(string rep, ValueNode[] operands, string opType) : base(rep)
+    protected Token token;
+
+    public Token Token {
+        get => token;
+    }
+
+    public OperationNode(Token rep, ValueNode[] operands, string opType) : base(rep)
     {
         this.operands = new List<ValueNode>(operands);
         this.opType = opType.ToLower();

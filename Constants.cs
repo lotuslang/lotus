@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public static class Operators
+/*public static class Operators
 {
     public readonly static Func<ValueNode[], dynamic> unaryPositive = delegate (ValueNode[] operands)
     {
@@ -287,4 +287,27 @@ public static class Operators
 
         throw new Exception("Cannot apply operator ^ to operands of type " + operand1.GetType().Name + " and " + operand2.GetType().Name);
     };
+}*/
+
+public enum Precedence {
+    Comma = 0,
+    Assignement = 1,
+    LogicalOR = 2,
+    LogicalAND = 3,
+    Equal = 4,
+    NotEqual = 4,
+    LessThan = 5,
+    GreaterThan = 5,
+    LessThanOrEqual = 5,
+    GreaterThanOrEqual = 5,
+    Addition = 6,
+    Substraction = 6,
+    Multiplication = 7,
+    Division = 7,
+    Modulo = 7,
+    Power = 8,
+    Unary = 9,
+    FuncCall = 10,
+    Access = 10,
+    Array = 10,
 }

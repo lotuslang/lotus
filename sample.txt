@@ -1,9 +1,19 @@
 var greeting = "hi";
 var name = "Mark";
 
-print(greeting + " " + name + "!");
+print(greeting + ' ' + name + '!');
 
 greeting = "hello";
 name = "world";
 
 print(greeting + " " + name);
+
+print(new Car("Renault", 63).maxSpeed);
+
+def printError(msg, tk) {
+    var location = tk.location;
+    msg.toStr(h, "\x").reverse();
+    print("({location}) {msg}");
+}
+
+printError("un", tk);

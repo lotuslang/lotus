@@ -45,17 +45,16 @@ public class Tokenizer : IConsumer<Token>
 
     public Token Peek() => Peek(1)[0];
 
-    public List<Token> Peek(int n=1) {
+    public Token[] Peek(int n=1) {
         // create a new (dee-copy of) tokenizer from this one
         var tokenizer = new Tokenizer(new StringConsumer(this.consumer));
 
         // the output list
-        var output = new List<Token>();
+        var output = new Token[n];
 
         // consume `n` tokens and add them to the output
-        for (int i = 0; i < n; i++)
-        {
-            output.Add(tokenizer.Consume());
+        for (int i = 0; i < n; i++) {
+            output[i] = tokenizer.Consume();
         }
 
         return output;
@@ -94,9 +93,8 @@ public class Tokenizer : IConsumer<Token>
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
         if (currChar == '\u0003' || currChar == '\0') return new Token(currChar, TokenKind.EOF, consumer.Position);
 
-        // If the chacracter is a digit
-        if (Char.IsDigit(currChar))
-        {
+        // If the character is a digit
+        if (Char.IsDigit(currChar)) {
             // Reconsume the current character
             consumer.Reconsume();
 
@@ -108,8 +106,7 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // If the character is '+', '-', or '.', followed by a digit
-        if (currChar == '.' && Char.IsDigit(consumer.Peek()))
-        {
+        if (currChar == '.' && Char.IsDigit(consumer.Peek())) {
             // Reconsume the current character
             consumer.Reconsume();
 
@@ -134,7 +131,7 @@ public class Tokenizer : IConsumer<Token>
             consumer.Reconsume();
 
             // Consume an identifier token and return it
-            current = ConsumeIdentToken();
+            current = ConsumeIdentLike();
 
             return current;
         }
@@ -146,22 +143,45 @@ public class Tokenizer : IConsumer<Token>
             if (consumer.Peek() == currChar) {
 
                 // return a new operator token with precedence 7
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Unary, false, consumer.Position);
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Unary, "right", consumer.Position);
 
                 return current;
             }
 
             // return a new operator token with precedence 2
-            current = new OperatorToken(currChar, Precedence.Addition, true, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Addition, "left", consumer.Position);
 
             return current;
         }
 
-        // If the character is '*' or '/'
-        if (currChar == '*' || currChar == '/') {
+        // If the character is '*'
+        if (currChar == '*') {
 
-            // return a new operator token with precedence 3
-            current = new OperatorToken(currChar, Precedence.Division, true, consumer.Position);
+            // return a new operator token with precedence Multiplication
+            current = new OperatorToken(currChar, Precedence.Multiplication, "left", consumer.Position);
+
+            return current;
+        }
+
+        // if the character is '/'
+        if (currChar == '/') {
+
+            // and the next character is '*', then it is a limited comment
+            if (consumer.Peek() == '*') {
+
+                // consume characters until the two next characters form "*/"
+                while (String.Join("", consumer.Peek(2)) != "*/") { consumer.Consume(); }
+
+                // consume the "*/" characters
+                consumer.Consume(); // should be '*'
+                consumer.Consume(); // should be '/'
+
+                // consume a token and return it
+                return Consume();
+            }
+
+            // return a new operator token with precedence Division
+            current = new OperatorToken(currChar, Precedence.Division, "left", consumer.Position);
 
             return current;
         }
@@ -170,7 +190,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '^') {
 
             // return a new operator token with precedence 4
-            current = new OperatorToken(currChar, Precedence.Power, false, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Power, "right", consumer.Position);
 
             return current;
         }
@@ -179,13 +199,13 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '!') {
 
             if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.NotEqual, false, consumer.Position);
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.NotEqual, "right", consumer.Position);
 
                 return current;
             }
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar, Precedence.Unary, false, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Unary, "right", consumer.Position);
 
             return current;
         }
@@ -194,7 +214,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '&' && consumer.Peek() == '&') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalAND, true, consumer.Position);
+            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalAND, "left", consumer.Position);
 
             return current;
         }
@@ -203,7 +223,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '|' && consumer.Peek() == '|') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalOR, true, consumer.Position);
+            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalOR, "left", consumer.Position);
 
             return current;
         }
@@ -212,12 +232,12 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '=') {
 
             if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Equal, true, consumer.Position);
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Equal, "left", consumer.Position);
 
                 return current;
             }
 
-            current = new OperatorToken(currChar, Precedence.Assignement, false, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Assignment, "left", consumer.Position);
 
             return current;
         }
@@ -225,12 +245,12 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '>') {
 
             if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.GreaterThanOrEqual, true, consumer.Position);
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.GreaterThanOrEqual, "left", consumer.Position);
 
                 return current;
             }
 
-            current = new OperatorToken(currChar, Precedence.GreaterThan, true, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.GreaterThan, "left", consumer.Position);
 
             return current;
         }
@@ -238,12 +258,12 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '<') {
 
             if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LessThanOrEqual, true, consumer.Position);
+                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LessThanOrEqual, "left", consumer.Position);
 
                 return current;
             }
 
-            current = new OperatorToken(currChar, Precedence.LessThan, true, consumer.Position);
+            current = new OperatorToken(currChar, Precedence.LessThan, "left", consumer.Position);
 
             return current;
         }
@@ -254,7 +274,42 @@ public class Tokenizer : IConsumer<Token>
         return current;
     }
 
-    protected ComplexToken ConsumeIdentToken() {
+    protected Token ConsumeIdentLike() {
+
+        // consume a name
+        var name = ConsumeName();
+
+        // if the identifier is the keyword "new"
+        if (name == "new") {
+
+            // return a right-associative operator token with the precedence of a function call, since instantiation is the same as a call to .ctor()
+            return new OperatorToken(name, Precedence.FuncCall, "right", name.Location);
+        }
+
+        // if the identifier is the keyword "def"
+        if (name == "def") {
+
+            // return a right-associative token with the precedence of a declaration
+            return new OperatorToken(name, Precedence.Declaration, "right", name.Location);
+        }
+
+        if (name == "var") {
+
+            //return a right-associative token with the precedence of a declaration
+            return new OperatorToken(name, Precedence.Declaration, "right", name.Location);
+        }
+
+        // if the identifier is a keyword
+        if (Constants.keywords.Contains(name)) {
+
+            // return the same token but with a kind of TokenKind.keyword
+            return new ComplexToken(name, TokenKind.@string, name.Location);
+        }
+
+        return name;
+    }
+
+    protected ComplexToken ConsumeName() {
 
         // consume a character
         var currChar = consumer.Consume();

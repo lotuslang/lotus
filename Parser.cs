@@ -76,74 +76,228 @@ public class Parser : IConsumer<StatementNode>
         // Consume a token
         var currToken = tokenizer.Consume();
 
+        // if the token is EOF, return null
+        // TODO: find an alternative to null
+        if (currToken == TokenKind.EOF) return null;
+
+        // if the token is ';', return the next statement node
+        if (currToken == ";") return Consume();
+
+        // if the token is "var"
         if (currToken == "var") {
+
+            // reconsume it
             tokenizer.Reconsume();
 
+            // consume a declaration and return it
             current = ConsumeDeclaration();
 
             return current;
         }
 
-        if (currToken == ";") {
-            return Consume();
+        // if the token is "new"
+        if (currToken == "new") {
+
+            // reconsume it
+            tokenizer.Reconsume();
+
+            // consume a value and return it (since an object instantiation is just a fancy function call, and function calls can be parsed as values)
+            current = ConsumeValue();
+
+            return current;
         }
 
+        // if the token is "def"
+        if (currToken == "def") {
+
+            // reconsume it
+            tokenizer.Reconsume();
+
+            // consume a function declaration and return it
+            current = ConsumeFunctionDeclaration();
+
+            return current;
+        }
+
+        // if the token is an identifier
 		if (currToken == TokenKind.ident) {
 
-			// if it's an identifier followed by '(', it's a function call
+			// if it's an identifier followed by '(', suppose it's a function call
 			if (tokenizer.Peek() == "(") {
-				return new FunctionNode(ConsumeValue(), currToken as ComplexToken);
+
+                // reconsume the identifier
+                tokenizer.Reconsume();
+
+                // consume a value (which is gonna be an OperationNode representing a function)
+                var paramsAsValue = ConsumeValue();
+
+                if (!(paramsAsValue is OperationNode)) throw new Exception($"{currToken.Location} : Failed to parse function call");
+
+                // consume a value, create a FunctionNode with its value set to the ValueNode returned, and return it
+				current = new FunctionNode(((OperationNode)paramsAsValue).Operands, currToken as ComplexToken);
+
+                return current;
 			}
 
+            // if the next token is '='
 			if (tokenizer.Peek() == "=") {
+
+                // consume it
 				tokenizer.Consume();
-				return new AssignementNode(ConsumeValue(), currToken as ComplexToken);
+
+                // consume a value, create an AssignmentNode with its value set to the ValueNode returned, and return it
+				current = new AssignmentNode(ConsumeValue(), currToken as ComplexToken);
+
+                return current;
 			}
 
-			throw new Exception($"{currToken.Location} : Unexpected {currToken.Kind}. Did you forget '=' or '()' ?");
+            // if the next token is "."
+            if (tokenizer.Peek() == ".") {
+
+                // reconsume the identifier
+                tokenizer.Reconsume();
+
+                // consume a value
+                current = ConsumeValue();
+
+                // if the value returned is not an OperationNode, throw an exception
+                if (!(current is OperationNode)) throw new Exception($"Unknown error at {currToken.Location}");
+
+                // return the value otherwise
+                return current;
+            }
+
+			throw new UnexpectedTokenException($"Did you mean to assign a value or call a function ?", currToken);
 		}
 
-        return null;
+        throw new Exception("what²²");
     }
 
     protected DeclarationNode ConsumeDeclaration() {
 
-        // consume a token (which should be the keyword "var")
+        // consume the keyword "var" token
         var varKeyword = tokenizer.Consume();
 
         // if the token isn't the keyword "var", throw an exception
-        if (varKeyword != "var") throw new Exception($"{varKeyword.Location} : Unexpected {varKeyword.Kind} ({varKeyword.Representation}) in declaration. A declaration must start with the keyword 'var'");
+        if (varKeyword != "var") throw new UnexpectedTokenException(varKeyword, "in declaration", "var");
 
-        // consume a token (which is the name of the variable we're declaring)
+        // consume the name of the variable we're declaring
         var name = tokenizer.Consume();
 
         // if the token isn't an identifier, throw an exception
-        if (name != TokenKind.ident) throw new Exception($"{name.Location} : Unexpected {name.Kind} ({name.Representation}) in declaration. Expected an identifier");
+        if (name != TokenKind.ident) throw new UnexpectedTokenException(name, TokenKind.ident);
 
         // consume a token
         var equalSign = tokenizer.Consume();
 
-        if (equalSign != "=") throw new Exception($"{equalSign.Location} : Unexpected {equalSign.Kind} ({equalSign.Representation}) in declaration. Expected '='");
+        // if this token wasn't an equal sign, throw an exception
+        if (equalSign != "=") throw new UnexpectedTokenException(equalSign, "=");
 
         // consume a ValueNode (which is the value of the variable we're declaring)
         var value = ConsumeValue();
 
+        // return that value
         return new DeclarationNode(value, name as ComplexToken);
     }
 
-    public ValueNode ConsumeValue() {
+    protected FunctionDeclarationNode ConsumeFunctionDeclaration() {
+
+        // consume the keyword "def" token
+        var defKeyword = tokenizer.Consume();
+
+        // if the token consumed was not "def", then throw an exception
+        if (defKeyword != "def") throw new UnexpectedTokenException("A function definition must start with the keyword 'def'", defKeyword);
+
+        // consume the name of the function
+        var funcName = tokenizer.Consume();
+
+        // if the token consumed was not an identifier, then throw an exception
+        if (funcName != TokenKind.ident) throw new UnexpectedTokenException(funcName, "in function declaration", TokenKind.ident);
+
+        // the list of the parameters the function has
+        var parameters = new List<ComplexToken>();
+
+        // consume a token
+        var parenthesis = tokenizer.Consume();
+
+        // if it wasn't an open parenthesis, throw an exception
+        if (parenthesis != "(") throw new UnexpectedTokenException(parenthesis, "in function declaration", "(");
+
+        // consume a token
+        var paramName = tokenizer.Consume();
+
+        // while this token is not a parenthesis
+        while (paramName != ")") {
+
+            // if the token is not an identifier, throw an exception
+            if (paramName != TokenKind.ident) throw new UnexpectedTokenException(paramName, "in function argument declaration", TokenKind.ident);
+
+            // add the parameter (as a ComplexToken) to the list of parameters
+            parameters.Add(paramName as ComplexToken);
+
+            // consume a token
+            var comma = tokenizer.Consume();
+
+            // if the token was a closing parenthesis, break out
+            if (comma == ")") break;
+
+            // if the token was not a comma, throw an exception
+            if (comma != ",") throw new UnexpectedTokenException(comma, "in function argument declaration");
+
+            // assign paramName to a new token
+            paramName = tokenizer.Consume();
+        }
+
+        // consume a simple block
+        var block = ConsumeSimpleBlock();
+
+        // return a new FunctionDeclarationNode with 'block' as the value, 'parameters' as the list of params, and funcName as the name
+        return new FunctionDeclarationNode(block, parameters.ToArray(), funcName as ComplexToken);
+    }
+
+    protected SimpleBlock ConsumeSimpleBlock() {
+
+        var bracket = tokenizer.Consume();
+
+        if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block");
+
+        var statements = new List<StatementNode>();
+
+        while (tokenizer.Peek() != "}" && tokenizer.Peek() != TokenKind.EOF) {
+            statements.Add(Consume());
+        }
+
+        bracket = tokenizer.Consume();
+
+        if (bracket == ";") bracket = tokenizer.Consume();
+
+        if (bracket != "}") throw new Exception("what² (" + bracket.Representation + ")");
+
+        return new SimpleBlock(statements.ToArray());
+    }
+
+    protected ValueNode ConsumeValue() {
 
         // converts to postfix notation
         var postfix = ToPostfixNotation(tokenizer);
 
+#if DEBUG
+    Console.WriteLine(String.Join(" ", postfix));
+#endif // DEBUG
+
+
         // postfix notation cannot contain an even number of tokens (since )
-        if (postfix.Count == 0) throw new Exception($"{tokenizer.Current.Location} : Unknown error, could not consume a value.");
+        if (postfix.Count == 0) return null;
 
         // if only one value could be parsed
         if (postfix.Count == 1) {
             var token = postfix[0];
 
-            // if the token is an identifieer, return an IdentNode
+            if (token == "}") {
+                return new ValueNode("}");
+            }
+
+            // if the token is an identifier, return an IdentNode
             if (token == TokenKind.ident) {
                 return new IdentNode(token.Representation);
             }
@@ -158,10 +312,10 @@ public class Parser : IConsumer<StatementNode>
                 return new NumberNode((token as NumberToken).Value);
             }
 
-            throw new Exception($"{token.Location} : Unexpected token {token.Representation} at {token.Location}. Expected string, number, identifier, or function call");
+            throw new UnexpectedTokenException(token, TokenKind.@string, TokenKind.ident, TokenKind.number, TokenKind.function);
         }
 
-        // otherwise, transform the postfix expression into a tree (we returnn the root of that tree)
+        // otherwise, transform the postfix expression into a tree (we return the root of that tree)
 
         var operands = new Stack<ValueNode>();
 
@@ -189,6 +343,8 @@ public class Parser : IConsumer<StatementNode>
                 continue;
             }
 
+            if (token == "{") { }
+
             if (token is OperatorToken) {
 
                 OperationNode op;
@@ -214,8 +370,7 @@ public class Parser : IConsumer<StatementNode>
                         op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "binaryAccess");
                         break;
 					case "=":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop()}, "binaryAssign");
-						break;
+						throw new Exception($"Unexpected assignment in value at location {token.Location}.");
                     case "_":
                         op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryNeg");
                         break;
@@ -251,6 +406,13 @@ public class Parser : IConsumer<StatementNode>
 					case "<":
 						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalLess");
 						break;
+                    case "new":
+                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryInvocation");
+                        break;
+                    case "var":
+                        throw new Exception($"Unexpected variable declaration at location {token.Location}.");
+                    case "def":
+                        throw new Exception($"Unexpected function definition at location {token.Location}.");
                     default: // if the operator is none of the above, then assume it is a function
                         var funcOperands = new List<ValueNode>();
 
@@ -311,14 +473,9 @@ public class Parser : IConsumer<StatementNode>
 
             // if the token is an identifier
             if (currToken == TokenKind.ident) {
+                if (tokenizer.Peek() == "(") {
 
-                // peek the next token
-                var nextToken = tokenizer.Peek();
-
-                // if it is a left paren ('(')
-                if (nextToken == "(") {
-
-                    // add an identical token but identified as TokenKind.function to the output
+                    // set the current token to an identical token but identified as TokenKind.function
                     currToken = new ComplexToken(currToken, TokenKind.function, currToken.Location);
                 }
             }
@@ -334,21 +491,10 @@ public class Parser : IConsumer<StatementNode>
             }
 
             // if the token is a function
-            /* if (currToken == TokenKind.function) {
-
-                // consume the '(' right after it
-                tokenizer.Consume();
-
-                // add a FunctionToken to the output with a RPN of the calling parenthesis as the arg list
-                output.Add(new FunctionToken(currToken, ToPostfixNotation(tokenizer), currToken.Location));
-                continue;
-            }*/
-
-            // if the token is a function
             if (currToken == TokenKind.function) {
 
                 // push it to the operator stack
-                operatorStack.Push(new OperatorToken(currToken, Precedence.FuncCall, false, currToken.Location));
+                operatorStack.Push(new OperatorToken(currToken, Precedence.FuncCall, "right", currToken.Location));
                 output.Add(new Token('[', TokenKind.delim, tokenizer.Peek().Location));
                 continue;
             }
@@ -357,7 +503,7 @@ public class Parser : IConsumer<StatementNode>
             if (currToken == "(") {
 
                 // push it to the operator stack
-                operatorStack.Push(new OperatorToken('(', 0, false, currToken.Location));
+                operatorStack.Push(new OperatorToken(currToken, 0, "right", currToken.Location));
                 continue;
             }
 
@@ -379,24 +525,33 @@ public class Parser : IConsumer<StatementNode>
                     throw new Exception($"Mismatched parenthesis at location {currToken.Location}");
                 }
 
+                //
 				// TODO: Implement type casting handling
-				if (!(tokenizer.Peek() is OperatorToken)) {
-
-				}
+                //
 
                 continue;
             }
 
+            // if the token is '.'
             if (currToken == ".") {
-                currToken = new OperatorToken(currToken, Precedence.Access, true, currToken.Location);
+
+                // set the current token to a left-associative operator with precedence Precedence.Access
+                currToken = new OperatorToken(currToken, Precedence.Access, "left", currToken.Location);
             }
 
+            // if the token is "++" or "--"
             if (currToken == "++" || currToken == "--") {
+
+                // if the last token was an identifier
                 if (lastToken == TokenKind.ident) {
-                    currToken = new OperatorToken(currToken, Precedence.Unary, true, currToken.Location);
+
+                    // set the current token to a left-associative operator with precedence Precedence.Unary
+                    currToken = new OperatorToken(currToken, Precedence.Unary, "left", currToken.Location);
                 }
                 else if (tokenizer.Peek() == TokenKind.ident) {
-                    currToken = new OperatorToken(currToken, Precedence.Unary, false, currToken.Location);
+
+                    // set the current token to a right-associative operator with precedence Precedence.Unary
+                    currToken = new OperatorToken(currToken, Precedence.Unary, "right", currToken.Location);
                 }
                 else throw new Exception($"Increment/Decrement operator with no associated identifier at location {currToken.Location}");
             }
@@ -405,13 +560,11 @@ public class Parser : IConsumer<StatementNode>
             if (currToken is OperatorToken) {
 
                 // if the last token was an operator and the next token is an identifier, or the last token was a right parenthesis, a right parenthesis it means this operator is unary
-                if ((lastToken is OperatorToken && tokenizer.Peek() == TokenKind.ident) || lastToken == "(" || tokenizer.Peek() == "(") {
+                if (lastToken == null || ((lastToken is OperatorToken && tokenizer.Peek() == TokenKind.ident) || lastToken == "(" || tokenizer.Peek() == "(")) {
 
                     // if the current token is "-"
                     if (currToken == "-") {
-                        currToken = new OperatorToken("_", Precedence.Unary, false, currToken.Location);
-                        //output.Add(new OperatorToken("_", 5, false, currToken.Location));
-                        //continue;
+                        currToken = new OperatorToken("_", Precedence.Unary, "right", currToken.Location);
                     }
 
                     // if the current token is "+", we skip it (since it is redundant)
@@ -455,7 +608,7 @@ public class Parser : IConsumer<StatementNode>
                         )
                         || // or
                         (
-                            // the operator has greater prcedence
+                            // the operator has greater precedence
                             operatorStack.Peek().Precedence > (currToken as OperatorToken).Precedence
                         )
                         || // or
@@ -517,7 +670,7 @@ public class Parser : IConsumer<StatementNode>
                 throw new Exception($"Mismatched parenthesis at location {operatorStack.Peek().Location}");
             }
 
-            // pop an operator fromp the operator stack and add it to the output
+            // pop an operator from the operator stack and add it to the output
             output.Add(operatorStack.Pop());
         }
 

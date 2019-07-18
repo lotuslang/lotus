@@ -51,23 +51,11 @@ public class OperationNode : ValueNode
         get => token;
     }
 
-    public OperationNode(Token rep, ValueNode[] operands, string opType) : base(rep)
+    public OperationNode(Token token, ValueNode[] operands, string opType) : base(token)
     {
         this.operands = new List<ValueNode>(operands);
         this.opType = opType.ToLower();
-    }
-
-    /// <summary>
-    /// Adds new operands to the Operands array.
-    /// </summary>
-    /// <param name="operandList">The array of operands to add.</param>
-    public void Add(params ValueNode[] operandList)
-    {
-        // For each operand in operandList, add it to the operands list
-        foreach (var operand in operandList)
-        {
-            operands.Add(operand);
-        }
+        this.token = token;
     }
 }
 

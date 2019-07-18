@@ -109,11 +109,19 @@ public class OperatorToken : Token
         isLeft = isLeftAssociative;
     }
 
+    public OperatorToken(string representation, Precedence precedence, string associativity, Location? location)
+        : this(representation, precedence, associativity == "left" ? true : false, location)
+    { }
+
+    public OperatorToken(char representation, Precedence precedence, string associativity, Location? location)
+        : this(representation.ToString(), precedence, associativity == "left" ? true : false, location)
+    { }
+
     public OperatorToken(char representation, Precedence precedence, bool isLeftAssociative, Location? location)
         : this(representation.ToString(), precedence, isLeftAssociative, location)
     { }
 }
 
 public enum TokenKind {
-    delim, ident, number, function, @string, @operator, EOF
+    delim, ident, number, function, @string, @operator, keyword, EOF
 }

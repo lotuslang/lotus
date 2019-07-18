@@ -29,7 +29,7 @@ public class DeclarationNode : StatementNode
 
     protected ComplexToken varName;
 
-    public ComplexToken VariableName {
+    public ComplexToken Name {
         get => varName;
     }
 
@@ -45,7 +45,7 @@ public class DeclarationNode : StatementNode
     }
 }
 
-public class AssignementNode : StatementNode
+public class AssignmentNode : StatementNode
 {
     protected ValueNode value;
 
@@ -59,7 +59,7 @@ public class AssignementNode : StatementNode
         get => varName;
     }
 
-    public AssignementNode(ValueNode value, ComplexToken varName) : base(varName + " = " + value.ToText()) {
+    public AssignmentNode(ValueNode value, ComplexToken varName) : base(varName + " = " + value.ToText()) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
         this.varName = varName;
@@ -73,10 +73,10 @@ public class AssignementNode : StatementNode
 
 public class FunctionNode : ValueNode
 {
-    protected ValueNode value;
+    protected ValueNode[] parameters;
 
-    public new ValueNode Value {
-        get => value;
+    public ValueNode[] CallingParameters {
+        get => parameters;
     }
 
     protected ComplexToken functionName;
@@ -85,10 +85,45 @@ public class FunctionNode : ValueNode
         get => functionName;
     }
 
-    public FunctionNode(ValueNode value, ComplexToken functionName) : base(functionName + "(...)") {
-        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier");
+    public FunctionNode(ValueNode[] parameters, ComplexToken functionName) : base(functionName + "(...)") {
+        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (call)");
 
         this.functionName = functionName;
+        this.parameters = parameters;
+    }
+}
+
+public class FunctionDeclarationNode : DeclarationNode
+{
+    protected new SimpleBlock value;
+
+    public new SimpleBlock Value {
+        get => value;
+    }
+
+    protected List<ComplexToken> parameters;
+
+    public List<ComplexToken> Parameters {
+        get => parameters;
+    }
+
+    public FunctionDeclarationNode(SimpleBlock value, ComplexToken[] parameters, ComplexToken functionName) : base(new ValueNode("block"), functionName) {
+        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (declaration)");
+
         this.value = value;
+        this.parameters = new List<ComplexToken>(parameters);
+    }
+}
+
+public class SimpleBlock
+{
+    protected List<StatementNode> content;
+
+    public List<StatementNode> Content {
+        get => content;
+    }
+
+    public SimpleBlock(StatementNode[] content) {
+        this.content = new List<StatementNode>(content);
     }
 }

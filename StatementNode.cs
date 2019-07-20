@@ -4,14 +4,21 @@ using System.Collections.Generic;
 
 public class StatementNode
 {
+    protected Token token;
+
+    public Token Token {
+        get => token;
+    }
+
     protected string rep;
 
     public string Representation {
         get => rep;
     }
 
-    public StatementNode(string representation) {
+    public StatementNode(string representation, Token token) {
         rep = representation;
+        this.token = token;
     }
 
     public new virtual string ToString() {
@@ -33,7 +40,7 @@ public class DeclarationNode : StatementNode
         get => varName;
     }
 
-    public DeclarationNode(ValueNode value, ComplexToken varName) : base("svar " + varName + " = " + value.ToText()) {
+    public DeclarationNode(ValueNode value, ComplexToken varName) : base("var", varName) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
         this.varName = varName;
@@ -41,7 +48,7 @@ public class DeclarationNode : StatementNode
     }
 
     public override string ToString() {
-        return "svar " + varName + " = " + value.ToText();
+        return "var " + varName + " = " + value.ToText();
     }
 }
 
@@ -59,7 +66,7 @@ public class AssignmentNode : StatementNode
         get => varName;
     }
 
-    public AssignmentNode(ValueNode value, ComplexToken varName) : base(varName + " = " + value.ToText()) {
+    public AssignmentNode(ValueNode value, ComplexToken varName) : base(varName , varName) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
         this.varName = varName;
@@ -71,30 +78,10 @@ public class AssignmentNode : StatementNode
     }
 }
 
-public class FunctionNode : ValueNode
-{
-    protected ValueNode[] parameters;
-
-    public ValueNode[] CallingParameters {
-        get => parameters;
-    }
-
-    protected ComplexToken functionName;
-
-    public ComplexToken Name {
-        get => functionName;
-    }
-
-    public FunctionNode(ValueNode[] parameters, ComplexToken functionName) : base(functionName + "(...)") {
-        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (call)");
-
-        this.functionName = functionName;
-        this.parameters = parameters;
-    }
-}
 
 public class FunctionDeclarationNode : DeclarationNode
 {
+    internal bool isInternal = false;
     protected new SimpleBlock value;
 
     public new SimpleBlock Value {
@@ -107,7 +94,7 @@ public class FunctionDeclarationNode : DeclarationNode
         get => parameters;
     }
 
-    public FunctionDeclarationNode(SimpleBlock value, ComplexToken[] parameters, ComplexToken functionName) : base(new ValueNode("block"), functionName) {
+    public FunctionDeclarationNode(SimpleBlock value, ComplexToken[] parameters, ComplexToken functionName) : base(new ValueNode("block", functionName), functionName) {
         if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (declaration)");
 
         this.value = value;

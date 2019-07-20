@@ -22,11 +22,13 @@ public class Environment
         get => functions;
     }
 
-    public Environment(string name, Dictionary<string, ValueNode> variables, FunctionDeclarationNode[] functions) {
-        this.variables = variables;
+    public Environment(string name, Dictionary<string, ValueNode> variables, ICollection<FunctionDeclarationNode> functions) {
+        this.variables = new Dictionary<string, ValueNode>(variables);
         this.functions = new List<FunctionDeclarationNode>(functions);
         this.name = name;
     }
+
+    public Environment(Environment environment) : this(environment.name, environment.variables, environment.functions) { }
 
     public bool HasVariable(string varName) => variables.ContainsKey(varName);
 
@@ -93,10 +95,26 @@ public class Environment
     }
 
     public bool TryRegisterFunction(FunctionDeclarationNode node) {
+
+        // if this function already exist, do nothing and return false
         if (HasFunction(node)) return false;
 
+        // otherwise, add it to the list of functions
         functions.Add(node);
 
+        // and return true
+        return true;
+    }
+
+    public bool TrySetVariable(string varName, ValueNode newValue) {
+
+        // if this variable doesn't exist yet, do nothing and return true
+        if (!HasVariable(varName)) return false;
+
+        // otherwise, set the value of the variable to `newValue`
+        variables[varName] = newValue;
+
+        // and return true
         return true;
     }
 }

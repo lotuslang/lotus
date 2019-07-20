@@ -61,10 +61,6 @@ class Program
 
     public static GraphNode ToGraphNode(OperationNode node) {
 
-        if (node.OperationType == "function") {
-            return ToGraphNode(new FunctionNode(node.Operands, new ComplexToken(node.Representation, TokenKind.ident, node.Token.Location)));
-        }
-
         var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
 
         if (node.Representation == "++" || node.Representation == "--") {

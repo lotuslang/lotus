@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class Tokenizer : IConsumer<Token>
 {
-    protected Token current;
+    private Token current;
 
     public Token Current {
         get => current;
@@ -15,13 +15,11 @@ public class Tokenizer : IConsumer<Token>
 
     private Queue<Token> reconsumeQueue;
 
-    protected int position;
-
-    public int Position {
-        get => position;
+    public Location Position {
+        get => consumer.Position;
     }
 
-    protected StringConsumer consumer;
+    private StringConsumer consumer;
 
     public Tokenizer(StringConsumer consumer)
     {
@@ -31,6 +29,8 @@ public class Tokenizer : IConsumer<Token>
 
         current = new Token('\0', TokenKind.delim, consumer.Position);
     }
+
+    public Tokenizer(Tokenizer tokenizer) : this(tokenizer.consumer) { }
 
     public Tokenizer(System.IO.FileInfo fileInfo) : this(new StringConsumer(fileInfo))
     { }
@@ -74,9 +74,6 @@ public class Tokenizer : IConsumer<Token>
         if (reconsumeQueue.Count != 0) {
             return reconsumeQueue.Dequeue();
         }
-
-        // Updates the position
-        position++;
 
         // Consume a character from the LinesConsumer object
         var currChar = consumer.Consume();

@@ -11,7 +11,7 @@ print(greeting + " " + name);
 print(new Car("Renault", 63).maxSpeed);
 
 def printError(msg, tk) {
-    var location = tk.location;
+    var location = tk;
     msg.toStr(h, "\x").reverse();
     print("({location}) {msg}");
 }

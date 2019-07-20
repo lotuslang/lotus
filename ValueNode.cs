@@ -14,7 +14,7 @@ public class ValueNode : StatementNode
         get => rep;
     }
 
-    public ValueNode(string rep) : base(rep) { }
+    public ValueNode(string rep, Token token) : base(rep, token) { }
 
     /// <summary>
     /// A human-readable version of this ValueNode
@@ -45,17 +45,10 @@ public class OperationNode : ValueNode
         get => opType;
     }
 
-    protected Token token;
-
-    public Token Token {
-        get => token;
-    }
-
-    public OperationNode(Token token, ValueNode[] operands, string opType) : base(token)
+    public OperationNode(Token token, ValueNode[] operands, string opType) : base(token, token)
     {
         this.operands = new List<ValueNode>(operands);
         this.opType = opType.ToLower();
-        this.token = token;
     }
 }
 
@@ -71,7 +64,7 @@ public class NumberNode : ValueNode
         get => value;
      }
 
-    public NumberNode(double value) : base(value.ToString())
+    public NumberNode(double value, Token token) : base(value.ToString(), token)
     {
         this.value = value;
     }
@@ -90,7 +83,7 @@ public class StringNode : ValueNode
         get => value;
     }
 
-    public StringNode(string value) : base(value)
+    public StringNode(string value, Token token) : base(value, token)
     {
         this.value = value;
     }
@@ -107,8 +100,30 @@ public class IdentNode : ValueNode
         set => this.value = value;
     }
 
-    public IdentNode(string varName) : base(varName)
+    public IdentNode(string varName, Token token) : base(varName, token)
     {
         this.varName = varName;
+    }
+}
+
+public class FunctionNode : ValueNode
+{
+    protected ValueNode[] parameters;
+
+    public ValueNode[] CallingParameters {
+        get => parameters;
+    }
+
+    protected ComplexToken functionName;
+
+    public ComplexToken Name {
+        get => functionName;
+    }
+
+    public FunctionNode(ValueNode[] parameters, ComplexToken functionName) : base(functionName + "(...)", functionName) {
+        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (call)");
+
+        this.functionName = functionName;
+        this.parameters = parameters;
     }
 }

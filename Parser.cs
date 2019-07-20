@@ -8,14 +8,8 @@ public class Parser : IConsumer<StatementNode>
 
     private Tokenizer tokenizer;
 
-    protected int position;
-
-    /// <summary>
-    /// Indicates the position of this instance (i.e. how many StatementNode objects have been consumed).
-    /// </summary>
-    /// <value>The position of this instance.</value>
-    public int Position {
-        get => position;
+    public Location Position {
+        get => tokenizer.Position;
     }
 
     protected StatementNode current;
@@ -29,16 +23,16 @@ public class Parser : IConsumer<StatementNode>
     }
 
     public Parser(Tokenizer tokenizer) {
-        this.tokenizer = tokenizer;
+        this.tokenizer = new Tokenizer(tokenizer);
     }
 
-    public Parser(StringConsumer consumer) {
-        tokenizer = new Tokenizer(consumer);
-    }
+    public Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
-    public Parser(IEnumerable<char> collection) {
-        tokenizer = new Tokenizer(collection);
-    }
+    public Parser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
+
+    public Parser(System.IO.FileInfo file) : this(new Tokenizer(file)) { }
+
+    public Parser(Parser parser) : this(parser.tokenizer) { }
 
     /// <summary>
     /// Reconsumes the last StatementNode object.
@@ -53,6 +47,7 @@ public class Parser : IConsumer<StatementNode>
     public StatementNode Consume(out bool success) {
         var node = Consume(); // consume a StatementNode
 
+        // TODO: find another value than null
         success = node != null; // then checks that it isn't null
 
         return node; // and finally return the StatementNode consumed
@@ -69,9 +64,6 @@ public class Parser : IConsumer<StatementNode>
             reconsumeLastDocNode = false;
             return current;
         }
-
-        // Update the position
-        position++;
 
         // Consume a token
         var currToken = tokenizer.Consume();
@@ -128,13 +120,15 @@ public class Parser : IConsumer<StatementNode>
                 // reconsume the identifier
                 tokenizer.Reconsume();
 
-                // consume a value (which is gonna be an OperationNode representing a function)
+                /* // consume a value (which is gonna be an OperationNode representing a function)
                 var paramsAsValue = ConsumeValue();
 
                 if (!(paramsAsValue is OperationNode)) throw new Exception($"{currToken.Location} : Failed to parse function call");
 
                 // consume a value, create a FunctionNode with its value set to the ValueNode returned, and return it
-				current = new FunctionNode(((OperationNode)paramsAsValue).Operands, currToken as ComplexToken);
+				current = new FunctionNode(((OperationNode)paramsAsValue).Operands, currToken as ComplexToken);*/
+
+                current = ConsumeValue();
 
                 return current;
 			}
@@ -294,22 +288,22 @@ public class Parser : IConsumer<StatementNode>
             var token = postfix[0];
 
             if (token == "}") {
-                return new ValueNode("}");
+                return new ValueNode("}", token);
             }
 
             // if the token is an identifier, return an IdentNode
             if (token == TokenKind.ident) {
-                return new IdentNode(token.Representation);
+                return new IdentNode(token.Representation, token);
             }
 
             // if the token is a string, return a StringNode
             if (token == TokenKind.@string) {
-                return new StringNode(token.Representation);
+                return new StringNode(token.Representation, token);
             }
 
             // if the token is a number, return a NumberNode
             if (token == TokenKind.number) {
-                return new NumberNode((token as NumberToken).Value);
+                return new NumberNode((token as NumberToken).Value, token);
             }
 
             throw new UnexpectedTokenException(token, TokenKind.@string, TokenKind.ident, TokenKind.number, TokenKind.function);
@@ -324,22 +318,22 @@ public class Parser : IConsumer<StatementNode>
             var token = postfix[i];
 
             if (token is NumberToken) {
-                operands.Push(new NumberNode((token as NumberToken).Value));
+                operands.Push(new NumberNode((token as NumberToken).Value, token));
                 continue;
             }
 
             if (token == TokenKind.ident) {
-                operands.Push(new IdentNode(token));
+                operands.Push(new IdentNode(token, token));
                 continue;
             }
 
             if (token == TokenKind.@string) {
-                operands.Push(new StringNode(token));
+                operands.Push(new StringNode(token, token));
                 continue;
             }
 
             if (token == "[") {
-                operands.Push(new ValueNode("["));
+                operands.Push(new ValueNode("[", token));
                 continue;
             }
 
@@ -347,7 +341,7 @@ public class Parser : IConsumer<StatementNode>
 
             if (token is OperatorToken) {
 
-                OperationNode op;
+                ValueNode op;
 
                 switch (token)
                 {
@@ -407,7 +401,7 @@ public class Parser : IConsumer<StatementNode>
 						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalLess");
 						break;
                     case "new":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryInvocation");
+                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryInvoc");
                         break;
                     case "var":
                         throw new Exception($"Unexpected variable declaration at location {token.Location}.");
@@ -424,7 +418,7 @@ public class Parser : IConsumer<StatementNode>
 						// pop the "[" remaining
                         operands.Pop();
 
-                        op = new OperationNode(token, funcOperands.ToArray(), "function");
+                        op = new FunctionNode(funcOperands.ToArray(), new ComplexToken(token, TokenKind.ident, token.Location));
                         break;
                 }
 

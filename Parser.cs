@@ -6,7 +6,7 @@ public class Parser : IConsumer<StatementNode>
 {
     private bool reconsumeLastDocNode;
 
-    private Tokenizer tokenizer;
+    private IConsumer<Token> tokenizer;
 
     public Location Position {
         get => tokenizer.Position;
@@ -26,6 +26,8 @@ public class Parser : IConsumer<StatementNode>
         this.tokenizer = new Tokenizer(tokenizer);
     }
 
+    public Parser(IConsumer<Token> tokenConsumer) : this(new Tokenizer(tokenConsumer)) { }
+
     public Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
     public Parser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
@@ -39,18 +41,29 @@ public class Parser : IConsumer<StatementNode>
     /// </summary>
     public void Reconsume() => reconsumeLastDocNode = true;
 
+    public StatementNode Peek() => new Parser(this).Consume();
+
+    public StatementNode[] Peek(int n) {
+        var parser = new Parser(this);
+
+        var output = new List<StatementNode>();
+
+        for (int i = 0; i < n; i++) {
+            output.Add(parser.Consume());
+        }
+
+        return output.ToArray();
+    }
+
     /// <summary>
     /// Consumes a StatementNode object and returns it.
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise.</param>
     /// <returns>The StatementNode object consumed.</returns>
-    public StatementNode Consume(out bool success) {
-        var node = Consume(); // consume a StatementNode
+    public bool Consume(out StatementNode result) {
+        result = Consume(); // consume a StatementNode
 
-        // TODO: find another value than null
-        success = node != null; // then checks that it isn't null
-
-        return node; // and finally return the StatementNode consumed
+        return result != null;
     }
 
     /// <summary>
@@ -259,6 +272,7 @@ public class Parser : IConsumer<StatementNode>
 
         while (tokenizer.Peek() != "}" && tokenizer.Peek() != TokenKind.EOF) {
             statements.Add(Consume());
+            if (tokenizer.Peek() == ";") tokenizer.Consume();
         }
 
         bracket = tokenizer.Consume();
@@ -302,8 +316,13 @@ public class Parser : IConsumer<StatementNode>
             }
 
             // if the token is a number, return a NumberNode
-            if (token == TokenKind.number) {
-                return new NumberNode((token as NumberToken).Value, token);
+            if (token is NumberToken number) {
+                return new NumberNode(number.Value, token);
+            }
+
+            // if the token is a bool, return a BoolNode
+            if (token is BoolToken boolToken) {
+                return new BoolNode(boolToken.Value, token);
             }
 
             throw new UnexpectedTokenException(token, TokenKind.@string, TokenKind.ident, TokenKind.number, TokenKind.function);
@@ -317,27 +336,36 @@ public class Parser : IConsumer<StatementNode>
         {
             var token = postfix[i];
 
-            if (token is NumberToken) {
-                operands.Push(new NumberNode((token as NumberToken).Value, token));
+            // if the token is a number, push a number node to the operands stack
+            if (token is NumberToken number) {
+                operands.Push(new NumberNode(number.Value, number));
                 continue;
             }
 
+            // if the token is a bool, push a bool node to the operands stack
+            if (token is BoolToken boolToken) {
+                operands.Push(new BoolNode(boolToken.Value, boolToken));
+            }
+
+            // if the token is an identifier, push a identifier node to the operands stack
             if (token == TokenKind.ident) {
                 operands.Push(new IdentNode(token, token));
                 continue;
             }
 
-            if (token == TokenKind.@string) {
+            // if the token is a string, push a string node to the operands stack
+            if (token == TokenKind.@string || token == TokenKind.complexString) {
                 operands.Push(new StringNode(token, token));
                 continue;
             }
 
+            // The '[' character is used delimit function calls. When we encounter it, we push it to the operands stack.
+            // Then, when a function "collects" its arguments, it will stop at the first '[' operand it founds.
+            // if the token is '[', push it to the operands stack
             if (token == "[") {
                 operands.Push(new ValueNode("[", token));
                 continue;
             }
-
-            if (token == "{") { }
 
             if (token is OperatorToken) {
 
@@ -400,9 +428,9 @@ public class Parser : IConsumer<StatementNode>
 					case "<":
 						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalLess");
 						break;
-                    case "new":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryInvoc");
-                        break;
+                    /* case "new":
+                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryInit");
+                        break;*/
                     case "var":
                         throw new Exception($"Unexpected variable declaration at location {token.Location}.");
                     case "def":
@@ -438,7 +466,7 @@ public class Parser : IConsumer<StatementNode>
     /// </summary>
     /// <param name="tokenizer">The tokenizer to consume the tokens from.</param>
     /// <returns>A list of tokens representing the input operation in Postfix Notation (a.k.a. Reverse Polish Notation).</returns>
-    public static List<Token> ToPostfixNotation(Tokenizer tokenizer) {
+    public static List<Token> ToPostfixNotation(IConsumer<Token> tokenizer) {
 
         // the output queue
         var output = new List<Token>();
@@ -461,7 +489,7 @@ public class Parser : IConsumer<StatementNode>
             lastToken = currToken;
 
             /// consume a token
-            currToken = tokenizer.Consume(out areTokensLeft);
+            areTokensLeft = tokenizer.Consume(out currToken);
 
             // this this to check if an identifier is a function, since it is not done during tokenizing.
 
@@ -476,8 +504,10 @@ public class Parser : IConsumer<StatementNode>
 
             // if the token is a number, a string, or an identifier
             if (currToken is NumberToken
-            || currToken == TokenKind.@string
-            || currToken == TokenKind.ident) {
+            ||  currToken is BoolToken
+            ||  currToken == TokenKind.@string
+            ||  currToken == TokenKind.complexString
+            ||  currToken == TokenKind.ident) {
 
                 // add it to the output list
                 output.Add(currToken);

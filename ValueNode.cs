@@ -21,6 +21,8 @@ public class ValueNode : StatementNode
     /// </summary>
     /// <returns>Returns a human-friendly string representing this ValueNode</returns>
     public virtual string ToText() => rep;
+
+    public new string GetName() => "value";
 }
 
 public class OperationNode : ValueNode
@@ -50,6 +52,8 @@ public class OperationNode : ValueNode
         this.operands = new List<ValueNode>(operands);
         this.opType = opType.ToLower();
     }
+
+    public new string GetName() => "operation";
 }
 
 public class NumberNode : ValueNode
@@ -68,6 +72,8 @@ public class NumberNode : ValueNode
     {
         this.value = value;
     }
+
+    public new string GetName() => "number";
 }
 
 
@@ -87,6 +93,30 @@ public class StringNode : ValueNode
     {
         this.value = value;
     }
+
+    public new string GetName() => "string";
+}
+
+public class BoolNode : ValueNode
+{
+    protected bool value;
+
+    /// <summary>
+    /// The value of this StringNode.
+    /// </summary>
+    /// <value>The number represented by this object.</value>
+    public new bool Value {
+        get => value;
+    }
+
+    public BoolNode(bool value, Token token) : base(value.ToString().ToLower(), token)
+    {
+        this.value = value;
+    }
+
+    public BoolNode(string repr, Token token) : this(repr == "true", token) { }
+
+    public new string GetName() => "boolean";
 }
 
 public class IdentNode : ValueNode
@@ -104,6 +134,8 @@ public class IdentNode : ValueNode
     {
         this.varName = varName;
     }
+
+    public new string GetName() => "variable name";
 }
 
 public class FunctionNode : ValueNode
@@ -126,4 +158,6 @@ public class FunctionNode : ValueNode
         this.functionName = functionName;
         this.parameters = parameters;
     }
+
+    public new string GetName() => "function";
 }

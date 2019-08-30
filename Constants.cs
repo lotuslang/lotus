@@ -35,5 +35,7 @@ public static class Constants
         keywords.Add("var");
         keywords.Add("new");
         keywords.Add("def");
+        keywords.Add("true");
+        keywords.Add("false");
     }
 }

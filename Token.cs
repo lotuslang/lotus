@@ -9,17 +9,13 @@ public class Token
     protected TokenKind kind;
 
     public TokenKind Kind {
-        get {
-            return kind;
-        }
+        get => kind;
     }
 
     protected StringBuilder rep;
 
     public string Representation {
-        get {
-            return rep.ToString();
-        }
+        get => rep.ToString();
     }
 
     Location? loc;
@@ -65,9 +61,7 @@ public class NumberToken : ComplexToken
     protected double val;
 
     public double Value {
-        get {
-            return val;
-        }
+        get => val;
     }
 
     public NumberToken(string representation, Location? location) : base(representation, TokenKind.number, location) {
@@ -83,6 +77,46 @@ public class NumberToken : ComplexToken
     public new void Add(string str) {
         rep.Append(str);
         Double.TryParse(rep.ToString(), out val);
+    }
+}
+
+[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {val}")]
+public class BoolToken : ComplexToken
+{
+    protected bool val;
+
+    public bool Value {
+        get => val;
+    }
+
+    public BoolToken(string representation, Location? location) : base(representation, TokenKind.number, location) {
+        if (representation != "true" || representation != "false") {
+            throw new Exception($"Unexpected representation of a bool token : {representation}. Expected `true` of `false`");
+        }
+
+        val = representation == "true";
+    }
+
+    public BoolToken(bool value, Location? location) : base(value.ToString().ToLower(), TokenKind.@bool, location) {
+
+    }
+}
+
+[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {val}")]
+public class ComplexStringToken : ComplexToken
+{
+    protected string val;
+
+    public string Value {
+        get => val;
+    }
+
+    protected List<Token[]> sections;
+
+    public List<Token[]> CodeSections;
+
+    public ComplexStringToken(string representation, List<Token[]> codeSections, Location? location) : base(representation, TokenKind.complexString, location) {
+        sections = codeSections;
     }
 }
 
@@ -123,5 +157,5 @@ public class OperatorToken : Token
 }
 
 public enum TokenKind {
-    delim, ident, number, function, @string, @operator, keyword, EOF
+    delim, ident, number, function, @bool, @string, complexString, @operator, keyword, EOF
 }

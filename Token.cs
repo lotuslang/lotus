@@ -50,9 +50,11 @@ public class ComplexToken : Token
 {
     public ComplexToken(string representation, TokenKind kind, Location? location) : base(representation, kind, location) { }
 
-    public void Add(char ch) => rep.Append(ch);
+    public void Add(char ch)
+        => rep.Append(ch);
 
-    public void Add(string str) => rep.Append(str);
+    public void Add(string str)
+        => rep.Append(str);
 }
 
 [System.Diagnostics.DebuggerDisplay("{loc} {kind} : {val}")]

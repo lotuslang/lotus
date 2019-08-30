@@ -8,7 +8,7 @@ using System.Collections.Generic;
 // TODO: Allow loading of other files into the environment
 public class Interpreter
 {
-    protected Parser parser;
+    protected IConsumer<StatementNode> parser;
 
     protected Environment environment;
 
@@ -24,27 +24,39 @@ public class Interpreter
 
     public Interpreter(FileInfo file, Environment environment) : this(new Parser(file), environment) { }
 
-    public Interpreter(Tokenizer tokenizer, Environment environment) : this(new Parser(tokenizer), environment) { }
+    public Interpreter(IConsumer<Token> tokenConsumer, Environment environment) : this(new Parser(tokenConsumer), environment) { }
 
-    public Interpreter(Parser parser, Environment environment) : this(parser) {
+    public Interpreter(IConsumer<StatementNode> nodeConsumer, Environment environment) : this(nodeConsumer) {
         this.environment = new Environment(environment);
     }
 
-    public Interpreter(IEnumerable<char> source) : this(new Parser(new Tokenizer(source))) { }
+    public Interpreter(IEnumerable<char> source) : this(new Tokenizer(source)) { }
 
-    public Interpreter(IEnumerable<string> source) : this(new Parser(new Tokenizer(source))) { }
+    public Interpreter(IEnumerable<string> source) : this(new Tokenizer(source)) { }
 
-    public Interpreter(FileInfo file) : this(new Parser(new Tokenizer(file))) { }
+    public Interpreter(FileInfo file) : this(new Tokenizer(file)) { }
 
-    public Interpreter(Tokenizer tokenizer) : this(new Parser(tokenizer)) { }
+    public Interpreter(IConsumer<Token> tokenConsumer) : this(new Parser(tokenConsumer)) { }
+
+    public Interpreter(IConsumer<StatementNode> nodeConsumer) {
+        this.parser = new Consumer<StatementNode>(nodeConsumer);
+        environment = new Environment(nodeConsumer.Position.filename, new Dictionary<string, ValueNode>(), new FunctionDeclarationNode[0]);
+        environment.RegisterVariable("#return", null);
+    }
 
     public Interpreter(Parser parser) {
         this.parser = new Parser(parser);
         environment = new Environment(parser.Position.filename, new Dictionary<string, ValueNode>(), new FunctionDeclarationNode[0]);
+        environment.RegisterVariable("#return", null);
     }
 
+    public Interpreter(Interpreter interpreter) : this(interpreter.parser, interpreter.environment) { }
+
     public void Run() {
-        var currNode = parser.Consume();
+        if (parser.Consume(out StatementNode currNode)) {
+            environment.SetVariableValue("#return", Constants.NULL);
+            return;
+        }
 
         if (currNode is AssignmentNode) {
 
@@ -58,6 +70,7 @@ public class Interpreter
                 throw new Exception($"{parser.Position} : Variable {varName} is not declared in the current scope."
                     + $" Did you mean \"var {varName} = {varValue}\"");
             }
+            return;
         }
 
         if (currNode is DeclarationNode) {
@@ -79,14 +92,31 @@ public class Interpreter
             if (!environment.TryRegisterVariable(varName, varValue)) {
                 throw new Exception($"{parser.Position} : Variable {varName} could not be declared");
             }
+
+            return;
         }
 
-        if (currNode is FunctionNode) {
-            CallFunction(currNode as FunctionNode);
+        if (currNode is FunctionCallNode) {
+            CallFunction(currNode as FunctionCallNode);
+            return;
+        }
+
+        if (currNode is ReturnNode) {
+            if ((currNode as ReturnNode).IsReturningValue) {
+                environment.SetVariableValue("#return", Compute((currNode as ReturnNode).Value));
+                return;
+            }
+
+            environment.SetVariableValue("#return", Constants.NULL);
+            return;
         }
     }
 
-    public void RunAll() { }
+    public void RunAll() {
+        while (environment.GetVariableValue("#return") == null) {
+            Run();
+        }
+    }
 
     protected ValueNode Compute(ValueNode node) {
 
@@ -100,8 +130,8 @@ public class Interpreter
 
         }
 
-        if (node is FunctionNode) {
-            return CallFunction(node as FunctionNode);
+        if (node is FunctionCallNode) {
+            return CallFunction(node as FunctionCallNode);
         }
 
         if (node is OperationNode) {
@@ -242,15 +272,49 @@ public class Interpreter
         return null;
     }
 
-    public ValueNode CallFunction(FunctionNode node) {
-         
+    public ValueNode CallFunction(FunctionCallNode node) {
 
-        return null;
+        // Check if the function exists in the current environnement, throw an error if not
+        if (!environment.HasFunction(node)) {
+            // TODO: Use a throw helper or create an appropriate exception
+            throw new Exception($"{node.Token.Location} : Function '{node.Name.Representation}' is not declared yet.");
+        }
+
+        // gets the FunctionDeclarationNode object corresponding to the function called
+        var func = environment.GetFunction(node);
+
+        // creates a consumer of StatementNode from the body of the function, and then creates an interpreter from that consumer and the current environment
+        var funcInterpreter = new Interpreter(new Consumer<StatementNode>(func.Value.Content), environment);
+
+        // the environment of the function interpreter
+        var funcEnvironment = funcInterpreter.Environment;
+
+        // for each parameter of the function
+        for (int i = 0; i < func.Parameters.Count; i++) {
+
+            // if a variable with the same name as the parameter already exists in the global scope (i.e. funcEnvironment before we modify it),
+            // we "shadow" it by replacing it's current value by the value of the parameter.
+            // howeever, since we created a completely new environment from the current one, and not just a copy (i.e. it doesn't reference the same object),
+            // we don't actually modify the value of the variable in the global scope
+            if (funcEnvironment.Variables.ContainsKey(func.Parameters[i].Representation)) {
+                funcEnvironment.SetVariableValue(func.Parameters[i].Representation, node.CallingParameters[i]);
+                continue;
+            }
+
+            // if the parameter isn't already a variable in the global scope, just register it with the value of the parameter
+            funcEnvironment.RegisterVariable(func.Parameters[i].Representation, node.CallingParameters[i]);
+        }
+
+        funcInterpreter.RunAll();
+
+        return funcEnvironment.GetVariableValue("#return");
     }
 
-    protected static Environment GetEnvironmentFrom(string source) => GetEnvironmentFrom(new Parser(source));
+    protected static Environment GetEnvironmentFrom(string source)
+        => GetEnvironmentFrom(new Parser(source));
 
-    protected static Environment GetEnvironmentFrom(FileInfo file) => GetEnvironmentFrom(new Parser(file));
+    protected static Environment GetEnvironmentFrom(FileInfo file)
+        => GetEnvironmentFrom(new Parser(file));
 
     protected static Environment GetEnvironmentFrom(Parser parser) {
         var interpreter = new Interpreter(parser);

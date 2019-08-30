@@ -21,16 +21,27 @@ public class Tokenizer : IConsumer<Token>
 
     private StringConsumer consumer;
 
-    public Tokenizer(StringConsumer consumer)
+    public Tokenizer(StringConsumer stringConsumer)
     {
-        this.consumer = consumer;
+        this.consumer = new StringConsumer(stringConsumer);
 
         reconsumeQueue = new Queue<Token>();
 
-        current = new Token('\0', TokenKind.delim, consumer.Position);
+        current = new Token('\0', TokenKind.delim, stringConsumer.Position);
     }
 
-    public Tokenizer(Tokenizer tokenizer) : this(tokenizer.consumer) { }
+    public Tokenizer(IConsumer<Token> tokenConsumer) : this(new StringConsumer("")) {
+        reconsumeQueue = new Queue<Token>();
+
+        while (tokenConsumer.Consume(out _)) {
+            reconsumeQueue.Enqueue(tokenConsumer.Current);
+        }
+    }
+
+    public Tokenizer(Tokenizer tokenizer) : this(tokenizer.consumer) {
+        current = tokenizer.current;
+        reconsumeQueue = new Queue<Token>(tokenizer.reconsumeQueue);
+    }
 
     public Tokenizer(System.IO.FileInfo fileInfo) : this(new StringConsumer(fileInfo))
     { }
@@ -41,13 +52,17 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(IEnumerable<string> collection) : this(new StringConsumer(collection))
     { }
 
-    public void Reconsume() => reconsumeQueue.Enqueue(current);
+    public void Reconsume() {
+        if (reconsumeQueue.TryPeek(out Token token) && Object.ReferenceEquals(token, current)) return;
 
-    public Token Peek() => Peek(1)[0];
+        reconsumeQueue.Enqueue(current);
+    }
 
-    public Token[] Peek(int n=1) {
+    public Token Peek() => new Tokenizer(this).Consume();
+
+    public Token[] Peek(int n) {
         // create a new (dee-copy of) tokenizer from this one
-        var tokenizer = new Tokenizer(new StringConsumer(this.consumer));
+        var tokenizer = new Tokenizer(this);
 
         // the output list
         var output = new Token[n];
@@ -60,12 +75,10 @@ public class Tokenizer : IConsumer<Token>
         return output;
     }
 
-    public Token Consume(out bool success) {
-        var token = Consume();
+    public bool Consume(out Token result) {
+        result = Consume();
 
-        success = token != TokenKind.EOF;
-
-        return token;
+        return result != TokenKind.EOF;
     }
 
     public Token Consume() {
@@ -109,6 +122,14 @@ public class Tokenizer : IConsumer<Token>
 
             // Consume a number token
             current = ConsumeNumberToken();
+
+            return current;
+        }
+
+        if (currChar == '$') {
+            if (consumer.Peek() != '\'' || consumer.Peek() != '"') return new Token(currChar, TokenKind.delim, consumer.Position);
+
+            current = ConsumeSpecialStringToken(consumer.Consume());
 
             return current;
         }
@@ -290,10 +311,18 @@ public class Tokenizer : IConsumer<Token>
             return new OperatorToken(name, Precedence.Declaration, "right", name.Location);
         }
 
+        // if the identifier is the keyword "var"
         if (name == "var") {
 
             //return a right-associative token with the precedence of a declaration
             return new OperatorToken(name, Precedence.Declaration, "right", name.Location);
+        }
+
+        // if the identifier is the keyword "true" or "false"
+        if (name == "true" || name == "false") {
+
+            // return a BoolToken with its value set to "true" if name was "true", and "false" if name was "false"
+            return new BoolToken(name == "true", name.Location);
         }
 
         // if the identifier is a keyword
@@ -357,6 +386,28 @@ public class Tokenizer : IConsumer<Token>
 
         // return the output token
         return output;
+    }
+
+    protected ComplexToken ConsumeSpecialStringToken(char endingDelimiter) {
+
+        //consume a character
+        var currChar = consumer.Consume();
+
+        // the output token
+        var output = new ComplexToken("", TokenKind.complexString, consumer.Position);
+
+        // while the current character is not the ending delimiter
+        while (currChar != endingDelimiter) {
+
+            if (currChar == '{') {
+                var tokenList = new List<Token>();
+                while (Consume() != "}") {
+
+                }
+            }
+        }
+
+        return null;
     }
 
     protected NumberToken ConsumeNumberToken() {

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class StringConsumer : IConsumer<char>
 {
+    private bool reconsumeFlag;
+
     protected Stack<char> stack;
 
     public int Count {
@@ -18,45 +20,44 @@ public class StringConsumer : IConsumer<char>
         get => current;
     }
 
-    protected int line;
-    protected int column;
-
-    protected string file;
+    protected Location pos;
 
     public Location Position {
-        get => new Location(line, column, file);
+        get => pos;
     }
 
     public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") {
         stack = new Stack<char>();
 
-        var success = true;
-
-        while (success) {
-            stack.Push(consumer.Consume(out success));
+        while (consumer.Consume(out char item)) {
+            stack.Push(item);
         }
 
         stack = new Stack<char>(stack);
 
-        line = 1;
-        column = 1;
-        file = fileName;
+        pos.line = 1;
+        pos.column = 1;
+        pos.filename = fileName;
     }
 
     public StringConsumer(StringConsumer consumer) {
         stack = new Stack<char>(consumer.stack.Reverse());
 
-        line = consumer.line;
-        column = consumer.column;
-        file = consumer.file;
+        current = consumer.current;
+
+        reconsumeFlag = consumer.reconsumeFlag;
+
+        pos.line = consumer.pos.line;
+        pos.column = consumer.pos.column;
+        pos.filename = consumer.pos.filename;
     }
 
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") {
         stack = new Stack<char>(collection.Reverse());
 
-        line = 1;
-        column = 1;
-        file = fileName;
+        pos.line = 1;
+        pos.column = 1;
+        pos.filename = fileName;
     }
 
     public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
@@ -77,30 +78,31 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        line = 1;
-        column = 1;
-        file = fileName;
+        pos.line = 1;
+        pos.column = 1;
+        pos.filename = fileName;
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)
     { }
 
     public void Reconsume() {
-        stack.Push(current);
+
+        if (reconsumeFlag) return;
+
+        reconsumeFlag = true;
 
         if (current == '\n') {
-            line--;
+            pos.line--;
         }
 
-        column--;
+        pos.column--;
     }
 
-    public char Consume(out bool success) {
-        var temp = Consume();
+    public bool Consume(out char result) {
+        result = Consume();
 
-        success = temp != '\u0003';
-
-        return temp;
+        return result != '\u0003';
     }
 
     public char Consume() {
@@ -110,20 +112,27 @@ public class StringConsumer : IConsumer<char>
             return current;
         }
 
+        if (reconsumeFlag) {
+            reconsumeFlag = false;
+            return current;
+        }
+
         current = stack.Pop();
 
         if (current == '\n') {
-            line++;
-            column = 0;
+            pos.line++;
+            pos.column = 0;
         }
 
-        column++;
+        pos.column++;
 
         return current;
     }
 
     public char Peek() {
-        if (Count <= 0) return '\u0003';
+        if (Count == 0) return '\u0003';
+
+        if (reconsumeFlag) return current;
 
         return stack.Peek();
     }
@@ -138,7 +147,7 @@ public class StringConsumer : IConsumer<char>
         for (int i = 0; i < n; i++) {
 
             // if the stack is empty, add padding U+0003 instead
-            if (stack.Count < 1) {
+            if (stack.Count == 0) {
                 output[i] = '\u0003';
                 continue;
             }

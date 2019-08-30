@@ -92,7 +92,9 @@ public class Interpreter
 
         if (node is NumberNode) return (node as NumberNode);
 
-        if (node is StringNode) return (node as StringNode);
+        if (node is StringNode) return ComputeString(node as StringNode);
+
+        if (node is BoolNode)   return (node as BoolNode);
 
         if (node is IdentNode) {
 
@@ -108,25 +110,64 @@ public class Interpreter
             var computedOperands = new List<ValueNode>(from operand in op.Operands select Compute(operand));
 
             if (op.OperationType.StartsWith("unary")) {
+
+                var operand = computedOperands[0];
+
+                if (op.OperationType.EndsWith("Not")) {
+                    if (operand is BoolNode boolNode) {
+                        return new BoolNode(!boolNode.Value, boolNode.Token);
+                    }
+
+                    throw new InvalidOperationException(op, operand, "boolean");
+                }
+
                 if (op.OperationType.EndsWith("Neg")) {
 
                 }
 
-                if (op.OperationType.EndsWith("Not")) {
-
-                }
-
                 if (op.OperationType.EndsWith("Pre")) {
+                    if (operand is IdentNode ident) {
+                        if (!environment.HasVariable(ident.Representation)) {
+                            //throw new UnknownVariableException(ident);
+                        }
 
+                        var varValue = environment.GetVariableValue(ident.Representation);
+
+                        if (!(varValue is NumberNode)) {
+                            throw new InvalidOperationException(op, varValue, "number");
+                        }
+
+                        environment.SetVariableValue(ident.Representation, new NumberNode((varValue as NumberNode).Value + 1, ident.Token));
+
+                        return environment.GetVariableValue(ident.Representation);
+                    }
+
+                    throw new InvalidOperationException(op, operand, "identifier");
                 }
 
                 if (op.OperationType.EndsWith("Post")) {
+                    if (operand is IdentNode ident) {
+                        if (!environment.HasVariable(ident.Representation)) {
+                            //throw new UnknownVariableException(ident);
+                        }
 
+                        var varValue = environment.GetVariableValue(ident.Representation);
+
+                        if (!(varValue is NumberNode)) {
+                            throw new InvalidOperationException(op, varValue, "number");
+                        }
+
+                        environment.SetVariableValue(ident.Representation, new NumberNode((varValue as NumberNode).Value + 1, ident.Token));
+
+                        return varValue;
+                    }
+
+                    throw new InvalidOperationException(op, operand, "identifier");
                 }
 
-                if (op.OperationType.EndsWith("Invoc")) {
-                    
-                }
+                /* if (op.OperationType.EndsWith("Init")) {
+
+                }*/
             }
 
             if (op.OperationType.StartsWith("binary")) {
@@ -156,14 +197,54 @@ public class Interpreter
             }
 
             if (op.OperationType.StartsWith("conditional")) {
+                if (op.OperationType.EndsWith("Eq")) {
 
+                }
+
+                if (op.OperationType.EndsWith("NotEq")) {
+
+                }
+
+                if (op.OperationType.EndsWith("Or")) {
+
+                }
+
+                if (op.OperationType.EndsWith("And")) {
+
+                }
+
+                if (op.OperationType.EndsWith("Greater")) {
+
+                }
+
+                if (op.OperationType.EndsWith("GreaterOrEq")) {
+
+                }
+
+                if (op.OperationType.EndsWith("Less")) {
+
+                }
+
+                if (op.OperationType.EndsWith("LessOrEq")) {
+
+                }
             }
         }
 
         throw new Exception($"{parser.Position} : Unknown ValueNode type");
     }
 
+    public StringNode ComputeString(StringNode node) {
+        if (node.Token.Kind == TokenKind.complexString) return node;
+
+        var str = node.Value;
+
+        return null;
+    }
+
     public ValueNode CallFunction(FunctionNode node) {
+         
+
         return null;
     }
 

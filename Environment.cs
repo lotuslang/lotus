@@ -82,6 +82,22 @@ public class Environment
         return functions.Find(func => func.Name.Representation == node.Name.Representation && func.Parameters.Count == node.CallingParameters.Length);
     }
 
+    public void SetVariableValue(string varName, ValueNode newValue) {
+        variables[varName] = newValue;
+    }
+
+    public void RegisterVariable(string varName, ValueNode value) {
+        variables.Add(varName, value);
+    }
+
+    public void RegisterFunction(string functionName, ComplexToken[] parameters, SimpleBlock body) {
+        RegisterFunction(new FunctionDeclarationNode(body, parameters, new ComplexToken(functionName, TokenKind.ident, null)));
+    }
+
+    public void RegisterFunction(FunctionDeclarationNode node) {
+        functions.Add(node);
+    }
+
     public bool TryRegisterVariable(string varName, ValueNode value) {
 
         // The Dictionnary.TryAdd function tries to add an key/value pair to the dictionnary and returns true if the operation succeeded, and false otherwise

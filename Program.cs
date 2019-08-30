@@ -8,13 +8,9 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/sample.txt"));
 
-        // Temp variable to store the result of tokenizer.Consume
-        var success = true;
-
         // Repeatedly consumes a token until we can't anymore
-        while (success) {
-            var token = tokenizer.Consume(out success);
-            //Console.WriteLine($"{token.Location} {token.Kind} : {token.Representation}");
+        while (tokenizer.Consume(out Token item)) {
+            Console.WriteLine($"{item.Location} {item.Kind} : {item.Representation}");
         }
 
         // Resets the tokenizer

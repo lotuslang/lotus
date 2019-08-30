@@ -24,6 +24,8 @@ public class StatementNode
     public new virtual string ToString() {
         return rep;
     }
+
+    public virtual string GetName() => "statement";
 }
 
 public class DeclarationNode : StatementNode
@@ -50,6 +52,8 @@ public class DeclarationNode : StatementNode
     public override string ToString() {
         return "var " + varName + " = " + value.ToText();
     }
+
+    public new string GetName() => "variable declaration";
 }
 
 public class AssignmentNode : StatementNode
@@ -76,6 +80,8 @@ public class AssignmentNode : StatementNode
     public override string ToString() {
         return varName + " = " + value.ToText();
     }
+
+    public new string GetName() => "assignment";
 }
 
 
@@ -100,6 +106,8 @@ public class FunctionDeclarationNode : DeclarationNode
         this.value = value;
         this.parameters = new List<ComplexToken>(parameters);
     }
+
+    public new string GetName() => "function declaration";
 }
 
 public class SimpleBlock

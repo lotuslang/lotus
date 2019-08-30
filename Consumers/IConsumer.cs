@@ -10,6 +10,8 @@ public interface IConsumer<T>
     /// <value>Last object consumed.</value>
     T Current { get; }
 
+    Location Position { get; }
+
     /// <summary>
     /// Reconsumes the last object, so that the next time the Consume() method is called,
     /// the last object will be consumed instead.
@@ -27,5 +29,7 @@ public interface IConsumer<T>
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise</param>
     /// <returns></returns>
-    T Consume(out bool success);
+    bool Consume(out T item);
+
+    T Peek();
 }

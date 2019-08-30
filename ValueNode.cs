@@ -20,9 +20,11 @@ public class ValueNode : StatementNode
     /// A human-readable version of this ValueNode
     /// </summary>
     /// <returns>Returns a human-friendly string representing this ValueNode</returns>
-    public virtual string ToText() => rep;
+    public virtual string ToText()
+        => rep;
 
-    public new string GetName() => "value";
+    public new string GetFriendlyName()
+        => "value";
 }
 
 public class OperationNode : ValueNode
@@ -53,7 +55,8 @@ public class OperationNode : ValueNode
         this.opType = opType.ToLower();
     }
 
-    public new string GetName() => "operation";
+    public new string GetFriendlyName()
+        => "operation";
 }
 
 public class NumberNode : ValueNode
@@ -73,7 +76,8 @@ public class NumberNode : ValueNode
         this.value = value;
     }
 
-    public new string GetName() => "number";
+    public new string GetFriendlyName()
+        => "number";
 }
 
 
@@ -94,7 +98,8 @@ public class StringNode : ValueNode
         this.value = value;
     }
 
-    public new string GetName() => "string";
+    public new string GetFriendlyName()
+        => "string";
 }
 
 public class BoolNode : ValueNode
@@ -116,7 +121,8 @@ public class BoolNode : ValueNode
 
     public BoolNode(string repr, Token token) : this(repr == "true", token) { }
 
-    public new string GetName() => "boolean";
+    public new string GetFriendlyName()
+        => "boolean";
 }
 
 public class IdentNode : ValueNode
@@ -135,10 +141,11 @@ public class IdentNode : ValueNode
         this.varName = varName;
     }
 
-    public new string GetName() => "variable name";
+    public new string GetFriendlyName()
+        => "variable name";
 }
 
-public class FunctionNode : ValueNode
+public class FunctionCallNode : ValueNode
 {
     protected ValueNode[] parameters;
 
@@ -152,12 +159,13 @@ public class FunctionNode : ValueNode
         get => functionName;
     }
 
-    public FunctionNode(ValueNode[] parameters, ComplexToken functionName) : base(functionName + "(...)", functionName) {
+    public FunctionCallNode(ValueNode[] parameters, ComplexToken functionName) : base(functionName + "(...)", functionName) {
         if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (call)");
 
         this.functionName = functionName;
         this.parameters = parameters;
     }
 
-    public new string GetName() => "function";
+    public new string GetFriendlyName()
+        => "function";
 }

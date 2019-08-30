@@ -9,9 +9,9 @@ class Program
         var tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/sample.txt"));
 
         // Repeatedly consumes a token until we can't anymore
-        while (tokenizer.Consume(out Token item)) {
+        /* while (tokenizer.Consume(out Token item)) {
             Console.WriteLine($"{item.Location} {item.Kind} : {item.Representation}");
-        }
+        }*/
 
         // Resets the tokenizer
         tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/sample.txt"));
@@ -32,6 +32,9 @@ class Program
 
         var g = new Graph("G");
 
+        g.AddNodeProp("fontname", "Consolas, monospace");
+        g.AddGraphProp("fontname", "Consolas, monospace");
+
         var val = parser.Consume();
 
         while (val != null) {
@@ -49,11 +52,14 @@ class Program
         //var parser = new Parser(tokenizer);
     }
 
-    public static GraphNode ToGraphNode(ValueNode node) => new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
+    public static GraphNode ToGraphNode(ValueNode node)
+        => new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
 
-    public static GraphNode ToGraphNode(StringNode node) => new GraphNode(node.GetHashCode().ToString(), "\"'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'\"");
+    public static GraphNode ToGraphNode(StringNode node)
+        => new GraphNode(node.GetHashCode().ToString(), "\"'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'\"");
 
-    public static GraphNode ToGraphNode(StatementNode node) => new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
+    public static GraphNode ToGraphNode(StatementNode node)
+        => new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
 
     public static GraphNode ToGraphNode(OperationNode node) {
 
@@ -93,7 +99,7 @@ class Program
         return root;
     }
 
-    public static GraphNode ToGraphNode(FunctionNode node) {
+    public static GraphNode ToGraphNode(FunctionCallNode node) {
         var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Name + "()\"");
 
         foreach (var parameter in node.CallingParameters)

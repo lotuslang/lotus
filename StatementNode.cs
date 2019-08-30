@@ -25,35 +25,8 @@ public class StatementNode
         return rep;
     }
 
-    public virtual string GetName() => "statement";
-}
-
-public class DeclarationNode : StatementNode
-{
-    protected ValueNode value;
-
-    public ValueNode Value {
-        get => value;
-    }
-
-    protected ComplexToken varName;
-
-    public ComplexToken Name {
-        get => varName;
-    }
-
-    public DeclarationNode(ValueNode value, ComplexToken varName) : base("var", varName) {
-        if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
-
-        this.varName = varName;
-        this.value = value;
-    }
-
-    public override string ToString() {
-        return "var " + varName + " = " + value.ToText();
-    }
-
-    public new string GetName() => "variable declaration";
+    public virtual string GetFriendlyName()
+        => "statement";
 }
 
 public class AssignmentNode : StatementNode
@@ -81,9 +54,59 @@ public class AssignmentNode : StatementNode
         return varName + " = " + value.ToText();
     }
 
-    public new string GetName() => "assignment";
+    public new string GetFriendlyName()
+        => "assignment";
 }
 
+public class ReturnNode : StatementNode
+{
+    protected ValueNode value;
+
+    public ValueNode Value {
+        get => value;
+    }
+
+    protected bool isReturningValue;
+
+    public bool IsReturningValue {
+        get => isReturningValue;
+    }
+
+    public ReturnNode(ValueNode value, ComplexToken returnToken) : base(returnToken, returnToken) {
+        isReturningValue = value == null;
+
+        this.value = value;
+    }
+}
+
+public class DeclarationNode : StatementNode
+{
+    protected ValueNode value;
+
+    public ValueNode Value {
+        get => value;
+    }
+
+    protected ComplexToken varName;
+
+    public ComplexToken Name {
+        get => varName;
+    }
+
+    public DeclarationNode(ValueNode value, ComplexToken varName) : base("var", varName) {
+        if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
+
+        this.varName = varName;
+        this.value = value;
+    }
+
+    public override string ToString() {
+        return "var " + varName + " = " + value.ToText();
+    }
+
+    public new string GetFriendlyName()
+        => "variable declaration";
+}
 
 public class FunctionDeclarationNode : DeclarationNode
 {
@@ -107,7 +130,8 @@ public class FunctionDeclarationNode : DeclarationNode
         this.parameters = new List<ComplexToken>(parameters);
     }
 
-    public new string GetName() => "function declaration";
+    public new string GetFriendlyName()
+        => "function declaration";
 }
 
 public class SimpleBlock

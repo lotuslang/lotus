@@ -17,7 +17,8 @@ public struct Location
         return $"In {filename}, at Line {line}, Column {column}";
     }
 
-    public override string ToString() => (string)this;
+    public override string ToString()
+        => (string)this;
 
     public static implicit operator string(Location loc) {
         return $"{loc.filename}({loc.line}, {loc.column})";

@@ -16,14 +16,14 @@ public class Tokenizer : IConsumer<Token>
     private Queue<Token> reconsumeQueue;
 
     public Location Position {
-        get => consumer.Position;
+        get => input.Position;
     }
 
-    private StringConsumer consumer;
+    private StringConsumer input;
 
     public Tokenizer(StringConsumer stringConsumer)
     {
-        this.consumer = new StringConsumer(stringConsumer);
+        this.input = new StringConsumer(stringConsumer);
 
         reconsumeQueue = new Queue<Token>();
 
@@ -38,7 +38,7 @@ public class Tokenizer : IConsumer<Token>
         }
     }
 
-    public Tokenizer(Tokenizer tokenizer) : this(tokenizer.consumer) {
+    public Tokenizer(Tokenizer tokenizer) : this(tokenizer.input) {
         current = tokenizer.current;
         reconsumeQueue = new Queue<Token>(tokenizer.reconsumeQueue);
     }
@@ -58,7 +58,8 @@ public class Tokenizer : IConsumer<Token>
         reconsumeQueue.Enqueue(current);
     }
 
-    public Token Peek() => new Tokenizer(this).Consume();
+    public Token Peek()
+        => new Tokenizer(this).Consume();
 
     public Token[] Peek(int n) {
         // create a new (dee-copy of) tokenizer from this one
@@ -83,17 +84,17 @@ public class Tokenizer : IConsumer<Token>
 
     public Token Consume() {
 
-        // If we are instructed to reconsume the last token, then return the last token consumed
+        // If we are instructed to reconsume the last token, hen dequeue a token from the reconsumeQueue and return it
         if (reconsumeQueue.Count != 0) {
             return reconsumeQueue.Dequeue();
         }
 
         // Consume a character from the LinesConsumer object
-        var currChar = consumer.Consume();
+        var currChar = input.Consume();
 
         // While there is whitespace, consume it
         while (Char.IsWhiteSpace(currChar)) {
-            currChar = consumer.Consume();
+            currChar = input.Consume();
         }
 
         // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
@@ -101,12 +102,12 @@ public class Tokenizer : IConsumer<Token>
         // because it might not correctly detect function calls and a lot of other thing
 
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
-        if (currChar == '\u0003' || currChar == '\0') return new Token(currChar, TokenKind.EOF, consumer.Position);
+        if (currChar == '\u0003' || currChar == '\0') return new Token(currChar, TokenKind.EOF, input.Position);
 
         // If the character is a digit
         if (Char.IsDigit(currChar)) {
             // Reconsume the current character
-            consumer.Reconsume();
+            input.Reconsume();
 
             // Consume a number token
             current = ConsumeNumberToken();
@@ -116,9 +117,9 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // If the character is '+', '-', or '.', followed by a digit
-        if (currChar == '.' && Char.IsDigit(consumer.Peek())) {
+        if (currChar == '.' && Char.IsDigit(input.Peek())) {
             // Reconsume the current character
-            consumer.Reconsume();
+            input.Reconsume();
 
             // Consume a number token
             current = ConsumeNumberToken();
@@ -127,9 +128,9 @@ public class Tokenizer : IConsumer<Token>
         }
 
         if (currChar == '$') {
-            if (consumer.Peek() != '\'' || consumer.Peek() != '"') return new Token(currChar, TokenKind.delim, consumer.Position);
+            if (input.Peek() != '\'' || input.Peek() != '"') return new Token(currChar, TokenKind.delim, input.Position);
 
-            current = ConsumeSpecialStringToken(consumer.Consume());
+            current = ConsumeSpecialStringToken(input.Consume());
 
             return current;
         }
@@ -146,7 +147,7 @@ public class Tokenizer : IConsumer<Token>
         if (Char.IsLetter(currChar) || currChar == '_') {
 
             // Reconsume the current character
-            consumer.Reconsume();
+            input.Reconsume();
 
             // Consume an identifier token and return it
             current = ConsumeIdentLike();
@@ -158,16 +159,16 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '+' || currChar == '-') {
 
             // if the next character is the same as now ('+' and '+' for example), then it is either an increment or a decrement ("++" and "--")
-            if (consumer.Peek() == currChar) {
+            if (input.Peek() == currChar) {
 
                 // return a new operator token with precedence 7
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Unary, "right", consumer.Position);
+                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.Unary, "right", input.Position);
 
                 return current;
             }
 
             // return a new operator token with precedence 2
-            current = new OperatorToken(currChar, Precedence.Addition, "left", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Addition, "left", input.Position);
 
             return current;
         }
@@ -176,7 +177,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '*') {
 
             // return a new operator token with precedence Multiplication
-            current = new OperatorToken(currChar, Precedence.Multiplication, "left", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Multiplication, "left", input.Position);
 
             return current;
         }
@@ -185,21 +186,21 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '/') {
 
             // and the next character is '*', then it is a limited comment
-            if (consumer.Peek() == '*') {
+            if (input.Peek() == '*') {
 
                 // consume characters until the two next characters form "*/"
-                while (String.Join("", consumer.Peek(2)) != "*/") { consumer.Consume(); }
+                while (String.Join("", input.Peek(2)) != "*/") { input.Consume(); }
 
                 // consume the "*/" characters
-                consumer.Consume(); // should be '*'
-                consumer.Consume(); // should be '/'
+                input.Consume(); // should be '*'
+                input.Consume(); // should be '/'
 
                 // consume a token and return it
                 return Consume();
             }
 
             // return a new operator token with precedence Division
-            current = new OperatorToken(currChar, Precedence.Division, "left", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Division, "left", input.Position);
 
             return current;
         }
@@ -208,7 +209,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '^') {
 
             // return a new operator token with precedence 4
-            current = new OperatorToken(currChar, Precedence.Power, "right", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Power, "right", input.Position);
 
             return current;
         }
@@ -216,32 +217,32 @@ public class Tokenizer : IConsumer<Token>
         // if the character is '!'
         if (currChar == '!') {
 
-            if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.NotEqual, "right", consumer.Position);
+            if (input.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.NotEqual, "right", input.Position);
 
                 return current;
             }
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar, Precedence.Unary, "right", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Unary, "right", input.Position);
 
             return current;
         }
 
         // if the current and next character form "&&"
-        if (currChar == '&' && consumer.Peek() == '&') {
+        if (currChar == '&' && input.Peek() == '&') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalAND, "left", consumer.Position);
+            current = new OperatorToken(currChar +""+ input.Consume(), Precedence.LogicalAND, "left", input.Position);
 
             return current;
         }
 
         // if the current and next character form "||"
-        if (currChar == '|' && consumer.Peek() == '|') {
+        if (currChar == '|' && input.Peek() == '|') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LogicalOR, "left", consumer.Position);
+            current = new OperatorToken(currChar +""+ input.Consume(), Precedence.LogicalOR, "left", input.Position);
 
             return current;
         }
@@ -249,45 +250,45 @@ public class Tokenizer : IConsumer<Token>
         // if the current and next character for "=="
         if (currChar == '=') {
 
-            if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.Equal, "left", consumer.Position);
+            if (input.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.Equal, "left", input.Position);
 
                 return current;
             }
 
-            current = new OperatorToken(currChar, Precedence.Assignment, "left", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.Assignment, "left", input.Position);
 
             return current;
         }
 
         if (currChar == '>') {
 
-            if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.GreaterThanOrEqual, "left", consumer.Position);
+            if (input.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.GreaterThanOrEqual, "left", input.Position);
 
                 return current;
             }
 
-            current = new OperatorToken(currChar, Precedence.GreaterThan, "left", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.GreaterThan, "left", input.Position);
 
             return current;
         }
 
         if (currChar == '<') {
 
-            if (consumer.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ consumer.Consume(), Precedence.LessThanOrEqual, "left", consumer.Position);
+            if (input.Peek() == '=') {
+                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.LessThanOrEqual, "left", input.Position);
 
                 return current;
             }
 
-            current = new OperatorToken(currChar, Precedence.LessThan, "left", consumer.Position);
+            current = new OperatorToken(currChar, Precedence.LessThan, "left", input.Position);
 
             return current;
         }
 
         // return a new delim token
-        current = new Token(currChar, TokenKind.delim, consumer.Position);
+        current = new Token(currChar, TokenKind.delim, input.Position);
 
         return current;
     }
@@ -329,7 +330,7 @@ public class Tokenizer : IConsumer<Token>
         if (Constants.keywords.Contains(name)) {
 
             // return the same token but with a kind of TokenKind.keyword
-            return new ComplexToken(name, TokenKind.@string, name.Location);
+            return new ComplexToken(name, TokenKind.keyword, name.Location);
         }
 
         return name;
@@ -338,10 +339,10 @@ public class Tokenizer : IConsumer<Token>
     protected ComplexToken ConsumeName() {
 
         // consume a character
-        var currChar = consumer.Consume();
+        var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexToken("", TokenKind.ident, consumer.Position);
+        var output = new ComplexToken("", TokenKind.ident, input.Position);
 
         // if the character is not a letter or a low line
         if (!(Char.IsLetter(currChar) || currChar == '_')) {
@@ -355,12 +356,12 @@ public class Tokenizer : IConsumer<Token>
             output.Add(currChar);
 
             // consume a character
-            currChar = consumer.Consume();
+            currChar = input.Consume();
         }
 
         // reconsume the last token (which is not a letter, a digit, or a low line,
         // since our while loop has exited) to make sure it is processed by the tokenizer
-        consumer.Reconsume();
+        input.Reconsume();
 
         // return the output token
         return output;
@@ -369,10 +370,10 @@ public class Tokenizer : IConsumer<Token>
     protected ComplexToken ConsumeStringToken(char endingDelimiter) {
 
         // consume a character
-        var currChar = consumer.Consume();
+        var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexToken("", TokenKind.@string, consumer.Position);
+        var output = new ComplexToken("", TokenKind.@string, input.Position);
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
@@ -381,7 +382,7 @@ public class Tokenizer : IConsumer<Token>
             output.Add(currChar);
 
             // consume a character
-            currChar = consumer.Consume();
+            currChar = input.Consume();
         }
 
         // return the output token
@@ -391,10 +392,10 @@ public class Tokenizer : IConsumer<Token>
     protected ComplexToken ConsumeSpecialStringToken(char endingDelimiter) {
 
         //consume a character
-        var currChar = consumer.Consume();
+        var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexToken("", TokenKind.complexString, consumer.Position);
+        var output = new ComplexToken("", TokenKind.complexString, input.Position);
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
@@ -413,10 +414,10 @@ public class Tokenizer : IConsumer<Token>
     protected NumberToken ConsumeNumberToken() {
 
         // consume a character
-        var currChar = consumer.Consume();
+        var currChar = input.Consume();
 
         // the output token
-        var output = new NumberToken("", consumer.Position);
+        var output = new NumberToken("", input.Position);
 
         // while the current character is a digit
         while (Char.IsDigit(currChar)) {
@@ -425,7 +426,7 @@ public class Tokenizer : IConsumer<Token>
             output.Add(currChar);
 
             // consume a character
-            currChar = consumer.Consume();
+            currChar = input.Consume();
         }
 
         // if the character is '.'
@@ -435,7 +436,7 @@ public class Tokenizer : IConsumer<Token>
             output.Add(currChar);
 
             // consume a character
-            currChar = consumer.Consume();
+            currChar = input.Consume();
         }
 
         // while the current character is a digit
@@ -445,7 +446,7 @@ public class Tokenizer : IConsumer<Token>
             output.Add(currChar);
 
             // consume a character
-            currChar = consumer.Consume();
+            currChar = input.Consume();
         }
 
         // if the character is an 'e' or an 'E'
@@ -455,7 +456,7 @@ public class Tokenizer : IConsumer<Token>
             output.Add(currChar);
 
             // consume a character
-            currChar = consumer.Consume();
+            currChar = input.Consume();
 
 
             // if the character is a '+' or a '-'
@@ -465,7 +466,7 @@ public class Tokenizer : IConsumer<Token>
                 output.Add(currChar);
 
                 // consume a character
-                currChar = consumer.Consume();
+                currChar = input.Consume();
             }
 
             // while the current character is a digit
@@ -475,21 +476,21 @@ public class Tokenizer : IConsumer<Token>
                 output.Add(currChar);
 
                 // consume a character
-                currChar = consumer.Consume();
+                currChar = input.Consume();
             }
         }
 
         // if the character is '.'
         if (currChar == '.') {
-            throw new Exception("Unexpected decimal separator at position " + consumer.Position);
+            throw new Exception("Unexpected decimal separator at position " + input.Position);
         }
 
         // if the character is 'e' or 'E'
         if (currChar == 'e' || currChar == 'E') {
-            throw new Exception("Unexpected power of ten separator at position " + consumer.Position);
+            throw new Exception("Unexpected power of ten separator at position " + input.Position);
         }
 
-        consumer.Reconsume();
+        input.Reconsume();
 
         return output;
     }

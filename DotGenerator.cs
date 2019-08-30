@@ -25,17 +25,39 @@ public class Graph
         get => rootNodes;
     }
 
+    protected Dictionary<string, string> graphprops;
+
+    public Dictionary<string, string> GraphProps {
+        get => graphprops;
+    }
+
+    protected Dictionary<string, string> nodeprops;
+
+    public Dictionary<string, string> NodeProps {
+        get => nodeprops;
+    }
+
+    protected Dictionary<string, string> edgeprops;
+
+    public Dictionary<string, string> EdgeProps {
+        get => edgeprops;
+    }
+
     public Graph(string name)
     {
         this.name = name;
         rootNodes = new List<GraphNode>();
+        graphprops = new Dictionary<string, string>();
+        nodeprops = new Dictionary<string, string>();
+        edgeprops = new Dictionary<string, string>();
     }
 
     /// <summary>
     /// Adds a new node to this Graph as a root of an independent tree.
     /// </summary>
     /// <param name="node">The GraphNode to add.</param>
-    public void AddNode(GraphNode node) => rootNodes.Add(node);
+    public void AddNode(GraphNode node)
+        => rootNodes.Add(node);
 
     /// <summary>
     /// A representation of this graph in the 'dot' language (https://www.graphviz.org/doc/info/lang.html).
@@ -49,6 +71,20 @@ public class Graph
         // Append the keyword 'diagraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
         strBuilder.AppendLine("digraph " + name);
         strBuilder.AppendLine("{");
+
+        foreach (var property in graphprops) {
+            strBuilder.AppendLine($"\tgraph[{property.Key}=\"{property.Value}\"]");
+        }
+
+        foreach (var property in nodeprops) {
+            strBuilder.AppendLine($"\tnode[{property.Key}=\"{property.Value}\"]");
+        }
+
+        foreach (var property in edgeprops) {
+            strBuilder.AppendLine($"\tedge[{property.Key}=\"{property.Value}\"]");
+        }
+
+        strBuilder.AppendLine();
 
         // A list of GraphNode to keep track of visited nodes
         var registry = new List<GraphNode>();
@@ -69,6 +105,15 @@ public class Graph
         // Return the string builder
         return strBuilder.ToString();
     }
+
+    public void AddGraphProp(string property, string value)
+        => graphprops.Add(property, value);
+
+    public void AddNodeProp(string property, string value)
+        => nodeprops.Add(property, value);
+
+    public void AddEdgeProp(string property, string value)
+        => edgeprops.Add(property, value);
 }
 
 [System.Diagnostics.DebuggerDisplay("{name}:{label}")]
@@ -123,7 +168,8 @@ public class GraphNode
     /// Add a child to this node.
     /// </summary>
     /// <param name="node">The node to add as a child.</param>
-    public void AddNode(GraphNode node) => childrens.Add(node);
+    public void AddNode(GraphNode node)
+        => childrens.Add(node);
 
     public string ToText(List<GraphNode> registry)
     {

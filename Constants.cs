@@ -29,13 +29,14 @@ public enum Precedence {
 
 public static class Constants
 {
-    public static readonly List<string> keywords = new List<string>();
+    public static readonly List<string> keywords = new List<string>() {
+        "var",
+        "new",
+        "def",
+        "return",
+        "true",
+        "false",
+    };
 
-    static Constants() {
-        keywords.Add("var");
-        keywords.Add("new");
-        keywords.Add("def");
-        keywords.Add("true");
-        keywords.Add("false");
-    }
+    public static readonly ValueNode NULL = new ValueNode("null", new Token('\0', TokenKind.EOF, null));
 }

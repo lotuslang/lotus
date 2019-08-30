@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Parser : IConsumer<StatementNode>
 {
-    private bool reconsumeLastDocNode;
+    private Queue<StatementNode> reconsumeQueue;
 
     private IConsumer<Token> tokenizer;
 
@@ -24,6 +24,20 @@ public class Parser : IConsumer<StatementNode>
 
     public Parser(Tokenizer tokenizer) {
         this.tokenizer = new Tokenizer(tokenizer);
+        reconsumeQueue = new Queue<StatementNode>();
+    }
+
+    public Parser(IConsumer<Token> tokenConsumer) {
+        this.tokenizer = tokenConsumer;
+        reconsumeQueue = new Queue<StatementNode>();
+    }
+
+    public Parser(IConsumer<StatementNode> nodeConsumer) {
+        reconsumeQueue = new Queue<StatementNode>();
+
+        while (nodeConsumer.Consume(out _)) {
+            reconsumeQueue.Enqueue(nodeConsumer.Current);
+        }
     }
 
     public Parser(IConsumer<Token> tokenConsumer) : this(new Tokenizer(tokenConsumer)) { }
@@ -39,7 +53,24 @@ public class Parser : IConsumer<StatementNode>
     /// <summary>
     /// Reconsumes the last StatementNode object.
     /// </summary>
-    public void Reconsume() => reconsumeLastDocNode = true;
+    public void Reconsume() {
+        if (reconsumeQueue.TryPeek(out StatementNode node) && Object.ReferenceEquals(node, current)) return;
+    }
+
+    public StatementNode Peek()
+        => new Parser(this).Consume();
+
+    public StatementNode[] Peek(int n) {
+        var parser = new Parser(this);
+
+        var output = new List<StatementNode>();
+
+        for (int i = 0; i < n; i++) {
+            output.Add(parser.Consume());
+        }
+
+        return output.ToArray();
+    }
 
     public StatementNode Peek() => new Parser(this).Consume();
 
@@ -72,10 +103,9 @@ public class Parser : IConsumer<StatementNode>
     /// <returns>The StatementNode object consumed.</returns>
     public StatementNode Consume() {
 
-        // If we are asked to reconsume, just return the current StatementNode
-        if (reconsumeLastDocNode) {
-            reconsumeLastDocNode = false;
-            return current;
+        // If we are instructed to reconsume the last node, then dequeue a node from the reconsumeQueue and return it
+        if (reconsumeQueue.Count != 0) {
+            return reconsumeQueue.Dequeue();
         }
 
         // Consume a token
@@ -120,6 +150,16 @@ public class Parser : IConsumer<StatementNode>
 
             // consume a function declaration and return it
             current = ConsumeFunctionDeclaration();
+
+            return current;
+        }
+
+        if (currToken == "return") {
+
+            // reconsume it
+            tokenizer.Reconsume();
+
+            current = ConsumeReturn();
 
             return current;
         }
@@ -249,7 +289,7 @@ public class Parser : IConsumer<StatementNode>
             if (comma == ")") break;
 
             // if the token was not a comma, throw an exception
-            if (comma != ",") throw new UnexpectedTokenException(comma, "in function argument declaration");
+            if (comma != ",") throw new UnexpectedTokenException(comma, "in function argument declaration", ",");
 
             // assign paramName to a new token
             paramName = tokenizer.Consume();
@@ -266,7 +306,7 @@ public class Parser : IConsumer<StatementNode>
 
         var bracket = tokenizer.Consume();
 
-        if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block");
+        if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block", "{");
 
         var statements = new List<StatementNode>();
 
@@ -282,6 +322,18 @@ public class Parser : IConsumer<StatementNode>
         if (bracket != "}") throw new Exception("what² (" + bracket.Representation + ")");
 
         return new SimpleBlock(statements.ToArray());
+    }
+
+    protected ReturnNode ConsumeReturn() {
+        var returnToken = tokenizer.Consume();
+
+        if (returnToken != "return") throw new UnexpectedTokenException(returnToken, "in return statement", "return");
+
+        if (tokenizer.Peek() == ";") return new ReturnNode(null, returnToken as ComplexToken);
+
+        var value = ConsumeValue();
+
+        return new ReturnNode(value, returnToken as ComplexToken);
     }
 
     protected ValueNode ConsumeValue() {
@@ -446,7 +498,7 @@ public class Parser : IConsumer<StatementNode>
 						// pop the "[" remaining
                         operands.Pop();
 
-                        op = new FunctionNode(funcOperands.ToArray(), new ComplexToken(token, TokenKind.ident, token.Location));
+                        op = new FunctionCallNode(funcOperands.ToArray(), new ComplexToken(token, TokenKind.ident, token.Location));
                         break;
                 }
 

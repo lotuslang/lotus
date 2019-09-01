@@ -128,7 +128,7 @@ public class Tokenizer : IConsumer<Token>
         }
 
         if (currChar == '$') {
-            if (input.Peek() != '\'' || input.Peek() != '"') return new Token(currChar, TokenKind.delim, input.Position);
+            if (input.Peek() != '\'' && input.Peek() != '"') return new Token(currChar, TokenKind.delim, input.Position);
 
             current = ConsumeSpecialStringToken(input.Consume());
 
@@ -298,13 +298,6 @@ public class Tokenizer : IConsumer<Token>
         // consume a name
         var name = ConsumeName();
 
-        // if the identifier is the keyword "new"
-        if (name == "new") {
-
-            // return a right-associative operator token with the precedence of a function call, since instantiation is the same as a call to .ctor()
-            return new OperatorToken(name, Precedence.FuncCall, "right", name.Location);
-        }
-
         // if the identifier is the keyword "def"
         if (name == "def") {
 
@@ -381,34 +374,57 @@ public class Tokenizer : IConsumer<Token>
             // add it to the value of output
             output.Add(currChar);
 
-            // consume a character
-            currChar = input.Consume();
+            if (!input.Consume(out currChar)) {
+                throw new Exception("Unexpected EOF in string");
+            }
         }
 
         // return the output token
         return output;
     }
 
-    protected ComplexToken ConsumeSpecialStringToken(char endingDelimiter) {
+    protected ComplexStringToken ConsumeSpecialStringToken(char endingDelimiter) {
 
         //consume a character
         var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexToken("", TokenKind.complexString, input.Position);
+        var output = new ComplexStringToken("", new List<Token[]>(), input.Position);
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
 
             if (currChar == '{') {
                 var tokenList = new List<Token>();
-                while (Consume() != "}") {
+                Token currToken;
+                while ((currToken = Consume())!= "}") {
+                    if (currToken == ";") {
+                        throw new Exception($"{input.Position} : Malformed formatted string. Unexpected ';'. Did you forget '}}' ?");
+                    }
 
+                    if (currToken == TokenKind.EOF) {
+                        throw new Exception("Unexpected EOF in string");
+                    }
+
+                    tokenList.Add(currToken);
                 }
+
+                output.AddSection(tokenList.ToArray());
+
+                output.Add("{" + (output.CodeSections.Count - 1) + "}");
+
+                currChar = input.Consume();
+                continue;
+            }
+
+            output.Add(currChar);
+
+            if (!input.Consume(out currChar)) {
+                throw new Exception("Unexpected EOF in string");
             }
         }
 
-        return null;
+        return output;
     }
 
     protected NumberToken ConsumeNumberToken() {

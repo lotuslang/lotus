@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 [System.Diagnostics.DebuggerDisplay("{loc} {kind} : {rep.ToString()}")]
 public class Token
@@ -115,10 +116,16 @@ public class ComplexStringToken : ComplexToken
 
     protected List<Token[]> sections;
 
-    public List<Token[]> CodeSections;
+    public ReadOnlyCollection<Token[]> CodeSections {
+        get => new ReadOnlyCollection<Token[]>(sections);
+    }
 
     public ComplexStringToken(string representation, List<Token[]> codeSections, Location? location) : base(representation, TokenKind.complexString, location) {
         sections = codeSections;
+    }
+
+    public void AddSection(Token[] section) {
+        sections.Add(section);
     }
 }
 

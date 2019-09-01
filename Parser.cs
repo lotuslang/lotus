@@ -40,6 +40,19 @@ public class Parser : IConsumer<StatementNode>
         }
     }
 
+    public Parser(IConsumer<Token> tokenConsumer) {
+        this.tokenizer = tokenConsumer;
+        reconsumeQueue = new Queue<StatementNode>();
+    }
+
+    public Parser(IConsumer<StatementNode> nodeConsumer) {
+        reconsumeQueue = new Queue<StatementNode>();
+
+        while (nodeConsumer.Consume(out _)) {
+            reconsumeQueue.Enqueue(nodeConsumer.Current);
+        }
+    }
+
     public Parser(IConsumer<Token> tokenConsumer) : this(new Tokenizer(tokenConsumer)) { }
 
     public Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
@@ -59,20 +72,6 @@ public class Parser : IConsumer<StatementNode>
 
     public StatementNode Peek()
         => new Parser(this).Consume();
-
-    public StatementNode[] Peek(int n) {
-        var parser = new Parser(this);
-
-        var output = new List<StatementNode>();
-
-        for (int i = 0; i < n; i++) {
-            output.Add(parser.Consume());
-        }
-
-        return output.ToArray();
-    }
-
-    public StatementNode Peek() => new Parser(this).Consume();
 
     public StatementNode[] Peek(int n) {
         var parser = new Parser(this);
@@ -346,7 +345,7 @@ public class Parser : IConsumer<StatementNode>
 #endif // DEBUG
 
 
-        // postfix notation cannot contain an even number of tokens (since )
+        // postfix notation cannot contain an even number of tokens
         if (postfix.Count == 0) return null;
 
         // if only one value could be parsed
@@ -363,7 +362,7 @@ public class Parser : IConsumer<StatementNode>
             }
 
             // if the token is a string, return a StringNode
-            if (token == TokenKind.@string) {
+            if (token == TokenKind.@string || token == TokenKind.complexString) {
                 return new StringNode(token.Representation, token);
             }
 
@@ -377,7 +376,7 @@ public class Parser : IConsumer<StatementNode>
                 return new BoolNode(boolToken.Value, token);
             }
 
-            throw new UnexpectedTokenException(token, TokenKind.@string, TokenKind.ident, TokenKind.number, TokenKind.function);
+            throw new UnexpectedTokenException(token, TokenKind.@string, TokenKind.complexString, TokenKind.ident, TokenKind.number, TokenKind.function);
         }
 
         // otherwise, transform the postfix expression into a tree (we return the root of that tree)
@@ -406,8 +405,20 @@ public class Parser : IConsumer<StatementNode>
             }
 
             // if the token is a string, push a string node to the operands stack
-            if (token == TokenKind.@string || token == TokenKind.complexString) {
+            if (token == TokenKind.@string) {
                 operands.Push(new StringNode(token, token));
+                continue;
+            }
+
+            // If the token is a complex token
+            if (token == TokenKind.complexString) {
+                var node = new ComplexStringNode(token as ComplexStringToken, new List<ValueNode>());
+
+                foreach (var section in (token as ComplexStringToken).CodeSections) {
+                    node.AddSection(new Parser(new Consumer<Token>(section)).ConsumeValue());
+                }
+
+                operands.Push(node);
                 continue;
             }
 
@@ -480,9 +491,6 @@ public class Parser : IConsumer<StatementNode>
 					case "<":
 						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalLess");
 						break;
-                    /* case "new":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryInit");
-                        break;*/
                     case "var":
                         throw new Exception($"Unexpected variable declaration at location {token.Location}.");
                     case "def":

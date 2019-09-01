@@ -4,6 +4,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class UnexpectedTokenException : System.Exception
 {
+    public UnexpectedTokenException() : base("Unexpected token encountered. No more info is available.") { }
     public UnexpectedTokenException(string message, Token token)
         : base($"{token.Location} : Unexpected {token.Kind} ({token.Representation}). {message}") { }
     public UnexpectedTokenException(Token token, params TokenKind[] expected)
@@ -19,6 +20,7 @@ public class UnexpectedTokenException : System.Exception
 [System.Serializable]
 public class InvalidOperationException : System.Exception
 {
+    public InvalidOperationException() : base("The interpreter was instructed to perform an invalid operation. No more info is available.") { }
     public InvalidOperationException(string message, Token token)
         : base($"{token.Location} : Incompatible operation. {message}") { }
     public InvalidOperationException(OperationNode op, StatementNode operand)
@@ -36,5 +38,5 @@ public class InvalidOperationException : System.Exception
 [System.Serializable]
 public class UnknownNameException : System.Exception
 {
-    public UnknownNameException() { }
+    public UnknownNameException() : base("A unknown name was used; No more info is available.") { }
 }

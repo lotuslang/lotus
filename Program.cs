@@ -13,8 +13,11 @@ class Program
             Console.WriteLine($"{item.Location} {item.Kind} : {item.Representation}");
         }*/
 
+        tokenizer = new Tokenizer("var a = $\"hello {16} !\";");
+
         // Resets the tokenizer
-        tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/sample.txt"));
+        //tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/sample.txt"));
+
 
         var parser = new Parser(tokenizer);
 

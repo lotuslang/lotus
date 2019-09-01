@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 public class StatementNode
 {
@@ -77,6 +78,9 @@ public class ReturnNode : StatementNode
 
         this.value = value;
     }
+
+    public new string GetFriendlyName()
+        => "return";
 }
 
 public class DeclarationNode : StatementNode
@@ -119,8 +123,8 @@ public class FunctionDeclarationNode : DeclarationNode
 
     protected List<ComplexToken> parameters;
 
-    public List<ComplexToken> Parameters {
-        get => parameters;
+    public ReadOnlyCollection<ComplexToken> Parameters {
+        get => new ReadOnlyCollection<ComplexToken>(parameters);
     }
 
     public FunctionDeclarationNode(SimpleBlock value, ComplexToken[] parameters, ComplexToken functionName) : base(new ValueNode("block", functionName), functionName) {
@@ -138,8 +142,8 @@ public class SimpleBlock
 {
     protected List<StatementNode> content;
 
-    public List<StatementNode> Content {
-        get => content;
+    public ReadOnlyCollection<StatementNode> Content {
+        get => new ReadOnlyCollection<StatementNode>(content);
     }
 
     public SimpleBlock(StatementNode[] content) {

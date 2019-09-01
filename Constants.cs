@@ -38,5 +38,9 @@ public static class Constants
         "false",
     };
 
+    /// <summary>
+    /// This constant is the equivalent of "null". When a function doesn't return, it will actually set the `#return` variable to this constant.
+    /// Variables that are assigned to a non-returning functions will actually be assigned this value.
+    /// </summary>
     public static readonly ValueNode NULL = new ValueNode("null", new Token('\0', TokenKind.EOF, null));
 }

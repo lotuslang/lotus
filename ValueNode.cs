@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 
 [System.Diagnostics.DebuggerDisplay("{Representation}")]
@@ -100,6 +101,23 @@ public class StringNode : ValueNode
 
     public new string GetFriendlyName()
         => "string";
+}
+
+public class ComplexStringNode : StringNode
+{
+    protected List<ValueNode> sections;
+
+    public ReadOnlyCollection<ValueNode> CodeSections {
+        get => new ReadOnlyCollection<ValueNode>(sections);
+    }
+
+    public ComplexStringNode(ComplexStringToken token, List<ValueNode> codeSections) : base(token.Representation, token) {
+        sections = codeSections;
+    }
+
+    public void AddSection(ValueNode section) {
+        sections.Add(section);
+    }
 }
 
 public class BoolNode : ValueNode

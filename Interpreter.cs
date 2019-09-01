@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 
 // TODO: Interpreter
@@ -53,7 +54,11 @@ public class Interpreter
     public Interpreter(Interpreter interpreter) : this(interpreter.parser, interpreter.environment) { }
 
     public void Run() {
-        if (parser.Consume(out StatementNode currNode)) {
+
+        // if you can't consume a node
+        if (!parser.Consume(out StatementNode currNode)) {
+
+            // set the environment variable `#return` to the NULL ValueNode constants
             environment.SetVariableValue("#return", Constants.NULL);
             return;
         }
@@ -118,7 +123,7 @@ public class Interpreter
         }
     }
 
-    protected ValueNode Compute(ValueNode node) {
+    public ValueNode Compute(ValueNode node) {
 
         if (node is NumberNode) return (node as NumberNode);
 
@@ -127,11 +132,16 @@ public class Interpreter
         if (node is BoolNode)   return (node as BoolNode);
 
         if (node is IdentNode) {
+            if (!environment.HasVariable(node.Representation)) {
+                throw new Exception($"{node.Token.Location} : Variable '{node.Representation}' is not declared in the current scope.");
+            }
 
+            return environment.GetVariableValue(node.Representation);
         }
 
         if (node is FunctionCallNode) {
-            return CallFunction(node as FunctionCallNode);
+            var value = CallFunction(node as FunctionCallNode);
+
         }
 
         if (node is OperationNode) {
@@ -152,27 +162,32 @@ public class Interpreter
                 }
 
                 if (op.OperationType.EndsWith("Neg")) {
+                    if (operand is BoolNode boolNode) {
+                        return new BoolNode(!boolNode.Value, boolNode.Token);
+                    }
 
+                    if (operand is NumberNode) {
+                        return new NumberNode(-(operand as NumberNode).Value, operand.Token);
+                    }
+
+                    throw new InvalidOperationException(op, operand, "number");
                 }
 
                 if (op.OperationType.EndsWith("Pre")) {
-                    if (operand is IdentNode ident) {
-                        if (!environment.HasVariable(ident.Representation)) {
-                            //throw new UnknownVariableException(ident);
+                    // we can't use `operand` here because it has already been resolved (we applied Compute() to every operand of computedOperands, and `operand` comes from it),
+                    // so it will never be IdentNode.
+                    if (op.Operands[0] is IdentNode ident) {
+                        // Because `operand` value is already resolved, we don't need to get the value of the variable.
+                        if (!(operand is NumberNode)) {
+                            throw new InvalidOperationException(op, operand, "number");
                         }
 
-                        var varValue = environment.GetVariableValue(ident.Representation);
-
-                        if (!(varValue is NumberNode)) {
-                            throw new InvalidOperationException(op, varValue, "number");
-                        }
-
-                        environment.SetVariableValue(ident.Representation, new NumberNode((varValue as NumberNode).Value + 1, ident.Token));
+                        environment.SetVariableValue(ident.Representation, new NumberNode((operand as NumberNode).Value + 1, ident.Token));
 
                         return environment.GetVariableValue(ident.Representation);
                     }
 
-                    throw new InvalidOperationException(op, operand, "identifier");
+                    throw new InvalidOperationException(op, op.Operands[0], "identifier");
                 }
 
                 if (op.OperationType.EndsWith("Post")) {
@@ -180,24 +195,20 @@ public class Interpreter
                         if (!environment.HasVariable(ident.Representation)) {
                             //throw new UnknownVariableException(ident);
                         }
-
-                        var varValue = environment.GetVariableValue(ident.Representation);
-
-                        if (!(varValue is NumberNode)) {
-                            throw new InvalidOperationException(op, varValue, "number");
+                        if (!(operand is NumberNode)) {
+                            throw new InvalidOperationException(op, operand, "number");
                         }
 
-                        environment.SetVariableValue(ident.Representation, new NumberNode((varValue as NumberNode).Value + 1, ident.Token));
+                        environment.SetVariableValue(ident.Representation, new NumberNode((operand as NumberNode).Value + 1, ident.Token));
 
-                        return varValue;
+                        return operand;
                     }
 
-                    throw new InvalidOperationException(op, operand, "identifier");
+                    throw new InvalidOperationException(op, op.Operands[0], "identifier");
                 }
 
-                /* if (op.OperationType.EndsWith("Init")) {
-
-                }*/
+                // throw if we don't know/support that operation
+                throw new InvalidOperationException(op, operand);
             }
 
             if (op.OperationType.StartsWith("binary")) {
@@ -264,12 +275,38 @@ public class Interpreter
         throw new Exception($"{parser.Position} : Unknown ValueNode type");
     }
 
-    public StringNode ComputeString(StringNode node) {
-        if (node.Token.Kind == TokenKind.complexString) return node;
-
+    protected StringNode ComputeString(ComplexStringNode node) {
         var str = node.Value;
 
-        return null;
+        var strBuilder = new StringBuilder("");
+
+        for (int i = 0; i < str.Length; i++) {
+            if (str[i] != '{') {
+                strBuilder.Append(str[i]);
+            }
+
+            if (i != 0) {
+               if (str[i-1] == '\\') {
+                    continue;
+                }
+            }
+
+            if (i + 1 < str.Length && !Char.IsDigit(str[i + 1])) {
+                throw new Exception("wut");
+            }
+
+            var sectionIndexRep = "";
+
+            while (i < str.Length && Char.IsDigit(str[i])) {
+                sectionIndexRep += str[i];
+            }
+
+            var sectionIndex = Int32.Parse(sectionIndexRep);
+
+            strBuilder.Append(Constants.ToString(Compute(node.CodeSections[sectionIndex])));
+        }
+
+        return new StringNode(strBuilder.ToString(), node.Token);
     }
 
     public ValueNode CallFunction(FunctionCallNode node) {
@@ -277,7 +314,7 @@ public class Interpreter
         // Check if the function exists in the current environnement, throw an error if not
         if (!environment.HasFunction(node)) {
             // TODO: Use a throw helper or create an appropriate exception
-            throw new Exception($"{node.Token.Location} : Function '{node.Name.Representation}' is not declared yet.");
+            throw new Exception($"{node.Token.Location} : Function '{node.Name.Representation}' is not declared in the current scope.");
         }
 
         // gets the FunctionDeclarationNode object corresponding to the function called
@@ -305,8 +342,10 @@ public class Interpreter
             funcEnvironment.RegisterVariable(func.Parameters[i].Representation, node.CallingParameters[i]);
         }
 
+        // after modifying the environment, we can evaluate the whole function body
         funcInterpreter.RunAll();
 
+        // once we finished the body, we return the value of `#return` (see docs for more info on `#return`)
         return funcEnvironment.GetVariableValue("#return");
     }
 

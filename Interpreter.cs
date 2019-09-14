@@ -125,11 +125,13 @@ public class Interpreter
 
     public ValueNode Compute(ValueNode node) {
 
-        if (node is NumberNode) return (node as NumberNode);
+        if (node is NumberNode) return node;
 
-        if (node is StringNode) return ComputeString(node as StringNode);
+        if (node is StringNode) return node;
 
-        if (node is BoolNode)   return (node as BoolNode);
+        if (node is BoolNode)   return node;
+
+        if (node is ComplexStringNode) return ComputeString(node as ComplexStringNode);
 
         if (node is IdentNode) {
             if (!environment.HasVariable(node.Representation)) {
@@ -147,11 +149,9 @@ public class Interpreter
         if (node is OperationNode) {
             var op = node as OperationNode;
 
-            var computedOperands = new List<ValueNode>(from operand in op.Operands select Compute(operand));
-
             if (op.OperationType.StartsWith("unary")) {
 
-                var operand = computedOperands[0];
+                var operand = Compute(op.Operands[0]);
 
                 if (op.OperationType.EndsWith("Not")) {
                     if (operand is BoolNode boolNode) {
@@ -212,28 +212,42 @@ public class Interpreter
             }
 
             if (op.OperationType.StartsWith("binary")) {
-                if (op.OperationType.EndsWith("Add")) {
 
+                // we need to check for access first because one or more the identifiers used will probably not resolve to a local variable or function,
+                // so computing them first would throw an error
+                if (op.OperationType.EndsWith("Access")) {
+                    if (!(op.Operands[0] is IdentNode) || !(op.Operands[1] is IdentNode)) {
+                        throw new InvalidOperationException(op, op.Operands[0], op.Operands[1], "identifier");
+                    }
+                }
+
+                // we take every operand in Op.Operands and compute their value
+                var computedOperands = new List<ValueNode>(
+                    from operand in op.Operands.Reverse() // we need to reverse the array because postfix inverted the operands
+                    select Compute(operand)
+                );
+
+                var operand1 = computedOperands[0];
+                var operand2 = computedOperands[1];
+
+                if (op.OperationType.EndsWith("Add")) {
+                    Console.WriteLine("return Constants.Add(operand1, operand2)");
                 }
 
                 if (op.OperationType.EndsWith("Sub")) {
-
+                    Console.WriteLine("return Constants.Sub(operand1, operand2)");
                 }
 
                 if (op.OperationType.EndsWith("Mul")) {
-
+                    Console.WriteLine("return Constants.Mul(operand1, operand2)");
                 }
 
                 if (op.OperationType.EndsWith("Div")) {
-
+                    Console.WriteLine("return Constants.Div(operand1, operand2)");
                 }
 
                 if (op.OperationType.EndsWith("Pow")) {
-
-                }
-
-                if (op.OperationType.EndsWith("Access")) {
-
+                    Console.WriteLine("return Constants.Pow(operand1, operand2)");
                 }
             }
 
@@ -303,7 +317,7 @@ public class Interpreter
 
             var sectionIndex = Int32.Parse(sectionIndexRep);
 
-            strBuilder.Append(Constants.ToString(Compute(node.CodeSections[sectionIndex])));
+            Console.WriteLine("strBuilder.Append(Constants.ToString(Compute(node.CodeSections[sectionIndex])))");
         }
 
         return new StringNode(strBuilder.ToString(), node.Token);

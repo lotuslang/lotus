@@ -139,29 +139,31 @@ public class GraphNode
         get => name;
     }
 
-
-    protected List<GraphNode> childrens;
+    protected List<GraphNode> children;
 
     /// <summary>
-    /// The childrens of this node, i.e. the nodes this node points to.
+    /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
-    /// <value>A list of GraphNode this node is pointing to, (i.e. childrens).</value>
-    public List<GraphNode> Childrens {
-        get => childrens;
+    /// <value>A list of GraphNode this node is pointing to, (i.e. children).</value>
+    public List<GraphNode> Children {
+        get => children;
     }
 
-    public GraphNode(string id)
-    {
-        this.id = id;
-        this.name = id;
-        childrens = new List<GraphNode>();
+    protected Dictionary<string, string> props;
+
+    public Dictionary<string, string> Properties {
+        get => props;
     }
+
+    public GraphNode(string id) : this(id, id) { }
 
     public GraphNode(string id, string name)
     {
         this.id = id;
-        this.name = name;
-        childrens = new List<GraphNode>();
+        props = new Dictionary<string, string>();
+        children = new List<GraphNode>();
+
+        props.Add("label", name);
     }
 
     /// <summary>
@@ -169,7 +171,10 @@ public class GraphNode
     /// </summary>
     /// <param name="node">The node to add as a child.</param>
     public void AddNode(GraphNode node)
-        => childrens.Add(node);
+        => children.Add(node);
+
+    public void AddProperty(string property, string value)
+        => props.Add(property, value);
 
     public string ToText(List<GraphNode> registry)
     {
@@ -177,10 +182,10 @@ public class GraphNode
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.AppendLine($"{id} [label={name}]");
+        strBuilder.AppendLine($"{id} [{String.Join(",", props).Replace('[', '\0').Replace(']', '\0').Replace(", ", "=")}]");
 
         // For each node that is a children of this object
-        foreach (var child in childrens)
+        foreach (var child in children)
         {
             // Append the connection of this node (this node's id -> child's id)
             strBuilder.AppendLine("\t" + id + " -> " + child.id);

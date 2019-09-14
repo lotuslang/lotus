@@ -40,21 +40,6 @@ public class Parser : IConsumer<StatementNode>
         }
     }
 
-    public Parser(IConsumer<Token> tokenConsumer) {
-        this.tokenizer = tokenConsumer;
-        reconsumeQueue = new Queue<StatementNode>();
-    }
-
-    public Parser(IConsumer<StatementNode> nodeConsumer) {
-        reconsumeQueue = new Queue<StatementNode>();
-
-        while (nodeConsumer.Consume(out _)) {
-            reconsumeQueue.Enqueue(nodeConsumer.Current);
-        }
-    }
-
-    public Parser(IConsumer<Token> tokenConsumer) : this(new Tokenizer(tokenConsumer)) { }
-
     public Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
     public Parser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
@@ -412,21 +397,23 @@ public class Parser : IConsumer<StatementNode>
 
             // If the token is a complex token
             if (token == TokenKind.complexString) {
+                // create a new ComplexStringNode
                 var node = new ComplexStringNode(token as ComplexStringToken, new List<ValueNode>());
 
+                // parse each section and add it to `node`
                 foreach (var section in (token as ComplexStringToken).CodeSections) {
                     node.AddSection(new Parser(new Consumer<Token>(section)).ConsumeValue());
                 }
 
+                // then, push `node` to the operand stack
                 operands.Push(node);
                 continue;
             }
 
-            // The '[' character is used delimit function calls. When we encounter it, we push it to the operands stack.
-            // Then, when a function "collects" its arguments, it will stop at the first '[' operand it founds.
-            // if the token is '[', push it to the operands stack
-            if (token == "[") {
-                operands.Push(new ValueNode("[", token));
+            // The '{' character is used delimit function calls. When we encounter it, we push it to the operands stack.
+            // Then, when a function "collects" its arguments, it will stop at the first '{' operand it founds.
+            if (token == "{") {
+                operands.Push(new ValueNode("{", token));
                 continue;
             }
 
@@ -498,12 +485,12 @@ public class Parser : IConsumer<StatementNode>
                     default: // if the operator is none of the above, then assume it is a function
                         var funcOperands = new List<ValueNode>();
 
-						// while the next operand is not "[" (the delimiter for function calls)
-                        while (operands.Peek().Representation != "[")
+						// while the next operand is not "{" (the delimiter for function calls)
+                        while (operands.Peek().Representation != "{")
 							// pop operands from the operand stack and add them to the function operands
                             funcOperands.Add(operands.Pop());
 
-						// pop the "[" remaining
+						// pop the "{" remaining
                         operands.Pop();
 
                         op = new FunctionCallNode(funcOperands.ToArray(), new ComplexToken(token, TokenKind.ident, token.Location));
@@ -579,7 +566,7 @@ public class Parser : IConsumer<StatementNode>
 
                 // push it to the operator stack
                 operatorStack.Push(new OperatorToken(currToken, Precedence.FuncCall, "right", currToken.Location));
-                output.Add(new Token('[', TokenKind.delim, tokenizer.Peek().Location));
+                output.Add(new Token('{', TokenKind.delim, tokenizer.Peek().Location));
                 continue;
             }
 
@@ -587,7 +574,7 @@ public class Parser : IConsumer<StatementNode>
             if (currToken == "(") {
 
                 // push it to the operator stack
-                operatorStack.Push(new OperatorToken(currToken, 0, "right", currToken.Location));
+                operatorStack.Push(new OperatorToken(currToken, 0, "left", currToken.Location));
                 continue;
             }
 
@@ -595,7 +582,7 @@ public class Parser : IConsumer<StatementNode>
             if (currToken == ")") {
 
                 try {
-                        // while the operator at the top of the operator stack is not a left parenthesis
+                    // while the operator at the top of the operator stack is not a left parenthesis
                     while (operatorStack.Peek() != "(") {
 
                         // pop an operator from the operator stack and add it to the output
@@ -603,6 +590,7 @@ public class Parser : IConsumer<StatementNode>
                     }
 
                     operatorStack.Pop();
+                    continue;
                 } catch {
 
                     // if no left parenthesis was found, there are mismatched parenthesis
@@ -612,8 +600,13 @@ public class Parser : IConsumer<StatementNode>
                 //
 				// TODO: Implement type casting handling
                 //
+            }
 
-                continue;
+            // TODO: Array access operator
+            if (currToken == "[") {
+
+                // push it to the operator stack
+                operatorStack.Push(new OperatorToken(currToken, Precedence.Array, "left", currToken.Location));
             }
 
             // if the token is '.'

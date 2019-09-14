@@ -218,7 +218,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '!') {
 
             if (input.Peek() == '=') {
-                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.NotEqual, "right", input.Position);
+                current = new OperatorToken(currChar +""+ input.Consume(), Precedence.NotEqual, "left", input.Position);
 
                 return current;
             }

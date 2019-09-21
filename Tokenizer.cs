@@ -106,6 +106,7 @@ public class Tokenizer : IConsumer<Token>
 
         // If the character is a digit
         if (Char.IsDigit(currChar)) {
+
             // Reconsume the current character
             input.Reconsume();
 
@@ -117,14 +118,19 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // If the character is '+', '-', or '.', followed by a digit
-        if (currChar == '.' && Char.IsDigit(input.Peek())) {
-            // Reconsume the current character
-            input.Reconsume();
+        if (currChar == '.') {
 
-            // Consume a number token
-            current = ConsumeNumberToken();
+            if (Char.IsDigit(input.Peek())) {
+                // Reconsume the current character
+                input.Reconsume();
 
-            return current;
+                // Consume a number token
+                current = ConsumeNumberToken();
+
+                return current;
+            }
+
+            return new OperatorToken(currChar, Precedence.Access, "left", input.Position);
         }
 
         if (currChar == '$') {
@@ -157,6 +163,14 @@ public class Tokenizer : IConsumer<Token>
 
         // If the character is '+' or '-'
         if (currChar == '+' || currChar == '-') {
+
+            if (Char.IsDigit(input.Peek())) {
+                input.Reconsume();
+
+                current = ConsumeNumberToken();
+
+                return current;
+            }
 
             // if the next character is the same as now ('+' and '+' for example), then it is either an increment or a decrement ("++" and "--")
             if (input.Peek() == currChar) {
@@ -434,6 +448,11 @@ public class Tokenizer : IConsumer<Token>
 
         // the output token
         var output = new NumberToken("", input.Position);
+
+        if (currChar == '+' || currChar == '-') {
+            output.Add(currChar);
+            currChar = input.Consume();
+        }
 
         // while the current character is a digit
         while (Char.IsDigit(currChar)) {

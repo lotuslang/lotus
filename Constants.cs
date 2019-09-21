@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public enum Precedence {
     Comma = 0,
+    Array = 11,
     Parenthesis = Comma,
     Curly = Comma,
     Assignment = 1,
@@ -22,9 +23,8 @@ public enum Precedence {
     Modulo = Multiplication,
     Power = 8,
     Unary = 9,
-    Access = Unary,
-    FuncCall = 10,
-    Array = FuncCall,
+    Access = 10,
+    FuncCall = 12,
 }
 
 public static class Constants

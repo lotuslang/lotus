@@ -73,16 +73,24 @@ public class Graph
         strBuilder.AppendLine("{");
 
         foreach (var property in graphprops) {
-            strBuilder.AppendLine($"\tgraph[{property.Key}=\"{property.Value}\"]");
+            strBuilder.AppendLine($"\t{property.Key}=\"{property.Value}\"");
         }
+
+        strBuilder.AppendLine("\tnode[");
 
         foreach (var property in nodeprops) {
-            strBuilder.AppendLine($"\tnode[{property.Key}=\"{property.Value}\"]");
+            strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
         }
 
+        strBuilder.AppendLine("\t]\n");
+
+        strBuilder.AppendLine("\tedge [");
+
         foreach (var property in edgeprops) {
-            strBuilder.AppendLine($"\tedge[{property.Key}=\"{property.Value}\"]");
+            strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
         }
+
+        strBuilder.AppendLine("\t]");
 
         strBuilder.AppendLine();
 
@@ -106,14 +114,26 @@ public class Graph
         return strBuilder.ToString();
     }
 
-    public void AddGraphProp(string property, string value)
-        => graphprops.Add(property, value);
+    public void AddGraphProp(string property, string value) {
+            if (graphprops.ContainsKey(property))
+                graphprops[property] = value;
+            else
+                graphprops.Add(property, value);
+    }
 
-    public void AddNodeProp(string property, string value)
-        => nodeprops.Add(property, value);
+    public void AddNodeProp(string property, string value) {
+            if (nodeprops.ContainsKey(property))
+                nodeprops[property] = value;
+            else
+                nodeprops.Add(property, value);
+    }
 
-    public void AddEdgeProp(string property, string value)
-        => edgeprops.Add(property, value);
+    public void AddEdgeProp(string property, string value) {
+            if (edgeprops.ContainsKey(property))
+                edgeprops[property] = value;
+            else
+                edgeprops.Add(property, value);
+    }
 }
 
 [System.Diagnostics.DebuggerDisplay("{name}:{label}")]
@@ -160,10 +180,9 @@ public class GraphNode
     public GraphNode(string id, string name)
     {
         this.id = id;
+        this.name = name;
         props = new Dictionary<string, string>();
         children = new List<GraphNode>();
-
-        props.Add("label", name);
     }
 
     /// <summary>
@@ -173,8 +192,12 @@ public class GraphNode
     public void AddNode(GraphNode node)
         => children.Add(node);
 
-    public void AddProperty(string property, string value)
-        => props.Add(property, value);
+    public void AddProperty(string property, string value) {
+            if (props.ContainsKey(property))
+                props[property] = value;
+            else
+                props.Add(property, value);
+    }
 
     public string ToText(List<GraphNode> registry)
     {
@@ -182,7 +205,11 @@ public class GraphNode
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.AppendLine($"{id} [{String.Join(",", props).Replace('[', '\0').Replace(']', '\0').Replace(", ", "=")}]");
+        strBuilder.AppendLine($"\n\t{id} [label={name}]");
+
+        foreach (var property in props) {
+            strBuilder.AppendLine($"\t{id} [{property.Key}={property.Value}]");
+        }
 
         // For each node that is a children of this object
         foreach (var child in children)

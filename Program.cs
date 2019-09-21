@@ -14,7 +14,7 @@ class Program
         }*/
 
 
-        var tokenizer = new Tokenizer("-1");
+        var tokenizer = new Tokenizer("6 + arr[6 + 3] - 9");
 
 
         var parser = new Parser(tokenizer);
@@ -31,10 +31,12 @@ class Program
 
         var val = new Parser(new Tokenizer(expr)).ConsumeValue();*/
 
-        var g = new Graph("G");
+        var g = new Graph("AST");
 
         g.AddNodeProp("fontname", "Consolas, monospace");
         g.AddGraphProp("fontname", "Consolas, monospace");
+        g.AddGraphProp("label", "Abstract Syntax Tree of a Block program\\n\\n");
+        g.AddGraphProp("labelloc", "top");
 
         StatementNode val = parser.ConsumeValue();
 
@@ -58,6 +60,7 @@ class Program
         var output = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
 
         output.AddProperty("color", "lightgrey");
+        output.AddProperty("tooltip", "ValueNode");
 
         return output;
     }
@@ -66,6 +69,7 @@ class Program
         var output = new GraphNode(node.GetHashCode().ToString(), "\"'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'\"");
 
         output.AddProperty("color", "orange");
+        output.AddProperty("tooltip", "StringNode");
 
         return output;
     }
@@ -74,6 +78,7 @@ class Program
         var output = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
 
         output.AddProperty("color", "black");
+        output.AddProperty("tooltip", "StatementNode");
 
         return output;
     }
@@ -83,6 +88,7 @@ class Program
         var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Representation + "\"");
 
         root.AddProperty("color", "dodgerblue");
+        root.AddProperty("tooltip", "OperationNode");
 
         if (node.Representation == "++" || node.Representation == "--") {
             root = new GraphNode(node.GetHashCode().ToString(), ((node as OperationNode).OperationType.EndsWith("post") ? "\"(postfix)" : "\"(prefix)") + node.Representation + "\"");
@@ -104,6 +110,7 @@ class Program
         var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Name + "\"");
 
         root.AddProperty("color", "teal");
+        root.AddProperty("tooltip", "AssignmentNode");
 
         root.AddNode(ToGraphNode((dynamic)node.Value));
 
@@ -114,8 +121,13 @@ class Program
         var root = new GraphNode(node.GetHashCode().ToString(), "\"var\"");
 
         root.AddProperty("color", "palegreen");
+        root.AddProperty("tooltip", "DeclarationNode");
 
-        root.AddNode(new GraphNode(node.Name.GetHashCode().ToString(), "\"" + node.Name + "\""));
+        var nameNode = new GraphNode(node.Name.GetHashCode().ToString(), "\"" + node.Name + "\"");
+
+        nameNode.AddProperty("tooltip", "name");
+
+        root.AddNode(nameNode);
 
         root.AddNode(ToGraphNode((dynamic)node.Value));
 
@@ -126,10 +138,15 @@ class Program
         var root = new GraphNode(node.GetHashCode().ToString(), "\"" + node.Name + "()\"");
 
         root.AddProperty("color", "tomato");
+        root.AddProperty("tooltip", "FunctionCallNode");
 
         foreach (var parameter in node.CallingParameters)
         {
-            root.AddNode(ToGraphNode((dynamic)parameter));
+            var paramNode = ToGraphNode((dynamic)parameter);
+
+            paramNode.AddProperty("tooltip", "argument");
+
+            root.AddNode(paramNode);
         }
 
         return root;
@@ -139,16 +156,27 @@ class Program
         var root = new GraphNode(node.GetHashCode().ToString(), "\"def " + node.Name.Representation + "\"");
 
         root.AddProperty("color", "indianred");
+        root.AddProperty("tooltip", "FunctionDeclarationNode");
 
-        var paramNode = new GraphNode(node.Parameters.GetHashCode().ToString(), "\"param\"");
+        var parameters = new GraphNode(node.Parameters.GetHashCode().ToString(), "\"param\"");
+
+        parameters.AddProperty("tooltip", "parameters");
 
         foreach (var parameter in node.Parameters) {
-            paramNode.AddNode(new GraphNode(parameter.GetHashCode().ToString(), parameter.Representation));
+            var paramNode = new GraphNode(parameter.GetHashCode().ToString(), parameter.Representation);
+
+            paramNode.AddProperty("tooltip", "parameter");
+
+            parameters.AddNode(paramNode);
         }
 
-        root.AddNode(paramNode);
+        root.AddNode(parameters);
 
-        root.AddNode(ToGraphNode((dynamic)node.Value));
+        var value = ToGraphNode((dynamic)node.Value);
+
+        value.AddProperty("tooltip", "body");
+
+        root.AddNode(value);
 
         return root;
     }
@@ -157,9 +185,14 @@ class Program
         var root = new GraphNode(block.GetHashCode().ToString(), "\"block\"");
 
         root.AddProperty("color", "green");
+        root.AddProperty("tooltip", "SimpleBlock");
 
         foreach (var statement in block.Content) {
-            root.AddNode(ToGraphNode((dynamic)statement));
+            var statementNode = ToGraphNode((dynamic)statement);
+
+            statementNode.AddProperty("tooltip", "statement");
+
+            root.AddNode(statementNode);
         }
 
         return root;

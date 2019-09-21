@@ -106,14 +106,14 @@ public class StringConsumer : IConsumer<char>
     }
 
     public char Consume() {
-        if (Count <= 0) {
-            current = '\u0003';
-
+        if (reconsumeFlag) {
+            reconsumeFlag = false;
             return current;
         }
 
-        if (reconsumeFlag) {
-            reconsumeFlag = false;
+        if (Count <= 0) {
+            current = '\u0003';
+
             return current;
         }
 
@@ -130,30 +130,20 @@ public class StringConsumer : IConsumer<char>
     }
 
     public char Peek() {
-        if (Count == 0) return '\u0003';
-
         if (reconsumeFlag) return current;
+
+        if (Count == 0) return '\u0003';
 
         return stack.Peek();
     }
 
     public char[] Peek(int n) {
-
-        // a new stack instance so that we don't use the actual stack of this instance, but a copy of it
-        var stack = new Stack<char>(this.stack.Reverse());
-
         var output = new char[n];
 
+        var consumer = new Consumer<char>(this);
+
         for (int i = 0; i < n; i++) {
-
-            // if the stack is empty, add padding U+0003 instead
-            if (stack.Count == 0) {
-                output[i] = '\u0003';
-                continue;
-            }
-
-            // pop a char from the stack and assign output[i] to it
-            output[i] = stack.Pop();
+            output[i] = consumer.Consume();
         }
 
         return output;

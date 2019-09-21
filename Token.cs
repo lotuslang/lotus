@@ -129,7 +129,7 @@ public class ComplexStringToken : ComplexToken
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {rep.ToString()} with precedence {precedence}")]
+[System.Diagnostics.DebuggerDisplay("{loc} {precedence}({(int)precedence}) : {rep.ToString()}")]
 public class OperatorToken : Token
 {
     protected Precedence precedence;
@@ -163,6 +163,12 @@ public class OperatorToken : Token
     public OperatorToken(char representation, Precedence precedence, bool isLeftAssociative, Location? location)
         : this(representation.ToString(), precedence, isLeftAssociative, location)
     { }
+
+    public OperatorToken(Token token, Precedence precedence, string associativity, Location? location)
+        : this(token, precedence, associativity == "left" ? true : false, location)
+    {
+        this.kind = token.Kind == TokenKind.function ? TokenKind.function : TokenKind.@operator;
+    }
 }
 
 public enum TokenKind {

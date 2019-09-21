@@ -320,7 +320,7 @@ public class Parser : IConsumer<StatementNode>
         return new ReturnNode(value, returnToken as ComplexToken);
     }
 
-    protected ValueNode ConsumeValue() {
+    internal ValueNode ConsumeValue() {
 
         // converts to postfix notation
         var postfix = ToPostfixNotation(tokenizer);
@@ -368,9 +368,7 @@ public class Parser : IConsumer<StatementNode>
 
         var operands = new Stack<ValueNode>();
 
-        for (int i = 0; i < postfix.Count; i++)
-        {
-            var token = postfix[i];
+        foreach (var token in postfix) {
 
             // if the token is a number, push a number node to the operands stack
             if (token is NumberToken number) {
@@ -410,10 +408,10 @@ public class Parser : IConsumer<StatementNode>
                 continue;
             }
 
-            // The '{' character is used delimit function calls. When we encounter it, we push it to the operands stack.
-            // Then, when a function "collects" its arguments, it will stop at the first '{' operand it founds.
-            if (token == "{") {
-                operands.Push(new ValueNode("{", token));
+            // The '(' character is used delimit function calls. When we encounter it, we push it to the operands stack.
+            // Then, when a function "collects" its arguments, it will stop at the first '(' operand it founds.
+            if (token == "(") {
+                operands.Push(new ValueNode("(", token));
                 continue;
             }
 
@@ -440,6 +438,9 @@ public class Parser : IConsumer<StatementNode>
                         break;
                     case ".":
                         op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "binaryAccess");
+                        break;
+                    case "[":
+                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "binaryArray");
                         break;
 					case "=":
 						throw new Exception($"Unexpected assignment in value at location {token.Location}.");
@@ -486,9 +487,10 @@ public class Parser : IConsumer<StatementNode>
                         var funcOperands = new List<ValueNode>();
 
 						// while the next operand is not "{" (the delimiter for function calls)
-                        while (operands.Peek().Representation != "{")
+                        while (operands.Peek().Representation != "(") {
 							// pop operands from the operand stack and add them to the function operands
                             funcOperands.Add(operands.Pop());
+                        }
 
 						// pop the "{" remaining
                         operands.Pop();
@@ -506,10 +508,10 @@ public class Parser : IConsumer<StatementNode>
     }
 
     /// <summary>
-    /// This is an implementation of the shunting-yard algorithm by Edsger Dijkstra.
+    /// This is a modified implementation of the shunting-yard algorithm by Edsger Dijkstra.
     /// It takes in a tokenizer from which it will consume tokens, and outputs a list of Token,
     /// representing the input operation in Postfix Notation (also called Reverse Polish Notation).
-    /// It can process numbers, identifiers, functions, and operators. It was a bit modified for convenience.
+    /// It can process numbers, identifiers, functions, and operators.
     /// </summary>
     /// <param name="tokenizer">The tokenizer to consume the tokens from.</param>
     /// <returns>A list of tokens representing the input operation in Postfix Notation (a.k.a. Reverse Polish Notation).</returns>
@@ -544,7 +546,7 @@ public class Parser : IConsumer<StatementNode>
             if (currToken == TokenKind.ident) {
                 if (tokenizer.Peek() == "(") {
 
-                    // set the current token to an identical token but identified as TokenKind.function
+                    // changes the current token to a TokenKind.function
                     currToken = new ComplexToken(currToken, TokenKind.function, currToken.Location);
                 }
             }
@@ -566,7 +568,7 @@ public class Parser : IConsumer<StatementNode>
 
                 // push it to the operator stack
                 operatorStack.Push(new OperatorToken(currToken, Precedence.FuncCall, "right", currToken.Location));
-                output.Add(new Token('{', TokenKind.delim, tokenizer.Peek().Location));
+                output.Add(new Token('(', TokenKind.delim, tokenizer.Peek().Location));
                 continue;
             }
 
@@ -606,14 +608,17 @@ public class Parser : IConsumer<StatementNode>
             if (currToken == "[") {
 
                 // push it to the operator stack
-                operatorStack.Push(new OperatorToken(currToken, Precedence.Array, "left", currToken.Location));
+                //operatorStack.Push(new OperatorToken(currToken, Precedence.Array, "left", currToken.Location));
+                //output.Add(new Token("]", TokenKind.delim, currToken.Location));
+
+                currToken = new OperatorToken(currToken, Precedence.Array, "left", currToken.Location);
+
+                //continue;
             }
 
-            // if the token is '.'
-            if (currToken == ".") {
-
-                // set the current token to a left-associative operator with precedence Precedence.Access
-                currToken = new OperatorToken(currToken, Precedence.Access, "left", currToken.Location);
+            if (currToken == "]") {
+                //output.Add(new Token("]", TokenKind.delim, currToken.Location));
+                continue;
             }
 
             // if the token is "++" or "--"
@@ -735,7 +740,7 @@ public class Parser : IConsumer<StatementNode>
                 break;
             }
 
-            output.Add(currToken);
+            //output.Add(currToken);
         }
 
         // add every operator in the operator stack to the output, unless it is a parenthesis

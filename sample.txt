@@ -11,7 +11,7 @@ print(greeting + " " + name);
 def printError(msg, tk) {
     var location = tk;
 
-    msg.toStr(h, "\x").reverse();
+    msg.toStr().reverse();
     print("({location}) : {msg}");
 }
 

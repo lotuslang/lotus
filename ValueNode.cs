@@ -7,6 +7,12 @@ using System.Collections.ObjectModel;
 [System.Diagnostics.DebuggerDisplay("{Representation}")]
 public class ValueNode : StatementNode
 {
+    /// <summary>
+    /// This constant is the equivalent of "null". When a function doesn't return, it will actually set the `#return` variable to this constant.
+    /// Variables that are assigned to a non-returning functions will actually be assigned this value.
+    /// </summary>
+    public static readonly ValueNode NULL = new ValueNode("null", new Token('\0', TokenKind.EOF, null));
+
     //// <summary>
     /// The value of this ValueNode
     /// </summary>
@@ -14,6 +20,8 @@ public class ValueNode : StatementNode
     public virtual string Value {
         get => rep;
     }
+
+    public ValueNode(Token token) : this(token.Representation, token) { }
 
     public ValueNode(string rep, Token token) : base(rep, token) { }
 
@@ -72,10 +80,12 @@ public class NumberNode : ValueNode
         get => value;
      }
 
-    public NumberNode(double value, Token token) : base(value.ToString(), token)
-    {
+    public NumberNode(double value, Token token) : base(value.ToString(), token) {
         this.value = value;
     }
+
+    public NumberNode(NumberToken token) : this(token.Value, token)
+    { }
 
     public new string GetFriendlyName()
         => "number";
@@ -171,16 +181,15 @@ public class FunctionCallNode : ValueNode
         get => parameters;
     }
 
-    protected ComplexToken functionName;
+    protected ValueNode function;
 
-    public ComplexToken Name {
-        get => functionName;
+    public ValueNode Function {
+        get => function;
     }
 
-    public FunctionCallNode(ValueNode[] parameters, ComplexToken functionName) : base(functionName + "(...)", functionName) {
-        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (call)");
+    public FunctionCallNode(ValueNode[] parameters, ValueNode functionName, Token token) : base(functionName + "(...)", token) {
 
-        this.functionName = functionName;
+        this.function = functionName;
         this.parameters = parameters;
     }
 

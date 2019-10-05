@@ -175,7 +175,9 @@ public class GraphNode
         get => props;
     }
 
-    public GraphNode(string id) : this(id, id) { }
+    public GraphNode(string name) : this(new Random().Next(), "\"" + name + "\"") { }
+
+    public GraphNode(int id, string name) : this(id.ToString(), name) { }
 
     public GraphNode(string id, string name)
     {

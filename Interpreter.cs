@@ -59,7 +59,7 @@ public class Interpreter
         if (!parser.Consume(out StatementNode currNode)) {
 
             // set the environment variable `#return` to the NULL ValueNode constants
-            environment.SetVariableValue("#return", Constants.NULL);
+            environment.SetVariableValue("#return", ValueNode.NULL);
             return;
         }
 
@@ -112,7 +112,7 @@ public class Interpreter
                 return;
             }
 
-            environment.SetVariableValue("#return", Constants.NULL);
+            environment.SetVariableValue("#return", ValueNode.NULL);
             return;
         }
     }
@@ -328,7 +328,7 @@ public class Interpreter
         // Check if the function exists in the current environnement, throw an error if not
         if (!environment.HasFunction(node)) {
             // TODO: Use a throw helper or create an appropriate exception
-            throw new Exception($"{node.Token.Location} : Function '{node.Name.Representation}' is not declared in the current scope.");
+            throw new Exception($"{node.Token.Location} : Function '{node.Function.Representation}' is not declared in the current scope.");
         }
 
         // gets the FunctionDeclarationNode object corresponding to the function called

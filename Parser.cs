@@ -8,6 +8,10 @@ public class Parser : IConsumer<StatementNode>
 
     private IConsumer<Token> tokenizer;
 
+    internal IConsumer<Token> Tokenizer {
+        get => tokenizer;
+    }
+
     public Location Position {
         get => tokenizer.Position;
     }
@@ -46,7 +50,7 @@ public class Parser : IConsumer<StatementNode>
 
     public Parser(System.IO.FileInfo file) : this(new Tokenizer(file)) { }
 
-    public Parser(Parser parser) : this(parser.tokenizer) { }
+    public Parser(Parser parser) : this(parser.Tokenizer) { }
 
     /// <summary>
     /// Reconsumes the last StatementNode object.
@@ -148,60 +152,11 @@ public class Parser : IConsumer<StatementNode>
             return current;
         }
 
-        // if the token is an identifier
-		if (currToken == TokenKind.ident) {
+        tokenizer.Reconsume();
 
-			// if it's an identifier followed by '(', suppose it's a function call
-			if (tokenizer.Peek() == "(") {
+        current = ConsumeValue();
 
-                // reconsume the identifier
-                tokenizer.Reconsume();
-
-                /* // consume a value (which is gonna be an OperationNode representing a function)
-                var paramsAsValue = ConsumeValue();
-
-                if (!(paramsAsValue is OperationNode)) throw new Exception($"{currToken.Location} : Failed to parse function call");
-
-                // consume a value, create a FunctionNode with its value set to the ValueNode returned, and return it
-				current = new FunctionNode(((OperationNode)paramsAsValue).Operands, currToken as ComplexToken);*/
-
-                current = ConsumeValue();
-
-                return current;
-			}
-
-            // if the next token is '='
-			if (tokenizer.Peek() == "=") {
-
-                // consume it
-				tokenizer.Consume();
-
-                // consume a value, create an AssignmentNode with its value set to the ValueNode returned, and return it
-				current = new AssignmentNode(ConsumeValue(), currToken as ComplexToken);
-
-                return current;
-			}
-
-            // if the next token is "."
-            if (tokenizer.Peek() == ".") {
-
-                // reconsume the identifier
-                tokenizer.Reconsume();
-
-                // consume a value
-                current = ConsumeValue();
-
-                // if the value returned is not an OperationNode, throw an exception
-                if (!(current is OperationNode)) throw new Exception($"Unknown error at {currToken.Location}");
-
-                // return the value otherwise
-                return current;
-            }
-
-			throw new UnexpectedTokenException($"Did you mean to assign a value or call a function ?", currToken);
-		}
-
-        throw new Exception("what²²");
+        return current;
     }
 
     protected DeclarationNode ConsumeDeclaration() {
@@ -320,443 +275,48 @@ public class Parser : IConsumer<StatementNode>
         return new ReturnNode(value, returnToken as ComplexToken);
     }
 
-    internal ValueNode ConsumeValue() {
+    internal ValueNode ConsumeValue(int precedence = 0) {
+        var token = tokenizer.Consume();
 
-        // converts to postfix notation
-        var postfix = ToPostfixNotation(tokenizer);
-
-#if DEBUG
-    Console.WriteLine(String.Join(" ", postfix));
-#endif // DEBUG
-
-
-        // postfix notation cannot contain an even number of tokens
-        if (postfix.Count == 0) return null;
-
-        // if only one value could be parsed
-        if (postfix.Count == 1) {
-            var token = postfix[0];
-
-            if (token == "}") {
-                return new ValueNode("}", token);
-            }
-
-            // if the token is an identifier, return an IdentNode
-            if (token == TokenKind.ident) {
-                return new IdentNode(token.Representation, token);
-            }
-
-            // if the token is a string, return a StringNode
-            if (token == TokenKind.@string || token == TokenKind.complexString) {
-                return new StringNode(token.Representation, token);
-            }
-
-            // if the token is a number, return a NumberNode
-            if (token is NumberToken number) {
-                return new NumberNode(number.Value, token);
-            }
-
-            // if the token is a bool, return a BoolNode
-            if (token is BoolToken boolToken) {
-                return new BoolNode(boolToken.Value, token);
-            }
-
-            throw new UnexpectedTokenException(token, TokenKind.@string, TokenKind.complexString, TokenKind.ident, TokenKind.number, TokenKind.function);
+        if (!token.GetExpressionKind().HasPrefixParselet()) {
+            throw new UnexpectedTokenException(token,
+                TokenKind.@bool,
+                TokenKind.@operator,
+                TokenKind.@string,
+                TokenKind.complexString,
+                TokenKind.ident,
+                TokenKind.number
+            );
         }
 
-        // otherwise, transform the postfix expression into a tree (we return the root of that tree)
+        var left = Constants.GetPrefixParselet(token).Parse(this, token);
 
-        var operands = new Stack<ValueNode>();
+        while (precedence < GetPrecedence(tokenizer.Peek())) {
+            token = tokenizer.Consume();
 
-        foreach (var token in postfix) {
-
-            // if the token is a number, push a number node to the operands stack
-            if (token is NumberToken number) {
-                operands.Push(new NumberNode(number.Value, number));
-                continue;
-            }
-
-            // if the token is a bool, push a bool node to the operands stack
-            if (token is BoolToken boolToken) {
-                operands.Push(new BoolNode(boolToken.Value, boolToken));
-            }
-
-            // if the token is an identifier, push a identifier node to the operands stack
-            if (token == TokenKind.ident) {
-                operands.Push(new IdentNode(token, token));
-                continue;
-            }
-
-            // if the token is a string, push a string node to the operands stack
-            if (token == TokenKind.@string) {
-                operands.Push(new StringNode(token, token));
-                continue;
-            }
-
-            // If the token is a complex token
-            if (token == TokenKind.complexString) {
-                // create a new ComplexStringNode
-                var node = new ComplexStringNode(token as ComplexStringToken, new List<ValueNode>());
-
-                // parse each section and add it to `node`
-                foreach (var section in (token as ComplexStringToken).CodeSections) {
-                    node.AddSection(new Parser(new Consumer<Token>(section)).ConsumeValue());
-                }
-
-                // then, push `node` to the operand stack
-                operands.Push(node);
-                continue;
-            }
-
-            // The '(' character is used delimit function calls. When we encounter it, we push it to the operands stack.
-            // Then, when a function "collects" its arguments, it will stop at the first '(' operand it founds.
-            if (token == "(") {
-                operands.Push(new ValueNode("(", token));
-                continue;
-            }
-
-            if (token is OperatorToken) {
-
-                ValueNode op;
-
-                switch (token)
-                {
-                    case "+":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop()}, "binaryAdd");
-                        break;
-                    case "-":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop()}, "binarySub");
-                        break;
-                    case "*":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop()}, "binaryMul");
-                        break;
-                    case "/":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop()}, "binaryDiv");
-                        break;
-                    case "^":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop()}, "binaryPow");
-                        break;
-                    case ".":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "binaryAccess");
-                        break;
-                    case "[":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "binaryArray");
-                        break;
-					case "=":
-						throw new Exception($"Unexpected assignment in value at location {token.Location}.");
-                    case "_":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryNeg");
-                        break;
-                    case "!":
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, "unaryNot");
-                        break;
-                    case "++":
-                    case "--":
-                        // if the operator is left associative, it's a postfix ++/--, otherwise, it's a prefix ++/--
-                        op = new OperationNode(token, new ValueNode[] { operands.Pop() }, (token as OperatorToken).IsLeftAssociative ? "unaryPost" : "unaryPre");
-                        break;
-                    case "||":
-		    			op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionOr");
-						break;
-					case "&&":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionAnd");
-						break;
-					case "!=":
-						op = new OperationNode(token, new ValueNode[] {operands.Pop(), operands.Pop() }, "conditionalNotEq");
-						break;
-					case "==":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalEq");
-						break;
-					case ">=":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalGreaterOrEq");
-						break;
-					case "<=":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalLessOrEq");
-						break;
-					case ">":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalGreater");
-						break;
-					case "<":
-						op = new OperationNode(token, new ValueNode[] { operands.Pop(), operands.Pop() }, "conditionalLess");
-						break;
-                    case "var":
-                        throw new Exception($"Unexpected variable declaration at location {token.Location}.");
-                    case "def":
-                        throw new Exception($"Unexpected function definition at location {token.Location}.");
-                    default: // if the operator is none of the above, then assume it is a function
-                        var funcOperands = new List<ValueNode>();
-
-						// while the next operand is not "{" (the delimiter for function calls)
-                        while (operands.Peek().Representation != "(") {
-							// pop operands from the operand stack and add them to the function operands
-                            funcOperands.Add(operands.Pop());
-                        }
-
-						// pop the "{" remaining
-                        operands.Pop();
-
-                        op = new FunctionCallNode(funcOperands.ToArray(), new ComplexToken(token, TokenKind.ident, token.Location));
-                        break;
-                }
-
-                operands.Push(op);
-                continue;
-            }
+            left = Constants.GetOperatorParselet(token).Parse(this, token, left);
         }
 
-        return operands.Pop();
+        if (tokenizer.Peek() == ",") {
+
+            // consume the remaining ","
+            tokenizer.Consume();
+
+            // then returns the left operand (i.e. the value);
+            return left as ValueNode;
+        }
+
+        return left as ValueNode;
     }
 
-    /// <summary>
-    /// This is a modified implementation of the shunting-yard algorithm by Edsger Dijkstra.
-    /// It takes in a tokenizer from which it will consume tokens, and outputs a list of Token,
-    /// representing the input operation in Postfix Notation (also called Reverse Polish Notation).
-    /// It can process numbers, identifiers, functions, and operators.
-    /// </summary>
-    /// <param name="tokenizer">The tokenizer to consume the tokens from.</param>
-    /// <returns>A list of tokens representing the input operation in Postfix Notation (a.k.a. Reverse Polish Notation).</returns>
-    public static List<Token> ToPostfixNotation(IConsumer<Token> tokenizer) {
-
-        // the output queue
-        var output = new List<Token>();
-
-        // the operator stack
-        var operatorStack = new Stack<OperatorToken>();
-
-        // the current token
-        Token currToken = null;
-
-        // the last token consumed
-        Token lastToken;
-
-        // variable to check if there are tokens left
-        bool areTokensLeft = true;
-
-        while (areTokensLeft) {
-
-            // basically sets the "lastToken" variable to the "currToken" before it is updated
-            lastToken = currToken;
-
-            /// consume a token
-            areTokensLeft = tokenizer.Consume(out currToken);
-
-            // this this to check if an identifier is a function, since it is not done during tokenizing.
-
-            // if the token is an identifier
-            if (currToken == TokenKind.ident) {
-                if (tokenizer.Peek() == "(") {
-
-                    // changes the current token to a TokenKind.function
-                    currToken = new ComplexToken(currToken, TokenKind.function, currToken.Location);
-                }
-            }
-
-            // if the token is a number, a string, or an identifier
-            if (currToken is NumberToken
-            ||  currToken is BoolToken
-            ||  currToken == TokenKind.@string
-            ||  currToken == TokenKind.complexString
-            ||  currToken == TokenKind.ident) {
-
-                // add it to the output list
-                output.Add(currToken);
-                continue;
-            }
-
-            // if the token is a function
-            if (currToken == TokenKind.function) {
-
-                // push it to the operator stack
-                operatorStack.Push(new OperatorToken(currToken, Precedence.FuncCall, "right", currToken.Location));
-                output.Add(new Token('(', TokenKind.delim, tokenizer.Peek().Location));
-                continue;
-            }
-
-            // if the token is a left parenthesis ('(')
-            if (currToken == "(") {
-
-                // push it to the operator stack
-                operatorStack.Push(new OperatorToken(currToken, 0, "left", currToken.Location));
-                continue;
-            }
-
-            // if the token is a right parenthesis (')')
-            if (currToken == ")") {
-
-                try {
-                    // while the operator at the top of the operator stack is not a left parenthesis
-                    while (operatorStack.Peek() != "(") {
-
-                        // pop an operator from the operator stack and add it to the output
-                        output.Add(operatorStack.Pop());
-                    }
-
-                    operatorStack.Pop();
-                    continue;
-                } catch {
-
-                    // if no left parenthesis was found, there are mismatched parenthesis
-                    throw new Exception($"Mismatched parenthesis at location {currToken.Location}");
-                }
-
-                //
-				// TODO: Implement type casting handling
-                //
-            }
-
-            // TODO: Array access operator
-            if (currToken == "[") {
-
-                // push it to the operator stack
-                //operatorStack.Push(new OperatorToken(currToken, Precedence.Array, "left", currToken.Location));
-                //output.Add(new Token("]", TokenKind.delim, currToken.Location));
-
-                currToken = new OperatorToken(currToken, Precedence.Array, "left", currToken.Location);
-
-                //continue;
-            }
-
-            if (currToken == "]") {
-                //output.Add(new Token("]", TokenKind.delim, currToken.Location));
-                continue;
-            }
-
-            // if the token is "++" or "--"
-            if (currToken == "++" || currToken == "--") {
-
-                // if the last token was an identifier
-                if (lastToken == TokenKind.ident) {
-
-                    // set the current token to a left-associative operator with precedence Precedence.Unary
-                    currToken = new OperatorToken(currToken, Precedence.Unary, "left", currToken.Location);
-                }
-                else if (tokenizer.Peek() == TokenKind.ident) {
-
-                    // set the current token to a right-associative operator with precedence Precedence.Unary
-                    currToken = new OperatorToken(currToken, Precedence.Unary, "right", currToken.Location);
-                }
-                else throw new Exception($"Increment/Decrement operator with no associated identifier at location {currToken.Location}");
-            }
-
-            // if the token is an operator token
-            if (currToken is OperatorToken) {
-
-                // if the last token was an operator and the next token is an identifier, or the last token was a right parenthesis, a right parenthesis it means this operator is unary
-                if (lastToken == null || ((lastToken is OperatorToken && tokenizer.Peek() == TokenKind.ident) || lastToken == "(" || tokenizer.Peek() == "(")) {
-
-                    // if the current token is "-"
-                    if (currToken == "-") {
-                        currToken = new OperatorToken("_", Precedence.Unary, "right", currToken.Location);
-                    }
-
-                    // if the current token is "+", we skip it (since it is redundant)
-                    if (currToken == "+") {
-                        continue;
-                    }
-                }
-
-                /*
-                * while
-                *       (
-                *               (the operator at the top of the operator stack is a function)
-                *           or  (the operator at the top of the operator stack has greater precedence)
-                *           or  (
-                *                       it has equal precedence
-                *                   and is left associative
-                *               )
-                *       )
-                *   and it is not a left parenthesis
-                */
-
-                /* Or :
-                * while (   (the operator at the top of the operator stack is a function)
-                *           or (the operator at the top of the operator stack has greater precedence)
-                *           or ((the operator at the top of the operator stack has equal precedence)
-                *               and (the operator at the top of the operator stack is left associative))
-                *       and (the operator at the top of the operator stack is not a left parenthesis)
-                *
-                */
-
-                while (
-                    (
-                        // the stack is not empty
-                        operatorStack.Count != 0
-                    )
-                    && // and
-                    (
-                        (
-                            // the operator is a function
-                            operatorStack.Peek() == TokenKind.function
-                        )
-                        || // or
-                        (
-                            // the operator has greater precedence
-                            operatorStack.Peek().Precedence > (currToken as OperatorToken).Precedence
-                        )
-                        || // or
-                        (
-                            (
-                                // the operator has equal precedence
-                                operatorStack.Peek().Precedence == (currToken as OperatorToken).Precedence
-                            )
-                            && // and
-                            (
-                                // the operator is left associative
-                                operatorStack.Peek().IsLeftAssociative
-                            )
-                        )
-                    )
-                    && // and
-                    (
-                        // the operator is not a left parenthesis
-                        operatorStack.Peek() != "("
-                    )
-                )
-
-                {
-                    // pop the operator from the stack and add it to the output
-                    output.Add(operatorStack.Pop());
-                }
-
-                // push the token to the stack
-                operatorStack.Push(currToken as OperatorToken);
-                continue;
-            }
-
-            /*if (currToken == ",") {
-                while (operatorStack.Peek() != "(") {
-                    output.Add(operatorStack.Pop());
-                }
-			}*/
-
-            // if this is the end of the statement, reconsume the token and break
-            if (currToken == ";") {
-                tokenizer.Reconsume();
-                break;
-            }
-
-            if (currToken == TokenKind.EOF) {
-                tokenizer.Reconsume();
-                break;
-            }
-
-            //output.Add(currToken);
+    private int GetPrecedence(ExpressionKind kind) {
+        if (kind.HasOperatorParselet()) {
+            return (int)Constants.GetOperatorParselet(kind).Precedence;
         }
 
-        // add every operator in the operator stack to the output, unless it is a parenthesis
-        while (operatorStack.Count != 0) {
-
-            // if there is still a parenthesis in the stack
-            if (operatorStack.Peek() == "(" || operatorStack.Peek() == ")") {
-                // then there are mismatched parenthesis
-                throw new Exception($"Mismatched parenthesis at location {operatorStack.Peek().Location}");
-            }
-
-            // pop an operator from the operator stack and add it to the output
-            output.Add(operatorStack.Pop());
-        }
-
-        // return the output list
-        return output;
+        return 0;
     }
+
+    private int GetPrecedence(Token token)
+        => GetPrecedence(token.GetExpressionKind());
 }

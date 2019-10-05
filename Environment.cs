@@ -50,7 +50,7 @@ public class Environment
     public bool HasFunction(FunctionCallNode node)
         // Try to find a function with the same name and same number of arguments as input function. If we can't find anything, then the result will be null.
         // So, we return true if the result is not null, and false otherwise.
-        => functions.Find(func => func.Name.Representation == node.Name.Representation && func.Parameters.Count == node.CallingParameters.Length) != null;
+        => functions.Find(func => func.Name.Representation == node.Function.Representation && func.Parameters.Count == node.CallingParameters.Length) != null;
 
     public bool HasFunction(string functionName)
         // Try to find a function with the name `functionName`. If we can't find anything, then the result will be null.
@@ -76,7 +76,7 @@ public class Environment
 
     public FunctionDeclarationNode GetFunction(FunctionCallNode node)
         // Find a function with the same name and parameter count as the input. If the search fails, it will return false
-        => functions.Find(func => func.Name.Representation == node.Name.Representation && func.Parameters.Count == node.CallingParameters.Length);
+        => functions.Find(func => func.Name.Representation == node.Function.Representation && func.Parameters.Count == node.CallingParameters.Length);
 
     public void SetVariableValue(string varName, ValueNode newValue)
         => variables[varName] = newValue;

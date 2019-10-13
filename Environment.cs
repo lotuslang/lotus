@@ -34,6 +34,9 @@ public class Environment
     public bool HasVariable(string varName)
         => variables.ContainsKey(varName);
 
+    public bool HasVariable(IdentNode node)
+        => variables.ContainsKey(node.Representation);
+
     public bool HasFunction(FunctionDeclarationNode node) {
 
         // I chose to not perform a simple `functions.Contains(node)` because it would do a "shallow comparison", which means that
@@ -50,7 +53,7 @@ public class Environment
     public bool HasFunction(FunctionCallNode node)
         // Try to find a function with the same name and same number of arguments as input function. If we can't find anything, then the result will be null.
         // So, we return true if the result is not null, and false otherwise.
-        => functions.Find(func => func.Name.Representation == node.Function.Representation && func.Parameters.Count == node.CallingParameters.Length) != null;
+        => functions.Find(func => func.Name.Representation == node.FunctionName.Representation && func.Parameters.Count == node.CallingParameters.Count) != null;
 
     public bool HasFunction(string functionName)
         // Try to find a function with the name `functionName`. If we can't find anything, then the result will be null.
@@ -74,15 +77,37 @@ public class Environment
         return output;
     }
 
+    public ValueNode GetVariableValue(IdentNode node) {
+
+        // Try to get the value with the key `varName`, and output the result in the variable `output`.
+        // If the method fails (i.e. there's no variable with this name), output will be set to null.
+        variables.TryGetValue(node.Representation, out ValueNode output);
+
+        // return output
+        return output;
+    }
+
+    public bool TryGetVariableValue(string varName, out ValueNode value)
+        => variables.TryGetValue(varName, out value);
+
+    public bool TryGetVariableValue(IdentNode node, out ValueNode value)
+        => variables.TryGetValue(node.Representation, out value);
+
     public FunctionDeclarationNode GetFunction(FunctionCallNode node)
         // Find a function with the same name and parameter count as the input. If the search fails, it will return false
-        => functions.Find(func => func.Name.Representation == node.Function.Representation && func.Parameters.Count == node.CallingParameters.Length);
+        => functions.Find(func => func.Name.Representation == node.FunctionName.Representation && func.Parameters.Count == node.CallingParameters.Count);
 
     public void SetVariableValue(string varName, ValueNode newValue)
         => variables[varName] = newValue;
 
+    public void SetVariableValue(IdentNode node, ValueNode newValue)
+        => variables[node.Representation] = newValue;
+
     public void RegisterVariable(string varName, ValueNode value)
         => variables.Add(varName, value);
+
+    public void RegisterVariable(IdentNode node, ValueNode value)
+        => variables.Add(node.Representation, value);
 
     public void RegisterFunction(string functionName, ComplexToken[] parameters, SimpleBlock body)
         => RegisterFunction(new FunctionDeclarationNode(body, parameters, new ComplexToken(functionName, TokenKind.ident, null)));

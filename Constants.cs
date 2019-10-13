@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public enum Precedence {
@@ -7,8 +8,8 @@ public enum Precedence {
     Curly = Comma,
     Assignment = 1,
     Declaration = Assignment,
-    LogicalOR = 2,
-    LogicalAND = 3,
+    Or = 2,
+    And = 3,
     Equal = 4,
     NotEqual = Equal,
     LessThan = 5,
@@ -29,7 +30,7 @@ public enum Precedence {
 
 public static class Constants
 {
-    public static readonly List<string> keywords = new List<string>() {
+    public static readonly string[] keywords = new string[] {
         "var",
         "new",
         "def",
@@ -38,9 +39,14 @@ public static class Constants
         "false",
     };
 
+    public static readonly string[] internalFunctions = new string[] {
+        "print",
+    };
+
     static readonly Dictionary<ExpressionKind, IPrefixParselet> PreParselets = new Dictionary<ExpressionKind, IPrefixParselet>();
 
     static readonly Dictionary<ExpressionKind, IInfixParselet> InAndPostParselets = new Dictionary<ExpressionKind, IInfixParselet>();
+
 
     static Constants() {
         RegisterPrefix(ExpressionKind.Number, new NumberParselet());
@@ -48,9 +54,11 @@ public static class Constants
         RegisterPrefix(ExpressionKind.Identifier, new IdentifierParselet());
         RegisterPrefix(ExpressionKind.Boolean, new BoolParselet());
         RegisterPrefix(ExpressionKind.LeftParen, new GroupParenParselet());
-        RegisterPrefix(ExpressionKind.Plus, new PrefixOperatorParselet());
-        RegisterPrefix(ExpressionKind.Minus, new PrefixOperatorParselet());
-        RegisterPrefix(ExpressionKind.Not, new PrefixOperatorParselet());
+        RegisterPrefix(ExpressionKind.Plus, new PrefixOperatorParselet("Pos"));
+        RegisterPrefix(ExpressionKind.Minus, new PrefixOperatorParselet("Neg"));
+        RegisterPrefix(ExpressionKind.Not, new PrefixOperatorParselet("Not"));
+        RegisterPrefix(ExpressionKind.Increment, new PrefixOperatorParselet("Incr"));
+        RegisterPrefix(ExpressionKind.Decrement, new PrefixOperatorParselet("Decr"));
 
         RegisterInfix(ExpressionKind.Plus, Precedence.Addition, "Add");
         RegisterInfix(ExpressionKind.Minus, Precedence.Substraction, "Sub");
@@ -63,7 +71,7 @@ public static class Constants
         RegisterInfix(ExpressionKind.LessOrEq, Precedence.LessThanOrEqual, "LessOrEq");
         RegisterInfix(ExpressionKind.Greater, Precedence.GreaterThan, "Greater");
         RegisterInfix(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, "GreaterOrEq");
-        RegisterInfix(ExpressionKind.Access, Precedence.Access, "Access");
+        //RegisterInfix(ExpressionKind.Access, Precedence.Access, "Access");
         RegisterInfix(ExpressionKind.Assignment, Precedence.Assignment, "Assign");
 
         InAndPostParselets.Add(ExpressionKind.ArrayAccess, new ArrayAccessParselet());
@@ -80,6 +88,9 @@ public static class Constants
         => InAndPostParselets.Add(kind, new PostfixOperatorParselet(operationType));
 
     public static ExpressionKind GetExpressionKind(this Token token) {
+
+        if (token == null) return ExpressionKind.NotAnExpr;
+
         switch (token.Kind) {
             case TokenKind.ident:
                 return ExpressionKind.Identifier;
@@ -131,8 +142,8 @@ public static class Constants
                 return ExpressionKind.LeftParen;
             case "[":
                 return ExpressionKind.ArrayAccess;
-            case ".":
-                return ExpressionKind.Access;
+            /*case ".":
+                return ExpressionKind.Access;*/
             case "=":
                 return ExpressionKind.Assignment;
         }

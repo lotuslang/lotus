@@ -1,18 +1,17 @@
-var greeting = "hi";
+var greeting = "Hi";
 var name = "Mark";
 
 print(greeting + ' ' + name + '!');
 
-greeting = "hello";
-name = "world";
+greeting = "Hello";
+name = "World";
 
 print(greeting + " " + name);
 
 def printError(msg, tk) {
     var location = tk;
 
-    msg.toStr().reverse();
-    print("({location}) : {msg}");
+    print($"({location}) : {msg}");
 }
 
-printError("un", tk);
+printError("a message", "line 1");

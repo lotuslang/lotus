@@ -98,8 +98,7 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
-        // although, you'll also need to modify the parser (in particular Parser.ConsumeValue or Parser.ToPostFixNotation)
-        // because it might not correctly detect function calls and a lot of other thing
+        // although, you'll also need to modify the parser and parselets because they might not work correctly
 
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
         if (currChar == '\u0003' || currChar == '\0') return new Token(currChar, TokenKind.EOF, input.Position);
@@ -203,11 +202,22 @@ public class Tokenizer : IConsumer<Token>
             if (input.Peek() == '*') {
 
                 // consume characters until the two next characters form "*/"
-                while (String.Join("", input.Peek(2)) != "*/") { input.Consume(); }
+                while (!(input.Current == '*' && input.Peek() == '/')) { input.Consume(); }
 
                 // consume the "*/" characters
                 input.Consume(); // should be '*'
                 input.Consume(); // should be '/'
+
+                // consume a token and return it
+                return Consume();
+            }
+
+            if (input.Peek() == '/') {
+
+                // consume charcaters until the two next characters form "//"
+                while (input.Peek() != '\n') { input.Consume(); }
+
+                input.Consume(); // should be '\n'
 
                 // consume a token and return it
                 return Consume();
@@ -247,7 +257,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '&' && input.Peek() == '&') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ input.Consume(), Precedence.LogicalAND, "left", input.Position);
+            current = new OperatorToken(currChar +""+ input.Consume(), Precedence.And, "left", input.Position);
 
             return current;
         }
@@ -256,7 +266,7 @@ public class Tokenizer : IConsumer<Token>
         if (currChar == '|' && input.Peek() == '|') {
 
             // return a new operator token with precedence 5
-            current = new OperatorToken(currChar +""+ input.Consume(), Precedence.LogicalOR, "left", input.Position);
+            current = new OperatorToken(currChar +""+ input.Consume(), Precedence.Or, "left", input.Position);
 
             return current;
         }

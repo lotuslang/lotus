@@ -61,7 +61,7 @@ public class OperationNode : ValueNode
     public OperationNode(Token token, ValueNode[] operands, string opType) : base(token, token)
     {
         this.operands = new List<ValueNode>(operands);
-        this.opType = opType.ToLower();
+        this.opType = opType;
     }
 
     public new string GetFriendlyName()
@@ -175,22 +175,24 @@ public class IdentNode : ValueNode
 
 public class FunctionCallNode : ValueNode
 {
-    protected ValueNode[] parameters;
+    protected List<ValueNode> parameters;
 
-    public ValueNode[] CallingParameters {
-        get => parameters;
+    public ReadOnlyCollection<ValueNode> CallingParameters {
+        get => new ReadOnlyCollection<ValueNode>(parameters);
     }
 
-    protected ValueNode function;
+    protected ValueNode name;
 
-    public ValueNode Function {
-        get => function;
+    public ValueNode FunctionName {
+        get => name;
     }
 
-    public FunctionCallNode(ValueNode[] parameters, ValueNode functionName, Token token) : base(functionName + "(...)", token) {
+    public FunctionCallNode(ValueNode[] parameters, ValueNode functionName, Token token)
+        : base(functionName.Representation + "(...)", token)
+    {
 
-        this.function = functionName;
-        this.parameters = parameters;
+        this.name = functionName;
+        this.parameters = new List<ValueNode>(parameters);
     }
 
     public new string GetFriendlyName()

@@ -13,7 +13,7 @@ public class Parser : IConsumer<StatementNode>
     }
 
     public Location Position {
-        get => tokenizer.Position;
+        get => tokenizer != null ? tokenizer.Position : default(Location);
     }
 
     protected StatementNode current;
@@ -39,8 +39,8 @@ public class Parser : IConsumer<StatementNode>
     public Parser(IConsumer<StatementNode> nodeConsumer) {
         reconsumeQueue = new Queue<StatementNode>();
 
-        while (nodeConsumer.Consume(out _)) {
-            reconsumeQueue.Enqueue(nodeConsumer.Current);
+        while (nodeConsumer.Consume(out StatementNode node)) {
+            reconsumeQueue.Enqueue(node);
         }
     }
 
@@ -50,7 +50,9 @@ public class Parser : IConsumer<StatementNode>
 
     public Parser(System.IO.FileInfo file) : this(new Tokenizer(file)) { }
 
-    public Parser(Parser parser) : this(parser.Tokenizer) { }
+    public Parser(Parser parser) : this(parser.Tokenizer) {
+        this.reconsumeQueue = new Queue<StatementNode>(parser.reconsumeQueue);
+    }
 
     /// <summary>
     /// Reconsumes the last StatementNode object.
@@ -96,11 +98,12 @@ public class Parser : IConsumer<StatementNode>
             return reconsumeQueue.Dequeue();
         }
 
+        if (tokenizer == null) return null;
+
         // Consume a token
         var currToken = tokenizer.Consume();
 
-        // if the token is EOF, return null
-        // TODO: find an alternative to null
+        // if the token is EOF, return ValueNode.NULL
         if (currToken == TokenKind.EOF) return null;
 
         // if the token is ';', return the next statement node
@@ -268,7 +271,7 @@ public class Parser : IConsumer<StatementNode>
 
         if (returnToken != "return") throw new UnexpectedTokenException(returnToken, "in return statement", "return");
 
-        if (tokenizer.Peek() == ";") return new ReturnNode(null, returnToken as ComplexToken);
+        if (tokenizer.Peek() == ";") return new ReturnNode(ValueNode.NULL, returnToken as ComplexToken);
 
         var value = ConsumeValue();
 
@@ -290,6 +293,8 @@ public class Parser : IConsumer<StatementNode>
         }
 
         var left = Constants.GetPrefixParselet(token).Parse(this, token);
+
+        if (tokenizer.Peek() == null) return left as ValueNode;
 
         while (precedence < GetPrecedence(tokenizer.Peek())) {
             token = tokenizer.Consume();

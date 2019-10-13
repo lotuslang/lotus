@@ -58,8 +58,14 @@ public class BoolParselet : IPrefixParselet
 
 public class PrefixOperatorParselet : IPrefixParselet
 {
+    string opType;
+
+    public PrefixOperatorParselet(string operation) {
+        opType = operation;
+    }
+
     public StatementNode Parse(Parser parser, Token token) {
-        return new OperationNode(token, new ValueNode[] { parser.ConsumeValue() }, "prefix");
+        return new OperationNode(token, new ValueNode[] { parser.ConsumeValue() }, "prefix" + opType);
     }
 }
 

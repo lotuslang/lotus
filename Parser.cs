@@ -281,7 +281,7 @@ public class Parser : IConsumer<StatementNode>
     internal ValueNode ConsumeValue(int precedence = 0) {
         var token = tokenizer.Consume();
 
-        if (!token.GetExpressionKind().HasPrefixParselet()) {
+        if (!token.GetExpressionKind().IsPrefixParselet()) {
             throw new UnexpectedTokenException(token,
                 TokenKind.@bool,
                 TokenKind.@operator,
@@ -302,20 +302,13 @@ public class Parser : IConsumer<StatementNode>
             left = Constants.GetOperatorParselet(token).Parse(this, token, left);
         }
 
-        if (tokenizer.Peek() == ",") {
-
-            // consume the remaining ","
-            tokenizer.Consume();
-
-            // then returns the left operand (i.e. the value);
-            return left as ValueNode;
-        }
+        if (tokenizer.Peek() != null && tokenizer.Peek() == ",") tokenizer.Consume();
 
         return left as ValueNode;
     }
 
     private int GetPrecedence(ExpressionKind kind) {
-        if (kind.HasOperatorParselet()) {
+        if (kind.IsOperatorParselet()) {
             return (int)Constants.GetOperatorParselet(kind).Precedence;
         }
 

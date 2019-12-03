@@ -22,10 +22,6 @@ public class StatementNode
         this.token = token;
     }
 
-    public new virtual string ToString() {
-        return rep;
-    }
-
     public virtual string GetFriendlyName()
         => "statement";
 }
@@ -49,10 +45,6 @@ public class AssignmentNode : StatementNode
 
         this.varName = varName;
         this.value = value;
-    }
-
-    public override string ToString() {
-        return varName + " = " + value.ToText();
     }
 
     public new string GetFriendlyName()
@@ -102,10 +94,6 @@ public class DeclarationNode : StatementNode
 
         this.varName = varName;
         this.value = value;
-    }
-
-    public override string ToString() {
-        return "var " + varName + " = " + value.ToText();
     }
 
     public new string GetFriendlyName()

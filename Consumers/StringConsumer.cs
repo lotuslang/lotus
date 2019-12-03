@@ -35,9 +35,7 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        pos.line = 1;
-        pos.column = 1;
-        pos.filename = fileName;
+        pos = new Location(1, 0, fileName);
     }
 
     public StringConsumer(StringConsumer consumer) {
@@ -47,17 +45,13 @@ public class StringConsumer : IConsumer<char>
 
         reconsumeFlag = consumer.reconsumeFlag;
 
-        pos.line = consumer.pos.line;
-        pos.column = consumer.pos.column;
-        pos.filename = consumer.pos.filename;
+        pos = new Location(consumer.pos.line, consumer.pos.column, consumer.pos.filename);
     }
 
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") {
         stack = new Stack<char>(collection.Reverse());
 
-        pos.line = 1;
-        pos.column = 1;
-        pos.filename = fileName;
+        pos = new Location(1, 0, fileName);
     }
 
     public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
@@ -78,9 +72,7 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        pos.line = 1;
-        pos.column = 1;
-        pos.filename = fileName;
+        pos = new Location(1, 0, fileName);
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)
@@ -121,7 +113,7 @@ public class StringConsumer : IConsumer<char>
 
         if (current == '\n') {
             pos.line++;
-            pos.column = 0;
+            pos.column = -1;
         }
 
         pos.column++;

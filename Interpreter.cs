@@ -51,6 +51,12 @@ public class Interpreter
 
     public Interpreter(Interpreter interpreter) : this(interpreter.parser, interpreter.environment) { }
 
+    public void RunAll() {
+        do {
+            Run();
+        } while (environment.GetVariableValue("#return") != null);
+    }
+
     public void Run() {
 
         // if you can't consume a node
@@ -125,113 +131,210 @@ public class Interpreter
         environment.SetVariableValue("#return", null);
     }
 
-    public void RunAll() {
-        do {
-            Run();
-        } while (environment.GetVariableValue("#return") != null);
-    }
 
-    public ValueNode Compute(ValueNode node) {
+    /// <summary>
+    /// Compute a literal value for a ValueNode. If it's a function, calls the function and returns the value.
+    /// </summary>
+    /// <param name="node">The node to compute.</param>
+    /// <returns>A constant value for `node`.</returns>
+    public ValueNode Compute(ValueNode node, bool resolveName = true) {
 
+        // if the node is a number, just return it
         if (node is NumberNode) return node;
 
+        // if the node is a complex string, compute its constant value and return it
         if (node is ComplexStringNode) return ComputeString(node as ComplexStringNode);
 
+        // if the node is a string, just return it
         if (node is StringNode) return node;
 
-        if (node is BoolNode)   return node;
+        // if the node is a boolean, just return it
+        if (node is BoolNode) return node;
 
-        if (node is IdentNode) {
-            if (!environment.HasVariable(node.Representation)) {
-                throw new Exception($"{node.Token.Location} : Variable '{node.Representation}' is not declared in the current scope.");
+        // if the node is an identifier
+        if (node is IdentNode varName) {
+
+            if (!resolveName) return node;
+
+            // if there's no variable with that name, throw
+            if (!environment.HasVariable(varName)) {
+                throw new Exception($"{varName.Token.Location} : Variable '{varName.Representation}' is not declared in the current scope.");
             }
 
-            return environment.GetVariableValue(node.Representation);
+            // otherwise, return the variable's value
+            return environment.GetVariableValue(varName);
         }
 
+        // if the node is a function call, call it and return the returned value
         if (node is FunctionCallNode func) return CallFunction(node as FunctionCallNode);
 
+        // if the node is an operation (oh boy)
         if (node is OperationNode op) {
 
-            if (op.OperationType.StartsWith("unary")) {
+            if (op.OperationType == "arrayAccess") {
 
-                var operand = Compute(op.Operands[0]);
+                if (!(Compute(op.Operands[0], false) is IdentNode arrayName)) throw new Exception("a");
 
-                if (op.OperationType.EndsWith("Not")) {
-                    if (operand is BoolNode boolNode) {
-                        return new BoolNode(!boolNode.Value, boolNode.Token);
-                    }
+                if (!(Compute(op.Operands[1]) is NumberNode index)) throw new Exception("b");
 
-                    throw new InvalidOperationException(op, operand, "boolean");
-                }
+                if (!environment.TryGetVariableValue(arrayName, out ValueNode array)) throw new Exception("c");
 
-                if (op.OperationType.EndsWith("Neg")) {
-                    if (operand is BoolNode boolNode) {
-                        return new BoolNode(!boolNode.Value, boolNode.Token);
-                    }
+                throw new Exception("yay");
+            }
 
-                    if (operand is NumberNode) {
-                        return new NumberNode(-(operand as NumberNode).Value, operand.Token);
-                    }
+            // if the operation is a prefix operation (i.e. the operator is in front of the operand)
+            if (op.OperationType.StartsWith("prefix")) {
 
-                    throw new InvalidOperationException(op, operand, "number");
-                }
-
-                if (op.OperationType.EndsWith("Pos")) {
-                    if (operand is BoolNode boolNode) {
-                        return new BoolNode(boolNode.Value, boolNode.Token);
-                    }
-
-                    if (operand is NumberNode) {
-                        return new NumberNode((operand as NumberNode).Value, operand.Token);
-                    }
-
-                    throw new InvalidOperationException(op, operand, "number");
-                }
-
+                // if the 
                 if (op.OperationType.EndsWith("Incr")) {
+
+                    var variable = Compute(op.Operands[0], false);
+
                     // we can't use `operand` here because it has already been resolved (we applied Compute() to every operand of computedOperands, and `operand` comes from it),
                     // so it will never be IdentNode.
-                    if (op.Operands[0] is IdentNode ident) {
+                    if (variable is IdentNode ident) {
                         if (!environment.HasVariable(ident.Representation)) {
                             //throw new UnknownNameException(ident);
                         }
 
+                        var value = environment.GetVariableValue(ident);
+
                         // Because `operand` value is already resolved, we don't need to get the value of the variable.
-                        if (!(operand is NumberNode)) {
-                            throw new InvalidOperationException(op, operand, "number");
+                        if (!(value is NumberNode)) {
+                            throw new InvalidOperationException(op, value, "number");
                         }
 
-                        var value = environment.GetVariableValue(ident.Representation);
+                        environment.SetVariableValue(ident.Representation, new NumberNode((value as NumberNode).Value + 1, ident.Token));
 
-                        environment.SetVariableValue(ident.Representation, new NumberNode((operand as NumberNode).Value + 1, ident.Token));
-
-                        return value;
+                        return environment.GetVariableValue(ident);
                     }
 
                     throw new InvalidOperationException(op, op.Operands[0], "identifier");
                 }
 
                 if (op.OperationType.EndsWith("Decr")) {
-                    if (operand is IdentNode ident) {
+
+                    var variable = Compute(op.Operands[0], false);
+
+                    if (variable is IdentNode ident) {
                         if (!environment.HasVariable(ident.Representation)) {
                             //throw new UnknownNameException(ident);
                         }
 
-                        if (!(operand is NumberNode)) {
-                            throw new InvalidOperationException(op, operand, "number");
+                        var value = environment.GetVariableValue(ident);
+
+                        if (!(value is NumberNode)) {
+                            throw new InvalidOperationException(op, value, "number");
                         }
 
-                        environment.SetVariableValue(ident.Representation, new NumberNode((operand as NumberNode).Value - 1, ident.Token));
+                        environment.SetVariableValue(ident.Representation, new NumberNode((value as NumberNode).Value - 1, ident.Token));
 
-                        return operand;
+                        return environment.GetVariableValue(ident);
                     }
 
                     throw new InvalidOperationException(op, op.Operands[0], "identifier");
                 }
 
-                // throw if we don't know/support that operation
-                throw new InvalidOperationException(op, operand);
+                // compute the operation's operand
+                var operand = Compute(op.Operands[0]);
+
+                // if the operation is a logical negation ('!' prefix operator)
+                if (op.OperationType.EndsWith("Not")) {
+
+                    // if the operand is a boolean
+                    if (operand is BoolNode boolNode) {
+
+                        // return a boolean with the opposite value (False if the value was True, True if the value was False).
+                        return new BoolNode(!boolNode.Value, boolNode.Token);
+                    }
+
+                    // otherwise throw
+                    throw new InvalidOperationException(op, operand, "boolean");
+                }
+
+                // if the operation is an unary minus ('-' prefix operator)
+                if (op.OperationType.EndsWith("Neg")) {
+
+                    // if the operand is a number
+                    if (operand is NumberNode) {
+
+                        // return the opposite of that number
+                        return new NumberNode(-(operand as NumberNode).Value, operand.Token);
+                    }
+
+                    // otherwise throw
+                    throw new InvalidOperationException(op, operand, "number");
+                }
+
+                // if the operation is an unary positive ('+' prefix operator)
+                if (op.OperationType.EndsWith("Pos")) {
+
+                    // if the operand is a number
+                    if (operand is NumberNode) {
+
+                        // return the same
+                        return operand as NumberNode;
+                    }
+
+                    // otherwise throw
+                    throw new InvalidOperationException(op, operand, "number");
+                }
+            }
+
+            if (op.OperationType.StartsWith("postfix")) {
+
+                // if the
+                if (op.OperationType.EndsWith("Incr")) {
+
+                    var variable = Compute(op.Operands[0], false);
+
+                    // we can't use `operand` here because it has already been resolved (we applied Compute() to every operand of computedOperands, and `operand` comes from it),
+                    // so it will never be IdentNode.
+                    if (variable is IdentNode ident) {
+                        if (!environment.HasVariable(ident.Representation)) {
+                            //throw new UnknownNameException(ident);
+                        }
+
+                        var value = environment.GetVariableValue(ident.Representation);
+
+                        // Because `operand` value is already resolved, we don't need to get the value of the variable.
+                        if (!(value is NumberNode)) {
+                            throw new InvalidOperationException(op, variable, "number");
+                        }
+
+                        environment.SetVariableValue(ident.Representation, new NumberNode((value as NumberNode).Value + 1, ident.Token));
+
+                        return value;
+                    }
+
+                    throw new InvalidOperationException(op, variable, "identifier");
+                }
+
+                if (op.OperationType.EndsWith("Decr")) {
+
+                    var variable = Compute(op.Operands[0], false);
+
+                    if (variable is IdentNode ident) {
+                        if (!environment.HasVariable(ident.Representation)) {
+                            //throw new UnknownNameException(ident);
+                        }
+
+                        var value = environment.GetVariableValue(ident);
+
+                        if (!(value is NumberNode)) {
+                            throw new InvalidOperationException(op, variable, "number");
+                        }
+
+                        environment.SetVariableValue(ident.Representation, new NumberNode((value as NumberNode).Value - 1, ident.Token));
+
+                        return value;
+                    }
+
+                    throw new InvalidOperationException(op, variable, "identifier");
+                }
+
+                // compute the operation's operand
+                var operand = Compute(op.Operands[0]);
             }
 
             if (op.OperationType.StartsWith("binary")) {
@@ -245,7 +348,8 @@ public class Interpreter
                 }*/
 
                 if (op.OperationType.EndsWith("Assign")) {
-                    if (op.Operands[0] is IdentNode variable) {
+
+                    if (Compute(op.Operands[0], false) is IdentNode variable) {
                         if (!environment.HasVariable(variable)) {
                             //throw new UnknownNameException(variable);
                         }
@@ -258,6 +362,10 @@ public class Interpreter
 
                         environment.SetVariableValue(variable, value);
 
+                        return ValueNode.NULL;
+                    }
+
+                    if (op.Operands[0].Representation == "[") {
                         return ValueNode.NULL;
                     }
 
@@ -335,56 +443,6 @@ public class Interpreter
 
     protected StringNode ComputeString(ComplexStringNode node) {
         var str = node.Value;
-
-        // ComplexStringNode are formatted as
-        //      complex_str = ('"' | "'") {{[unicode_char | "{{"]} '{' integer '}' {[unicode_char | "{{"]}};
-        // e.g. "hello {0} ! My name is {1}"
-        // They are formatted by the tokenizer so there shouldn't be any exception to this,
-        // but you never know for sure.
-        //
-        // The integer indicates the index of the section in ComplexStringNode.CodeSections
-
-        /*for (int i = 0; i < str.Length; i++) {
-
-            // if the current character isn't '{', just append it to the output
-            if (str[i] != '{') {
-                strBuilder.Append(str[i]);
-                continue;
-            }
-
-            // if the current index isn't zero
-            if (i != 0) {
-                // and the previous character was a '\', append it to the output
-                if (str[i-1] == '\\') {
-                    strBuilder.Append(str[i]);
-                    continue;
-                }
-            }
-
-            // if the next character is a digit, throw an error
-            if (i + 1 < str.Length && !Char.IsDigit(str[i + 1])) {
-                throw new Exception("This REALLY shouldn't happen");
-            }
-
-            // otherwise, increment i
-            i++;
-
-            // the string to hold the section index
-            var sectionIndexRep = "";
-
-            // while the current character is a digit, append it to sectionIndexRep and increment i
-            while (i < str.Length && Char.IsDigit(str[i])) {
-                sectionIndexRep += str[i++];
-            }
-
-            // parse sectionIndexRep into an integer
-            var sectionIndex = Int32.Parse(sectionIndexRep);
-
-            // append to the output the string representation of the section at index sectionIndex
-            strBuilder.Append(Convert.ToString(Compute(node.CodeSections[sectionIndex])).Value);
-        }*/
-
-        // way simpler -_-
 
         // compute every code section and convert them to a string
         var computedSections = (from section in node.CodeSections

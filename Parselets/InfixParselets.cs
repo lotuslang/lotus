@@ -20,7 +20,7 @@ public class BinaryOperatorParselet : IInfixParselet
     public StatementNode Parse(Parser parser, Token token, StatementNode left) {
         if (token is OperatorToken operatorToken) {
             return new OperationNode(
-                token,
+                operatorToken,
                 new ValueNode[] {
                     left as ValueNode,
                     parser.ConsumeValue((int)precedence - (operatorToken.IsLeftAssociative ? 0 : 1))
@@ -77,6 +77,13 @@ public class ArrayAccessParselet : IInfixParselet
             throw new UnexpectedTokenException(parser.Tokenizer.Current, "]");
         }
 
-        return new OperationNode(token, new ValueNode[] { array as ValueNode, index }, "arrayAccess");
+        return new OperationNode(
+            new OperatorToken('[', Precedence.Array, true, token.Location),
+            new ValueNode[] {
+                array as ValueNode,
+                index
+            },
+            "arrayAccess"
+        );
     }
 }

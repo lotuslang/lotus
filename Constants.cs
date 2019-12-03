@@ -76,6 +76,8 @@ public static class Constants
 
         InAndPostParselets.Add(ExpressionKind.ArrayAccess, new ArrayAccessParselet());
         InAndPostParselets.Add(ExpressionKind.LeftParen, new FuncCallParselet());
+        InAndPostParselets.Add(ExpressionKind.Increment, new PostfixOperatorParselet("Incr"));
+        InAndPostParselets.Add(ExpressionKind.Decrement, new PostfixOperatorParselet("Decr"));
     }
 
     static void RegisterPrefix(ExpressionKind kind, IPrefixParselet parselet)
@@ -163,9 +165,9 @@ public static class Constants
     public static IInfixParselet GetOperatorParselet(Token token)
         => InAndPostParselets[token.GetExpressionKind()];
 
-    public static bool HasPrefixParselet(this ExpressionKind kind)
+    public static bool IsPrefixParselet(this ExpressionKind kind)
         => PreParselets.ContainsKey(kind);
 
-    public static bool HasOperatorParselet(this ExpressionKind kind)
+    public static bool IsOperatorParselet(this ExpressionKind kind)
         => InAndPostParselets.ContainsKey(kind);
 }

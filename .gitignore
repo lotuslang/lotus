@@ -5,5 +5,5 @@
 
 bin/
 
-#Tests.cs
+*.old
 obj/

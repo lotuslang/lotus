@@ -25,19 +25,16 @@ public class ValueNode : StatementNode
 
     public ValueNode(string rep, Token token) : base(rep, token) { }
 
-    /// <summary>
-    /// A human-readable version of this ValueNode
-    /// </summary>
-    /// <returns>Returns a human-friendly string representing this ValueNode</returns>
-    public virtual string ToText()
-        => rep;
-
     public new string GetFriendlyName()
         => "value";
 }
 
 public class OperationNode : ValueNode
 {
+    public new OperatorToken Token {
+        get => token as OperatorToken;
+    }
+
     protected List<ValueNode> operands;
 
     /// <summary>
@@ -58,7 +55,7 @@ public class OperationNode : ValueNode
         get => opType;
     }
 
-    public OperationNode(Token token, ValueNode[] operands, string opType) : base(token, token)
+    public OperationNode(OperatorToken token, ValueNode[] operands, string opType) : base(token, token)
     {
         this.operands = new List<ValueNode>(operands);
         this.opType = opType;

@@ -1,17 +1,19 @@
-var greeting = "Hi";
-var name = "Mark";
+var greeting = "Hi"
 
-print(greeting + ' ' + name + '!');
+var name = "Mark"
 
-greeting = "Hello";
-name = "World";
+print(greeting + ' ' + name + '!')
 
-print(greeting + " " + name);
+greeting = "Hello"
+
+name = "world"
+
+print(greeting + " " + name)
 
 def printError(msg, tk) {
-    var location = tk;
+	var location = tk
 
-    print($"({location}) : {msg}");
+	print($"({location}) : {msg}")
 }
 
-printError("a message", "line 1");
+printError("a message", "line 1")

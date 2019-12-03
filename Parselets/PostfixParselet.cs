@@ -20,11 +20,11 @@ public class PostfixOperatorParselet : IPostfixParselet
     public StatementNode Parse(Parser parser, Token token, StatementNode left) {
         if (token is OperatorToken operatorToken) {
             return new OperationNode(
-                token,
+                operatorToken,
                 new ValueNode[] {
                     left as ValueNode
                 },
-                "unary" + opType
+                "postfix" + opType
             );
         }
 

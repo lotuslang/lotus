@@ -69,7 +69,7 @@ public class Graph
         var strBuilder = new StringBuilder();
 
         // Append the keyword 'diagraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
-        strBuilder.AppendLine("digraph " + name);
+        strBuilder.AppendLine("graph " + name);
         strBuilder.AppendLine("{");
 
         foreach (var property in graphprops) {
@@ -217,7 +217,7 @@ public class GraphNode
         foreach (var child in children)
         {
             // Append the connection of this node (this node's id -> child's id)
-            strBuilder.AppendLine("\t" + id + " -> " + child.id);
+            strBuilder.AppendLine("\t" + id + " -- " + child.id);
 
             // If this child hasn't been registered yet
             if (!registry.Contains(child))

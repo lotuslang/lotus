@@ -278,7 +278,7 @@ public class Parser : IConsumer<StatementNode>
         return new ReturnNode(value, returnToken as ComplexToken);
     }
 
-    internal ValueNode ConsumeValue(int precedence = 0) {
+    internal ValueNode ConsumeValue(Precedence precedence = 0) {
         var token = tokenizer.Consume();
 
         if (!token.GetExpressionKind().IsPrefixParselet()) {
@@ -307,14 +307,14 @@ public class Parser : IConsumer<StatementNode>
         return left as ValueNode;
     }
 
-    private int GetPrecedence(ExpressionKind kind) {
+    private Precedence GetPrecedence(ExpressionKind kind) {
         if (kind.IsOperatorParselet()) {
-            return (int)Constants.GetOperatorParselet(kind).Precedence;
+            return Constants.GetOperatorParselet(kind).Precedence;
         }
 
         return 0;
     }
 
-    private int GetPrecedence(Token token)
+    private Precedence GetPrecedence(Token token)
         => GetPrecedence(token.GetExpressionKind());
 }

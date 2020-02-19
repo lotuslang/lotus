@@ -23,7 +23,7 @@ public class BinaryOperatorParselet : IInfixParselet
                 operatorToken,
                 new ValueNode[] {
                     left as ValueNode,
-                    parser.ConsumeValue((int)precedence - (operatorToken.IsLeftAssociative ? 0 : 1))
+                    parser.ConsumeValue(precedence - (operatorToken.IsLeftAssociative ? 0 : 1))
                 },
                 "binary" + opType
             );

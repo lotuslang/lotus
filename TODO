@@ -1,3 +1,8 @@
 - Finish Parser.ConsumeValue
 - Finish the Parser
 - Handle prefix increment/decrement operators
+
+// TODO: Implement all of Lotus's syntax for the parser (we don't care about the interpreter obviously)
+// Changes from lotus syntax :
+//      - Comments are '//' and '/*' because they can be nested way easily, they are more familiar, and it's just less work for me
+//      - Interpolated strings use $"..." and not `...`

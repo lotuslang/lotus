@@ -177,12 +177,12 @@ public class GraphNode
 
     public GraphNode(string name) : this(new Random().Next(), "\"" + name + "\"") { }
 
-    public GraphNode(int id, string name) : this(id.ToString(), name) { }
+    public GraphNode(int id, string text) : this(id.ToString(), "\"" + text + "\"") { }
 
-    public GraphNode(string id, string name)
+    public GraphNode(string id, string text)
     {
         this.id = id;
-        this.name = name;
+        this.name = text;
         props = new Dictionary<string, string>();
         children = new List<GraphNode>();
     }
@@ -210,7 +210,7 @@ public class GraphNode
         strBuilder.AppendLine($"\n\t{id} [label={name}]");
 
         foreach (var property in props) {
-            strBuilder.AppendLine($"\t{id} [{property.Key}={property.Value}]");
+            strBuilder.AppendLine($"\t{id} [{property.Key}=\"{property.Value}\"]");
         }
 
         // For each node that is a children of this object

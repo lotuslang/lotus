@@ -152,18 +152,12 @@ public class BoolNode : ValueNode
 
 public class IdentNode : ValueNode
 {
-    protected string varName;
 
-    protected ValueNode value;
+    public override string Value { get; }
 
-    public new ValueNode Value {
-        get => value;
-        set => this.value = value;
-    }
-
-    public IdentNode(string varName, Token token) : base(varName, token)
+    public IdentNode(string value, Token token) : base(value, token)
     {
-        this.varName = varName;
+        Value = value;
     }
 
     public new string GetFriendlyName()
@@ -194,4 +188,28 @@ public class FunctionCallNode : ValueNode
 
     public new string GetFriendlyName()
         => "function";
+}
+
+public class ArrayLiteralNode : ValueNode
+{
+    protected List<ValueNode> items;
+
+    public ReadOnlyCollection<ValueNode> Content {
+        get => new ReadOnlyCollection<ValueNode>(items);
+    }
+    public ArrayLiteralNode(ValueNode[] content, Token token) : base(token) {
+        items = new List<ValueNode>(content);
+    }
+}
+
+public class TypeCastNode : ValueNode
+{
+    public ValueNode Type { get; }
+
+    public ValueNode Operand { get; }
+
+    public TypeCastNode(ValueNode type, ValueNode operand) : base(type.Token) {
+        Type = type;
+        Operand = operand;
+    }
 }

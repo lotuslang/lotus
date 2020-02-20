@@ -185,7 +185,7 @@ public class Interpreter
             // if the operation is a prefix operation (i.e. the operator is in front of the operand)
             if (op.OperationType.StartsWith("prefix")) {
 
-                // if the 
+                // if the
                 if (op.OperationType.EndsWith("Incr")) {
 
                     var variable = Compute(op.Operands[0], false);

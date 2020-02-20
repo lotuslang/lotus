@@ -2,32 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum Precedence {
-    Comma = 0,
-    Parenthesis = Comma,
-    Curly = Comma,
-    Assignment = 1,
-    Declaration = Assignment,
-    Or = 2,
-    And = 3,
-    Equal = 4,
-    NotEqual = Equal,
-    LessThan = 5,
-    GreaterThan = LessThan,
-    LessThanOrEqual = LessThan,
-    GreaterThanOrEqual = LessThan,
-    Addition = 6,
-    Substraction = Addition,
-    Multiplication = 7,
-    Division = Multiplication,
-    Modulo = Multiplication,
-    Power = 8,
-    Unary = 9,
-    Access = 10,
-    FuncCall = 11,
-    Array = FuncCall,
-}
-
 public static class Constants
 {
     public static readonly string[] keywords = new string[] {
@@ -53,12 +27,13 @@ public static class Constants
         RegisterPrefix(ExpressionKind.String, new StringParselet());
         RegisterPrefix(ExpressionKind.Identifier, new IdentifierParselet());
         RegisterPrefix(ExpressionKind.Boolean, new BoolParselet());
-        RegisterPrefix(ExpressionKind.LeftParen, new GroupParenParselet());
+        RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParselet());
         RegisterPrefix(ExpressionKind.Plus, new PrefixOperatorParselet("Pos"));
         RegisterPrefix(ExpressionKind.Minus, new PrefixOperatorParselet("Neg"));
         RegisterPrefix(ExpressionKind.Not, new PrefixOperatorParselet("Not"));
         RegisterPrefix(ExpressionKind.Increment, new PrefixOperatorParselet("Incr"));
         RegisterPrefix(ExpressionKind.Decrement, new PrefixOperatorParselet("Decr"));
+        RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParselet());
 
         RegisterInfix(ExpressionKind.Plus, Precedence.Addition, "Add");
         RegisterInfix(ExpressionKind.Minus, Precedence.Substraction, "Sub");
@@ -71,10 +46,10 @@ public static class Constants
         RegisterInfix(ExpressionKind.LessOrEq, Precedence.LessThanOrEqual, "LessOrEq");
         RegisterInfix(ExpressionKind.Greater, Precedence.GreaterThan, "Greater");
         RegisterInfix(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, "GreaterOrEq");
-        //RegisterInfix(ExpressionKind.Access, Precedence.Access, "Access");
+        RegisterInfix(ExpressionKind.Access, Precedence.Access, "Access");
         RegisterInfix(ExpressionKind.Assignment, Precedence.Assignment, "Assign");
 
-        InAndPostParselets.Add(ExpressionKind.ArrayAccess, new ArrayAccessParselet());
+        InAndPostParselets.Add(ExpressionKind.Array, new ArrayAccessParselet());
         InAndPostParselets.Add(ExpressionKind.LeftParen, new FuncCallParselet());
         InAndPostParselets.Add(ExpressionKind.Increment, new PostfixOperatorParselet("Incr"));
         InAndPostParselets.Add(ExpressionKind.Decrement, new PostfixOperatorParselet("Decr"));
@@ -143,9 +118,9 @@ public static class Constants
             case "(":
                 return ExpressionKind.LeftParen;
             case "[":
-                return ExpressionKind.ArrayAccess;
-            /*case ".":
-                return ExpressionKind.Access;*/
+                return ExpressionKind.Array;
+            case ".":
+                return ExpressionKind.Access;
             case "=":
                 return ExpressionKind.Assignment;
         }

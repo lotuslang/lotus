@@ -11,7 +11,7 @@ public enum ExpressionKind
     Multiply,
     Divide,
     Power,
-    ArrayAccess,
+    Array,
     Access,
     Not,
     Eq,

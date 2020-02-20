@@ -2,3 +2,5 @@
 
 *.png binary
 *.jpg binary
+
+*.cs diff=csharp

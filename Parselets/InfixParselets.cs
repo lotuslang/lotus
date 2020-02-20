@@ -43,7 +43,7 @@ public class FuncCallParselet : IInfixParselet
         var args = new List<ValueNode>();
 
         if (!(function is ValueNode)) {
-            throw new ArgumentException(nameof(function) + " needs to be, at least, an expression/value.");
+            throw new ArgumentException(nameof(function) + " needs to be, at least, a value.");
         }
 
         //parser.tokenizer.Consume();
@@ -63,7 +63,7 @@ public class FuncCallParselet : IInfixParselet
 public class ArrayAccessParselet : IInfixParselet
 {
     public Precedence Precedence {
-        get => Precedence.Array;
+        get => Precedence.ArrayAccess;
     }
 
     public StatementNode Parse(Parser parser, Token token, StatementNode array) {
@@ -78,7 +78,7 @@ public class ArrayAccessParselet : IInfixParselet
         }
 
         return new OperationNode(
-            new OperatorToken('[', Precedence.Array, true, token.Location),
+            new OperatorToken('[', Precedence.ArrayAccess, true, token.Location),
             new ValueNode[] {
                 array as ValueNode,
                 index

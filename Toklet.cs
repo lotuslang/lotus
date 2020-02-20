@@ -280,8 +280,16 @@ public class CommentToklet : Toklet
         // and the next character is '*', then it is a limited comment
         if (consumer.Peek() == '*') {
 
+            consumer.Consume();
+
             // consume characters until the two next characters form "*/"
-            while (!(consumer.Current == '*' && consumer.Peek() == '/')) { consumer.Consume(); }
+            while (consumer.Consume(out currChar) && !(currChar == '*' && consumer.Peek() == '/')) {
+                if (currChar == '/' && consumer.Peek() == '*') {
+                    consumer.Reconsume();
+
+                    Consume(consumer, tokenizer);
+                }
+            }
 
             // consume the "*/" characters
             consumer.Consume(); // should be '*'

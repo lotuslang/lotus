@@ -17,9 +17,7 @@ public class ValueNode : StatementNode
     /// The value of this ValueNode
     /// </summary>
     /// <value></value>
-    public virtual string Value {
-        get => rep;
-    }
+    public virtual string Value { get; protected set; }
 
     public ValueNode(Token token) : this(token.Representation, token) { }
 
@@ -32,7 +30,7 @@ public class ValueNode : StatementNode
 public class OperationNode : ValueNode
 {
     public new OperatorToken Token {
-        get => token as OperatorToken;
+        get => Token as OperatorToken;
     }
 
     protected List<ValueNode> operands;
@@ -41,24 +39,20 @@ public class OperationNode : ValueNode
     /// The operands of this operation
     /// </summary>
     /// <value>An array of ValueNode</value>
-    public ValueNode[] Operands {
-        get => operands.ToArray();
+    public ReadOnlyCollection<ValueNode> Operands {
+        get => operands.AsReadOnly();
     }
-
-    protected string opType;
 
     /// <summary>
     /// Indicates what type/kind of operation this object represents.
     /// </summary>
     /// <value>A string representing the type of operation this object represents.</value>
-    public string OperationType {
-        get => opType;
-    }
+    public string OperationType { get; protected set; }
 
-    public OperationNode(OperatorToken token, ValueNode[] operands, string opType) : base(token, token)
+    public OperationNode(OperatorToken token, ValueNode[] operands, string opType) : base(token)
     {
         this.operands = new List<ValueNode>(operands);
-        this.opType = opType;
+        OperationType = opType;
     }
 
     public new string GetFriendlyName()
@@ -67,18 +61,14 @@ public class OperationNode : ValueNode
 
 public class NumberNode : ValueNode
 {
-    protected double value;
-
     /// <summary>
     /// The value of this NumberNode.
     /// </summary>
     /// <value>The number represented by this object.</value>
-    public new double Value {
-        get => value;
-     }
+    public new double Value { get; protected set; }
 
     public NumberNode(double value, Token token) : base(value.ToString(), token) {
-        this.value = value;
+        Value = value;
     }
 
     public NumberNode(NumberToken token) : this(token.Value, token)
@@ -91,19 +81,15 @@ public class NumberNode : ValueNode
 
 public class StringNode : ValueNode
 {
-    protected string value;
-
     /// <summary>
     /// The value of this StringNode.
     /// </summary>
     /// <value>The number represented by this object.</value>
-    public new string Value {
-        get => value;
-    }
+    public new string Value { get; protected set; }
 
     public StringNode(string value, Token token) : base(value, token)
     {
-        this.value = value;
+        Value = value;
     }
 
     public new string GetFriendlyName()
@@ -115,7 +101,7 @@ public class ComplexStringNode : StringNode
     protected List<ValueNode> sections;
 
     public ReadOnlyCollection<ValueNode> CodeSections {
-        get => new ReadOnlyCollection<ValueNode>(sections);
+        get => sections.AsReadOnly();
     }
 
     public ComplexStringNode(ComplexStringToken token, List<ValueNode> codeSections) : base(token.Representation, token) {
@@ -129,19 +115,15 @@ public class ComplexStringNode : StringNode
 
 public class BoolNode : ValueNode
 {
-    protected bool value;
-
     /// <summary>
     /// The value of this StringNode.
     /// </summary>
     /// <value>The number represented by this object.</value>
-    public new bool Value {
-        get => value;
-    }
+    public new bool Value { get; protected set; }
 
     public BoolNode(bool value, Token token) : base(value.ToString().ToLower(), token)
     {
-        this.value = value;
+        Value = value;
     }
 
     public BoolNode(string repr, Token token) : this(repr == "true", token) { }
@@ -153,7 +135,7 @@ public class BoolNode : ValueNode
 public class IdentNode : ValueNode
 {
 
-    public override string Value { get; }
+    public override string Value { get; protected set; }
 
     public IdentNode(string value, Token token) : base(value, token)
     {
@@ -169,20 +151,16 @@ public class FunctionCallNode : ValueNode
     protected List<ValueNode> parameters;
 
     public ReadOnlyCollection<ValueNode> CallingParameters {
-        get => new ReadOnlyCollection<ValueNode>(parameters);
+        get => parameters.AsReadOnly();
     }
 
-    protected ValueNode name;
-
-    public ValueNode FunctionName {
-        get => name;
-    }
+    public ValueNode FunctionName { get; protected set; }
 
     public FunctionCallNode(ValueNode[] parameters, ValueNode functionName, Token token)
         : base(functionName.Representation + "(...)", token)
     {
 
-        this.name = functionName;
+        FunctionName = functionName;
         this.parameters = new List<ValueNode>(parameters);
     }
 
@@ -195,7 +173,7 @@ public class ArrayLiteralNode : ValueNode
     protected List<ValueNode> items;
 
     public ReadOnlyCollection<ValueNode> Content {
-        get => new ReadOnlyCollection<ValueNode>(items);
+        get => items.AsReadOnly();
     }
     public ArrayLiteralNode(ValueNode[] content, Token token) : base(token) {
         items = new List<ValueNode>(content);
@@ -204,12 +182,21 @@ public class ArrayLiteralNode : ValueNode
 
 public class TypeCastNode : ValueNode
 {
-    public ValueNode Type { get; }
+    public ValueNode Type { get; protected set; }
 
-    public ValueNode Operand { get; }
+    public ValueNode Operand { get; protected set; }
 
-    public TypeCastNode(ValueNode type, ValueNode operand) : base(type.Token) {
+    public TypeCastNode(ValueNode type, ValueNode operand, Token token) : base(token) {
         Type = type;
         Operand = operand;
+    }
+}
+
+public class ObjectCreationNode : ValueNode
+{
+    public FunctionCallNode InvocationNode { get; protected set; }
+
+    public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken) : base(newToken) {
+        InvocationNode = invoke;
     }
 }

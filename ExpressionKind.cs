@@ -26,4 +26,5 @@ public enum ExpressionKind
     Increment,
     Decrement,
     Assignment,
+    New,
 }

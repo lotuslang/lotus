@@ -15,3 +15,8 @@ public interface IInfixParselet
 
 public interface IPostfixParselet : IInfixParselet
 { }
+
+public interface IStatementParselet
+{
+    StatementNode Parse(Parser parser, Token token);
+}

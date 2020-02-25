@@ -1,20 +1,14 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 public class PostfixOperatorParselet : IPostfixParselet
 {
-    Precedence precedence;
+    public Precedence Precedence { get; }
 
-    public Precedence Precedence {
-        get => precedence;
-    }
-
-    string opType;
+    readonly string opType;
 
     public PostfixOperatorParselet(string operation) {
-        this.precedence = Precedence.Unary;
-        this.opType = operation;
+        Precedence = Precedence.Unary;
+        opType = operation;
     }
 
     public StatementNode Parse(Parser parser, Token token, StatementNode left) {

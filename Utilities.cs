@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public static class Constants
+public static class Utilities
 {
     public static readonly string[] keywords = new string[] {
         "var",
@@ -22,11 +22,11 @@ public static class Constants
     static readonly Dictionary<ExpressionKind, IInfixParselet> InAndPostParselets = new Dictionary<ExpressionKind, IInfixParselet>();
 
 
-    static Constants() {
-        RegisterPrefix(ExpressionKind.Number, new NumberParselet());
-        RegisterPrefix(ExpressionKind.String, new StringParselet());
+    static Utilities() {
+        RegisterPrefix(ExpressionKind.Number, new NumberLiteralParselet());
+        RegisterPrefix(ExpressionKind.String, new StringLiteralParselet());
         RegisterPrefix(ExpressionKind.Identifier, new IdentifierParselet());
-        RegisterPrefix(ExpressionKind.Boolean, new BoolParselet());
+        RegisterPrefix(ExpressionKind.Boolean, new BoolLiteralParselet());
         RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParselet());
         RegisterPrefix(ExpressionKind.Plus, new PrefixOperatorParselet("Pos"));
         RegisterPrefix(ExpressionKind.Minus, new PrefixOperatorParselet("Neg"));
@@ -34,6 +34,7 @@ public static class Constants
         RegisterPrefix(ExpressionKind.Increment, new PrefixOperatorParselet("Incr"));
         RegisterPrefix(ExpressionKind.Decrement, new PrefixOperatorParselet("Decr"));
         RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParselet());
+        RegisterPrefix(ExpressionKind.New, new ObjectCreationParselet());
 
         RegisterInfix(ExpressionKind.Plus, Precedence.Addition, "Add");
         RegisterInfix(ExpressionKind.Minus, Precedence.Substraction, "Sub");
@@ -49,10 +50,11 @@ public static class Constants
         RegisterInfix(ExpressionKind.Access, Precedence.Access, "Access");
         RegisterInfix(ExpressionKind.Assignment, Precedence.Assignment, "Assign");
 
+        RegisterPostfix(ExpressionKind.Increment, "Incr");
+        RegisterPostfix(ExpressionKind.Decrement, "Decr");
+
         InAndPostParselets.Add(ExpressionKind.Array, new ArrayAccessParselet());
         InAndPostParselets.Add(ExpressionKind.LeftParen, new FuncCallParselet());
-        InAndPostParselets.Add(ExpressionKind.Increment, new PostfixOperatorParselet("Incr"));
-        InAndPostParselets.Add(ExpressionKind.Decrement, new PostfixOperatorParselet("Decr"));
     }
 
     static void RegisterPrefix(ExpressionKind kind, IPrefixParselet parselet)
@@ -123,6 +125,8 @@ public static class Constants
                 return ExpressionKind.Access;
             case "=":
                 return ExpressionKind.Assignment;
+            case "new":
+                return ExpressionKind.New;
         }
 
         return ExpressionKind.NotAnExpr;
@@ -145,4 +149,21 @@ public static class Constants
 
     public static bool IsOperatorParselet(this ExpressionKind kind)
         => InAndPostParselets.ContainsKey(kind);
+
+    public static bool IsName(ValueNode node) {
+        if (node is IdentNode) return true;
+
+        if (node is OperationNode op && op.OperationType == "binaryAccess") {
+            if (op.Operands.Count != 2) return false;
+
+            // we only need to check the left-hand operand, because we know the right-hand operand
+            // is an IdentNode, because an access operation is defined as :
+            //  access-operation :
+            //      value '.' identifier
+            // hence, the left-hand side
+            return IsName(op.Operands[0]);
+        }
+
+        return false;
+    }
 }

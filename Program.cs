@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 class Program
@@ -8,7 +8,7 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/sample.txt"));
 
-        tokenizer = new Tokenizer("hello(a, 96, (pi * 2 * r))");
+        //tokenizer = new Tokenizer("hello(a, 96, (pi * 2 * r))");
 
         var parser = new Parser(tokenizer);
 

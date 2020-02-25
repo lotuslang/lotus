@@ -39,7 +39,7 @@ public class Consumer<T> : IConsumer<T>
 
     public bool Consume(out T item) {
         if (stack.Count == 0) {
-            current = item = default(T);
+            current = item = default;
             return false;
         }
 
@@ -49,7 +49,7 @@ public class Consumer<T> : IConsumer<T>
 
     public T Consume() {
         if (stack.Count == 0) {
-            current = default(T);
+            current = default;
             return current;
         }
 

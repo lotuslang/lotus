@@ -5,22 +5,17 @@ using System.Collections.ObjectModel;
 
 public class StatementNode
 {
-    protected Token token;
+    public Token Token { get; protected set; }
 
-    public Token Token {
-        get => token;
-    }
-
-    protected string rep;
-
-    public string Representation {
-        get => rep;
-    }
+    public string Representation { get; protected set; }
 
     public StatementNode(string representation, Token token) {
-        rep = representation;
-        this.token = token;
+        Representation = representation;
+        Token = token;
     }
+
+    public StatementNode(Token token) : this(token.Representation, token)
+        { }
 
     public virtual string GetFriendlyName()
         => "statement";
@@ -28,23 +23,15 @@ public class StatementNode
 
 public class AssignmentNode : StatementNode
 {
-    protected ValueNode value;
+    public ValueNode Value { get; protected set; }
 
-    public ValueNode Value {
-        get => value;
-    }
+    public ComplexToken Name { get; protected set; }
 
-    protected ComplexToken varName;
-
-    public ComplexToken Name {
-        get => varName;
-    }
-
-    public AssignmentNode(ValueNode value, ComplexToken varName) : base(varName , varName) {
+    public AssignmentNode(ValueNode value, ComplexToken varName) : base(varName) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
-        this.varName = varName;
-        this.value = value;
+        Name = varName;
+        Value = value;
     }
 
     public new string GetFriendlyName()
@@ -53,22 +40,14 @@ public class AssignmentNode : StatementNode
 
 public class ReturnNode : StatementNode
 {
-    protected ValueNode value;
+    public ValueNode Value { get; protected set; }
 
-    public ValueNode Value {
-        get => value;
-    }
+    public bool IsReturningValue { get; protected set; }
 
-    protected bool isReturningValue;
+    public ReturnNode(ValueNode value, ComplexToken returnToken) : base(returnToken) {
+        IsReturningValue = value == null;
 
-    public bool IsReturningValue {
-        get => isReturningValue;
-    }
-
-    public ReturnNode(ValueNode value, ComplexToken returnToken) : base(returnToken, returnToken) {
-        isReturningValue = value == null;
-
-        this.value = value;
+        Value = value;
     }
 
     public new string GetFriendlyName()
@@ -77,23 +56,15 @@ public class ReturnNode : StatementNode
 
 public class DeclarationNode : StatementNode
 {
-    protected ValueNode value;
+    public ValueNode Value { get; protected set; }
 
-    public ValueNode Value {
-        get => value;
-    }
-
-    protected ComplexToken varName;
-
-    public ComplexToken Name {
-        get => varName;
-    }
+    public ComplexToken Name { get; protected set; }
 
     public DeclarationNode(ValueNode value, ComplexToken varName) : base("var", varName) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
-        this.varName = varName;
-        this.value = value;
+        Name = varName;
+        Value = value;
     }
 
     public new string GetFriendlyName()
@@ -103,11 +74,8 @@ public class DeclarationNode : StatementNode
 public class FunctionDeclarationNode : DeclarationNode
 {
     internal bool isInternal = false;
-    protected new SimpleBlock value;
 
-    public new SimpleBlock Value {
-        get => value;
-    }
+    public new SimpleBlock Value { get; protected set; }
 
     protected List<ComplexToken> parameters;
 
@@ -118,7 +86,7 @@ public class FunctionDeclarationNode : DeclarationNode
     public FunctionDeclarationNode(SimpleBlock value, ComplexToken[] parameters, ComplexToken functionName) : base(new ValueNode("block", functionName), functionName) {
         if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (declaration)");
 
-        this.value = value;
+        Value = value;
         this.parameters = new List<ComplexToken>(parameters);
     }
 
@@ -126,12 +94,50 @@ public class FunctionDeclarationNode : DeclarationNode
         => "function declaration";
 }
 
+public class NamespaceNode : StatementNode
+{
+    public ValueNode NamespaceName { get; protected set; }
+
+    public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken) : base(namespaceToken) {
+        NamespaceName = namespaceName;
+    }
+}
+
+public class ImportNode : StatementNode
+{
+    public ReadOnlyCollection<ValueNode> ImportsName { get; protected set; }
+
+    public FromNode FromStatement { get; protected set; }
+
+    public ImportNode(IEnumerable<ValueNode> imports, FromNode from, ComplexToken importToken) : base(importToken) {
+        ImportsName = imports.ToList().AsReadOnly();
+        FromStatement = from;
+    }
+}
+
+public class FromNode : StatementNode
+{
+    // private protected : variable is accessible only to this class or derived classes within this assembly
+    // (basically what i thought protected internal did)
+    internal bool IsInternalOrigin { get; private protected set; }
+
+    public ValueNode OriginName { get; protected set; }
+
+    public FromNode(StringNode originName, ComplexToken fromToken) : this(originName, fromToken, false)
+        { }
+
+    internal FromNode(ValueNode originName, ComplexToken fromToken, bool isInternal) : base(fromToken) {
+        OriginName = originName;
+        IsInternalOrigin = isInternal;
+    }
+}
+
 public class SimpleBlock
 {
     protected List<StatementNode> content;
 
     public ReadOnlyCollection<StatementNode> Content {
-        get => new ReadOnlyCollection<StatementNode>(content);
+        get => content.AsReadOnly();
     }
 
     public SimpleBlock(StatementNode[] content) {

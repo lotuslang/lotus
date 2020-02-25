@@ -1,19 +1,14 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 public class BinaryOperatorParselet : IInfixParselet
 {
-    Precedence precedence;
+    public Precedence Precedence { get; }
 
-    public Precedence Precedence {
-        get => precedence;
-    }
-
-    string opType;
+    readonly string opType;
 
     public BinaryOperatorParselet(Precedence precedence, string operation) {
-        this.precedence = precedence;
+        Precedence = precedence;
         opType = operation;
     }
 
@@ -23,7 +18,7 @@ public class BinaryOperatorParselet : IInfixParselet
                 operatorToken,
                 new ValueNode[] {
                     left as ValueNode,
-                    parser.ConsumeValue(precedence - (operatorToken.IsLeftAssociative ? 0 : 1))
+                    parser.ConsumeValue(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1))
                 },
                 "binary" + opType
             );
@@ -39,24 +34,17 @@ public class FuncCallParselet : IInfixParselet
         get => Precedence.FuncCall;
     }
 
-    public StatementNode Parse(Parser parser, Token token, StatementNode function) {
-        var args = new List<ValueNode>();
+    public StatementNode Parse(Parser parser, Token leftParen, StatementNode function) {
 
         if (!(function is ValueNode)) {
             throw new ArgumentException(nameof(function) + " needs to be, at least, a value.");
         }
 
-        //parser.tokenizer.Consume();
+        parser.Tokenizer.Reconsume();
 
-        if (parser.Tokenizer.Peek() != ")") {
-            do {
-                args.Add(parser.ConsumeValue());
-            } while (parser.Tokenizer.Peek() != ")");
-        }
+        var args = parser.ConsumeCommaSeparatedList("(", ")");
 
-        parser.Tokenizer.Consume(); // the remaining ')'
-
-        return new FunctionCallNode(args.ToArray(), function as ValueNode, token);
+        return new FunctionCallNode(args, function as ValueNode, leftParen);
     }
 }
 
@@ -66,7 +54,7 @@ public class ArrayAccessParselet : IInfixParselet
         get => Precedence.ArrayAccess;
     }
 
-    public StatementNode Parse(Parser parser, Token token, StatementNode array) {
+    public StatementNode Parse(Parser parser, Token leftSquareBracket, StatementNode array) {
         if (!(array is ValueNode)) {
             throw new ArgumentException(nameof(array) + " needs to be, at least, an expression/value.");
         }
@@ -78,7 +66,7 @@ public class ArrayAccessParselet : IInfixParselet
         }
 
         return new OperationNode(
-            new OperatorToken('[', Precedence.ArrayAccess, true, token.Location),
+            new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracket.Location),
             new ValueNode[] {
                 array as ValueNode,
                 index

@@ -1,8 +1,20 @@
-- Finish Parser.ConsumeValue
-- Finish the Parser
-- Handle prefix increment/decrement operators
-
 // TODO: Implement all of Lotus's syntax for the parser (we don't care about the interpreter obviously)
-// Changes from lotus syntax :
+// Changes from lotus syntax (for now) :
 //      - Comments are '//' and '/*' because they can be nested way easily, they are more familiar, and it's just less work for me
 //      - Interpolated strings use $"..." and not `...`
+
+// TODO: Write actual exceptions instead on throwing just new Exception()s (about 52 basic Exceptions in total, of which 14 are empty)
+//
+// TODO: Iron out the details, for example, in the Parselets' Parse(...) methods, we need to choose if we prefer to name the token
+// parameter directly and then do some checks on it, even though that could sometimes mean that we would need to convert multiple times
+// for multiple reasons. Or, we could choose to take a more generic name for the token passed as parameter at first, and then we do
+// usual checks like `is ComplexToken <token_name>` where we replace <token_name> by the actual name of the token.
+//
+// Other thing to check : is style consistent for things like ReadOnlyCollection-s ? List<T> vs T[] ? Property + backing field vs auto-property ?
+//
+// TODO: Last one. Do we keep the Toklets inside the Tokenizer, or do we put them in another class, like for the Parselets and Parser.
+// Maybe we could do the opposite and put the Parselets back *into* the Parser class ?
+//
+// TODO: Also, do we change Utilities.IsName(ValueNode) to ValueNode.IsName() with an extension method ?
+//
+// TODO: Also, we need to get every parselet into its own file, and "categories" of parselets can be organized into folders

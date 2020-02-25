@@ -459,7 +459,7 @@ public class Interpreter
                           select Compute(parameter)).ToArray();
 
         // if the function is an internal function
-        if (Constants.internalFunctions.Contains(node.FunctionName.Representation)) {
+        if (Utilities.internalFunctions.Contains(node.FunctionName.Representation)) {
 
             // the name of the function
             var funcName = node.FunctionName.Representation;

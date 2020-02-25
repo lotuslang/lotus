@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public class Tokenizer : IConsumer<Token>
 {
 
-    private List<Toklet> toklets;
+    private readonly List<Toklet> toklets;
 
     private Token current;
 
@@ -29,15 +29,15 @@ public class Tokenizer : IConsumer<Token>
 
         current = new Token('\0', TokenKind.delim, default(Location));
 
-        toklets = new List<Toklet>();
-
-        toklets.Add(new NumberToklet());
-        toklets.Add(new ComplexStringToklet());
-        toklets.Add(new StringToklet());
-        toklets.Add(new IdentToklet());
-        toklets.Add(new CommentToklet());
-        toklets.Add(new OperatorToklet());
-        toklets.Add(new Toklet());
+        toklets = new List<Toklet> {
+            new NumberToklet(),
+            new ComplexStringToklet(),
+            new StringToklet(),
+            new IdentToklet(),
+            new CommentToklet(),
+            new OperatorToklet(),
+            new Toklet(),
+        };
     }
 
     public Tokenizer(StringConsumer stringConsumer) : this () {
@@ -158,7 +158,7 @@ public class Tokenizer : IConsumer<Token>
         }
 
         // if the identifier is a keyword
-        if (Constants.keywords.Contains(name)) {
+        if (Utilities.keywords.Contains(name)) {
 
             // return the same token but with a kind of TokenKind.keyword
             return new ComplexToken(name, TokenKind.keyword, name.Location);

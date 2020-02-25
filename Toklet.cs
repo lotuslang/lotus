@@ -7,7 +7,7 @@ public class Toklet
     protected virtual Predicate<IConsumer<char>> condition
         => new Predicate<IConsumer<char>>(consumer => true);
 
-    public Predicate<IConsumer<char>> Condition => this.condition;
+    public Predicate<IConsumer<char>> Condition => condition;
 
     public virtual Token Consume(IConsumer<char> consumer, Tokenizer tokenizer)
         => new Token(consumer.Consume(), TokenKind.delim, consumer.Position);

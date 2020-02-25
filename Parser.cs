@@ -8,12 +8,12 @@ public class Parser : IConsumer<StatementNode>
 
     private IConsumer<Token> tokenizer;
 
-    internal IConsumer<Token> Tokenizer {
+    public IConsumer<Token> Tokenizer {
         get => tokenizer;
     }
 
     public Location Position {
-        get => tokenizer != null ? tokenizer.Position : default(Location);
+        get => tokenizer != null ? tokenizer.Position : default;
     }
 
     protected StatementNode current;
@@ -32,7 +32,7 @@ public class Parser : IConsumer<StatementNode>
     }
 
     public Parser(IConsumer<Token> tokenConsumer) {
-        this.tokenizer = tokenConsumer;
+        tokenizer = tokenConsumer;
         reconsumeQueue = new Queue<StatementNode>();
     }
 
@@ -51,7 +51,7 @@ public class Parser : IConsumer<StatementNode>
     public Parser(System.IO.FileInfo file) : this(new Tokenizer(file)) { }
 
     public Parser(Parser parser) : this(parser.Tokenizer) {
-        this.reconsumeQueue = new Queue<StatementNode>(parser.reconsumeQueue);
+        reconsumeQueue = new Queue<StatementNode>(parser.reconsumeQueue);
     }
 
     /// <summary>
@@ -98,7 +98,10 @@ public class Parser : IConsumer<StatementNode>
             return reconsumeQueue.Dequeue();
         }
 
-        if (tokenizer == null) return null;
+        if (tokenizer == null) {
+            Console.WriteLine("wtf the tokenizer is null ?????");
+            return null;
+        }
 
         // Consume a token
         var currToken = tokenizer.Consume();
@@ -109,14 +112,13 @@ public class Parser : IConsumer<StatementNode>
         // if the token is ';', return the next statement node
         if (currToken == ";") return Consume();
 
+        // TODO: This whole thing is now a giant switch, just need to changte that, shouldn't take too long
+
         // if the token is "var"
         if (currToken == "var") {
 
-            // reconsume it
-            tokenizer.Reconsume();
-
             // consume a declaration and return it
-            current = ConsumeDeclaration();
+            current = new DeclarationParselet().Parse(this, currToken);
 
             return current;
         }
@@ -124,33 +126,26 @@ public class Parser : IConsumer<StatementNode>
         // if the token is "new"
         if (currToken == "new") {
 
-            // reconsume it
-            tokenizer.Reconsume();
-
-            // consume a value and return it (since an object instantiation is just a fancy function call, and function calls can be parsed as values)
-            current = ConsumeValue();
+            current = new ObjectCreationParselet().Parse(this, currToken);
 
             return current;
         }
 
         // if the token is "def"
         if (currToken == "def") {
-
-            // reconsume it
-            tokenizer.Reconsume();
-
-            // consume a function declaration and return it
-            current = ConsumeFunctionDeclaration();
+            current = new FunctionDeclarationParselet().Parse(this, currToken);
 
             return current;
         }
 
         if (currToken == "return") {
+            current = new ReturnParselet().Parse(this, currToken);
 
-            // reconsume it
-            tokenizer.Reconsume();
+            return current;
+        }
 
-            current = ConsumeReturn();
+        if (currToken == "from") {
+            current = new ImportParselet().Parse(this, currToken);
 
             return current;
         }
@@ -162,89 +157,7 @@ public class Parser : IConsumer<StatementNode>
         return current;
     }
 
-    protected DeclarationNode ConsumeDeclaration() {
-
-        // consume the keyword "var" token
-        var varKeyword = tokenizer.Consume();
-
-        // if the token isn't the keyword "var", throw an exception
-        if (varKeyword != "var") throw new UnexpectedTokenException(varKeyword, "in declaration", "var");
-
-        // consume the name of the variable we're declaring
-        var name = tokenizer.Consume();
-
-        // if the token isn't an identifier, throw an exception
-        if (name != TokenKind.ident) throw new UnexpectedTokenException(name, TokenKind.ident);
-
-        // consume a token
-        var equalSign = tokenizer.Consume();
-
-        // if this token wasn't an equal sign, throw an exception
-        if (equalSign != "=") throw new UnexpectedTokenException(equalSign, "=");
-
-        // consume a ValueNode (which is the value of the variable we're declaring)
-        var value = ConsumeValue();
-
-        // return that value
-        return new DeclarationNode(value, name as ComplexToken);
-    }
-
-    protected FunctionDeclarationNode ConsumeFunctionDeclaration() {
-
-        // consume the keyword "def" token
-        var defKeyword = tokenizer.Consume();
-
-        // if the token consumed was not "def", then throw an exception
-        if (defKeyword != "def") throw new UnexpectedTokenException("A function definition must start with the keyword 'def'", defKeyword);
-
-        // consume the name of the function
-        var funcName = tokenizer.Consume();
-
-        // if the token consumed was not an identifier, then throw an exception
-        if (funcName != TokenKind.ident) throw new UnexpectedTokenException(funcName, "in function declaration", TokenKind.ident);
-
-        // the list of the parameters the function has
-        var parameters = new List<ComplexToken>();
-
-        // consume a token
-        var parenthesis = tokenizer.Consume();
-
-        // if it wasn't an open parenthesis, throw an exception
-        if (parenthesis != "(") throw new UnexpectedTokenException(parenthesis, "in function declaration", "(");
-
-        // consume a token
-        var paramName = tokenizer.Consume();
-
-        // while this token is not a parenthesis
-        while (paramName != ")") {
-
-            // if the token is not an identifier, throw an exception
-            if (paramName != TokenKind.ident) throw new UnexpectedTokenException(paramName, "in function argument declaration", TokenKind.ident);
-
-            // add the parameter (as a ComplexToken) to the list of parameters
-            parameters.Add(paramName as ComplexToken);
-
-            // consume a token
-            var comma = tokenizer.Consume();
-
-            // if the token was a closing parenthesis, break out
-            if (comma == ")") break;
-
-            // if the token was not a comma, throw an exception
-            if (comma != ",") throw new UnexpectedTokenException(comma, "in function argument declaration", ",");
-
-            // assign paramName to a new token
-            paramName = tokenizer.Consume();
-        }
-
-        // consume a simple block
-        var block = ConsumeSimpleBlock();
-
-        // return a new FunctionDeclarationNode with 'block' as the value, 'parameters' as the list of params, and funcName as the name
-        return new FunctionDeclarationNode(block, parameters.ToArray(), funcName as ComplexToken);
-    }
-
-    protected SimpleBlock ConsumeSimpleBlock() {
+    public SimpleBlock ConsumeSimpleBlock() {
 
         var bracket = tokenizer.Consume();
 
@@ -266,19 +179,7 @@ public class Parser : IConsumer<StatementNode>
         return new SimpleBlock(statements.ToArray());
     }
 
-    protected ReturnNode ConsumeReturn() {
-        var returnToken = tokenizer.Consume();
-
-        if (returnToken != "return") throw new UnexpectedTokenException(returnToken, "in return statement", "return");
-
-        if (tokenizer.Peek() == ";") return new ReturnNode(ValueNode.NULL, returnToken as ComplexToken);
-
-        var value = ConsumeValue();
-
-        return new ReturnNode(value, returnToken as ComplexToken);
-    }
-
-    internal ValueNode ConsumeValue(Precedence precedence = 0) {
+    public ValueNode ConsumeValue(Precedence precedence = 0) {
         var token = tokenizer.Consume();
 
         if (!token.GetExpressionKind().IsPrefixParselet()) {
@@ -292,24 +193,46 @@ public class Parser : IConsumer<StatementNode>
             );
         }
 
-        var left = Constants.GetPrefixParselet(token).Parse(this, token);
+        var left = Utilities.GetPrefixParselet(token).Parse(this, token);
 
         if (tokenizer.Peek() == null) return left as ValueNode;
 
         while (precedence < GetPrecedence(tokenizer.Peek())) {
             token = tokenizer.Consume();
 
-            left = Constants.GetOperatorParselet(token).Parse(this, token, left);
+            left = Utilities.GetOperatorParselet(token).Parse(this, token, left);
         }
-
-        if (tokenizer.Peek() != null && tokenizer.Peek() == ",") tokenizer.Consume();
 
         return left as ValueNode;
     }
 
+    public ValueNode[] ConsumeCommaSeparatedList(string start, string end) {
+        var startingDelimiter = tokenizer.Consume();
+
+        var items = new List<ValueNode>();
+
+        if (startingDelimiter.Representation != start) {
+            throw new UnexpectedTokenException(startingDelimiter, "in comma-separated list", start);
+        }
+
+        while (tokenizer.Peek() != end) {
+            items.Add(ConsumeValue());
+
+            if (!tokenizer.Consume(out Token currToken) || currToken == end) {
+                break;
+            }
+
+            if (currToken != ",") {
+                throw new UnexpectedTokenException(currToken, "in comma-separated list", ",");
+            }
+        }
+
+        return items.ToArray();
+    }
+
     private Precedence GetPrecedence(ExpressionKind kind) {
         if (kind.IsOperatorParselet()) {
-            return Constants.GetOperatorParselet(kind).Precedence;
+            return Utilities.GetOperatorParselet(kind).Precedence;
         }
 
         return 0;

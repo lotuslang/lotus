@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public class NumberParselet : IPrefixParselet
+public class NumberLiteralParselet : IPrefixParselet
 {
-    public StatementNode Parse(Parser parser, Token token) {
+    public StatementNode Parse(Parser _, Token token) {
         if (token is NumberToken number) {
             return new NumberNode(number);
         }
@@ -15,7 +15,7 @@ public class NumberParselet : IPrefixParselet
 
 public class IdentifierParselet : IPrefixParselet
 {
-    public StatementNode Parse(Parser parser, Token token) {
+    public StatementNode Parse(Parser _, Token token) {
         if (token.Kind == TokenKind.ident) {
             return new IdentNode(token.Representation, token);
         }
@@ -24,9 +24,9 @@ public class IdentifierParselet : IPrefixParselet
     }
 }
 
-public class StringParselet : IPrefixParselet
+public class StringLiteralParselet : IPrefixParselet
 {
-    public StatementNode Parse(Parser parser, Token token) {
+    public StatementNode Parse(Parser _, Token token) {
         if (token.Kind == TokenKind.@string) {
             return new StringNode(token.Representation, token);
         }
@@ -45,9 +45,9 @@ public class StringParselet : IPrefixParselet
     }
 }
 
-public class BoolParselet : IPrefixParselet
+public class BoolLiteralParselet : IPrefixParselet
 {
-    public StatementNode Parse(Parser parser, Token token) {
+    public StatementNode Parse(Parser _, Token token) {
         if (token is BoolToken boolean) {
             return new BoolNode(boolean.Value, boolean);
         }
@@ -58,7 +58,7 @@ public class BoolParselet : IPrefixParselet
 
 public class PrefixOperatorParselet : IPrefixParselet
 {
-    string opType;
+    readonly string opType;
 
     public PrefixOperatorParselet(string operation) {
         opType = operation;
@@ -67,31 +67,9 @@ public class PrefixOperatorParselet : IPrefixParselet
     public StatementNode Parse(Parser parser, Token token) {
         return new OperationNode(token as OperatorToken, new ValueNode[] { parser.ConsumeValue(Precedence.Unary) }, "prefix" + opType);
     }
-}
-
-public class ArrayLiteralParselet : IPrefixParselet
+}public class LeftParenParselet : IPrefixParselet
 {
-    public StatementNode Parse(Parser parser, Token token) {
-
-        if (token != "[") throw new ArgumentException(nameof(token) + " needs to be a '[' (left square bracket).");
-
-        var values = new List<ValueNode>();
-
-        if (parser.Tokenizer.Peek() != "]") {
-            do {
-                values.Add(parser.ConsumeValue());
-            } while (parser.Tokenizer.Peek() != "]");
-        }
-
-        parser.Tokenizer.Consume();
-
-        return new ArrayLiteralNode(values.ToArray(), token);
-    }
-}
-
-public class LeftParenParselet : IPrefixParselet
-{
-    public StatementNode Parse(Parser parser, Token token) {
+    public StatementNode Parse(Parser parser, Token parenToken) {
         // This one is a bit tricky : when we have a left parenthesis, it could either be a type cast,
         // or a grouping parenthesis. For example, we need to differentiate between those two expressions :
         // (char)0
@@ -120,7 +98,7 @@ public class LeftParenParselet : IPrefixParselet
         //
         //
         // access-operation :
-        //      value '.' (identifier | access-operation)
+        //      value '.' identifier
         //
         // type-name :
         //        identifier
@@ -146,24 +124,54 @@ public class LeftParenParselet : IPrefixParselet
 
         var value = parser.ConsumeValue();
 
-        // if the value is an identifier or an access operation, parse it as a type-cast expression
-
         // if the next token isn't a right/closing parenthesis, throw an error
         if (parser.Tokenizer.Consume() != ")") {
             throw new UnexpectedTokenException(parser.Tokenizer.Current, ")");
         }
 
-        if (value is IdentNode typeName) {
-            return new TypeCastNode(typeName, parser.ConsumeValue(Precedence.TypeCast));
-        }
-
-        if (value is OperationNode op && op.OperationType == "binaryAccess") {
-            return new TypeCastNode(op, parser.ConsumeValue(Precedence.TypeCast));
+        // if the value is a name (an identifier or an access operation), parse it as a type-cast expression
+        if (Utilities.IsName(value)) {
+            return new TypeCastNode(value, parser.ConsumeValue(Precedence.TypeCast), parenToken);
         }
 
         // otherwise, parse it as a grouping parenthesis expression
         // (which is just returning the value)
 
         return value;
+    }
+}
+
+public class ArrayLiteralParselet : IPrefixParselet
+{
+    public StatementNode Parse(Parser parser, Token token) {
+
+        if (token != "[") throw new ArgumentException(nameof(token) + " needs to be a '[' (left square bracket).");
+
+        parser.Tokenizer.Reconsume();
+
+        var values = parser.ConsumeCommaSeparatedList("[", "]");
+
+        return new ArrayLiteralNode(values, token);
+    }
+}
+
+
+public class ObjectCreationParselet : IPrefixParselet
+{
+    public StatementNode Parse(Parser parser, Token newKeyword) {
+
+        // if the token isn't the keyword "new", throw an exception
+        if (newKeyword != "new") throw new UnexpectedTokenException(newKeyword, "in object initialization", "new");
+
+        // basically, since a constructor invocation is basically just a function call preceded by the 'new' keyword
+        // we can parse just eat the keyword and parse the rest as a function call, no need to write twice a code
+        // that is so similar and essential
+        var invoc = parser.ConsumeValue();
+
+        if (invoc is FunctionCallNode call) {
+            return new ObjectCreationNode(call, newKeyword as ComplexToken);
+        }
+
+        throw new Exception();
     }
 }

@@ -16,3 +16,15 @@
 // Maybe we could do the opposite and put the Parselets back *into* the Parser class ?
 //
 // TODO: Also, do we change Utilities.IsName(ValueNode) to ValueNode.IsName() with an extension method ?
+//
+// TODO:
+//      - foreach/in
+//      - for
+//      - class/interface/extends
+//      - break/continue
+//      - while/do
+//      - if/else
+//
+// TODO: Extract *Nodes in their own files
+//
+// TODO: Add ToGraphNode()s for TriviaTokens

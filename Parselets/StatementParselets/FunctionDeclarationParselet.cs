@@ -24,6 +24,9 @@ public class FunctionDeclarationParselet : IStatementParselet
         var block = parser.ConsumeSimpleBlock();
 
         // return a new FunctionDeclarationNode with 'block' as the value, 'parameters' as the list of params, and funcName as the name
-        return new FunctionDeclarationNode(block, parameters.Select(parameter => parameter.Token as ComplexToken).ToArray(), funcName as ComplexToken);
+        return new FunctionDeclarationNode(block,
+                                           parameters.Select(parameter => parameter.Token as ComplexToken).ToArray(),
+                                           funcName as ComplexToken,
+                                           defKeyword as ComplexToken);
     }
 }

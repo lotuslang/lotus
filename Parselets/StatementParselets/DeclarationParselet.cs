@@ -21,6 +21,6 @@ public class DeclarationParselet : IStatementParselet
         var value = parser.ConsumeValue();
 
         // return that value
-        return new DeclarationNode(value, name as ComplexToken);
+        return new DeclarationNode(value, name as ComplexToken, varKeyword as ComplexToken);
     }
 }

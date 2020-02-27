@@ -4,14 +4,16 @@ using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {rep.ToString()}")]
+[System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {rep.ToString()}")]
 public class Token
 {
-    protected TokenKind kind;
+    public static readonly Token NULL = new Token('\0', TokenKind.EOF, default(Location), null, null);
 
-    public TokenKind Kind {
-        get => kind;
-    }
+    public TriviaToken LeadingTrivia { get; protected set; }
+
+    public TriviaToken TrailingTrivia { get; protected set; }
+
+    public TokenKind Kind { get; protected set; }
 
     protected StringBuilder rep;
 
@@ -19,19 +21,40 @@ public class Token
         get => rep.ToString();
     }
 
-    Location? loc;
+    public Location? Location { get; protected set; }
 
-    public Location? Location {
-        get => loc;
-    }
+    public Token(char representation, TokenKind kind, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
+        : this(representation.ToString(), kind, location, leading, trailing) { }
 
-    public Token(char representation, TokenKind kind, Location? location) : this(representation.ToString(), kind, location) { }
-
-    public Token(string representation, TokenKind kind, Location? location) {
+    public Token(string representation, TokenKind kind, Location? location, TriviaToken leading = null, TriviaToken trailing = null) {
         rep = new StringBuilder();
         rep.Append(representation);
-        this.kind = kind;
-        loc = location;
+        Kind = kind;
+        Location = location;
+        LeadingTrivia = leading;
+        TrailingTrivia = trailing;
+    }
+
+    public void AddLeadingTrivia(TriviaToken trivia) {
+        if (trivia is null) {
+            throw new ArgumentNullException(nameof(trivia));
+        }
+
+        if (LeadingTrivia is null)
+            LeadingTrivia = trivia;
+        else
+            LeadingTrivia.AddLeadingTrivia(trivia);
+    }
+
+    public void AddTrailingTrivia(TriviaToken trivia) {
+        if (trivia is null) {
+            throw new ArgumentNullException(nameof(trivia));
+        }
+
+        if (TrailingTrivia is null)
+            TrailingTrivia = trivia;
+        else
+            TrailingTrivia.AddTrailingTrivia(trivia);
     }
 
     public override string ToString() {
@@ -39,7 +62,7 @@ public class Token
     }
 
     public static implicit operator TokenKind(Token token) {
-        return token.kind;
+        return token.Kind;
     }
 
     public static implicit operator string(Token token) {
@@ -49,7 +72,8 @@ public class Token
 
 public class ComplexToken : Token
 {
-    public ComplexToken(string representation, TokenKind kind, Location? location) : base(representation, kind, location) { }
+    public ComplexToken(string representation, TokenKind kind, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
+        : base(representation, kind, location, leading, trailing) { }
 
     public void Add(char ch)
         => rep.Append(ch);
@@ -58,32 +82,31 @@ public class ComplexToken : Token
         => rep.Append(str);
 }
 
-[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {val}")]
+[System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
 public class NumberToken : ComplexToken
 {
     protected double val;
 
-    public double Value {
-        get => val;
-    }
+    public double Value { get => val; }
 
-    public NumberToken(string representation, Location? location) : base(representation, TokenKind.number, location) {
-        rep = new StringBuilder(representation);
-        Double.TryParse(representation, out val);
+    public NumberToken(string representation, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
+        : base(representation, TokenKind.number, location, leading, trailing)
+    {
+        if (!Double.TryParse(representation, out val)) throw new Exception();
     }
 
     public new void Add(char ch) {
         rep.Append(ch);
-        Double.TryParse(rep.ToString(), out val);
+        if (!Double.TryParse(Representation, out val)) throw new Exception();
     }
 
     public new void Add(string str) {
         rep.Append(str);
-        Double.TryParse(rep.ToString(), out val);
+        if (!Double.TryParse(Representation, out val)) throw new Exception();
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {val}")]
+[System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
 public class BoolToken : ComplexToken
 {
     protected bool val;
@@ -92,12 +115,10 @@ public class BoolToken : ComplexToken
         get => val;
     }
 
-    public BoolToken(string representation, Location? location) : base(representation, TokenKind.number, location) {
-        if (representation != "true" || representation != "false") {
-            throw new Exception($"Unexpected representation of a bool token : {representation}. Expected `true` of `false`");
-        }
-
-        val = representation == "true";
+    public BoolToken(string representation, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
+        : base(representation, TokenKind.number, location, leading, trailing)
+    {
+        if (!Boolean.TryParse(representation, out val)) throw new Exception();
     }
 
     public BoolToken(bool value, Location? location) : base(value.ToString().ToLower(), TokenKind.@bool, location) {
@@ -105,22 +126,17 @@ public class BoolToken : ComplexToken
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{loc} {kind} : {val}")]
 public class ComplexStringToken : ComplexToken
 {
-    protected string val;
-
-    public string Value {
-        get => val;
-    }
-
     protected List<Token[]> sections;
 
     public ReadOnlyCollection<Token[]> CodeSections {
         get => new ReadOnlyCollection<Token[]>(sections);
     }
 
-    public ComplexStringToken(string representation, List<Token[]> codeSections, Location? location) : base(representation, TokenKind.complexString, location) {
+    public ComplexStringToken(string representation, List<Token[]> codeSections, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
+        : base(representation, TokenKind.complexString, location, leading, trailing)
+    {
         sections = codeSections;
     }
 
@@ -129,14 +145,10 @@ public class ComplexStringToken : ComplexToken
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{loc} {precedence}({(int)precedence}) : {rep.ToString()}")]
+[System.Diagnostics.DebuggerDisplay("{Location} {Precedence}({(int)Precedence}) : {Representation}")]
 public class OperatorToken : Token
 {
-    protected Precedence precedence;
-
-    public Precedence Precedence {
-        get => precedence;
-    }
+    public Precedence Precedence { get; protected set; }
 
     protected bool isLeft;
 
@@ -148,7 +160,7 @@ public class OperatorToken : Token
     public OperatorToken(string representation, Precedence precedence, bool isLeftAssociative, Location? location)
         : base(representation, TokenKind.@operator, location)
     {
-        this.precedence = precedence;
+        Precedence = precedence;
         isLeft = isLeftAssociative;
     }
 
@@ -167,10 +179,10 @@ public class OperatorToken : Token
     public OperatorToken(Token token, Precedence precedence, string associativity, Location? location)
         : this(token, precedence, associativity == "left" ? true : false, location)
     {
-        this.kind = token.Kind == TokenKind.function ? TokenKind.function : TokenKind.@operator;
+        Kind = token.Kind == TokenKind.function ? TokenKind.function : TokenKind.@operator;
     }
 }
 
 public enum TokenKind {
-    delim, ident, number, function, @bool, @string, complexString, @operator, keyword, EOF
+    delim, ident, number, function, @bool, @string, complexString, @operator, keyword, EOF, trivia
 }

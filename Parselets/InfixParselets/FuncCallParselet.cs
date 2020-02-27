@@ -12,10 +12,11 @@ public class FuncCallParselet : IInfixParselet
             throw new ArgumentException(nameof(function) + " needs to be, at least, a value.");
         }
 
+        // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 
         var args = parser.ConsumeCommaSeparatedList("(", ")");
 
-        return new FunctionCallNode(args, function as ValueNode, leftParen);
+        return new FunctionCallNode(args, function as ValueNode, function.Token);
     }
 }

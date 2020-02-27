@@ -110,7 +110,10 @@ public class Environment
         => variables.Add(node.Representation, value);
 
     public void RegisterFunction(string functionName, ComplexToken[] parameters, SimpleBlock body)
-        => RegisterFunction(new FunctionDeclarationNode(body, parameters, new ComplexToken(functionName, TokenKind.ident, null)));
+        => RegisterFunction(new FunctionDeclarationNode(body,
+                                                        parameters,
+                                                        new ComplexToken(functionName, TokenKind.ident, null),
+                                                        new ComplexToken("def", TokenKind.ident, null)));
 
     public void RegisterFunction(FunctionDeclarationNode node)
         => functions.Add(node);
@@ -121,7 +124,10 @@ public class Environment
 
     public bool TryRegisterFunction(string functionName, ComplexToken[] parameters, SimpleBlock body)
         // call TryRegisterFunction with a new FunctionDeclarationNode crafted from the arguments to this function
-        => TryRegisterFunction(new FunctionDeclarationNode(body, parameters, new ComplexToken(functionName, TokenKind.ident, null)));
+        => TryRegisterFunction(new FunctionDeclarationNode(body,
+                                                           parameters,
+                                                           new ComplexToken(functionName, TokenKind.ident, null),
+                                                           new ComplexToken("def", TokenKind.ident, null)));
 
     public bool TryRegisterFunction(FunctionDeclarationNode node) {
 

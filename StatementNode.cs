@@ -27,7 +27,7 @@ public class AssignmentNode : StatementNode
 
     public ComplexToken Name { get; protected set; }
 
-    public AssignmentNode(ValueNode value, ComplexToken varName) : base(varName) {
+    public AssignmentNode(ValueNode value, ComplexToken varName, ComplexToken equalToken) : base(equalToken) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
         Name = varName;
@@ -60,7 +60,7 @@ public class DeclarationNode : StatementNode
 
     public ComplexToken Name { get; protected set; }
 
-    public DeclarationNode(ValueNode value, ComplexToken varName) : base("var", varName) {
+    public DeclarationNode(ValueNode value, ComplexToken varName, ComplexToken introToken) : base(introToken) {
         if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
 
         Name = varName;
@@ -83,7 +83,12 @@ public class FunctionDeclarationNode : DeclarationNode
         get => new ReadOnlyCollection<ComplexToken>(parameters);
     }
 
-    public FunctionDeclarationNode(SimpleBlock value, ComplexToken[] parameters, ComplexToken functionName) : base(new ValueNode("block", functionName), functionName) {
+    public FunctionDeclarationNode(SimpleBlock value,
+                                   ComplexToken[] parameters,
+                                   ComplexToken functionName,
+                                   ComplexToken defToken)
+        : base(new ValueNode("block", functionName), functionName, defToken)
+    {
         if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (declaration)");
 
         Value = value;

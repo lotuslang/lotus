@@ -121,12 +121,12 @@ public class BoolNode : ValueNode
     /// <value>The number represented by this object.</value>
     public new bool Value { get; protected set; }
 
-    public BoolNode(bool value, Token token) : base(value.ToString().ToLower(), token)
+    public BoolNode(bool value, Token boolToken) : base(value.ToString().ToLower(), boolToken)
     {
         Value = value;
     }
 
-    public BoolNode(string repr, Token token) : this(repr == "true", token) { }
+    public BoolNode(string repr, Token boolToken) : this(repr == "true", boolToken) { }
 
     public new string GetFriendlyName()
         => "boolean";
@@ -137,7 +137,7 @@ public class IdentNode : ValueNode
 
     public override string Value { get; protected set; }
 
-    public IdentNode(string value, Token token) : base(value, token)
+    public IdentNode(string value, Token identToken) : base(value, identToken)
     {
         Value = value;
     }
@@ -156,8 +156,8 @@ public class FunctionCallNode : ValueNode
 
     public ValueNode FunctionName { get; protected set; }
 
-    public FunctionCallNode(ValueNode[] parameters, ValueNode functionName, Token token)
-        : base(functionName.Representation + "(...)", token)
+    public FunctionCallNode(ValueNode[] parameters, ValueNode functionName, Token functionToken)
+        : base(functionName.Representation + "(...)", functionToken)
     {
 
         FunctionName = functionName;
@@ -175,7 +175,7 @@ public class ArrayLiteralNode : ValueNode
     public ReadOnlyCollection<ValueNode> Content {
         get => items.AsReadOnly();
     }
-    public ArrayLiteralNode(ValueNode[] content, Token token) : base(token) {
+    public ArrayLiteralNode(ValueNode[] content, Token leftSquareBracketToken) : base(leftSquareBracketToken) {
         items = new List<ValueNode>(content);
     }
 }
@@ -186,7 +186,7 @@ public class TypeCastNode : ValueNode
 
     public ValueNode Operand { get; protected set; }
 
-    public TypeCastNode(ValueNode type, ValueNode operand, Token token) : base(token) {
+    public TypeCastNode(ValueNode type, ValueNode operand, Token parenToken) : base(parenToken) {
         Type = type;
         Operand = operand;
     }

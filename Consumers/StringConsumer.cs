@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class StringConsumer : IConsumer<char>
 {
-    private bool reconsumeFlag;
+    protected Queue<char> reconsumeQueue;
 
     protected Stack<char> stack;
 
@@ -14,11 +14,7 @@ public class StringConsumer : IConsumer<char>
         get => stack.Count;
     }
 
-    protected char current;
-
-    public char Current {
-        get => current;
-    }
+    public char Current { get; protected set; }
 
     protected Location pos;
 
@@ -36,22 +32,26 @@ public class StringConsumer : IConsumer<char>
         stack = new Stack<char>(stack);
 
         pos = new Location(1, 0, fileName);
+
+        reconsumeQueue = new Queue<char>();
     }
 
     public StringConsumer(StringConsumer consumer) {
         stack = new Stack<char>(consumer.stack.Reverse());
 
-        current = consumer.current;
-
-        reconsumeFlag = consumer.reconsumeFlag;
+        Current = consumer.Current;
 
         pos = new Location(consumer.pos.line, consumer.pos.column, consumer.pos.filename);
+
+        reconsumeQueue = new Queue<char>(consumer.reconsumeQueue);
     }
 
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") {
         stack = new Stack<char>(collection.Reverse());
 
         pos = new Location(1, 0, fileName);
+
+        reconsumeQueue = new Queue<char>();
     }
 
     public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
@@ -73,6 +73,8 @@ public class StringConsumer : IConsumer<char>
         stack = new Stack<char>(stack);
 
         pos = new Location(1, 0, fileName);
+
+        reconsumeQueue = new Queue<char>();
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)
@@ -80,15 +82,14 @@ public class StringConsumer : IConsumer<char>
 
     public void Reconsume() {
 
-        if (reconsumeFlag) return;
+        reconsumeQueue.Enqueue(Current);
 
-        reconsumeFlag = true;
-
-        if (current == '\n') {
+        if (Current == '\n') {
             pos.line--;
+            pos.column = -1;
         }
 
-        pos.column--;
+        pos.column++;
     }
 
     public bool Consume(out char result) {
@@ -98,31 +99,35 @@ public class StringConsumer : IConsumer<char>
     }
 
     public char Consume() {
-        if (reconsumeFlag) {
-            reconsumeFlag = false;
-            return current;
+
+        // If we are instructed to reconsume the last char, then dequeue a char from the reconsumeQueue and return it
+        if (reconsumeQueue.Count != 0) {
+            return reconsumeQueue.Dequeue();
         }
 
         if (Count <= 0) {
-            current = '\u0003';
+            Current = '\u0003';
 
-            return current;
+            return Current;
         }
 
-        current = stack.Pop();
+        Current = stack.Pop();
 
-        if (current == '\n') {
+        if (Current == '\n') {
             pos.line++;
             pos.column = -1;
         }
 
         pos.column++;
 
-        return current;
+        return Current;
     }
 
     public char Peek() {
-        if (reconsumeFlag) return current;
+
+        if (reconsumeQueue.Count != 0) {
+            reconsumeQueue.Peek();
+        }
 
         if (Count == 0) return '\u0003';
 

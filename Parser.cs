@@ -107,76 +107,36 @@ public class Parser : IConsumer<StatementNode>
         var currToken = tokenizer.Consume();
 
         // if the token is EOF, return ValueNode.NULL
-        if (currToken == TokenKind.EOF) return null;
+        if (currToken == "\u0003" || currToken == "\0") return null;
 
         // if the token is ';', return the next statement node
         if (currToken == ";") return Consume();
 
-        // TODO: This whole thing is now a giant switch, just need to changte that, shouldn't take too long
-
         // if the token is "var"
-        if (currToken == "var") {
-
-            // consume a declaration and return it
-            current = new DeclarationParselet().Parse(this, currToken);
-
-            return current;
+        switch (currToken)
+        {
+            case "var":
+                current = new DeclarationParselet().Parse(this, currToken);
+                break;
+            case "new":
+                current = new ObjectCreationParselet().Parse(this, currToken);
+                break;
+            case "def":
+                current = new FunctionDeclarationParselet().Parse(this, currToken);
+                break;
+            case "return":
+                current = new ReturnParselet().Parse(this, currToken);
+                break;
+            case "from":
+                current = new ImportParselet().Parse(this, currToken);
+                break;
+            default:
+                tokenizer.Reconsume();
+                current = ConsumeValue();
+                break;
         }
-
-        // if the token is "new"
-        if (currToken == "new") {
-
-            current = new ObjectCreationParselet().Parse(this, currToken);
-
-            return current;
-        }
-
-        // if the token is "def"
-        if (currToken == "def") {
-            current = new FunctionDeclarationParselet().Parse(this, currToken);
-
-            return current;
-        }
-
-        if (currToken == "return") {
-            current = new ReturnParselet().Parse(this, currToken);
-
-            return current;
-        }
-
-        if (currToken == "from") {
-            current = new ImportParselet().Parse(this, currToken);
-
-            return current;
-        }
-
-        tokenizer.Reconsume();
-
-        current = ConsumeValue();
 
         return current;
-    }
-
-    public SimpleBlock ConsumeSimpleBlock() {
-
-        var bracket = tokenizer.Consume();
-
-        if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block", "{");
-
-        var statements = new List<StatementNode>();
-
-        while (tokenizer.Peek() != "}" && tokenizer.Peek() != TokenKind.EOF) {
-            statements.Add(Consume());
-            if (tokenizer.Peek() == ";") tokenizer.Consume();
-        }
-
-        bracket = tokenizer.Consume();
-
-        if (bracket == ";") bracket = tokenizer.Consume();
-
-        if (bracket != "}") throw new Exception("what² (" + bracket.Representation + ")");
-
-        return new SimpleBlock(statements.ToArray());
     }
 
     public ValueNode ConsumeValue(Precedence precedence = 0) {
@@ -204,6 +164,28 @@ public class Parser : IConsumer<StatementNode>
         }
 
         return left as ValueNode;
+    }
+
+    public SimpleBlock ConsumeSimpleBlock() {
+
+        var bracket = tokenizer.Consume();
+
+        if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block", "{");
+
+        var statements = new List<StatementNode>();
+
+        while (tokenizer.Peek() != "}" && tokenizer.Peek() != TokenKind.EOF) {
+            statements.Add(Consume());
+            if (tokenizer.Peek() == ";") tokenizer.Consume();
+        }
+
+        bracket = tokenizer.Consume();
+
+        if (bracket == ";") bracket = tokenizer.Consume();
+
+        if (bracket != "}") throw new Exception("what² (" + bracket.Representation + ")");
+
+        return new SimpleBlock(statements.ToArray());
     }
 
     public ValueNode[] ConsumeCommaSeparatedList(string start, string end) {

@@ -14,10 +14,10 @@ public class ObjectCreationParselet : IPrefixParselet
         // that is so similar and essential
         var invoc = parser.ConsumeValue();
 
-        if (invoc is FunctionCallNode call) {
-            return new ObjectCreationNode(call, newKeyword as ComplexToken);
+        if (!(invoc is FunctionCallNode call)) {
+            throw new Exception();
         }
 
-        throw new Exception();
+        return new ObjectCreationNode(call, newKeyword as ComplexToken);
     }
 }

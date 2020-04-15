@@ -45,7 +45,7 @@ public class ReturnNode : StatementNode
     public bool IsReturningValue { get; protected set; }
 
     public ReturnNode(ValueNode value, ComplexToken returnToken) : base(returnToken) {
-        IsReturningValue = value == null;
+        IsReturningValue = value != null;
 
         Value = value;
     }
@@ -114,6 +114,8 @@ public class ImportNode : StatementNode
 
     public FromNode FromStatement { get; protected set; }
 
+    internal bool IsEverything { get => ImportsName.Count == 0; }
+
     public ImportNode(IEnumerable<ValueNode> imports, FromNode from, ComplexToken importToken) : base(importToken) {
         ImportsName = imports.ToList().AsReadOnly();
         FromStatement = from;
@@ -134,6 +136,35 @@ public class FromNode : StatementNode
     internal FromNode(ValueNode originName, ComplexToken fromToken, bool isInternal) : base(fromToken) {
         OriginName = originName;
         IsInternalOrigin = isInternal;
+    }
+}
+
+public class ForeachNode : StatementNode
+{
+    public ComplexToken InToken;
+
+    public IdentNode ItemName {
+        get;
+        protected set;
+    }
+
+    public ValueNode CollectionName {
+        get;
+        protected set;
+    }
+
+    public SimpleBlock Body {
+        get;
+        protected set;
+    }
+
+    public ForeachNode(ComplexToken foreachToken, ComplexToken inToken, IdentNode itemName, ValueNode collectionName, SimpleBlock body)
+        : base(foreachToken)
+    {
+        InToken = inToken;
+        ItemName = itemName;
+        CollectionName = collectionName;
+        Body = body;
     }
 }
 

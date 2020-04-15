@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 
 public class Toklet
 {
@@ -9,7 +10,7 @@ public class Toklet
 
     public Predicate<IConsumer<char>> Condition => condition;
 
-    public virtual Token Consume(IConsumer<char> input, Tokenizer tokenizer)
+    public virtual Token Consume(IConsumer<char> input, Tokenizer _)
         => new Token(input.Consume(), TokenKind.delim, input.Position);
 }
 
@@ -29,15 +30,16 @@ public class NumberToklet : Toklet
             }
         );
 
-    public override Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
-        // consume a character
+    public override Token Consume(IConsumer<char> input, Tokenizer _) {
+        // the output token
+        var numberStr = new StringBuilder();
+
         var currChar = input.Consume();
 
-        // the output token
-        var output = new NumberToken("", input.Position);
+        var origin = input.Position; // the position of the number's first character
 
         if (currChar == '+' || currChar == '-') {
-            output.Add(currChar);
+            numberStr.Append(currChar);
             currChar = input.Consume();
         }
 
@@ -45,7 +47,7 @@ public class NumberToklet : Toklet
         while (Char.IsDigit(currChar)) {
 
             // add it to the value of output
-            output.Add(currChar);
+            numberStr.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -55,7 +57,7 @@ public class NumberToklet : Toklet
         if (currChar == '.')
         {
             // add it to the value of output
-            output.Add(currChar);
+            numberStr.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -65,7 +67,7 @@ public class NumberToklet : Toklet
         while (Char.IsDigit(currChar)) {
 
             // add it to the value of output
-            output.Add(currChar);
+            numberStr.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -75,7 +77,7 @@ public class NumberToklet : Toklet
         if (currChar == 'e' || currChar == 'E') {
 
             // add the e/E to the output
-            output.Add(currChar);
+            numberStr.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -85,7 +87,7 @@ public class NumberToklet : Toklet
             if (currChar == '+' || currChar == '-') {
 
                 // add it to the value of output
-                output.Add(currChar);
+                numberStr.Append(currChar);
 
                 // consume a character
                 currChar = input.Consume();
@@ -95,7 +97,7 @@ public class NumberToklet : Toklet
             while (Char.IsDigit(currChar)) {
 
                 // add it to the value of output
-                output.Add(currChar);
+                numberStr.Append(currChar);
 
                 // consume a character
                 currChar = input.Consume();
@@ -114,7 +116,7 @@ public class NumberToklet : Toklet
 
         input.Reconsume();
 
-        return output;
+        return new NumberToken(numberStr.ToString(), origin);
     }
 }
 
@@ -155,7 +157,10 @@ public class ComplexStringToklet : Toklet
                 var tokenList = new List<Token>();
                 Token currToken;
 
-                while ((currToken = tokenizer.Consume()) != "}") {
+                while (tokenizer.Peek() != "}") {
+
+                    currToken = tokenizer.Consume();
+
                     if (currToken == ";") {
                         throw new Exception($"{input.Position} : Malformed formatted string. Unexpected ';'. Did you forget '}}' ?");
                     }
@@ -171,7 +176,11 @@ public class ComplexStringToklet : Toklet
 
                 output.Add("{" + (output.CodeSections.Count - 1) + "}");
 
+                input.Consume(); // consumes the '}'
+
                 currChar = input.Consume();
+
+                //Console.WriteLine(tokenizer.Current + " " + input.Current);
                 continue;
             }
 
@@ -248,6 +257,10 @@ public class IdentToklet : Toklet
         // reconsume the last token (which is not a letter, a digit, or a low line,
         // since our while loop has exited) to make sure it is processed by the tokenizer afterwards
         input.Reconsume();
+
+        if (Utilities.keywords.Contains(output)) {
+            return new ComplexToken(output, TokenKind.keyword, output.Location);
+        }
 
         // return the output token
         return output;

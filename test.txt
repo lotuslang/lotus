@@ -1,0 +1,52 @@
+from "extern.lts" import *
+from std import math
+
+namespace my_nspace
+
+def someFunc() {
+    print("from someFunc")
+}
+
+someFunc()
+
+def add(i1, i2) {
+
+    var temp = i1 + i2
+
+    return i1 + i2
+}
+
+add(96, 65)
+
+add(-6, 85)
+
+var str = "world"
+
+var n =
+      1 * .2
+    + "hello "
+    + $"{str} !"
+    + (8 - 9) / 2
+    + math.PI
+    + extern.MOTD.toString()
+    + global.args[6 / 6 - 1]
+    + extern.magicNumber.toString("x")
+
+                                                        hey++
+--                                          hello
+
+n = -.1
+
+foreach (item in collection) {
+    hello.there(item);
+}
+
+foreach (item2 in some.class.arr) { }
+
+a = --i
+
+obj = new Object(h, ey)
+
+arr = [ 1, 5, -3, 8]
+
+b = true

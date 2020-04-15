@@ -92,9 +92,12 @@ public class NumberToken : ComplexToken
     public NumberToken(string representation, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
         : base(representation, TokenKind.number, location, leading, trailing)
     {
-        if (!Double.TryParse(representation, out val)) throw new Exception();
+        if (representation.Length != 0 && !Double.TryParse(representation, out val)) throw new Exception();
     }
 
+    // we should keep them because it's possible for someone to call ComplexToken.Add() on this instance
+    // so that it wouldn't be a valid number.
+    // However, in the state they are right now, they cannot really be used to create a number, so meh.
     public new void Add(char ch) {
         rep.Append(ch);
         if (!Double.TryParse(Representation, out val)) throw new Exception();
@@ -118,7 +121,7 @@ public class BoolToken : ComplexToken
     public BoolToken(string representation, Location? location, TriviaToken leading = null, TriviaToken trailing = null)
         : base(representation, TokenKind.number, location, leading, trailing)
     {
-        if (!Boolean.TryParse(representation, out val)) throw new Exception();
+        if (representation.Length != 0 && !Boolean.TryParse(representation, out val)) throw new Exception();
     }
 
     public BoolToken(bool value, Location? location) : base(value.ToString().ToLower(), TokenKind.@bool, location) {
@@ -165,11 +168,11 @@ public class OperatorToken : Token
     }
 
     public OperatorToken(string representation, Precedence precedence, string associativity, Location? location)
-        : this(representation, precedence, associativity == "left" ? true : false, location)
+        : this(representation, precedence, associativity == "left", location)
     { }
 
     public OperatorToken(char representation, Precedence precedence, string associativity, Location? location)
-        : this(representation.ToString(), precedence, associativity == "left" ? true : false, location)
+        : this(representation.ToString(), precedence, associativity == "left", location)
     { }
 
     public OperatorToken(char representation, Precedence precedence, bool isLeftAssociative, Location? location)
@@ -177,7 +180,7 @@ public class OperatorToken : Token
     { }
 
     public OperatorToken(Token token, Precedence precedence, string associativity, Location? location)
-        : this(token, precedence, associativity == "left" ? true : false, location)
+        : this(token, precedence, associativity == "left", location)
     {
         Kind = token.Kind == TokenKind.function ? TokenKind.function : TokenKind.@operator;
     }

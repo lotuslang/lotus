@@ -9,8 +9,6 @@ public static class Utilities
         "new",
         "def",
         "return",
-        "true",
-        "false",
     };
 
     public static readonly string[] internalFunctions = new string[] {
@@ -19,8 +17,9 @@ public static class Utilities
 
     static readonly Dictionary<ExpressionKind, IPrefixParselet> PreParselets = new Dictionary<ExpressionKind, IPrefixParselet>();
 
-    static readonly Dictionary<ExpressionKind, IInfixParselet> InAndPostParselets = new Dictionary<ExpressionKind, IInfixParselet>();
+    static readonly Dictionary<ExpressionKind, IInfixParselet> InParselets = new Dictionary<ExpressionKind, IInfixParselet>();
 
+    static readonly Dictionary<ExpressionKind, IPostfixParselet> PostParselets = new Dictionary<ExpressionKind, IPostfixParselet>();
 
     static Utilities() {
         RegisterPrefix(ExpressionKind.Number, new NumberLiteralParselet());
@@ -53,18 +52,18 @@ public static class Utilities
         RegisterPostfix(ExpressionKind.Increment, "Incr");
         RegisterPostfix(ExpressionKind.Decrement, "Decr");
 
-        InAndPostParselets.Add(ExpressionKind.Array, new ArrayAccessParselet());
-        InAndPostParselets.Add(ExpressionKind.LeftParen, new FuncCallParselet());
+        InParselets.Add(ExpressionKind.Array, new ArrayAccessParselet());
+        InParselets.Add(ExpressionKind.LeftParen, new FuncCallParselet());
     }
 
     static void RegisterPrefix(ExpressionKind kind, IPrefixParselet parselet)
         => PreParselets.Add(kind, parselet);
 
     static void RegisterInfix(ExpressionKind kind, Precedence precedence, string operationType)
-        => InAndPostParselets.Add(kind, new BinaryOperatorParselet(precedence, operationType));
+        => InParselets.Add(kind, new BinaryOperatorParselet(precedence, operationType));
 
     static void RegisterPostfix(ExpressionKind kind, string operationType)
-        => InAndPostParselets.Add(kind, new PostfixOperatorParselet(operationType));
+        => PostParselets.Add(kind, new PostfixOperatorParselet(operationType));
 
     public static ExpressionKind GetExpressionKind(this Token token) {
 
@@ -139,16 +138,25 @@ public static class Utilities
         => PreParselets[token.GetExpressionKind()];
 
     public static IInfixParselet GetOperatorParselet(ExpressionKind kind)
-        => InAndPostParselets[kind];
+        => InParselets[kind];
 
     public static IInfixParselet GetOperatorParselet(Token token)
-        => InAndPostParselets[token.GetExpressionKind()];
+        => InParselets[token.GetExpressionKind()];
 
-    public static bool IsPrefixParselet(this ExpressionKind kind)
+    public static IPostfixParselet GetPostfixParselet(ExpressionKind kind)
+        => PostParselets[kind];
+
+    public static IPostfixParselet GetPostfixParselet(Token token)
+        => PostParselets[token.GetExpressionKind()];
+
+    public static bool IsPrefix(this ExpressionKind kind)
         => PreParselets.ContainsKey(kind);
 
+    public static bool IsPostfix(this ExpressionKind kind)
+        => PostParselets.ContainsKey(kind);
+
     public static bool IsOperatorParselet(this ExpressionKind kind)
-        => InAndPostParselets.ContainsKey(kind);
+        => InParselets.ContainsKey(kind);
 
     public static bool IsName(ValueNode node) {
         if (node is IdentNode) return true;

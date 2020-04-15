@@ -18,13 +18,16 @@
 // TODO: Also, do we change Utilities.IsName(ValueNode) to ValueNode.IsName() with an extension method ?
 //
 // TODO:
-//      - foreach/in
 //      - for
 //      - class/interface/extends
 //      - break/continue
 //      - while/do
 //      - if/else
+//      - type for func declaration (return type and param type)
 //
-// TODO: Extract *Nodes in their own files
+// TODO: Extract *Nodes (and maybe tokens and toklets ?) in their own files
 //
 // TODO: Add ToGraphNode()s for TriviaTokens
+//
+// TODO: re-write some parsing code (e.g. foreach.parse) to have a consistent style (e.g. consume nodes instead of tokens and
+// then check if they are valid)

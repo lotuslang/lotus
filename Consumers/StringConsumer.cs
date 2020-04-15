@@ -11,7 +11,7 @@ public class StringConsumer : IConsumer<char>
     protected Stack<char> stack;
 
     public int Count {
-        get => stack.Count;
+        get => stack.Count + reconsumeQueue.Count;
     }
 
     public char Current { get; protected set; }
@@ -105,7 +105,7 @@ public class StringConsumer : IConsumer<char>
             return reconsumeQueue.Dequeue();
         }
 
-        if (Count <= 0) {
+        if (Count == 0) {
             Current = '\u0003';
 
             return Current;
@@ -126,7 +126,7 @@ public class StringConsumer : IConsumer<char>
     public char Peek() {
 
         if (reconsumeQueue.Count != 0) {
-            reconsumeQueue.Peek();
+            return reconsumeQueue.Peek();
         }
 
         if (Count == 0) return '\u0003';

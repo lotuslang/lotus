@@ -1,12 +1,28 @@
-/* hey */ var greeting = "Hi"
+from "std" import string
+
+namespace SampleApp.Utility
+
+multarg(arg1, arg2, arg3, "hello", 1452, "{0}", arg4)
 
 var name = "Mark"
 
+var greeting = "Hi"
+
 print(greeting + ' ' + name + '!')
+
+print(greeting + ' !')
 
 greeting = "Hello"
 
 name = "world"
+
+foreach (item in collection) {
+	print($"{item} at {index}")
+
+	print($"{hello} in")
+
+	collection.remove(item);
+}
 
 print(greeting + " " + name)
 

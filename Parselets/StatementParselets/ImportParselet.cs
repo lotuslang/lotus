@@ -12,7 +12,7 @@ public class ImportParselet : IStatementParselet
 
         FromNode from;
 
-        if (fromOrigin is IdentNode) {
+        if (Utilities.IsName(fromOrigin)) {
             from = new FromNode(fromOrigin, fromKeyword, true);
         } else if (fromOrigin is StringNode str) {
             from = new FromNode(str, fromKeyword);
@@ -32,8 +32,16 @@ public class ImportParselet : IStatementParselet
         // Because OOP is way easier to use to create a SyntaxTree and it's also the model i'm the most comfortable with)
         var importToken = parser.Tokenizer.Consume();
 
-        if (!(importToken is ComplexToken importKeyword && token == "import")) {
+        if (!(importToken is ComplexToken importKeyword && importToken == "import")) {
             throw new Exception();
+        }
+
+        if (parser.Tokenizer.Peek() == "*") {
+            return new ImportNode(
+                new List<ValueNode>() { new ValueNode(parser.Tokenizer.Consume()) },
+                from,
+                importKeyword
+            );
         }
 
         var importList = new List<ValueNode>();
@@ -41,10 +49,12 @@ public class ImportParselet : IStatementParselet
         do {
             var import = parser.ConsumeValue();
 
-            if (!Utilities.IsName(import)) throw new Exception();
+            if (!(Utilities.IsName(import) || import.Representation == "*")) throw new Exception();
 
             importList.Add(import);
-        } while (parser.Tokenizer.Peek() == ",");
+        } while (parser.Tokenizer.Consume() == ",");
+
+        parser.Tokenizer.Reconsume();
 
         return new ImportNode(importList, from, importKeyword);
     }

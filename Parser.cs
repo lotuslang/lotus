@@ -130,6 +130,12 @@ public class Parser : IConsumer<StatementNode>
             case "from":
                 current = new ImportParselet().Parse(this, currToken);
                 break;
+            case "namespace":
+                current = new NamespaceParselet().Parse(this, currToken);
+                break;
+            case "foreach":
+                current = new ForeachParselet().Parse(this, currToken);
+                break;
             default:
                 tokenizer.Reconsume();
                 current = ConsumeValue();
@@ -142,7 +148,7 @@ public class Parser : IConsumer<StatementNode>
     public ValueNode ConsumeValue(Precedence precedence = 0) {
         var token = tokenizer.Consume();
 
-        if (!token.GetExpressionKind().IsPrefixParselet()) {
+        if (!token.GetExpressionKind().IsPrefix()) {
             throw new UnexpectedTokenException(token,
                 TokenKind.@bool,
                 TokenKind.@operator,
@@ -155,13 +161,23 @@ public class Parser : IConsumer<StatementNode>
 
         var left = Utilities.GetPrefixParselet(token).Parse(this, token);
 
-        if (tokenizer.Peek() == null) return left as ValueNode;
+        //if (tokenizer.Peek() == null) return left as ValueNode;
 
-        while (precedence < GetPrecedence(tokenizer.Peek())) {
+        token = tokenizer.Consume();
+
+        if (token.GetExpressionKind().IsPostfix()) {
+            left = Utilities.GetPostfixParselet(token).Parse(this, token, left);
+
             token = tokenizer.Consume();
-
-            left = Utilities.GetOperatorParselet(token).Parse(this, token, left);
         }
+
+        while (precedence < GetPrecedence(token)) {
+            left = Utilities.GetOperatorParselet(token).Parse(this, token, left);
+
+            token = tokenizer.Consume();
+        }
+
+        tokenizer.Reconsume();
 
         return left as ValueNode;
     }
@@ -174,8 +190,11 @@ public class Parser : IConsumer<StatementNode>
 
         var statements = new List<StatementNode>();
 
-        while (tokenizer.Peek() != "}" && tokenizer.Peek() != TokenKind.EOF) {
+        while (tokenizer.Peek() != "}") {
             statements.Add(Consume());
+
+            if (tokenizer.Peek() == TokenKind.EOF) throw new Exception("EOF in block");
+
             if (tokenizer.Peek() == ";") tokenizer.Consume();
         }
 
@@ -198,16 +217,21 @@ public class Parser : IConsumer<StatementNode>
         }
 
         while (tokenizer.Peek() != end) {
+
             items.Add(ConsumeValue());
 
-            if (!tokenizer.Consume(out Token currToken) || currToken == end) {
-                break;
-            }
+            if (tokenizer.Consume() != ",") {
 
-            if (currToken != ",") {
-                throw new UnexpectedTokenException(currToken, "in comma-separated list", ",");
+                if (tokenizer.Current == end) {
+                    tokenizer.Reconsume();
+                    break;
+                }
+
+                throw new UnexpectedTokenException(tokenizer.Current, "in comma-separated list", ",");
             }
         }
+
+        tokenizer.Consume();
 
         return items.ToArray();
     }
@@ -221,5 +245,5 @@ public class Parser : IConsumer<StatementNode>
     }
 
     private Precedence GetPrecedence(Token token)
-        => GetPrecedence(token.GetExpressionKind());
+        => token != null ? GetPrecedence(token.GetExpressionKind()) : 0;
 }

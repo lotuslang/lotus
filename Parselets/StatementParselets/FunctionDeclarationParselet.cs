@@ -14,7 +14,7 @@ public class FunctionDeclarationParselet : IStatementParselet
         // if the token consumed was not an identifier, then throw an exception
         if (funcName != TokenKind.ident) throw new UnexpectedTokenException(funcName, "in function declaration", TokenKind.ident);
 
-        var parameters = parser.ConsumeCommaSeparatedList("(", ")");
+        var parameters = parser.ConsumeCommaSeparatedValueList("(", ")");
 
         if (!parameters.All(parameter => parameter.Token is ComplexToken)) {
             throw new Exception();

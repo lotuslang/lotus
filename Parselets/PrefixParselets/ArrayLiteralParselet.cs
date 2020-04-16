@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 public class ArrayLiteralParselet : IPrefixParselet
 {
@@ -8,7 +9,7 @@ public class ArrayLiteralParselet : IPrefixParselet
 
         parser.Tokenizer.Reconsume();
 
-        var values = parser.ConsumeCommaSeparatedList("[", "]");
+        var values = parser.ConsumeCommaSeparatedValueList("[", "]");
 
         return new ArrayLiteralNode(values, token);
     }

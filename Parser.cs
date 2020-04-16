@@ -136,6 +136,9 @@ public class Parser : IConsumer<StatementNode>
             case "foreach":
                 current = new ForeachParselet().Parse(this, currToken);
                 break;
+            case "for":
+                current = new ForParselet().Parse(this, currToken);
+                break;
             default:
                 tokenizer.Reconsume();
                 current = ConsumeValue();
@@ -207,7 +210,7 @@ public class Parser : IConsumer<StatementNode>
         return new SimpleBlock(statements.ToArray());
     }
 
-    public ValueNode[] ConsumeCommaSeparatedList(string start, string end) {
+    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end) {
         var startingDelimiter = tokenizer.Consume();
 
         var items = new List<ValueNode>();
@@ -229,6 +232,8 @@ public class Parser : IConsumer<StatementNode>
 
                 throw new UnexpectedTokenException(tokenizer.Current, "in comma-separated list", ",");
             }
+
+            if (tokenizer.Peek() == ")") throw new Exception("cannot use comma followed by an end delimiter in comma-separated list");
         }
 
         tokenizer.Consume();

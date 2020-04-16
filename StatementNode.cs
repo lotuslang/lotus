@@ -9,6 +9,8 @@ public class StatementNode
 
     public string Representation { get; protected set; }
 
+    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, null));
+
     public StatementNode(string representation, Token token) {
         Representation = representation;
         Token = token;
@@ -168,15 +170,29 @@ public class ForeachNode : StatementNode
     }
 }
 
-public class SimpleBlock
+public class ForNode : StatementNode
 {
-    protected List<StatementNode> content;
-
-    public ReadOnlyCollection<StatementNode> Content {
-        get => content.AsReadOnly();
+    public ReadOnlyCollection<StatementNode> Header {
+        get;
+        protected set;
     }
 
-    public SimpleBlock(StatementNode[] content) {
-        this.content = new List<StatementNode>(content);
+    public SimpleBlock Body {
+        get;
+        protected set;
+    }
+
+    public ForNode(ComplexToken forToken, StatementNode[] header, SimpleBlock body) : base(forToken) {
+        Header = header.ToList().AsReadOnly();
+        Body = body;
+    }
+}
+
+public class SimpleBlock
+{
+    public ReadOnlyCollection<StatementNode> Content { get; protected set; }
+
+    public SimpleBlock(IEnumerable<StatementNode> content) {
+        Content = content.ToList().AsReadOnly();
     }
 }

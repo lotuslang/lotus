@@ -3,7 +3,7 @@
 //      - Comments are '//' and '/*' because they can be nested way easily, they are more familiar, and it's just less work for me
 //      - Interpolated strings use $"..." and not `...`
 
-// TODO: Write actual exceptions instead on throwing just new Exception()s (about 52 basic Exceptions in total, of which 14 are empty)
+// TODO: Write actual exceptions instead on throwing just new Exception()s (about 58 classic Exceptions in total, of which 27 are empty)
 //
 // TODO: Iron out the details, for example, in the Parselets' Parse(...) methods, we need to choose if we prefer to name the token
 // parameter directly and then do some checks on it, even though that could sometimes mean that we would need to convert multiple times
@@ -18,7 +18,6 @@
 // TODO: Also, do we change Utilities.IsName(ValueNode) to ValueNode.IsName() with an extension method ?
 //
 // TODO:
-//      - for
 //      - class/interface/extends
 //      - break/continue
 //      - while/do
@@ -31,3 +30,7 @@
 //
 // TODO: re-write some parsing code (e.g. foreach.parse) to have a consistent style (e.g. consume nodes instead of tokens and
 // then check if they are valid)
+//
+// TODO: Should we do some check like IsName() at the semantic analysis phase or at parsing ? It might be better to do all the checking
+// at analysis-time, because right now some odes are valid while others not. Maybe a compromise, like, if it's absolutely possible to
+// check at parse-time, do it, but if it's not sure, wait for semantic analysis.

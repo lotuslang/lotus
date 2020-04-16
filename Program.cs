@@ -8,7 +8,7 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new Tokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/test.txt"));
 
-        //tokenizer = new Tokenizer("from std import *");
+        //tokenizer = new Tokenizer("for (a,b,) { print(i) }");
 
         var parser = new Parser(tokenizer);
 
@@ -338,6 +338,28 @@ class Program
         }
 
         root.AddNode(argsNode);
+
+        return root;
+    }
+
+    public static GraphNode ToGraphNode(ForNode node) {
+        var root = new GraphNode(node.GetHashCode(), "for loop");
+
+        if (node.Header.Count != 0) {
+            var headerNode = new GraphNode(node.Header.GetHashCode(), "header");
+
+            headerNode.AddProperty("color", "deepskyblue");
+            headerNode.AddProperty("tooltip", "for-loop header");
+
+            foreach (var statement in node.Header) headerNode.AddNode(ToGraphNode((dynamic)statement));
+
+            root.AddNode(headerNode);
+
+        } else {
+            root.AddNode(new GraphNode(node.Header.GetHashCode(), "(empty header)"));
+        }
+
+        root.AddNode(ToGraphNode(node.Body));
 
         return root;
     }

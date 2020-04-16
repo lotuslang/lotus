@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 public class FuncCallParselet : IInfixParselet
 {
@@ -15,7 +16,7 @@ public class FuncCallParselet : IInfixParselet
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 
-        var args = parser.ConsumeCommaSeparatedList("(", ")");
+        var args = parser.ConsumeCommaSeparatedValueList("(", ")");
 
         return new FunctionCallNode(args, function as ValueNode, function.Token);
     }

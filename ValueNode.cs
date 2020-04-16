@@ -11,7 +11,7 @@ public class ValueNode : StatementNode
     /// This constant is the equivalent of "null". When a function doesn't return, it will actually set the `#return` variable to this constant.
     /// Variables that are assigned to a non-returning functions will actually be assigned this value.
     /// </summary>
-    public static readonly ValueNode NULL = new ValueNode("null", new Token('\0', TokenKind.EOF, null));
+    public static new readonly ValueNode NULL = new ValueNode("null", new Token('\0', TokenKind.EOF, null));
 
     //// <summary>
     /// The value of this ValueNode
@@ -30,7 +30,7 @@ public class ValueNode : StatementNode
 public class OperationNode : ValueNode
 {
     public new OperatorToken Token {
-        get => Token as OperatorToken;
+        get => Token;
     }
 
     protected List<ValueNode> operands;
@@ -105,7 +105,7 @@ public class ComplexStringNode : StringNode
     }
 
     public ComplexStringNode(ComplexStringToken token, List<ValueNode> codeSections) : base(token.Representation, token) {
-        sections = codeSections;
+        sections = new List<ValueNode>(codeSections);
     }
 
     public void AddSection(ValueNode section) {

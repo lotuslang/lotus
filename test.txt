@@ -43,10 +43,14 @@ foreach (item in collection) {
 
 foreach (item2 in some.class.arr) { }
 
-a = --i
+var a = --n
 
-obj = new Object(h, ey)
+obj = new Object()
 
-arr = [ 1, 5, -3, 8]
+arr = [ 1, 5, -3, 8 ]
 
-b = true
+var b = true
+
+for (var i = 0, i < arr.length, i++) {
+    print(arr[i])
+}

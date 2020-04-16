@@ -40,6 +40,9 @@ public static class Utilities
         RegisterInfix(ExpressionKind.Multiply, Precedence.Multiplication, "Mul");
         RegisterInfix(ExpressionKind.Divide, Precedence.Division, "Div");
         RegisterInfix(ExpressionKind.Power, Precedence.Power, "Pow");
+        RegisterInfix(ExpressionKind.Modulo, Precedence.Modulo, "Mod");
+        RegisterInfix(ExpressionKind.Or, Precedence.Or, "Or");
+        RegisterInfix(ExpressionKind.And, Precedence.And, "And");
         RegisterInfix(ExpressionKind.Eq, Precedence.Equal, "Eq");
         RegisterInfix(ExpressionKind.NotEq, Precedence.NotEqual, "NotEq");
         RegisterInfix(ExpressionKind.Less, Precedence.LessThan, "Less");
@@ -90,6 +93,8 @@ public static class Utilities
                 return ExpressionKind.Multiply;
             case "/":
                 return ExpressionKind.Divide;
+            case "%":
+                return ExpressionKind.Modulo;
             case "^":
                 return ExpressionKind.Power;
             case "!":

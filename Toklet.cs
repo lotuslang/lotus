@@ -285,9 +285,9 @@ public class OperatorToklet : Toklet
                 ||  c == '!') return true;
 
                 if (c == '&') {
-                    if (input.Consume() == '&') return true;
+                    return input.Consume() == '&';
                 } else if (c == '|') {
-                    if (input.Consume() == '|') return true;
+                    return input.Consume() == '|';
                 }
 
                 return false;

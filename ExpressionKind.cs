@@ -10,6 +10,7 @@ public enum ExpressionKind
     Minus,
     Multiply,
     Divide,
+    Modulo,
     Power,
     Array,
     Access,

@@ -14,17 +14,25 @@ public class StringConsumer : IConsumer<char>
         get => stack.Count + reconsumeQueue.Count;
     }
 
+    private Location lastPosition;
+
     public char Current { get; protected set; }
 
-    protected Location pos;
+    protected Location pos; // we keep it because it's faster performance-wise
 
     public Location Position {
         get => pos;
     }
 
-    public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") {
+    protected StringConsumer() {
+        Current = '\u0003';
         stack = new Stack<char>();
+        pos = new Location(1, 0);
+        reconsumeQueue = new Queue<char>();
+        lastPosition = new Location(0, -1);
+    }
 
+    public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") : this() {
         while (consumer.Consume(out char item)) {
             stack.Push(item);
         }
@@ -32,11 +40,9 @@ public class StringConsumer : IConsumer<char>
         stack = new Stack<char>(stack);
 
         pos = new Location(1, 0, fileName);
-
-        reconsumeQueue = new Queue<char>();
     }
 
-    public StringConsumer(StringConsumer consumer) {
+    public StringConsumer(StringConsumer consumer) : this() {
         stack = new Stack<char>(consumer.stack.Reverse());
 
         Current = consumer.Current;
@@ -44,22 +50,20 @@ public class StringConsumer : IConsumer<char>
         pos = new Location(consumer.pos.line, consumer.pos.column, consumer.pos.filename);
 
         reconsumeQueue = new Queue<char>(consumer.reconsumeQueue);
+
+        lastPosition = consumer.lastPosition;
     }
 
-    public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") {
+    public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
         stack = new Stack<char>(collection.Reverse());
 
         pos = new Location(1, 0, fileName);
-
-        reconsumeQueue = new Queue<char>();
     }
 
     public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
     { }
 
-    public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") {
-        stack = new Stack<char>();
-
+    public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") : this() {
         foreach (var line in lines)
         {
             foreach (var ch in line)
@@ -73,8 +77,6 @@ public class StringConsumer : IConsumer<char>
         stack = new Stack<char>(stack);
 
         pos = new Location(1, 0, fileName);
-
-        reconsumeQueue = new Queue<char>();
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)
@@ -84,12 +86,7 @@ public class StringConsumer : IConsumer<char>
 
         reconsumeQueue.Enqueue(Current);
 
-        if (Current == '\n') {
-            pos.line--;
-            pos.column = -1;
-        }
-
-        pos.column++;
+        pos = lastPosition;
     }
 
     public bool Consume(out char result) {
@@ -102,8 +99,17 @@ public class StringConsumer : IConsumer<char>
 
         // If we are instructed to reconsume the last char, then dequeue a char from the reconsumeQueue and return it
         if (reconsumeQueue.Count != 0) {
+            if (reconsumeQueue.Peek() == '\n') {
+                pos.line++;
+                pos.column = -1;
+            }
+
+            pos.column++;
+
             return reconsumeQueue.Dequeue();
         }
+
+        lastPosition = pos;
 
         if (Count == 0) {
             Current = '\u0003';

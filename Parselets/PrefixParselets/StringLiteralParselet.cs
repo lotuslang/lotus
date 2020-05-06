@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-public class StringLiteralParselet : IPrefixParselet
+public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
 {
-    public StatementNode Parse(Parser _, Token token) {
+    public StringNode Parse(Parser parser, Token token) {
         if (token.Kind == TokenKind.@string) {
             return new StringNode(token.Representation, token);
         }
@@ -12,12 +12,12 @@ public class StringLiteralParselet : IPrefixParselet
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
             foreach (var section in complexString.CodeSections) {
-                node.AddSection(new Parser(new Consumer<Token>(section)).ConsumeValue());
+                node.AddSection(new Parser(new Consumer<Token>(section), parser.Grammar).ConsumeValue());
             }
 
             return node;
         }
 
-        throw new ArgumentException(nameof(token) + " needs to be a string.");
+        throw new ArgumentException("Token needs to be a string.");
     }
 }

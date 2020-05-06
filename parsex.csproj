@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3</TargetFramework>
     <RootNamespace>Parsex</RootNamespace>
+    <TargetCulture>InvariantCulture</TargetCulture>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
 </Project>

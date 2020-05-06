@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-public class ForParselet : IStatementParselet
+public sealed class ForParselet : IStatementParselet<ForNode>
 {
-    public StatementNode Parse(Parser parser, Token token) {
-        if (!(token is ComplexToken forToken && forToken == "for")) {
-            throw new Exception();
-        }
+    public ForNode Parse(Parser parser, Token token) {
+        if (!(token is ComplexToken forToken && forToken == "for"))
+            throw new UnexpectedTokenException(token, "in for loop header", "for");
 
         var header = new List<StatementNode>();
 
-        if (parser.Tokenizer.Consume() != "(") throw new Exception();
+        if (parser.Tokenizer.Consume() != "(")
+            throw new UnexpectedTokenException(parser.Tokenizer.Current, "in for loop header", "(");
 
         var commaCount = 0; // FIXME: I feel dirty
 
@@ -42,9 +42,10 @@ public class ForParselet : IStatementParselet
             commaCount++;
         }
 
-        parser.Tokenizer.Consume();
+        parser.Tokenizer.Consume(); // consume the ')'
 
-        if (commaCount > 2) throw new Exception("too many statements in for-loop header (" + (commaCount + 1) + ")");
+        if (commaCount > 2) // FIXME: Choose an appropriate exception
+            throw new Exception("too many statements in for-loop header (" + (commaCount + 1) + ")");
 
         // if there's not enough statements in the header (happens when the last statement in not specified),
         // add an empty statement

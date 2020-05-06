@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class ArrayAccessParselet : IInfixParselet
+public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
 {
     public Precedence Precedence {
         get => Precedence.ArrayAccess;
     }
 
-    public StatementNode Parse(Parser parser, Token leftSquareBracket, StatementNode array) {
-        if (!(array is ValueNode)) {
-            throw new ArgumentException(nameof(array) + " needs to be, at least, an expression/value.");
-        }
+    public OperationNode Parse(Parser parser, Token leftSquareBracketToken, ValueNode array) {
+
+        if (leftSquareBracketToken != "[")
+            throw new UnexpectedTokenException(leftSquareBracketToken, "in array index access", "[");
 
         var index = parser.ConsumeValue();
 
         if (parser.Tokenizer.Consume() != "]") {
-            throw new UnexpectedTokenException(parser.Tokenizer.Current, "]");
+            throw new UnexpectedTokenException(parser.Tokenizer.Current, "in array index access", "]");
         }
 
         return new OperationNode(
-            new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracket.Location),
+            new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracketToken.Location),
             new ValueNode[] {
-                array as ValueNode,
+                array,
                 index
             },
-            "arrayAccess"
+            OperationType.ArrayAccess
         );
     }
 }

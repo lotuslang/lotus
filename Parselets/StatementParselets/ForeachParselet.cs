@@ -1,35 +1,41 @@
 using System;
 using System.Linq;
 
-public class ForeachParselet : IStatementParselet
+public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 {
-    public StatementNode Parse(Parser parser, Token foreachToken)
+    public ForeachNode Parse(Parser parser, Token foreachToken)
     {
-        if (foreachToken != "foreach")
-            throw new UnexpectedTokenException("a foreach statement must start with the keyword 'foreach'", foreachToken);
+        if (!(foreachToken is ComplexToken @foreach && @foreach == "foreach"))
+            throw new UnexpectedTokenException(foreachToken, "in a foreach header", "the 'foreach' keyword");
 
-        if (parser.Tokenizer.Consume() != "(") throw new Exception();
+        if (parser.Tokenizer.Consume() != "(") {
+            throw new UnexpectedTokenException(parser.Tokenizer.Current, "in foreach header", "an open parenthesis '('");
+        }
 
-        var itemName = parser.Tokenizer.Consume();
+        var itemNameToken = parser.Tokenizer.Consume();
 
-        if (!(itemName is ComplexToken)) throw new Exception();
+        if (!(itemNameToken is ComplexToken itemName && itemName == TokenKind.ident)) {
+            throw new UnexpectedTokenException(itemNameToken, "in a foreach header", TokenKind.ident);
+        }
 
         var inToken = parser.Tokenizer.Consume();
 
-        if (!(inToken is ComplexToken && inToken == "in")) throw new Exception();
+        if (!(inToken is ComplexToken @in && @in == "in")) {
+            throw new UnexpectedTokenException(itemNameToken, "in a foreach header", "the 'in' keyword");
+        }
 
         var collectionName = parser.ConsumeValue();
 
         if (!Utilities.IsName(collectionName)) {
-            throw new Exception();
+            throw new UnexpectedValueType(collectionName, "in a foreach header", typeof(OperationNode), typeof(IdentNode));
         }
 
         if (parser.Tokenizer.Consume() != ")") {
-            throw new Exception();
+            throw new UnexpectedTokenException(parser.Tokenizer.Current, "in a foreach header", "a closing parenthesis ')'");
         }
 
         var body = parser.ConsumeSimpleBlock();
 
-        return new ForeachNode(foreachToken as ComplexToken, inToken as ComplexToken, new IdentNode(itemName.Representation, itemName as ComplexToken), collectionName, body);
+        return new ForeachNode(@foreach, @in, new IdentNode(itemNameToken.Representation, itemName), collectionName, body);
     }
 }

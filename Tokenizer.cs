@@ -3,123 +3,145 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
-
+using System.Diagnostics.CodeAnalysis;
 
 public class Tokenizer : IConsumer<Token>
 {
-
-    protected readonly List<Toklet> toklets;
-
-    protected readonly List<TriviaToklet> triviaToklets;
 
     public Token Current { get; protected set; }
 
     protected Queue<Token> reconsumeQueue;
 
     public Location Position {
-        get => input.Position;
+        get => Current.Location;
     }
 
     protected StringConsumer input;
 
-    private Tokenizer() {
+    public ReadOnlyGrammar Grammar { get; protected set; }
+
+    protected Tokenizer() {
         reconsumeQueue = new Queue<Token>();
 
-        Current = new Token('\0', TokenKind.delim, default(Location));
+        input = new StringConsumer(new char[0]);
 
-        triviaToklets = new List<TriviaToklet> {
-            new CommentTriviaToklet(),
-            new WhitespaceTriviaToklet(),
-            new NewlineTriviaToklet(),
-            new TriviaToklet(),
-        };
+        Current = Token.NULL;
 
-        toklets = new List<Toklet> {
-            new NumberToklet(),
-            new ComplexStringToklet(),
-            new StringToklet(),
-            new IdentToklet(),
-            new OperatorToklet(),
-            new Toklet(),
-        };
+        Grammar = new ReadOnlyGrammar();
     }
 
-    public Tokenizer(StringConsumer stringConsumer) : this () {
+    protected Tokenizer(ReadOnlyGrammar grammar) : this() {
+        if (grammar is null) {
+            throw new ArgumentNullException(nameof(grammar));
+        }
+
+        Grammar = grammar;
+    }
+
+    public Tokenizer(StringConsumer stringConsumer, ReadOnlyGrammar grammar) : this(grammar) {
         input = new StringConsumer(stringConsumer);
     }
 
-    public Tokenizer(IConsumer<char> consumer) : this () {
+    public Tokenizer(IConsumer<char> consumer, ReadOnlyGrammar grammar) : this(grammar) {
         input = new StringConsumer(consumer);
     }
 
-    public Tokenizer(IConsumer<Token> tokenConsumer) : this(new StringConsumer("")) {
+    public Tokenizer(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(new StringConsumer(""), grammar) {
         while (tokenConsumer.Consume(out _)) {
             reconsumeQueue.Enqueue(tokenConsumer.Current);
         }
     }
 
-    public Tokenizer(Tokenizer tokenizer) : this(tokenizer.input) {
+    public Tokenizer(Tokenizer tokenizer) : this(tokenizer, tokenizer.Grammar)
+    { }
+
+    public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer.input, grammar) {
         reconsumeQueue = new Queue<Token>(tokenizer.reconsumeQueue);
 
         Current = tokenizer.Current;
     }
 
-    public Tokenizer(System.IO.FileInfo fileInfo) : this(new StringConsumer(fileInfo))
+    public Tokenizer(System.IO.FileInfo fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar)
     { }
 
-    public Tokenizer(IEnumerable<char> collection) : this(new StringConsumer(collection))
+    public Tokenizer(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar)
     { }
 
-    public Tokenizer(IEnumerable<string> collection) : this(new StringConsumer(collection))
+    public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar)
     { }
 
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out Token token) && Object.ReferenceEquals(token, Current)) return;
+        if (reconsumeQueue.TryPeek(out Token? token) && Object.ReferenceEquals(token!, Current)) {
+            Console.WriteLine("Calling reconsume multiple times in a row !");
+            return;
+        }
 
         reconsumeQueue.Enqueue(Current);
     }
 
-    public Token Peek() {
-        if (reconsumeQueue.Count != 0) {
-            return reconsumeQueue.Peek();
-        }
+    // Because of stupid interface rule
+    public Token Peek() => Peek(preserveTrivia: false);
 
-        if (input.Peek() == '\u0003' || input.Peek() == '\0') {
-            return Token.NULL;
-        }
+    public Token Peek(bool preserveTrivia = false) {
+        var oldCurrent = new Token(
+            Current.Representation,
+            Current.Kind,
+            Current.Location,
+            Current.LeadingTrivia,
+            Current.TrailingTrivia
+        );
 
-        return new Tokenizer(this).Consume();
+        var output = Consume(preserveTrivia);
+
+        reconsumeQueue.Enqueue(output);
+
+        Current = oldCurrent;
+
+        return output;
     }
 
-    public Token[] Peek(int n) {
-        // create a new (dee-copy of) tokenizer from this one
-        var tokenizer = new Tokenizer(this);
+    public Token[] Peek(int n, bool preserveTrivia = false) {
 
-        // the output list
+        var oldCurrent = new Token(
+            Current.Representation,
+            Current.Kind,
+            Current.Location,
+            Current.LeadingTrivia,
+            Current.TrailingTrivia
+        );
+
         var output = new Token[n];
 
-        // consume `n` tokens and add them to the output
         for (int i = 0; i < n; i++) {
-            output[i] = tokenizer.Consume();
+            output[n] = Consume(preserveTrivia);
+        }
+
+        Current = oldCurrent;
+
+        foreach (var token in output.Reverse()) {
+            reconsumeQueue.Enqueue(token);
         }
 
         return output;
     }
 
-    public bool Consume(out Token result) {
+    public bool Consume([MaybeNullWhen(false)] out Token result) {
         result = Consume();
 
         return result != TokenKind.EOF;
     }
 
-    public Token Consume() {
+    // Because of stupid interface rule
+    public Token Consume() => Consume(preserveTrivia: false);
+
+    public Token Consume(bool preserveTrivia = false) {
 
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
         if (reconsumeQueue.Count != 0) {
-            return reconsumeQueue.Dequeue();
+            return (Current = reconsumeQueue.Dequeue());
         }
 
-        // Consume a character from the LinesConsumer object
+        // Consume a character from the StringConsumer object
         var currChar = input.Consume();
 
         // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
@@ -134,25 +156,31 @@ public class Tokenizer : IConsumer<Token>
 
         input.Reconsume();
 
-        var leadingTrivia = ConsumeTrivia();
+        if (!preserveTrivia) {
+            var leadingTrivia = ConsumeTrivia();
 
-        Current = toklets.Find(toklet => toklet.Condition(new StringConsumer(input))).Consume(input, this);
+            Current = Grammar.MatchToklet(input).Consume(input, this);
 
-        if (!(leadingTrivia is null)) Current.AddLeadingTrivia(leadingTrivia);
+            if (!(leadingTrivia is null)) Current.AddLeadingTrivia(leadingTrivia);
 
-        if (input.Peek() != '\n') {
-            var trailingTrivia = ConsumeTrivia();
+            if (input.Peek() != '\n') {
+                var trailingTrivia = ConsumeTrivia();
 
-            if (!(trailingTrivia is null)) Current.AddTrailingTrivia(trailingTrivia);
+                if (!(trailingTrivia is null)) Current.AddTrailingTrivia(trailingTrivia);
+            }
+
+            return Current;
         }
+
+        Current = Grammar.MatchToklet(input).Consume(input, this);
 
         return Current;
     }
 
     public TriviaToken ConsumeTrivia() {
-        var triviaToklet = triviaToklets.Find(toklet => toklet.Condition(new StringConsumer(input)));
+        var triviaToklet = Grammar.MatchTriviaToklet(input);
 
-        if (triviaToklet is null) return null;
+        if (triviaToklet is null) return TriviaToken.NULL;
 
         return triviaToklet.Consume(input, this) as TriviaToken;
     }

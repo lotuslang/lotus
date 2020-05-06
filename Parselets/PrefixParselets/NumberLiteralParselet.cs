@@ -1,12 +1,12 @@
 using System;
 
-public class NumberLiteralParselet : IPrefixParselet
+public sealed class NumberLiteralParselet : IPrefixParselet<NumberNode>
 {
-    public StatementNode Parse(Parser _, Token token) {
+    public NumberNode Parse(Parser _, Token token) {
         if (token is NumberToken number) {
             return new NumberNode(number);
         }
 
-        throw new ArgumentException(nameof(token) + " needs to be a number.");
+        throw new ArgumentException("Token needs to be a number.");
     }
 }

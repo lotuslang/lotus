@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 public interface IConsumer<T>
 {
@@ -22,6 +23,7 @@ public interface IConsumer<T>
     /// Consumes an object and returns it.
     /// </summary>
     /// <returns>The consumed object</returns>
+    //[return: MaybeNull]
     T Consume();
 
     /// <summary>
@@ -29,7 +31,9 @@ public interface IConsumer<T>
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise</param>
     /// <returns></returns>
-    bool Consume(out T item);
+    bool Consume([MaybeNullWhen(false)] out T item);
 
     T Peek();
+
+    //T[] Peek(int n);
 }

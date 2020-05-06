@@ -1,63 +1,63 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 public class Consumer<T> : IConsumer<T>
 {
     private bool reconsumeFlag;
 
-    private Stack<T> stack;
+    private Stack<T> inputStack;
 
-    protected T current;
+    [property: AllowNull]
+    public T Current { get; protected set; }
 
-    public T Current {
-        get => current;
+    protected Location pos; // we keep it because it's faster performance-wise
+
+    public Location Position => pos;
+
+    protected Consumer() {
+        inputStack = new Stack<T>();
+        pos = new Location(1, 0);
+        Current = default(T);
     }
 
-    public Location pos;
-
-    public Location Position {
-        get => pos;
+    public Consumer(IEnumerable<T> enumerable) : this() {
+        inputStack = new Stack<T>(enumerable.Reverse());
     }
 
-    public Consumer(IEnumerable<T> enumerable) {
-        stack = new Stack<T>(enumerable.Reverse());
-        pos = new Location(0, 0);
-    }
-
-    public Consumer(IConsumer<T> consumer) {
-        var stack = new Stack<T>();
-
+    public Consumer(IConsumer<T> consumer) : this() {
         while (consumer.Consume(out T item)) {
-            stack.Push(item);
+            inputStack.Push(item);
         }
 
-        this.stack = new Stack<T>(stack);
-
-        pos = new Location(0, 0);
+        inputStack = new Stack<T>(inputStack);
     }
 
-    public bool Consume(out T item) {
-        if (stack.Count == 0) {
-            current = item = default;
+    public bool Consume([MaybeNullWhen(false)] out T item) {
+        if (inputStack.Count == 0) {
+            Current = default(T);
+            item = default(T);
             return false;
         }
 
-        item = Consume();
+        item = Consume()!;
+
         return true;
     }
 
+    [return: MaybeNull]
     public T Consume() {
-        if (stack.Count == 0) {
-            current = default;
-            return current;
+        if (inputStack.Count == 0) {
+            Current = default(T);
+            return Current;
         }
 
         pos.column++;
 
-        current = stack.Pop();
+        Current = inputStack.Pop();
 
-        return current;
+        return Current;
     }
 
     public void Reconsume() {
@@ -67,9 +67,9 @@ public class Consumer<T> : IConsumer<T>
     }
 
     public T Peek() {
-        if (reconsumeFlag) return current;
+        if (reconsumeFlag) return Current;
 
-        stack.TryPeek(out T result);
+        inputStack.TryPeek(out T result);
 
         return result;
     }

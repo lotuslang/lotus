@@ -1,64 +1,75 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 public class Parser : IConsumer<StatementNode>
 {
-    private Queue<StatementNode> reconsumeQueue;
+    private readonly Queue<StatementNode> reconsumeQueue;
 
-    private IConsumer<Token> tokenizer;
-
-    public IConsumer<Token> Tokenizer {
-        get => tokenizer;
-    }
+    public IConsumer<Token> Tokenizer { get; }
 
     public Location Position {
-        get => tokenizer != null ? tokenizer.Position : default;
+        get => Current.Token.Location;
     }
-
-    protected StatementNode current;
 
     /// <summary>
     /// Gets the last StatementNode object consumed by this instance.
     /// </summary>
     /// <value>The last StatementNode consumed.</value>
-    public StatementNode Current {
-        get => current;
+    public StatementNode Current { get; protected set; }
+
+    public ReadOnlyGrammar Grammar { get; protected set; }
+
+    protected Parser() {
+        reconsumeQueue = new Queue<StatementNode>();
+
+        Current = StatementNode.NULL;
+
+        Grammar = new ReadOnlyGrammar();
     }
 
-    public Parser(Tokenizer tokenizer) {
-        this.tokenizer = new Tokenizer(tokenizer);
+    protected Parser(ReadOnlyGrammar grammar) : this() {
+        if (grammar is null) {
+            throw new ArgumentNullException(nameof(grammar));
+        }
+
+        Grammar = grammar;
+    }
+
+    //public Parser(Tokenizer tokenizer) : this(tokenizer as IConsumer<Token>) { }
+
+    public Parser(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+        Tokenizer = tokenConsumer;
         reconsumeQueue = new Queue<StatementNode>();
     }
 
-    public Parser(IConsumer<Token> tokenConsumer) {
-        tokenizer = tokenConsumer;
-        reconsumeQueue = new Queue<StatementNode>();
-    }
-
-    public Parser(IConsumer<StatementNode> nodeConsumer) {
-        reconsumeQueue = new Queue<StatementNode>();
-
-        while (nodeConsumer.Consume(out StatementNode node)) {
+    public Parser(IConsumer<StatementNode> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+        while (nodeConsumer.Consume(out StatementNode? node)) {
             reconsumeQueue.Enqueue(node);
         }
     }
 
-    public Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
+    public Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
 
-    public Parser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
+    public Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection, grammar), grammar) { }
 
-    public Parser(System.IO.FileInfo file) : this(new Tokenizer(file)) { }
+    public Parser(System.IO.FileInfo file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
 
-    public Parser(Parser parser) : this(parser.Tokenizer) {
+    public Parser(Parser parser) : this(parser, parser.Grammar)
+    { }
+
+    public Parser(Parser parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
         reconsumeQueue = new Queue<StatementNode>(parser.reconsumeQueue);
+
+        Current = parser.Current;
     }
 
     /// <summary>
     /// Reconsumes the last StatementNode object.
     /// </summary>
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out StatementNode node) && Object.ReferenceEquals(node, current)) return;
+        if (reconsumeQueue.TryPeek(out StatementNode? node) && Object.ReferenceEquals(node, Current)) return;
     }
 
     public StatementNode Peek()
@@ -81,10 +92,10 @@ public class Parser : IConsumer<StatementNode>
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise.</param>
     /// <returns>The StatementNode object consumed.</returns>
-    public bool Consume(out StatementNode result) {
+    public bool Consume([MaybeNullWhen(false)] out StatementNode result) {
         result = Consume(); // consume a StatementNode
 
-        return result != null;
+        return result != StatementNode.NULL;
     }
 
     /// <summary>
@@ -98,60 +109,56 @@ public class Parser : IConsumer<StatementNode>
             return reconsumeQueue.Dequeue();
         }
 
-        if (tokenizer == null) {
-            Console.WriteLine("wtf the tokenizer is null ?????");
-            return null;
+        if (Tokenizer == null) {
+            throw new InternalErrorException(message: "The parser's tokenizer was null. Something went seriously wrong");
         }
 
         // Consume a token
-        var currToken = tokenizer.Consume();
+        var currToken = Tokenizer.Consume();
 
         // if the token is EOF, return ValueNode.NULL
-        if (currToken == "\u0003" || currToken == "\0") return null;
-
-        // if the token is ';', return the next statement node
-        if (currToken == ";") return Consume();
+        if (currToken == "\u0003" || currToken == "\0") return StatementNode.NULL;
 
         // if the token is "var"
         switch (currToken)
         {
             case "var":
-                current = new DeclarationParselet().Parse(this, currToken);
+                Current = new DeclarationParselet().Parse(this, currToken);
                 break;
             case "new":
-                current = new ObjectCreationParselet().Parse(this, currToken);
+                Current = new ObjectCreationParselet().Parse(this, currToken);
                 break;
             case "def":
-                current = new FunctionDeclarationParselet().Parse(this, currToken);
+                Current = new FunctionDeclarationParselet().Parse(this, currToken);
                 break;
             case "return":
-                current = new ReturnParselet().Parse(this, currToken);
+                Current = new ReturnParselet().Parse(this, currToken);
                 break;
             case "from":
-                current = new ImportParselet().Parse(this, currToken);
+                Current = new ImportParselet().Parse(this, currToken);
                 break;
             case "namespace":
-                current = new NamespaceParselet().Parse(this, currToken);
+                Current = new NamespaceParselet().Parse(this, currToken);
                 break;
             case "foreach":
-                current = new ForeachParselet().Parse(this, currToken);
+                Current = new ForeachParselet().Parse(this, currToken);
                 break;
             case "for":
-                current = new ForParselet().Parse(this, currToken);
+                Current = new ForParselet().Parse(this, currToken);
                 break;
             default:
-                tokenizer.Reconsume();
-                current = ConsumeValue();
+                Tokenizer.Reconsume();
+                Current = ConsumeValue();
                 break;
         }
 
-        return current;
+        return Current;
     }
 
     public ValueNode ConsumeValue(Precedence precedence = 0) {
-        var token = tokenizer.Consume();
+        var token = Tokenizer.Consume();
 
-        if (!token.GetExpressionKind().IsPrefix()) {
+        if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
             throw new UnexpectedTokenException(token,
                 TokenKind.@bool,
                 TokenKind.@operator,
@@ -162,93 +169,94 @@ public class Parser : IConsumer<StatementNode>
             );
         }
 
-        var left = Utilities.GetPrefixParselet(token).Parse(this, token);
+        var left = Grammar.GetPrefixParselet(token).Parse(this, token);
 
         //if (tokenizer.Peek() == null) return left as ValueNode;
 
-        token = tokenizer.Consume();
+        token = Tokenizer.Consume();
 
-        if (token.GetExpressionKind().IsPostfix()) {
-            left = Utilities.GetPostfixParselet(token).Parse(this, token, left);
+        if (Grammar.IsPostfix(Grammar.GetExpressionKind(token))) {
+            left = Grammar.GetPostfixParselet(token).Parse(this, token, left);
 
-            token = tokenizer.Consume();
+            token = Tokenizer.Consume();
         }
 
-        while (precedence < GetPrecedence(token)) {
-            left = Utilities.GetOperatorParselet(token).Parse(this, token, left);
+        while (precedence < Grammar.GetPrecedence(token)) {
+            left = Grammar.GetOperatorParselet(token).Parse(this, token, left);
 
-            token = tokenizer.Consume();
+            token = Tokenizer.Consume();
         }
 
-        tokenizer.Reconsume();
+        Tokenizer.Reconsume();
 
         return left as ValueNode;
     }
 
     public SimpleBlock ConsumeSimpleBlock() {
 
-        var bracket = tokenizer.Consume();
+        var bracket = Tokenizer.Consume();
 
         if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block", "{");
 
         var statements = new List<StatementNode>();
 
-        while (tokenizer.Peek() != "}") {
+        while (Tokenizer.Peek() != "}") {
             statements.Add(Consume());
 
-            if (tokenizer.Peek() == TokenKind.EOF) throw new Exception("EOF in block");
+            if (Tokenizer.Peek() == TokenKind.EOF) {
+                throw new UnexpectedTokenException(
+                    Tokenizer.Consume(),
+                    "in simple block",
+                    "a statement"
+                    // Extendable version with TokenKind :
+                    // Enum.GetValues(typeof(TokenKind)).Cast<TokenKind>().Where(value => value != TokenKind.EOF).ToArray()
+                );
+            }
 
-            if (tokenizer.Peek() == ";") tokenizer.Consume();
+            if (Tokenizer.Peek() == ";") Tokenizer.Consume();
         }
 
-        bracket = tokenizer.Consume();
+        bracket = Tokenizer.Consume();
 
-        if (bracket == ";") bracket = tokenizer.Consume();
+        if (bracket == ";") bracket = Tokenizer.Consume();
 
-        if (bracket != "}") throw new Exception("what² (" + bracket.Representation + ")");
+        if (bracket != "}") {
+            throw new UnexpectedTokenException(bracket, "in simple block", "}");
+        }
 
         return new SimpleBlock(statements.ToArray());
     }
 
     public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end) {
-        var startingDelimiter = tokenizer.Consume();
-
-        var items = new List<ValueNode>();
+        var startingDelimiter = Tokenizer.Consume();
 
         if (startingDelimiter.Representation != start) {
             throw new UnexpectedTokenException(startingDelimiter, "in comma-separated list", start);
         }
 
-        while (tokenizer.Peek() != end) {
+        var items = new List<ValueNode>();
+
+        while (Tokenizer.Peek() != end) {
 
             items.Add(ConsumeValue());
 
-            if (tokenizer.Consume() != ",") {
+            if (Tokenizer.Consume() != ",") {
 
-                if (tokenizer.Current == end) {
-                    tokenizer.Reconsume();
+                if (Tokenizer.Current == end) {
+                    Tokenizer.Reconsume();
                     break;
                 }
 
-                throw new UnexpectedTokenException(tokenizer.Current, "in comma-separated list", ",");
+                throw new UnexpectedTokenException(Tokenizer.Current, "in comma-separated list", ",");
             }
 
-            if (tokenizer.Peek() == ")") throw new Exception("cannot use comma followed by an end delimiter in comma-separated list");
+            if (Tokenizer.Peek() == end) {
+                throw new UnexpectedTokenException(Tokenizer.Consume(), "in comma-separated list", "value");
+            }
         }
 
-        tokenizer.Consume();
+        Tokenizer.Consume();
 
         return items.ToArray();
     }
-
-    private Precedence GetPrecedence(ExpressionKind kind) {
-        if (kind.IsOperatorParselet()) {
-            return Utilities.GetOperatorParselet(kind).Precedence;
-        }
-
-        return 0;
-    }
-
-    private Precedence GetPrecedence(Token token)
-        => token != null ? GetPrecedence(token.GetExpressionKind()) : 0;
 }

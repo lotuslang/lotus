@@ -1,23 +1,21 @@
 using System;
 using System.Linq;
 
-public class FuncCallParselet : IInfixParselet
+public sealed class FuncCallParselet : IInfixParselet<FunctionCallNode>
 {
     public Precedence Precedence {
         get => Precedence.FuncCall;
     }
 
-    public StatementNode Parse(Parser parser, Token leftParen, StatementNode function) {
+    public FunctionCallNode Parse(Parser parser, Token leftParenToken, ValueNode function) {
 
-        if (!(function is ValueNode)) {
-            throw new ArgumentException(nameof(function) + " needs to be, at least, a value.");
-        }
+        if (leftParenToken != "(") throw new UnexpectedTokenException(leftParenToken, "in function call", "(");
 
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 
         var args = parser.ConsumeCommaSeparatedValueList("(", ")");
 
-        return new FunctionCallNode(args, function as ValueNode, function.Token);
+        return new FunctionCallNode(args, function, function.Token);
     }
 }

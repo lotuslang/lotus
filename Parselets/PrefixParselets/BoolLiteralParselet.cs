@@ -1,12 +1,12 @@
 using System;
 
-public class BoolLiteralParselet : IPrefixParselet
+public sealed class BoolLiteralParselet : IPrefixParselet<BoolNode>
 {
-    public StatementNode Parse(Parser _, Token token) {
-        if (token is BoolToken boolean) {
+    public BoolNode Parse(Parser _, Token boolToken) {
+        if (boolToken is BoolToken boolean) {
             return new BoolNode(boolean.Value, boolean);
         }
 
-        throw new ArgumentException(nameof(token) + " needs to be a bool.");
+        throw new ArgumentException("Token needs to be a bool.");
     }
 }

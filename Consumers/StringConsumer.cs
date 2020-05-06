@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 public class StringConsumer : IConsumer<char>
 {
@@ -89,7 +90,7 @@ public class StringConsumer : IConsumer<char>
         pos = lastPosition;
     }
 
-    public bool Consume(out char result) {
+    public bool Consume([MaybeNullWhen(false)] out char result) {
         result = Consume();
 
         return result != '\u0003';

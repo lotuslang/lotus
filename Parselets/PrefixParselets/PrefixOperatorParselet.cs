@@ -1,12 +1,17 @@
-public class PrefixOperatorParselet : IPrefixParselet
-{
-    readonly string opType;
+using System;
 
-    public PrefixOperatorParselet(string operation) {
+public sealed class PrefixOperatorParselet : IPrefixParselet<OperationNode>
+{
+    readonly OperationType opType;
+
+    public PrefixOperatorParselet(OperationType operation) {
         opType = operation;
     }
 
-    public StatementNode Parse(Parser parser, Token token) {
-        return new OperationNode(token as OperatorToken, new ValueNode[] { parser.ConsumeValue(Precedence.Unary) }, "prefix" + opType);
+    public OperationNode Parse(Parser parser, Token token) {
+
+        if (!(token is OperatorToken opToken)) throw new Exception();
+
+        return new OperationNode(opToken, new ValueNode[] { parser.ConsumeValue(Precedence.Unary) }, opType);
     }
 }

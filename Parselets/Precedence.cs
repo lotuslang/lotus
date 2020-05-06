@@ -6,23 +6,25 @@ Here's a beautiful ASCII table for operator precedence
 | Precedence | Operator(s)  | Description                               |
 +------------+--------------+-------------------------------------------+
 |            | a()          | Function call                             |
-| 10         | a[]          | Array access                              |
+| 11         | a[]          | Array access                              |
 |            | .            | Member access                             |
 +------------+--------------+-------------------------------------------+
 |            | ++a --a      | Prefix increment and decrement            |
-| 9          | a++ a--      | Postfix increment and decrement           |
+| 10         | a++ a--      | Postfix increment and decrement           |
 |            | (type)object | Type casting                              |
 +------------+--------------+-------------------------------------------+
-| 8          | ^            | Exponentiation                            |
+| 9          | ^            | Exponentiation                            |
 +------------+--------------+-------------------------------------------+
-| 7          | a*b a/b a%b  | Multiplication, division and modulo       |
+| 8          | a*b a/b a%b  | Multiplication, division and modulo       |
 +------------+--------------+-------------------------------------------+
-| 6          | a+b a-b      | Addition and Substraction                 |
+| 7          | a+b a-b      | Addition and Substraction                 |
 +------------+--------------+-------------------------------------------+
-| 5          | < <=         | Greater-than and greater-than-or-equal-to |
+| 6          | < <=         | Greater-than and greater-than-or-equal-to |
 |            | > >=         | Lesser-than and lesser-than-or-equal-to   |
 +------------+--------------+-------------------------------------------+
-| 4          | == !=        | equal-to and not-equal-to                 |
+| 5          | == !=        | equal-to and not-equal-to                 |
++------------+--------------+-------------------------------------------+
+| 4          | ^^           | Logical XOR                               |
 +------------+--------------+-------------------------------------------+
 | 3          | &&           | Logical AND                               |
 +------------+--------------+-------------------------------------------+
@@ -72,6 +74,7 @@ Made by hand ;)
 
 */
 
+// PLEASE UPDATE TABLE IF YOU CHANGE THIS CLASS
 public enum Precedence {
     Comma = 0,
     Parenthesis = Comma,
@@ -80,21 +83,22 @@ public enum Precedence {
     Declaration = Assignment,
     Or = 2,
     And = 3,
-    Equal = 4,
+    Xor = 4,
+    Equal = 5,
     NotEqual = Equal,
-    LessThan = 5,
+    LessThan = 6,
     GreaterThan = LessThan,
     LessThanOrEqual = LessThan,
     GreaterThanOrEqual = LessThan,
-    Addition = 6,
+    Addition = 7,
     Substraction = Addition,
-    Multiplication = 7,
+    Multiplication = 8,
     Division = Multiplication,
     Modulo = Multiplication,
-    Power = 8,
-    Unary = 9,
+    Power = 9,
+    Unary = 10,
     TypeCast = Unary,
-    Access = 10,
+    Access = 11,
     FuncCall = Access,
     ArrayAccess = Access,
 }

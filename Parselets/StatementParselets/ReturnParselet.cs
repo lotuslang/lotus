@@ -1,13 +1,18 @@
-public class ReturnParselet : IStatementParselet
+public sealed class ReturnParselet : IStatementParselet<ReturnNode>
 {
-    public StatementNode Parse(Parser parser, Token returnKeyword) {
+    public ReturnNode Parse(Parser parser, Token returnToken) {
 
-        if (returnKeyword != "return") throw new UnexpectedTokenException(returnKeyword, "in return statement", "return");
+        if (!(returnToken is ComplexToken returnKeyword && returnKeyword == "return")) throw new UnexpectedTokenException(returnToken, "in return statement", "return");
 
-        if (parser.Tokenizer.Peek() == ";") return new ReturnNode(ValueNode.NULL, returnKeyword as ComplexToken);
+        if (parser.Tokenizer.Peek() == ";" || parser.Tokenizer.Peek() == "}") {
+
+            if (parser.Tokenizer.Peek() == ";") parser.Tokenizer.Consume();
+
+            return new ReturnNode(ValueNode.NULL, returnKeyword);
+        }
 
         var value = parser.ConsumeValue();
 
-        return new ReturnNode(value, returnKeyword as ComplexToken);
+        return new ReturnNode(value, returnKeyword);
     }
 }

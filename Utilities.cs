@@ -1,6 +1,8 @@
 using System;
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 public static class Utilities
 {
@@ -15,158 +17,10 @@ public static class Utilities
         "print",
     };
 
-    static readonly Dictionary<ExpressionKind, IPrefixParselet> PreParselets = new Dictionary<ExpressionKind, IPrefixParselet>();
-
-    static readonly Dictionary<ExpressionKind, IInfixParselet> InParselets = new Dictionary<ExpressionKind, IInfixParselet>();
-
-    static readonly Dictionary<ExpressionKind, IPostfixParselet> PostParselets = new Dictionary<ExpressionKind, IPostfixParselet>();
-
-    static Utilities() {
-        RegisterPrefix(ExpressionKind.Number, new NumberLiteralParselet());
-        RegisterPrefix(ExpressionKind.String, new StringLiteralParselet());
-        RegisterPrefix(ExpressionKind.Identifier, new IdentifierParselet());
-        RegisterPrefix(ExpressionKind.Boolean, new BoolLiteralParselet());
-        RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParselet());
-        RegisterPrefix(ExpressionKind.Plus, new PrefixOperatorParselet("Pos"));
-        RegisterPrefix(ExpressionKind.Minus, new PrefixOperatorParselet("Neg"));
-        RegisterPrefix(ExpressionKind.Not, new PrefixOperatorParselet("Not"));
-        RegisterPrefix(ExpressionKind.Increment, new PrefixOperatorParselet("Incr"));
-        RegisterPrefix(ExpressionKind.Decrement, new PrefixOperatorParselet("Decr"));
-        RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParselet());
-        RegisterPrefix(ExpressionKind.New, new ObjectCreationParselet());
-
-        RegisterInfix(ExpressionKind.Plus, Precedence.Addition, "Add");
-        RegisterInfix(ExpressionKind.Minus, Precedence.Substraction, "Sub");
-        RegisterInfix(ExpressionKind.Multiply, Precedence.Multiplication, "Mul");
-        RegisterInfix(ExpressionKind.Divide, Precedence.Division, "Div");
-        RegisterInfix(ExpressionKind.Power, Precedence.Power, "Pow");
-        RegisterInfix(ExpressionKind.Modulo, Precedence.Modulo, "Mod");
-        RegisterInfix(ExpressionKind.Or, Precedence.Or, "Or");
-        RegisterInfix(ExpressionKind.And, Precedence.And, "And");
-        RegisterInfix(ExpressionKind.Eq, Precedence.Equal, "Eq");
-        RegisterInfix(ExpressionKind.NotEq, Precedence.NotEqual, "NotEq");
-        RegisterInfix(ExpressionKind.Less, Precedence.LessThan, "Less");
-        RegisterInfix(ExpressionKind.LessOrEq, Precedence.LessThanOrEqual, "LessOrEq");
-        RegisterInfix(ExpressionKind.Greater, Precedence.GreaterThan, "Greater");
-        RegisterInfix(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, "GreaterOrEq");
-        RegisterInfix(ExpressionKind.Access, Precedence.Access, "Access");
-        RegisterInfix(ExpressionKind.Assignment, Precedence.Assignment, "Assign");
-
-        RegisterPostfix(ExpressionKind.Increment, "Incr");
-        RegisterPostfix(ExpressionKind.Decrement, "Decr");
-
-        InParselets.Add(ExpressionKind.Array, new ArrayAccessParselet());
-        InParselets.Add(ExpressionKind.LeftParen, new FuncCallParselet());
-    }
-
-    static void RegisterPrefix(ExpressionKind kind, IPrefixParselet parselet)
-        => PreParselets.Add(kind, parselet);
-
-    static void RegisterInfix(ExpressionKind kind, Precedence precedence, string operationType)
-        => InParselets.Add(kind, new BinaryOperatorParselet(precedence, operationType));
-
-    static void RegisterPostfix(ExpressionKind kind, string operationType)
-        => PostParselets.Add(kind, new PostfixOperatorParselet(operationType));
-
-    public static ExpressionKind GetExpressionKind(this Token token) {
-
-        if (token == null) return ExpressionKind.NotAnExpr;
-
-        switch (token.Kind) {
-            case TokenKind.ident:
-                return ExpressionKind.Identifier;
-            case TokenKind.number:
-                return ExpressionKind.Number;
-            case TokenKind.@bool:
-                return ExpressionKind.Boolean;
-            case TokenKind.@string:
-            case TokenKind.complexString:
-                return ExpressionKind.String;
-        }
-
-        switch (token.Representation) {
-            case "+":
-                return ExpressionKind.Plus;
-            case "-":
-                return ExpressionKind.Minus;
-            case "*":
-                return ExpressionKind.Multiply;
-            case "/":
-                return ExpressionKind.Divide;
-            case "%":
-                return ExpressionKind.Modulo;
-            case "^":
-                return ExpressionKind.Power;
-            case "!":
-                return ExpressionKind.Not;
-            case "==":
-                return ExpressionKind.Eq;
-            case "!=":
-                return ExpressionKind.NotEq;
-            case "<":
-                return ExpressionKind.Less;
-            case ">":
-                return ExpressionKind.Greater;
-            case "<=":
-                return ExpressionKind.LessOrEq;
-            case ">=":
-                return ExpressionKind.GreaterOrEq;
-            case "&&":
-                return ExpressionKind.And;
-            case "||":
-                return ExpressionKind.Or;
-            case "^^":
-                return ExpressionKind.Xor;
-            case "++":
-                return ExpressionKind.Increment;
-            case "--":
-                return ExpressionKind.Decrement;
-            case "(":
-                return ExpressionKind.LeftParen;
-            case "[":
-                return ExpressionKind.Array;
-            case ".":
-                return ExpressionKind.Access;
-            case "=":
-                return ExpressionKind.Assignment;
-            case "new":
-                return ExpressionKind.New;
-        }
-
-        return ExpressionKind.NotAnExpr;
-    }
-
-    public static IPrefixParselet GetPrefixParselet(ExpressionKind kind)
-        => PreParselets[kind];
-
-    public static IPrefixParselet GetPrefixParselet(Token token)
-        => PreParselets[token.GetExpressionKind()];
-
-    public static IInfixParselet GetOperatorParselet(ExpressionKind kind)
-        => InParselets[kind];
-
-    public static IInfixParselet GetOperatorParselet(Token token)
-        => InParselets[token.GetExpressionKind()];
-
-    public static IPostfixParselet GetPostfixParselet(ExpressionKind kind)
-        => PostParselets[kind];
-
-    public static IPostfixParselet GetPostfixParselet(Token token)
-        => PostParselets[token.GetExpressionKind()];
-
-    public static bool IsPrefix(this ExpressionKind kind)
-        => PreParselets.ContainsKey(kind);
-
-    public static bool IsPostfix(this ExpressionKind kind)
-        => PostParselets.ContainsKey(kind);
-
-    public static bool IsOperatorParselet(this ExpressionKind kind)
-        => InParselets.ContainsKey(kind);
-
     public static bool IsName(ValueNode node) {
         if (node is IdentNode) return true;
 
-        if (node is OperationNode op && op.OperationType == "binaryAccess") {
+        if (node is OperationNode op && op.OperationType == OperationType.Access) {
             if (op.Operands.Count != 2) return false;
 
             // we only need to check the left-hand operand, because we know the right-hand operand
@@ -178,5 +32,28 @@ public static class Utilities
         }
 
         return false;
+    }
+
+    public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
+        where TKey : notnull
+        => new ReadOnlyDictionary<TKey, TValue>(dic);
+
+    public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
+        => new ReadOnlyCollection<T>(list);
+
+    public static ReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> list)
+        => list.ToList().AsReadOnly();
+
+    [return: MaybeNull]
+    public static T Find<T>(this ICollection<T> collection, Predicate<T> match) {
+        if(match is null) {
+            throw new ArgumentNullException(nameof(match));
+        }
+
+        foreach (var item in collection) {
+            if (match(item)) return item;
+        }
+
+        return default(T);
     }
 }

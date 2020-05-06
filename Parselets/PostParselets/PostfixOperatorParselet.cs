@@ -1,24 +1,25 @@
 using System;
 
-public class PostfixOperatorParselet : IPostfixParselet
+public sealed class PostfixOperatorParselet : IPostfixParselet<OperationNode>
 {
     public Precedence Precedence { get; }
 
-    readonly string opType;
+    readonly OperationType opType;
 
-    public PostfixOperatorParselet(string operation) {
+    public PostfixOperatorParselet(OperationType operation) {
         Precedence = Precedence.Unary;
+
         opType = operation;
     }
 
-    public StatementNode Parse(Parser parser, Token token, StatementNode left) {
+    public OperationNode Parse(Parser parser, Token token, ValueNode left) {
         if (token is OperatorToken operatorToken) {
             return new OperationNode(
                 operatorToken,
                 new ValueNode[] {
-                    left as ValueNode
+                    left
                 },
-                "postfix" + opType
+                opType
             );
         }
 

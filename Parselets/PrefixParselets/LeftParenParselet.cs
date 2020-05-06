@@ -1,6 +1,8 @@
-public class LeftParenParselet : IPrefixParselet
+using System;
+
+public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
 {
-    public StatementNode Parse(Parser parser, Token parenToken) {
+    public ValueNode Parse(Parser parser, Token parenToken) {
         // This one is a bit tricky : when we have a left parenthesis, it could either be a type cast,
         // or a grouping parenthesis. For example, we need to differentiate between those two expressions :
         // (char)0
@@ -53,17 +55,18 @@ public class LeftParenParselet : IPrefixParselet
         // If the check succeeds, we parse it as type-casting expression ;
         // otherwise, it means that this is a grouping parenthesis and parse it as such
 
+        if (parenToken != "(")
+            throw new UnexpectedTokenException(parenToken, "in grouping parenthesis or type casting", "(");
+
         var value = parser.ConsumeValue();
 
         // if the next token isn't a right/closing parenthesis, throw an error
-        if (parser.Tokenizer.Consume() != ")") {
+        if (parser.Tokenizer.Consume() != ")")
             throw new UnexpectedTokenException(parser.Tokenizer.Current, ")");
-        }
 
         // if the value is a name (an identifier or an access operation), parse it as a type-cast expression
-        if (Utilities.IsName(value)) {
+        if (Utilities.IsName(value))
             return new TypeCastNode(value, parser.ConsumeValue(Precedence.TypeCast), parenToken);
-        }
 
         // otherwise, parse it as a grouping parenthesis expression
         // (which is just returning the value)

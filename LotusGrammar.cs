@@ -1,0 +1,124 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+public class LotusGrammar : ReadOnlyGrammar
+{
+    private readonly Grammar internalGrammar = new Grammar();
+
+    public LotusGrammar() : base() {
+        InitializeToklets();
+        InitializeTriviaToklets();
+        InitializeExpressionKind();
+        InitializeParselets();
+
+        base.Initialize(internalGrammar);
+    }
+
+    private void InitializeTriviaToklets() {
+        internalGrammar
+            .RegisterToklet(new NumberToklet())
+            .RegisterToklet(new ComplexStringToklet())
+            .RegisterToklet(new StringToklet())
+            .RegisterToklet(new IdentToklet())
+            .RegisterToklet(new OperatorToklet())
+            .RegisterToklet(new Toklet());
+    }
+
+    private void InitializeToklets() {
+        internalGrammar
+            .RegisterTriviaToklet(new CommentTriviaToklet())
+            .RegisterTriviaToklet(new WhitespaceTriviaToklet())
+            .RegisterTriviaToklet(new NewlineTriviaToklet())
+            .RegisterTriviaToklet(new TriviaToklet());
+    }
+
+    private void InitializeParselets() {
+
+        // values
+        internalGrammar
+            .RegisterPrefix(ExpressionKind.Number, new NumberLiteralParselet())
+            .RegisterPrefix(ExpressionKind.String, new StringLiteralParselet())
+            .RegisterPrefix(ExpressionKind.Identifier, new IdentifierParselet())
+            .RegisterPrefix(ExpressionKind.Boolean, new BoolLiteralParselet())
+            .RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParselet());
+
+        // prefix operators
+        internalGrammar
+            .RegisterPrefixOperator(ExpressionKind.Plus, OperationType.Positive)
+            .RegisterPrefixOperator(ExpressionKind.Minus, OperationType.Negative)
+            .RegisterPrefixOperator(ExpressionKind.Not, OperationType.Not)
+            .RegisterPrefixOperator(ExpressionKind.Increment, OperationType.PrefixIncrement)
+            .RegisterPrefixOperator(ExpressionKind.Decrement, OperationType.PrefixDecrement);
+
+        // misc prefix parselets
+        internalGrammar
+            .RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParselet())
+            .RegisterPrefix(ExpressionKind.New, new ObjectCreationParselet());
+
+        // infix binary operators
+        internalGrammar
+            .RegisterInfixBinaryOperator(ExpressionKind.Plus, Precedence.Addition, OperationType.Addition)
+            .RegisterInfixBinaryOperator(ExpressionKind.Minus, Precedence.Substraction, OperationType.Substraction)
+            .RegisterInfixBinaryOperator(ExpressionKind.Multiply, Precedence.Multiplication, OperationType.Multiplication)
+            .RegisterInfixBinaryOperator(ExpressionKind.Divide, Precedence.Division, OperationType.Division)
+            .RegisterInfixBinaryOperator(ExpressionKind.Power, Precedence.Power, OperationType.Power)
+            .RegisterInfixBinaryOperator(ExpressionKind.Modulo, Precedence.Modulo, OperationType.Modulo)
+            .RegisterInfixBinaryOperator(ExpressionKind.Or, Precedence.Or, OperationType.Or)
+            .RegisterInfixBinaryOperator(ExpressionKind.And, Precedence.And, OperationType.And)
+            .RegisterInfixBinaryOperator(ExpressionKind.Xor, Precedence.Xor, OperationType.Xor)
+            .RegisterInfixBinaryOperator(ExpressionKind.Eq, Precedence.Equal, OperationType.Equal)
+            .RegisterInfixBinaryOperator(ExpressionKind.NotEq, Precedence.NotEqual, OperationType.NotEqual)
+            .RegisterInfixBinaryOperator(ExpressionKind.Less, Precedence.LessThan, OperationType.Less)
+            .RegisterInfixBinaryOperator(ExpressionKind.LessOrEq, Precedence.LessThanOrEqual, OperationType.LessOrEqual)
+            .RegisterInfixBinaryOperator(ExpressionKind.Greater, Precedence.GreaterThan, OperationType.Greater)
+            .RegisterInfixBinaryOperator(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, OperationType.GreaterOrEqual)
+            .RegisterInfixBinaryOperator(ExpressionKind.Access, Precedence.Access, OperationType.Access)
+            .RegisterInfixBinaryOperator(ExpressionKind.Assignment, Precedence.Assignment, OperationType.Assign);
+
+        // misc infix parselets
+        internalGrammar
+            .RegisterInfix(ExpressionKind.Array, new ArrayAccessParselet())
+            .RegisterInfix(ExpressionKind.LeftParen, new FuncCallParselet());
+
+        // postfix operators
+        internalGrammar
+            .RegisterPostfixOperation(ExpressionKind.Increment, OperationType.PostfixIncrement)
+            .RegisterPostfixOperation(ExpressionKind.Decrement, OperationType.PostfixDecrement);
+    }
+
+    private void InitializeExpressionKind() {
+
+        // Maths operators
+        internalGrammar
+            .RegisterExpressionKind("+", ExpressionKind.Plus)
+            .RegisterExpressionKind("-", ExpressionKind.Minus)
+            .RegisterExpressionKind("*", ExpressionKind.Multiply)
+            .RegisterExpressionKind("/", ExpressionKind.Divide)
+            .RegisterExpressionKind("%", ExpressionKind.Modulo)
+            .RegisterExpressionKind("^", ExpressionKind.Power);
+
+        // Logical/comparison operators
+        internalGrammar
+            .RegisterExpressionKind("!", ExpressionKind.Not)
+            .RegisterExpressionKind("<=", ExpressionKind.LessOrEq)
+            .RegisterExpressionKind(">=", ExpressionKind.GreaterOrEq)
+            .RegisterExpressionKind("&&", ExpressionKind.And)
+            .RegisterExpressionKind("||", ExpressionKind.Or)
+            .RegisterExpressionKind("^^", ExpressionKind.Xor)
+            .RegisterExpressionKind("<", ExpressionKind.Less)
+            .RegisterExpressionKind("(", ExpressionKind.LeftParen)
+            .RegisterExpressionKind("[", ExpressionKind.Array)
+            .RegisterExpressionKind(".", ExpressionKind.Access)
+            .RegisterExpressionKind("=", ExpressionKind.Assignment)
+            .RegisterExpressionKind("==", ExpressionKind.Eq)
+            .RegisterExpressionKind("!=", ExpressionKind.NotEq);
+
+        // Misc
+        internalGrammar
+            .RegisterExpressionKind("++", ExpressionKind.Increment)
+            .RegisterExpressionKind("--", ExpressionKind.Decrement)
+            .RegisterExpressionKind("new", ExpressionKind.New);
+    }
+}

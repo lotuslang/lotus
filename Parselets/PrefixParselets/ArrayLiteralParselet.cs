@@ -1,16 +1,17 @@
 using System;
 using System.Linq;
 
-public class ArrayLiteralParselet : IPrefixParselet
+public sealed class ArrayLiteralParselet : IPrefixParselet<ArrayLiteralNode>
 {
-    public StatementNode Parse(Parser parser, Token token) {
+    public ArrayLiteralNode Parse(Parser parser, Token leftSquareBracket) {
 
-        if (token != "[") throw new ArgumentException(nameof(token) + " needs to be a '[' (left square bracket).");
+        if (leftSquareBracket != "[")
+            throw new ArgumentException("Token needs to be a '[' (left square bracket).");
 
-        parser.Tokenizer.Reconsume();
+        parser.Tokenizer.Reconsume(); // reconsume the square bracket '['
 
         var values = parser.ConsumeCommaSeparatedValueList("[", "]");
 
-        return new ArrayLiteralNode(values, token);
+        return new ArrayLiteralNode(values, leftSquareBracket);
     }
 }

@@ -1,12 +1,12 @@
 using System;
 
-public class IdentifierParselet : IPrefixParselet
+public sealed class IdentifierParselet : IPrefixParselet<IdentNode>
 {
-    public StatementNode Parse(Parser _, Token token) {
-        if (token.Kind == TokenKind.ident) {
-            return new IdentNode(token.Representation, token);
+    public IdentNode Parse(Parser _, Token identToken) {
+        if (identToken.Kind == TokenKind.ident) {
+            return new IdentNode(identToken.Representation, identToken);
         }
 
-        throw new ArgumentException(nameof(token) + " needs to be an identifier.");
+        throw new ArgumentException("Token needs to be an identifier.");
     }
 }

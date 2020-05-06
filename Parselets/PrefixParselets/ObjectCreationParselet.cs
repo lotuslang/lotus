@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 
-
-public class ObjectCreationParselet : IPrefixParselet
+public sealed class ObjectCreationParselet : IPrefixParselet<ObjectCreationNode>
 {
-    public StatementNode Parse(Parser parser, Token newKeyword) {
+    public ObjectCreationNode Parse(Parser parser, Token newKeyword) {
 
         // if the token isn't the keyword "new", throw an exception
-        if (newKeyword != "new") throw new UnexpectedTokenException(newKeyword, "in object initialization", "new");
+        if (!(newKeyword is ComplexToken newToken && newKeyword == "new")) throw new UnexpectedTokenException(newKeyword, "in object initialization", "new");
 
         // basically, since a constructor invocation is basically just a function call preceded by the 'new' keyword
         // we can parse just eat the keyword and parse the rest as a function call, no need to write twice a code
@@ -15,9 +14,9 @@ public class ObjectCreationParselet : IPrefixParselet
         var invoc = parser.ConsumeValue();
 
         if (!(invoc is FunctionCallNode call)) {
-            throw new Exception();
+            throw new UnexpectedValueType(invoc, "in object instantiation", typeof(FunctionCallNode));
         }
 
-        return new ObjectCreationNode(call, newKeyword as ComplexToken);
+        return new ObjectCreationNode(call, newToken);
     }
 }

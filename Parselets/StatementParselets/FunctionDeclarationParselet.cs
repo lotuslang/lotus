@@ -1,32 +1,40 @@
 ﻿using System;
 using System.Linq;
 
-public class FunctionDeclarationParselet : IStatementParselet
+public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDeclarationNode>
 {
-    public StatementNode Parse(Parser parser, Token defKeyword) {
+    public FunctionDeclarationNode Parse(Parser parser, Token defToken) {
 
         // if the token consumed was not "def", then throw an exception
-        if (defKeyword != "def") throw new UnexpectedTokenException("A function definition must start with the keyword 'def'", defKeyword);
+        if (!(defToken is ComplexToken defKeyword && defKeyword == "def"))
+            throw new UnexpectedTokenException("A function definition must start with the keyword 'def'", defToken);
 
         // consume the name of the function
-        var funcName = parser.Tokenizer.Consume();
+        var funcNameToken = parser.Tokenizer.Consume();
 
         // if the token consumed was not an identifier, then throw an exception
-        if (funcName != TokenKind.ident) throw new UnexpectedTokenException(funcName, "in function declaration", TokenKind.ident);
+        if (!(funcNameToken is ComplexToken funcName && funcName == TokenKind.ident))
+            throw new UnexpectedTokenException(funcNameToken, "in function declaration", TokenKind.ident);
 
         var parameters = parser.ConsumeCommaSeparatedValueList("(", ")");
 
-        if (!parameters.All(parameter => parameter.Token is ComplexToken)) {
-            throw new Exception();
-        }
+        // yes this returns true even if the parameter list is empty
+        if (!parameters.All(parameter => parameter.Token is ComplexToken))
+            throw new UnexpectedTokenException(
+                parameters.Find(p => !(p.Token is ComplexToken))!.Token,
+                "in a declared function parameters list",
+                TokenKind.ident
+            );
 
         // consume a simple block
         var block = parser.ConsumeSimpleBlock();
 
         // return a new FunctionDeclarationNode with 'block' as the value, 'parameters' as the list of params, and funcName as the name
-        return new FunctionDeclarationNode(block,
-                                           parameters.Select(parameter => parameter.Token as ComplexToken).ToArray(),
-                                           funcName as ComplexToken,
-                                           defKeyword as ComplexToken);
+        return new FunctionDeclarationNode(
+            block,
+            parameters.Select(parameter => parameter.Token as ComplexToken)!.ToArray()!,
+            funcName,
+            defKeyword
+        );
     }
 }

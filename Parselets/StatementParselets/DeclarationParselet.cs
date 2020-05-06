@@ -1,15 +1,15 @@
-public class DeclarationParselet : IStatementParselet
+public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
 {
-    public StatementNode Parse(Parser parser, Token varKeyword) {
+    public DeclarationNode Parse(Parser parser, Token varToken) {
 
         // if the token isn't the keyword "var", throw an exception
-        if (varKeyword != "var") throw new UnexpectedTokenException(varKeyword, "in declaration", "var");
+        if (!(varToken is ComplexToken varKeyword && varKeyword == "var")) throw new UnexpectedTokenException(varToken, "in declaration", "var");
 
         // consume the name of the variable we're declaring
-        var name = parser.Tokenizer.Consume();
+        var nameToken = parser.Tokenizer.Consume();
 
         // if the token isn't an identifier, throw an exception
-        if (name != TokenKind.ident) throw new UnexpectedTokenException(name, TokenKind.ident);
+        if (!(nameToken is ComplexToken name && name == TokenKind.ident)) throw new UnexpectedTokenException(nameToken, TokenKind.ident);
 
         // consume a token
         var equalSign = parser.Tokenizer.Consume();
@@ -21,6 +21,6 @@ public class DeclarationParselet : IStatementParselet
         var value = parser.ConsumeValue();
 
         // return that value
-        return new DeclarationNode(value, name as ComplexToken, varKeyword as ComplexToken);
+        return new DeclarationNode(value, name, varKeyword);
     }
 }

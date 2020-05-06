@@ -7,10 +7,10 @@ public struct Location
 
     public string filename;
 
-    public Location(int l, int c, string fileName = "<std>") {
-        line = l;
-        column = c;
-        filename = fileName;
+    public Location(int line, int column, string filename = "<std>") {
+        this.line = line;
+        this.column = column;
+        this.filename = filename;
     }
 
     public string Totext() {

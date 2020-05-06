@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RootNamespace>sample_tokenizer</RootNamespace>
+    <TargetFramework>netcoreapp3</TargetFramework>
+    <RootNamespace>Parsex</RootNamespace>
   </PropertyGroup>
 
 </Project>

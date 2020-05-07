@@ -1,11 +1,16 @@
 # VS Code
 .vscode/
 
+# Visual studio
+.vs/
+
+# git folder
 .git/
 
+# Build artifact
 bin/
-
-*.old
 obj/
 
+# Misc
+*.old
 omnisharp.json

@@ -4,9 +4,22 @@ using System.IO;
 class Program
 {
     static void Main(string[] _) {
+        var file = new FileInfo(Directory.GetCurrentDirectory() + "/test.txt");
 
+#if VS
+		// lil hack for our vs 2019 users, which thinks it's a rebel becasue it doesn't use the same
+		// working directory as literally every other major IDE + the official fucking CLI
+		// used to love vs 2019, but honestly I think I'm switching to vs code for most things
+		// and not loooking back
+		file = new FileInfo(
+			Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location))
+				.Parent
+				.Parent
+				.FullName
+			+ /*Path.DirectorySeparatorChar +*/ "/test.txt");
+#endif
         // Initializes the tokenizer with the content of the "sample.txt" file
-        var tokenizer = new LotusTokenizer(new FileInfo(Directory.GetCurrentDirectory() + "/test.txt"));
+        var tokenizer = new LotusTokenizer(file);
 
         tokenizer = new LotusTokenizer(@"
         def hey() {

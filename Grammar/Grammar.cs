@@ -11,7 +11,9 @@ public class Grammar : ReadOnlyGrammar
         IDictionary<ExpressionKind, IPrefixParselet<ValueNode>>? prefixParselets = null,
         IDictionary<ExpressionKind, IInfixParselet<ValueNode>>? infixParselets = null,
         IDictionary<ExpressionKind, IPostfixParselet<ValueNode>>? postfixParselets = null,
+        IDictionary<StatementKind, IStatementParselet<StatementNode>>? statementParselets = null,
         IDictionary<string, ExpressionKind>? expressionKinds = null,
+        IDictionary<string, StatementKind>? statementKinds = null,
         ICollection<IToklet<Token>>? toklets = null,
         ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
     )
@@ -19,7 +21,9 @@ public class Grammar : ReadOnlyGrammar
             prefixParselets,
             infixParselets,
             postfixParselets,
+            statementParselets,
             expressionKinds,
+            statementKinds,
             toklets,
             triviaToklets
         )
@@ -76,8 +80,20 @@ public class Grammar : ReadOnlyGrammar
         return this;
     }
 
+    public Grammar RegisterStatementParselet(StatementKind kind, IStatementParselet<StatementNode> parselet) {
+        statementParselets.Add(kind, parselet);
+
+        return this;
+    }
+
     public Grammar RegisterExpressionKind(string representation, ExpressionKind kind) {
         expressionKinds.Add(representation, kind);
+
+        return this;
+    }
+
+    public Grammar RegisterStatementKind(string representation, StatementKind kind) {
+        statementKinds.Add(representation, kind);
 
         return this;
     }

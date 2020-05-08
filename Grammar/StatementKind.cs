@@ -7,4 +7,5 @@ public enum StatementKind {
     NamespaceStatement,
     ForeachLoop,
     ForLoop,
+    IfStatement,
 }

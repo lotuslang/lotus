@@ -54,6 +54,6 @@ public static class Utilities
             if (match(item)) return item;
         }
 
-        return default(T);
+        return default(T)!;
     }
 }

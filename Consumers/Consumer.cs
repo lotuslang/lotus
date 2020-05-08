@@ -19,7 +19,7 @@ public class Consumer<T> : IConsumer<T>
     protected Consumer() {
         inputStack = new Stack<T>();
         pos = new Location(1, 0);
-        Current = default(T);
+        Current = default(T)!;
     }
 
     public Consumer(IEnumerable<T> enumerable) : this() {
@@ -36,8 +36,8 @@ public class Consumer<T> : IConsumer<T>
 
     public bool Consume([MaybeNullWhen(false)] out T item) {
         if (inputStack.Count == 0) {
-            Current = default(T);
-            item = default(T);
+            Current = default(T)!;
+            item = default(T)!;
             return false;
         }
 
@@ -49,7 +49,7 @@ public class Consumer<T> : IConsumer<T>
     [return: MaybeNull]
     public T Consume() {
         if (inputStack.Count == 0) {
-            Current = default(T);
+            Current = default(T)!;
             return Current;
         }
 

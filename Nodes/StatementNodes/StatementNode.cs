@@ -4,7 +4,7 @@ public class StatementNode
 
     public string Representation { get; protected set; }
 
-    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, default(Location)));
+    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, new Location()));
 
     public StatementNode(string representation, Token token) {
         Representation = representation;

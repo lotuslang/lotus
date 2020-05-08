@@ -132,7 +132,8 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementKind("from", StatementKind.FromStatement)
             .RegisterStatementKind("namespace", StatementKind.NamespaceStatement)
             .RegisterStatementKind("foreach", StatementKind.ForeachLoop)
-            .RegisterStatementKind("for", StatementKind.ForLoop);
+            .RegisterStatementKind("for", StatementKind.ForLoop)
+            .RegisterStatementKind("if", StatementKind.IfStatement);
     }
 
     private void InitializeStatementParselets() {
@@ -143,6 +144,7 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParselet(StatementKind.FromStatement, new ImportParselet())
             .RegisterStatementParselet(StatementKind.NamespaceStatement, new NamespaceParselet())
             .RegisterStatementParselet(StatementKind.ForeachLoop, new ForeachParselet())
-            .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet());
+            .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet())
+            .RegisterStatementParselet(StatementKind.IfStatement, new IfParselet());
     }
 }

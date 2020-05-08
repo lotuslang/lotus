@@ -14,7 +14,6 @@ TODO:
      - class/interface/extends
      - break/continue
      - while/do
-     - if/else
      - type for func declaration (return type and param type)
 
 TODO: re-write some parsing code (e.g. foreach.parse) to have a consistent style (e.g. consume nodes instead of tokens and
@@ -40,3 +39,10 @@ is not valid for this parselet/toklet
 - No because InvalidInput is better for that, and if we start to use InternalError everywhere it will loose its meaning and gravity
 
 TODO: IMPORTANT Write coding guidelines
+
+TODO: Make a color chart for node
+
+TODO: Do we preserve every token we can, even if they are obvious, or do we just ignore them ?
+
+TODO: Find a way to flatten else-if chains (example in git stash) AND "clean" them, i.e. remove the pointers to the other ElseNodes
+that have been flattened

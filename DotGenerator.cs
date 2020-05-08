@@ -76,21 +76,27 @@ public class Graph
             strBuilder.AppendLine($"\t{property.Key}=\"{property.Value}\"");
         }
 
-        strBuilder.AppendLine("\tnode[");
+        if (nodeprops.Count != 0) {
 
-        foreach (var property in nodeprops) {
-            strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
+            strBuilder.AppendLine("\tnode[");
+
+            foreach (var property in nodeprops) {
+                strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
+            }
+
+            strBuilder.AppendLine("\t]\n");
         }
 
-        strBuilder.AppendLine("\t]\n");
+        if (edgeprops.Count != 0) {
 
-        strBuilder.AppendLine("\tedge [");
+            strBuilder.AppendLine("\tedge [");
 
-        foreach (var property in edgeprops) {
-            strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
+            foreach (var property in edgeprops) {
+                strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
+            }
+
+            strBuilder.AppendLine("\t]");
         }
-
-        strBuilder.AppendLine("\t]");
 
         strBuilder.AppendLine();
 
@@ -195,10 +201,10 @@ public class GraphNode
         => children.Add(node);
 
     public void AddProperty(string property, string value) {
-            if (props.ContainsKey(property))
-                props[property] = value;
-            else
-                props.Add(property, value);
+        if (props.ContainsKey(property))
+            props[property] = value;
+        else
+            props.Add(property, value);
     }
 
     public string ToText(List<GraphNode> registry)
@@ -207,11 +213,19 @@ public class GraphNode
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.AppendLine($"\n\t{id} [label={name}]");
+        strBuilder.Append($"\n\t" + id + " [label=" + name);
 
-        foreach (var property in props) {
-            strBuilder.AppendLine($"\t{id} [{property.Key}=\"{property.Value}\"]");
+        if (props.Count != 0) {
+            //strBuilder.Append("\t" + id + " [");
+
+            foreach (var property in props) {
+                strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");
+            }
+
+            //strBuilder.Remove(strBuilder.Length - 1, 1);
         }
+
+        strBuilder.AppendLine("]");
 
         // For each node that is a children of this object
         foreach (var child in children)

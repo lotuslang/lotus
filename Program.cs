@@ -1,6 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Numerics;
 using System.Reflection;
+using System.Threading.Tasks;
 
 #pragma warning disable
 class Program
@@ -24,10 +27,17 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new LotusTokenizer(file);
 
-        /*tokenizer = new LotusTokenizer(@"
-        def hey() {
-            return !a && b || c ^^ d && !e
-        }");*/
+        tokenizer = new LotusTokenizer(@"
+        if (!a && b || c ^^ d && !e)
+            hello = 5
+        else if (hello)
+            hello = -5
+        else if (true)
+            hello = 0
+        else if (false)
+            hello = 1
+        else
+            hello = -1");
 
         var parser = new LotusParser(tokenizer);
 

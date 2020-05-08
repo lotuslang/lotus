@@ -27,7 +27,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             );
 
         // consume a simple block
-        var block = parser.ConsumeSimpleBlock();
+        var block = parser.ConsumeSimpleBlock(areOneLinersAllowed: false);
 
         // return a new FunctionDeclarationNode with 'block' as the value, 'parameters' as the list of params, and funcName as the name
         return new FunctionDeclarationNode(

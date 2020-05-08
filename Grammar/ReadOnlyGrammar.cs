@@ -30,10 +30,22 @@ public class ReadOnlyGrammar
         get => postfixParselets.AsReadOnly();
     }
 
+    protected IDictionary<StatementKind, IStatementParselet<StatementNode>> statementParselets;
+
+    public virtual ReadOnlyDictionary<StatementKind, IStatementParselet<StatementNode>> StatementParselets {
+        get => statementParselets.AsReadOnly();
+    }
+
     protected IDictionary<string, ExpressionKind> expressionKinds;
 
     public virtual ReadOnlyDictionary<string, ExpressionKind> ExpressionKinds {
         get => expressionKinds.AsReadOnly();
+    }
+
+    protected IDictionary<string, StatementKind> statementKinds;
+
+    public virtual ReadOnlyDictionary<string, StatementKind> StatementKinds {
+        get => statementKinds.AsReadOnly();
     }
 
     protected ICollection<IToklet<Token>> toklets;
@@ -53,7 +65,9 @@ public class ReadOnlyGrammar
         IDictionary<ExpressionKind, IPrefixParselet<ValueNode>>? prefixParselets = null,
         IDictionary<ExpressionKind, IInfixParselet<ValueNode>>? infixParselets = null,
         IDictionary<ExpressionKind, IPostfixParselet<ValueNode>>? postfixParselets = null,
+        IDictionary<StatementKind, IStatementParselet<StatementNode>>? statementParselets = null,
         IDictionary<string, ExpressionKind>? expressionKinds = null,
+        IDictionary<string, StatementKind>? statementKinds = null,
         ICollection<IToklet<Token>>? toklets = null,
         ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
     ) {
@@ -61,7 +75,9 @@ public class ReadOnlyGrammar
             prefixParselets,
             infixParselets,
             postfixParselets,
+            statementParselets,
             expressionKinds,
+            statementKinds,
             toklets,
             triviaToklets
         );
@@ -73,7 +89,9 @@ public class ReadOnlyGrammar
             grammar.prefixParselets,
             grammar.infixParselets,
             grammar.postfixParselets,
+            grammar.statementParselets,
             grammar.expressionKinds,
+            grammar.statementKinds,
             grammar.toklets,
             grammar.triviaToklets
         )
@@ -88,7 +106,9 @@ public class ReadOnlyGrammar
             grammar.prefixParselets,
             grammar.infixParselets,
             grammar.postfixParselets,
+            grammar.statementParselets,
             grammar.expressionKinds,
+            grammar.statementKinds,
             grammar.toklets,
             grammar.triviaToklets
         );
@@ -102,15 +122,19 @@ public class ReadOnlyGrammar
         IDictionary<ExpressionKind, IPrefixParselet<ValueNode>>? prefixParselets = null,
         IDictionary<ExpressionKind, IInfixParselet<ValueNode>>? infixParselets = null,
         IDictionary<ExpressionKind, IPostfixParselet<ValueNode>>? postfixParselets = null,
+        IDictionary<StatementKind, IStatementParselet<StatementNode>>? statementParselets = null,
         IDictionary<string, ExpressionKind>? expressionKinds = null,
+        IDictionary<string, StatementKind>? statementKinds = null,
         ICollection<IToklet<Token>>? toklets = null,
         ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
     ) {
         this.prefixParselets = prefixParselets ?? new Dictionary<ExpressionKind, IPrefixParselet<ValueNode>>();
         this.infixParselets = infixParselets ?? new Dictionary<ExpressionKind, IInfixParselet<ValueNode>>();
         this.postfixParselets = postfixParselets ?? new Dictionary<ExpressionKind, IPostfixParselet<ValueNode>>();
+        this.statementParselets = statementParselets ?? new Dictionary<StatementKind, IStatementParselet<StatementNode>>();
 
         this.expressionKinds = expressionKinds ?? new Dictionary<string, ExpressionKind>();
+        this.statementKinds = statementKinds ?? new Dictionary<string, StatementKind>();
 
         this.toklets = toklets ?? new List<IToklet<Token>>();
         this.triviaToklets = triviaToklets ?? new List<ITriviaToklet<TriviaToken>>();
@@ -126,6 +150,7 @@ public class ReadOnlyGrammar
 
         if (token == null) return ExpressionKind.NotAnExpr;
 
+        // fundamental expression kinds
         switch (token.Kind) {
             case TokenKind.ident:
                 return ExpressionKind.Identifier;
@@ -141,23 +166,35 @@ public class ReadOnlyGrammar
         return expressionKinds.TryGetValue(token, out ExpressionKind kind) ? kind : ExpressionKind.NotAnExpr;
     }
 
+    public StatementKind GetStatementKind(Token token) {
+        if (token == null) return StatementKind.NotAStatement;
+
+        return statementKinds.TryGetValue(token, out StatementKind kind) ? kind : StatementKind.NotAStatement;
+    }
+
     public IPrefixParselet<ValueNode> GetPrefixParselet(ExpressionKind kind)
         => prefixParselets[kind];
 
     public IPrefixParselet<ValueNode> GetPrefixParselet(Token token)
-        => prefixParselets[GetExpressionKind(token)];
+        => GetPrefixParselet(GetExpressionKind(token));
 
     public IInfixParselet<ValueNode> GetOperatorParselet(ExpressionKind kind)
         => infixParselets[kind];
 
     public IInfixParselet<ValueNode> GetOperatorParselet(Token token)
-        => infixParselets[GetExpressionKind(token)];
+        => GetOperatorParselet(GetExpressionKind(token));
 
     public IPostfixParselet<ValueNode> GetPostfixParselet(ExpressionKind kind)
         => postfixParselets[kind];
 
     public IPostfixParselet<ValueNode> GetPostfixParselet(Token token)
-        => postfixParselets[GetExpressionKind(token)];
+        => GetPostfixParselet(GetExpressionKind(token));
+
+    public IStatementParselet<StatementNode> GetStatementParselet(StatementKind kind)
+        => statementParselets[kind];
+
+    public IStatementParselet<StatementNode> GetStatementParselet(Token token)
+        => GetStatementParselet(GetStatementKind(token));
 
     public Precedence GetPrecedence(ExpressionKind kind) {
         if (!IsOperatorParselet(kind)) {

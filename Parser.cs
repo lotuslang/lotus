@@ -21,6 +21,7 @@ public class Parser : IConsumer<StatementNode>
 
     public ReadOnlyGrammar Grammar { get; protected set; }
 
+#pragma warning disable CS8618
     protected Parser() {
         reconsumeQueue = new Queue<StatementNode>();
 
@@ -28,6 +29,7 @@ public class Parser : IConsumer<StatementNode>
 
         Grammar = new ReadOnlyGrammar();
     }
+#pragma warning restore
 
     protected Parser(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
@@ -119,37 +121,13 @@ public class Parser : IConsumer<StatementNode>
         // if the token is EOF, return ValueNode.NULL
         if (currToken == "\u0003" || currToken == "\0") return StatementNode.NULL;
 
-        // if the token is "var"
-        switch (currToken)
-        {
-            case "var":
-                Current = new DeclarationParselet().Parse(this, currToken);
-                break;
-            case "new":
-                Current = new ObjectCreationParselet().Parse(this, currToken);
-                break;
-            case "def":
-                Current = new FunctionDeclarationParselet().Parse(this, currToken);
-                break;
-            case "return":
-                Current = new ReturnParselet().Parse(this, currToken);
-                break;
-            case "from":
-                Current = new ImportParselet().Parse(this, currToken);
-                break;
-            case "namespace":
-                Current = new NamespaceParselet().Parse(this, currToken);
-                break;
-            case "foreach":
-                Current = new ForeachParselet().Parse(this, currToken);
-                break;
-            case "for":
-                Current = new ForParselet().Parse(this, currToken);
-                break;
-            default:
-                Tokenizer.Reconsume();
-                Current = ConsumeValue();
-                break;
+        var statementKind = Grammar.GetStatementKind(currToken);
+
+        if (statementKind != StatementKind.NotAStatement) {
+            Current = Grammar.GetStatementParselet(statementKind).Parse(this, currToken);
+        } else {
+            Tokenizer.Reconsume();
+            Current = ConsumeValue();
         }
 
         return Current;

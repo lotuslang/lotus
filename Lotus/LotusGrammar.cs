@@ -10,8 +10,10 @@ public class LotusGrammar : ReadOnlyGrammar
     public LotusGrammar() : base() {
         InitializeToklets();
         InitializeTriviaToklets();
-        InitializeExpressionKind();
-        InitializeParselets();
+        InitializeExpressionKinds();
+        InitializeExpressionParselets();
+        InitializeStatementKinds();
+        InitializeStatementParselets();
 
         base.Initialize(internalGrammar);
     }
@@ -34,7 +36,7 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterTriviaToklet(new TriviaToklet());
     }
 
-    private void InitializeParselets() {
+    private void InitializeExpressionParselets() {
 
         // values
         internalGrammar
@@ -88,7 +90,7 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterPostfixOperation(ExpressionKind.Decrement, OperationType.PostfixDecrement);
     }
 
-    private void InitializeExpressionKind() {
+    private void InitializeExpressionKinds() {
 
         // Maths operators
         internalGrammar
@@ -120,5 +122,27 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterExpressionKind("++", ExpressionKind.Increment)
             .RegisterExpressionKind("--", ExpressionKind.Decrement)
             .RegisterExpressionKind("new", ExpressionKind.New);
+    }
+
+    private void InitializeStatementKinds() {
+        internalGrammar
+            .RegisterStatementKind("var", StatementKind.VariableDeclaration)
+            .RegisterStatementKind("def", StatementKind.FunctionDeclaration)
+            .RegisterStatementKind("return", StatementKind.ReturnStatement)
+            .RegisterStatementKind("from", StatementKind.FromStatement)
+            .RegisterStatementKind("namespace", StatementKind.NamespaceStatement)
+            .RegisterStatementKind("foreach", StatementKind.ForeachLoop)
+            .RegisterStatementKind("for", StatementKind.ForLoop);
+    }
+
+    private void InitializeStatementParselets() {
+        internalGrammar
+            .RegisterStatementParselet(StatementKind.VariableDeclaration, new DeclarationParselet())
+            .RegisterStatementParselet(StatementKind.FunctionDeclaration, new FunctionDeclarationParselet())
+            .RegisterStatementParselet(StatementKind.ReturnStatement, new ReturnParselet())
+            .RegisterStatementParselet(StatementKind.FromStatement, new ImportParselet())
+            .RegisterStatementParselet(StatementKind.NamespaceStatement, new NamespaceParselet())
+            .RegisterStatementParselet(StatementKind.ForeachLoop, new ForeachParselet())
+            .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet());
     }
 }

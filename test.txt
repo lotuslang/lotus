@@ -1,75 +1,147 @@
-from "extern.lts" import *
-from std import math
+/*
+ *
+ * This is a test file for the parser.
+ * It is meant to test each feature, even tho it doesn't
+ * make any sense most of the times.
+ * This should never throw.
+ *
+ */
 
-namespace my_nspace
+anIdent
+
+_anotherOne
+
+_
+
+_var_12
+
+true
+
+false
+
+132
+
+.65
+
+1e-9
+
+.02e12
+
+86512313
+
+(SomeType)obj
+
+(a + b)
+
+!a
+
+!(a == b)
+
+++b
+
+a--
+
+-a
+
++b
+
+a + b
+
+a - b
+
+a * b
+
+a / b
+
+a % b
+
+a ^ b
+
+a || b
+
+a && b
+
+a ^^ b
+
+a == b
+
+a != b
+
+a < b
+
+a > b
+
+a <= b
+
+a >= b
+
+a.b.c
+
+a = b
+
+arr[0]
+
+arr[arr.length - 1]
+
+new Object()
+
+new Array(2, 84163, "uh")
+
+arr = [ 36, 845, 215, "he", true, [ .5465, 486513], aur, /* wtf */ new String() ]
+
+arr.add([], arr)
+
+var a = 0
 
 def someFunc() {
-    print("from someFunc")
+    print("called!")
+
+    return
 }
 
-someFunc()
-
-def add(i1, i2) {
-
-    var temp = i1 + i2
-
-    return i1 + i2
+def someFunc2(a, b, c) {
+    return rnd.Next()
 }
 
-add(96, 65)
+from origin import *
 
-add(-6, 85)
+from std import math
 
-var str = "world"
+namespace my_space
 
-var n =
-      1 * .2
-    + "hello "
-    + $"{str} !"
-    + (8 - 9) / 2
-    + math.PI
-    + extern.MOTD.toString()
-    + global.args[6 / 6 - 1]
-    + extern.magicNumber.toString("x")
+foreach (item in collection) { }
 
-                                                        hey++
---                                          hello // yes, surprisingly, that is legal, and no, it is not a bug
+foreach (otherItem in otherCollection) {
+    if (collection.contains(otherItem)) break;
 
-n = -.1
-
-foreach (item in collection) {
-    if (item != 0) continue;
-
-    hello.there(item);
+    otherItem.markAsBad()
 }
 
-foreach (item2 in some.class.arr) {
-    if (item2 == "am tired") break;
+for (var i = 0, i < 10, i++) {
+    print(i)
 }
 
-var a = --n
+for (var _ = i, i > 10, --i) { }
 
-obj = new Object()
+if (condition)
+    print("it's true")
 
-arr = [ 1, 5, -3, 8 ]
+if (a || b && c != d + e)
+    print("tf")
+else if (this.otherCondition()) {
+    print("maybe ?")
+} else { }
 
-var b = true
+while (str.length < 20) {
+    if (str[-1] == "z") continue;
 
-for (var i = 0, i < arr.length, i++)
-    print(arr[i])
-
-if (!arr.contains(5)) {
-    print("arr didn't contain the number five. Adding it back...")
-    arr.add(5)
+    str.concat(alphabet[rnd.Next(26)])
 }
 
-var counter = 5;
+do
+    print("still looping")
+while (_global++ < 13)
 
-while (counter > 0) counter--
+/* some /* nested */ comments */
 
-if (a < 0) {
-    a = math.abs(a);
-} else if (a == 0)
-    a = 100
-else
-    a = math.pow(a, 2)
+// some on-line comment

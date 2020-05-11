@@ -12,7 +12,9 @@ public class Consumer<T> : IConsumer<T>
     [property: AllowNull]
     public T Current { get; protected set; }
 
-    protected Location pos; // we keep it because it's faster performance-wise
+    // we keep it because it's cleaner and faster performance-wise than copying and storing
+    // at each modification
+    protected Location pos;
 
     public Location Position => pos;
 

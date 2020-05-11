@@ -136,7 +136,9 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementKind("for", StatementKind.ForLoop)
             .RegisterStatementKind("if", StatementKind.IfStatement)
             .RegisterStatementKind("while", StatementKind.WhileStatement)
-            .RegisterStatementKind("do", StatementKind.DoWhileStatement);
+            .RegisterStatementKind("do", StatementKind.DoWhileStatement)
+            .RegisterStatementKind("break", StatementKind.BreakStatement)
+            .RegisterStatementKind("continue", StatementKind.ContinueStatement);
     }
 
     private void InitializeStatementParselets() {
@@ -150,6 +152,8 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet())
             .RegisterStatementParselet(StatementKind.IfStatement, new IfParselet())
             .RegisterStatementParselet(StatementKind.WhileStatement, new WhileParselet())
-            .RegisterStatementParselet(StatementKind.DoWhileStatement, new DoWhileParselet());
+            .RegisterStatementParselet(StatementKind.DoWhileStatement, new DoWhileParselet())
+            .RegisterStatementParselet(StatementKind.BreakStatement, new BreakParselet())
+            .RegisterStatementParselet(StatementKind.ContinueStatement, new ContinueParselet());
     }
 }

@@ -10,6 +10,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
                 ||  c == '-'
                 ||  c == '*'
                 ||  c == '/'
+                ||  c == '%'
                 ||  c == '^'
                 ||  c == '.'
                 ||  c == '='
@@ -39,6 +40,9 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             case '/':
                 // Division operator a / b
                 return new OperatorToken(currChar, Precedence.Division, "left", input.Position);
+            case '%':
+                // Modulo operator a % b
+                return new OperatorToken(currChar, Precedence.Modulo, "left", input.Position);
             case '.':
                 // Member access "operator" a.b
                 return new OperatorToken(currChar, Precedence.Access, "left", input.Position);

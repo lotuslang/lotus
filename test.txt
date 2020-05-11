@@ -33,15 +33,19 @@ var n =
     + extern.magicNumber.toString("x")
 
                                                         hey++
---                                          hello // yes, surprisingly, that is legal
+--                                          hello // yes, surprisingly, that is legal, and no, it is not a bug
 
 n = -.1
 
 foreach (item in collection) {
+    if (item != 0) continue;
+
     hello.there(item);
 }
 
-foreach (item2 in some.class.arr) { }
+foreach (item2 in some.class.arr) {
+    if (item2 == "am tired") break;
+}
 
 var a = --n
 

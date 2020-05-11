@@ -10,4 +10,6 @@ public enum StatementKind {
     IfStatement,
     WhileStatement,
     DoWhileStatement,
+    BreakStatement,
+    ContinueStatement,
 }

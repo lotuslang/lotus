@@ -149,9 +149,14 @@ public class Parser : IConsumer<StatementNode>
 
         var left = Grammar.GetPrefixParselet(token).Parse(this, token);
 
-        //if (tokenizer.Peek() == null) return left as ValueNode;
-
         token = Tokenizer.Consume();
+
+        // it might be null because the complex-string parsing algorithm uses a Consumer<T>,
+        // not a tokenizer, and it returns null when there's no more to consume
+        // FIXME: This
+        if (token == null || token == ";") {
+            return left;
+        }
 
         if (Grammar.IsPostfix(Grammar.GetExpressionKind(token))) {
             left = Grammar.GetPostfixParselet(token).Parse(this, token, left);
@@ -167,7 +172,7 @@ public class Parser : IConsumer<StatementNode>
 
         Tokenizer.Reconsume();
 
-        return left as ValueNode;
+        return left;
     }
 
     public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true) {

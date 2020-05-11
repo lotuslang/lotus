@@ -104,12 +104,13 @@ public class LotusGrammar : ReadOnlyGrammar
         // Logical/comparison operators
         internalGrammar
             .RegisterExpressionKind("!", ExpressionKind.Not)
-            .RegisterExpressionKind("<=", ExpressionKind.LessOrEq)
-            .RegisterExpressionKind(">=", ExpressionKind.GreaterOrEq)
             .RegisterExpressionKind("&&", ExpressionKind.And)
             .RegisterExpressionKind("||", ExpressionKind.Or)
             .RegisterExpressionKind("^^", ExpressionKind.Xor)
             .RegisterExpressionKind("<", ExpressionKind.Less)
+            .RegisterExpressionKind("<=", ExpressionKind.LessOrEq)
+            .RegisterExpressionKind(">", ExpressionKind.Greater)
+            .RegisterExpressionKind(">=", ExpressionKind.GreaterOrEq)
             .RegisterExpressionKind("(", ExpressionKind.LeftParen)
             .RegisterExpressionKind("[", ExpressionKind.Array)
             .RegisterExpressionKind(".", ExpressionKind.Access)
@@ -133,7 +134,9 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementKind("namespace", StatementKind.NamespaceStatement)
             .RegisterStatementKind("foreach", StatementKind.ForeachLoop)
             .RegisterStatementKind("for", StatementKind.ForLoop)
-            .RegisterStatementKind("if", StatementKind.IfStatement);
+            .RegisterStatementKind("if", StatementKind.IfStatement)
+            .RegisterStatementKind("while", StatementKind.WhileStatement)
+            .RegisterStatementKind("do", StatementKind.DoWhileStatement);
     }
 
     private void InitializeStatementParselets() {
@@ -145,6 +148,8 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParselet(StatementKind.NamespaceStatement, new NamespaceParselet())
             .RegisterStatementParselet(StatementKind.ForeachLoop, new ForeachParselet())
             .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet())
-            .RegisterStatementParselet(StatementKind.IfStatement, new IfParselet());
+            .RegisterStatementParselet(StatementKind.IfStatement, new IfParselet())
+            .RegisterStatementParselet(StatementKind.WhileStatement, new WhileParselet())
+            .RegisterStatementParselet(StatementKind.DoWhileStatement, new DoWhileParselet());
     }
 }

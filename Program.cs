@@ -27,17 +27,11 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new LotusTokenizer(file);
 
-        tokenizer = new LotusTokenizer(@"
-        if (!a && b || c ^^ d && !e)
+        /*tokenizer = new LotusTokenizer(@"
+        do
             hello = 5
-        else if (hello)
-            hello = -5
-        else if (true)
-            hello = 0
-        else if (false)
-            hello = 1
-        else
-            hello = -1");
+        while (!a && b || c ^^ d && !e)
+        ");*/
 
         var parser = new LotusParser(tokenizer);
 

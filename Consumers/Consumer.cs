@@ -7,7 +7,7 @@ public class Consumer<T> : IConsumer<T>
 {
     private bool reconsumeFlag;
 
-    private Stack<T> inputStack;
+    private readonly Stack<T> inputStack;
 
     [property: AllowNull]
     public T Current { get; protected set; }

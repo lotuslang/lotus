@@ -12,6 +12,7 @@ public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
             foreach (var section in complexString.CodeSections) {
+                // FIXME: See Parser.ConsumeValue comment
                 node.AddSection(new Parser(new Consumer<Token>(section), parser.Grammar).ConsumeValue());
             }
 

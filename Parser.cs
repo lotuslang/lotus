@@ -215,7 +215,7 @@ public class Parser : IConsumer<StatementNode>
         return new SimpleBlock(statements.ToArray());
     }
 
-    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end) {
+    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end, int maxItemCount = -1) {
         var startingDelimiter = Tokenizer.Consume();
 
         if (startingDelimiter.Representation != start) {
@@ -224,7 +224,9 @@ public class Parser : IConsumer<StatementNode>
 
         var items = new List<ValueNode>();
 
-        while (Tokenizer.Peek() != end) {
+        var itemCount = 0;
+
+        while (itemCount++ != maxItemCount && Tokenizer.Peek() != end) {
 
             items.Add(ConsumeValue());
 
@@ -243,7 +245,17 @@ public class Parser : IConsumer<StatementNode>
             }
         }
 
-        Tokenizer.Consume();
+        if (Tokenizer.Consume() != end) {
+            throw new Exception();
+        }
+
+        if (maxItemCount != -1 && itemCount != maxItemCount) {
+            throw new InternalErrorException(
+                "while parsing a comma-separated value list delimited by `" + start + "` and `" + end + "`",
+                "because there was too many values. Expected " + maxItemCount + ", but got only " + itemCount,
+                Position
+            );
+        }
 
         return items.ToArray();
     }

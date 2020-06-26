@@ -82,7 +82,8 @@ public class LotusGrammar : ReadOnlyGrammar
         // misc infix parselets
         internalGrammar
             .RegisterInfix(ExpressionKind.Array, new ArrayAccessParselet())
-            .RegisterInfix(ExpressionKind.LeftParen, new FuncCallParselet());
+            .RegisterInfix(ExpressionKind.LeftParen, new FuncCallParselet())
+            .RegisterInfix(ExpressionKind.Ternary, new TernaryOperatorParselet());
 
         // postfix operators
         internalGrammar
@@ -122,7 +123,8 @@ public class LotusGrammar : ReadOnlyGrammar
         internalGrammar
             .RegisterExpressionKind("++", ExpressionKind.Increment)
             .RegisterExpressionKind("--", ExpressionKind.Decrement)
-            .RegisterExpressionKind("new", ExpressionKind.New);
+            .RegisterExpressionKind("new", ExpressionKind.New)
+            .RegisterExpressionKind("?", ExpressionKind.Ternary);
     }
 
     private void InitializeStatementKinds() {

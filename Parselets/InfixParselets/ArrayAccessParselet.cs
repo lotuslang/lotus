@@ -20,10 +20,7 @@ public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
 
         return new OperationNode(
             new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracketToken.Location),
-            new ValueNode[] {
-                array,
-                index
-            },
+            new[] { array, index },
             OperationType.ArrayAccess
         );
     }

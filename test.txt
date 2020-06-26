@@ -7,91 +7,13 @@
  *
  */
 
-anIdent
-
-_anotherOne
-
-_
-
-_var_12
-
-true
-
-false
-
-132
-
-.65
-
-1e-9
-
-.02e12
-
-86512313
-
-(SomeType)obj
-
-(a + b)
-
-!a
-
-!(a == b)
-
-++b
-
-a--
-
--a
-
-+b
-
-a + b
-
-a - b
-
-a * b
-
-a / b
-
-a % b
-
-a ^ b
-
-a || b
-
-a && b
-
-a ^^ b
-
-a == b
-
-a != b
-
-a < b
-
-a > b
-
-a <= b
-
-a >= b
-
-a.b.c
-
-a = b
-
-arr[0]
-
-arr[arr.length - 1]
-
-new Object()
-
-new Array(2, 84163, "uh")
-
 arr = [ 36, 845, 215, "he", true, [ .5465, 486513], aur, /* wtf */ new String() ]
 
 arr.add([], arr)
 
 var a = 0
+
+var a = arr != [] ? arr : [0]
 
 def someFunc() {
     print("called!")

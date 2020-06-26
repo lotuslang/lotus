@@ -16,9 +16,7 @@ public sealed class PostfixOperatorParselet : IPostfixParselet<OperationNode>
         if (token is OperatorToken operatorToken) {
             return new OperationNode(
                 operatorToken,
-                new ValueNode[] {
-                    left
-                },
+                new[] { left },
                 opType
             );
         }

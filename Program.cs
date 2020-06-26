@@ -7,10 +7,10 @@ class Program
 {
     static void Main(string[] _) {
 
-		// Lil hack for our visual studio (win and mac) users, which thinks it's a rebel because it doesn't use the same
-		// working directory as literally every other major IDE + the official fucking CLI.
-		// Used to love vs 2019, but honestly I think I'm switching to vs code for most things
-		// and not loooking back
+		// Lil hack for our visual studio (win and mac) users, whose IDE thinks it's a rebel
+        // because it doesn't use the same working directory as literally every other
+        // major IDE + the official fucking CLI. Used to love vs 2019, but honestly
+        // I think I'm switching to vs code for most things and not loooking back.
 
         Directory.SetCurrentDirectory(
             Directory.GetParent(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))

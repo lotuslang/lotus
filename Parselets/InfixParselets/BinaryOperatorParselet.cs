@@ -15,7 +15,7 @@ public sealed class BinaryOperatorParselet : IInfixParselet<OperationNode>
         if (token is OperatorToken operatorToken) {
             return new OperationNode(
                 operatorToken,
-                new ValueNode[] {
+                new[] {
                     left,
                     parser.ConsumeValue(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
                 },

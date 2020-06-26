@@ -32,7 +32,7 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
 
         if (parser.Tokenizer.Peek() == "*") {
             return new ImportNode(
-                new List<ValueNode>() { new ValueNode(parser.Tokenizer.Consume()) },
+                new[] { new ValueNode(parser.Tokenizer.Consume()) },
                 from,
                 importKeyword
             );

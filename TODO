@@ -12,10 +12,9 @@ usual checks like `is ComplexToken <token_name>` where we replace <token_name> b
 
 TODO:
      - class/interface/extends
-     - ternary/conditional operator (condition ? a : b)
-     - type for func declaration (return type and param type)
+     - typed functions (return and parameters)
 
-TODO: re-write some parsing code (e.g. foreach.parse) to have a consistent style (e.g. consume nodes instead of tokens and
+TODO: re-write some parsing code (e.g. foreach parsing) to have a consistent style (e.g. consume nodes instead of tokens and
 then check if they are valid)
 
 TODO: Should we do some check like IsName() at the semantic analysis phase or at parsing ? It might be better to do all the checking

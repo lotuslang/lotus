@@ -6,29 +6,31 @@ Here's a beautiful ASCII table for operator precedence
 | Precedence | Operator(s)  | Description                               |
 +------------+--------------+-------------------------------------------+
 |            | a()          | Function call                             |
-| 11         | a[]          | Array access                              |
+| 12         | a[]          | Array access                              |
 |            | .            | Member access                             |
 +------------+--------------+-------------------------------------------+
 |            | ++a --a      | Prefix increment and decrement            |
-| 10         | a++ a--      | Postfix increment and decrement           |
+| 11         | a++ a--      | Postfix increment and decrement           |
 |            | (type)object | Type casting                              |
 +------------+--------------+-------------------------------------------+
-| 9          | ^            | Exponentiation                            |
+| 10         | ^            | Exponentiation                            |
 +------------+--------------+-------------------------------------------+
-| 8          | a*b a/b a%b  | Multiplication, division and modulo       |
+| 9          | a*b a/b a%b  | Multiplication, division and modulo       |
 +------------+--------------+-------------------------------------------+
-| 7          | a+b a-b      | Addition and Substraction                 |
+| 8          | a+b a-b      | Addition and Substraction                 |
 +------------+--------------+-------------------------------------------+
-| 6          | < <=         | Greater-than and greater-than-or-equal-to |
+| 7          | < <=         | Greater-than and greater-than-or-equal-to |
 |            | > >=         | Lesser-than and lesser-than-or-equal-to   |
 +------------+--------------+-------------------------------------------+
-| 5          | == !=        | equal-to and not-equal-to                 |
+| 6          | == !=        | equal-to and not-equal-to                 |
 +------------+--------------+-------------------------------------------+
-| 4          | ^^           | Logical XOR                               |
+| 5          | ^^           | Logical XOR                               |
 +------------+--------------+-------------------------------------------+
-| 3          | &&           | Logical AND                               |
+| 4          | &&           | Logical AND                               |
 +------------+--------------+-------------------------------------------+
-| 2          | ||           | Logical OR                                |
+| 3          | ||           | Logical OR                                |
++------------+--------------+-------------------------------------------+
+| 2          | a ? b : c    | Ternary (=conditional) operator           |
 +------------+--------------+-------------------------------------------+
 | 1          | var a = b    | Declaration                               |
 |            | a = c        | Assignment                                |
@@ -79,26 +81,39 @@ public enum Precedence {
     Comma = 0,
     Parenthesis = Comma,
     Curly = Comma,
-    Assignment = 1,
+
+    Assignment = Comma + 1,
     Declaration = Assignment,
-    Or = 2,
-    And = 3,
-    Xor = 4,
-    Equal = 5,
+
+    Ternary = Assignment + 1,
+
+    Or = Ternary + 1,
+
+    And = Or + 1,
+
+    Xor = And + 1,
+
+    Equal = Xor + 1,
     NotEqual = Equal,
-    LessThan = 6,
+
+    LessThan = Equal + 1,
     GreaterThan = LessThan,
     LessThanOrEqual = LessThan,
     GreaterThanOrEqual = LessThan,
-    Addition = 7,
+
+    Addition = LessThan + 1,
     Substraction = Addition,
-    Multiplication = 8,
+
+    Multiplication = Addition + 1,
     Division = Multiplication,
     Modulo = Multiplication,
-    Power = 9,
-    Unary = 10,
+
+    Power = Multiplication + 1,
+
+    Unary = Power + 1,
     TypeCast = Unary,
-    Access = 11,
+
+    Access = Unary + 1,
     FuncCall = Access,
     ArrayAccess = Access,
 }

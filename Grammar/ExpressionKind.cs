@@ -28,4 +28,5 @@ public enum ExpressionKind
     Decrement,
     Assignment,
     New,
+    Ternary,
 }

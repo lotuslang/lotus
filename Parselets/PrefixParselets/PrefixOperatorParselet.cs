@@ -12,6 +12,6 @@ public sealed class PrefixOperatorParselet : IPrefixParselet<OperationNode>
 
         if (!(token is OperatorToken opToken)) throw new Exception();
 
-        return new OperationNode(opToken, new ValueNode[] { parser.ConsumeValue(Precedence.Unary) }, opType);
+        return new OperationNode(opToken, new[] { parser.ConsumeValue(Precedence.Unary) }, opType);
     }
 }

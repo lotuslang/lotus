@@ -38,8 +38,8 @@ public class IfParselet : IStatementParselet<IfNode>
 
     // TODO: Later
     /*static ElseNode[] FlattenElseChain(ElseNode elseNode) {
-        if (!elseNode.HasIf || !elseNode.IfNode.HasElse) return new ElseNode[] { elseNode };
+        if (!elseNode.HasIf || !elseNode.IfNode.HasElse) return new[] { elseNode };
 
-        return (new ElseNode[] { elseNode }).Concat(FlattenElseChain(elseNode.IfNode.ElseNode)).ToArray();
+        return (new[] { elseNode }).Concat(FlattenElseChain(elseNode.IfNode.ElseNode)).ToArray();
     }*/
 }

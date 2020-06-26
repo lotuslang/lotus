@@ -16,7 +16,8 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
                 ||  c == '='
                 ||  c == '>'
                 ||  c == '<'
-                ||  c == '!') return true;
+                ||  c == '!'
+                ||  c == '?') return true;
 
                 if (c == '&') {
                     return input.Consume() == '&';
@@ -52,6 +53,8 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             case '|' when input.Peek() == '|':
                 // Logical OR operator a || b
                 return new OperatorToken(currChar +""+ input.Consume(), Precedence.Or, "left", input.Position);
+            case '?':
+                return new OperatorToken(currChar, Precedence.Ternary, "left", input.Position);
         }
 
         // this part is for cases that aren't simple and/or wouldn't look good in a switch expression

@@ -1,1 +1,1 @@
-public enum OperationKind { Unary, Binary, Trinary, Unknown }
+public enum OperationKind { Unary, Binary, Ternary, Unknown }

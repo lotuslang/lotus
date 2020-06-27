@@ -6,18 +6,10 @@ public class FromNode : StatementNode
         OriginName = originName;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "from");
-
-        root.AddProperty("color", "navy");
-        root.AddProperty("tooltip", "from statement");
-
-        var nameNode = OriginName.ToGraphNode();
-
-        nameNode.AddProperty("tooltip", "origin name");
-
-        root.AddNode(nameNode);
-
-        return root;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), "from") {
+            OriginName.ToGraphNode()
+                .SetTooltip("origin name")
+        }.SetColor("navy")
+         .SetTooltip("from statement");
 }

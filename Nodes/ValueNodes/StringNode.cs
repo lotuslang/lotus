@@ -11,12 +11,8 @@ public class StringNode : ValueNode
         Value = value;
     }
 
-    public override GraphNode ToGraphNode() {
-        var output = new GraphNode(GetHashCode(), "'" + Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'");
-
-        output.AddProperty("color", "orange");
-        output.AddProperty("tooltip", nameof(StringNode));
-
-        return output;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), "'" + Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
+            .SetColor("orange")
+            .SetTooltip(nameof(StringNode));
 }

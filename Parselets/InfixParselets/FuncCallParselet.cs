@@ -11,6 +11,8 @@ public sealed class FuncCallParselet : IInfixParselet<FunctionCallNode>
 
         if (leftParenToken != "(") throw new UnexpectedTokenException(leftParenToken, "in function call", "(");
 
+        if (function is NumberNode) throw new Exception("wtf");
+
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 

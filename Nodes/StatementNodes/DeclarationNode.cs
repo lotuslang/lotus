@@ -30,16 +30,10 @@ public class DeclarationNode : StatementNode
         Value = value;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "var");
-
-        root.AddProperty("color", "palegreen");
-        root.AddProperty("tooltip", nameof(DeclarationNode));
-
-        root.AddNode(Name.ToGraphNode("name"));
-
-        root.AddNode(Value.ToGraphNode());
-
-        return root;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), "var") {
+            Name.ToGraphNode("name"),
+            Value.ToGraphNode()
+        }.SetColor("palegreen")
+         .SetTooltip(nameof(DeclarationNode));
 }

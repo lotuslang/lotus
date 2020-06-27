@@ -20,23 +20,22 @@ public class ForNode : StatementNode
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "for loop");
+        var root = new GraphNode(GetHashCode(), "for loop"); // FIXME: choose color and tooltip
 
         if (Header.Count != 0) {
-            var headerNode = new GraphNode(Header.GetHashCode(), "header");
+            var headerNode = new GraphNode(Header.GetHashCode(), "header")
+                .SetColor("deepskyblue")
+                .SetTooltip("for-loop header");
 
-            headerNode.AddProperty("color", "deepskyblue");
-            headerNode.AddProperty("tooltip", "for-loop header");
+            foreach (var statement in Header) headerNode.Add(statement.ToGraphNode());
 
-            foreach (var statement in Header) headerNode.AddNode(statement.ToGraphNode());
-
-            root.AddNode(headerNode);
+            root.Add(headerNode);
 
         } else {
-            root.AddNode(new GraphNode(Header.GetHashCode(), "(empty header)"));
+            root.Add(new GraphNode(Header.GetHashCode(), "(empty header)"));
         }
 
-        root.AddNode(Body.ToGraphNode());
+        root.Add(Body.ToGraphNode());
 
         return root;
     }

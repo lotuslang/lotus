@@ -2,27 +2,19 @@ public class ReturnNode : StatementNode
 {
     public ValueNode Value { get; protected set; }
 
-    public bool IsReturningValue { get; protected set; }
+    public bool IsReturningValue => Value != ValueNode.NULL;
 
     public ReturnNode(ValueNode value, ComplexToken returnToken) : base(returnToken) {
-        if (value != null && value != ValueNode.NULL) {
-            Value = value;
-            IsReturningValue = true;
-            return;
-        }
-
-        Value = ValueNode.NULL;
-        IsReturningValue = false;
+        Value = (value != null && value != ValueNode.NULL) ? value : ValueNode.NULL;
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "return");
-
-        root.AddProperty("color", "brown");
-        root.AddProperty("tooltip", "return");
+        var root = new GraphNode(GetHashCode(), "return")
+            .SetColor("brown")
+            .SetTooltip("return");
 
         if (IsReturningValue) {
-            root.AddNode(Value.ToGraphNode());
+            root.Add(Value.ToGraphNode());
         }
 
         return root;

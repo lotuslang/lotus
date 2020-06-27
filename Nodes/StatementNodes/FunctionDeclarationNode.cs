@@ -26,32 +26,24 @@ public class FunctionDeclarationNode : StatementNode
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "def " + Name.Representation);
-
-        root.AddProperty("color", "indianred");
-        root.AddProperty("tooltip", nameof(FunctionDeclarationNode));
+        var root = new GraphNode(GetHashCode(), "def " + Name.Representation)
+            .SetColor("indianred")
+            .SetTooltip(nameof(FunctionDeclarationNode));
 
         if (Parameters.Count == 0) {
-            root.AddNode(new GraphNode(Parameters.GetHashCode(), "(no params)"));
-
+            root.Add(new GraphNode(Parameters.GetHashCode(), "(no params)"));
         } else {
-
-            var parameters = new GraphNode(Parameters.GetHashCode(), "param");
-
-            parameters.AddProperty("tooltip", "parameters");
+            var parameters = new GraphNode(Parameters.GetHashCode(), "param")
+                .SetTooltip("parameters");
 
             foreach (var parameter in Parameters) {
-                parameters.AddNode(parameter.ToGraphNode("parameter"));
+                parameters.Add(parameter.ToGraphNode("parameter"));
             }
 
-            root.AddNode(parameters);
+            root.Add(parameters);
         }
 
-        var body = Value.ToGraphNode();
-
-        body.AddProperty("tooltip", "body");
-
-        root.AddNode(body);
+        root.Add(Value.ToGraphNode().SetTooltip("body"));
 
         return root;
     }

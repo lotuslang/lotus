@@ -11,16 +11,11 @@ public class SimpleBlock
     }
 
     public GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "block");
+        var root = new GraphNode(GetHashCode(), "block")
+            .SetColor("darkviolet")
+            .SetTooltip(nameof(SimpleBlock));
 
-        root.AddProperty("color", "darkviolet");
-        root.AddProperty("tooltip", nameof(SimpleBlock));
-
-        foreach (var statement in Content) {
-            var statementNode = statement.ToGraphNode();
-
-            root.AddNode(statementNode);
-        }
+        foreach (var statement in Content) root.Add(statement.ToGraphNode());
 
         return root;
     }

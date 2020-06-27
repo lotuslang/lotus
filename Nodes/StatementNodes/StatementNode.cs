@@ -21,12 +21,8 @@ public class StatementNode
     /// and this method should be implemented by them.
     /// </summary>
     /// <returns>A GraphNode representing the state of the node</returns>
-    public virtual GraphNode ToGraphNode() {
-        var output = new GraphNode(GetHashCode(), Representation);
-
-        output.AddProperty("color", "black");
-        output.AddProperty("tooltip", nameof(StatementNode));
-
-        return output;
-    }
+    public virtual GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), Representation)
+            .SetColor("black")
+            .SetTooltip(nameof(StatementNode));
 }

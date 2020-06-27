@@ -13,12 +13,8 @@ public class ValueNode : StatementNode
     public ValueNode(string rep, Token token) : base(rep, token)
     { }
 
-    public override GraphNode ToGraphNode() {
-        var output = new GraphNode(GetHashCode(), Representation);
-
-        output.AddProperty("color", "lightgrey");
-        output.AddProperty("tooltip", nameof(ValueNode));
-
-        return output;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), Representation)
+            .SetColor("lightgrey")
+            .SetTooltip(nameof(ValueNode));
 }

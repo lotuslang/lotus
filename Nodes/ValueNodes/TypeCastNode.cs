@@ -9,24 +9,12 @@ public class TypeCastNode : ValueNode
         Operand = operand;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "type-cast");
-
-        root.AddProperty("color", "purple");
-        root.AddProperty("tooltip", "type-casting expression");
-
-        var typeNode = Type.ToGraphNode();
-
-        typeNode.AddProperty("tooltip", "type");
-
-        root.AddNode(typeNode);
-
-        var operandNode = Operand.ToGraphNode();
-
-        operandNode.AddProperty("tooltip", "operand");
-
-        root.AddNode(operandNode);
-
-        return root;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), "type-cast") {
+            Type.ToGraphNode()
+                .SetTooltip("type"),
+            Operand.ToGraphNode()
+                .SetTooltip("operand"),
+        }.SetColor("purple")
+         .SetTooltip("type-casting expression");
 }

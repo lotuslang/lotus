@@ -58,10 +58,6 @@ public class Token
         return rep.ToString();
     }
 
-    /*public virtual GraphNode ToGraphNode() {
-        return new GraphNode(GetHashCode(), Representation);
-    }*/
-
     public static implicit operator TokenKind(Token token) {
         return token.Kind;
     }

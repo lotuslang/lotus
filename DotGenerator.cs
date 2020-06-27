@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 [System.Diagnostics.DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
@@ -143,43 +144,27 @@ public class Graph
 }
 
 [System.Diagnostics.DebuggerDisplay("{name}:{label}")]
-public class GraphNode
+public class GraphNode : IEnumerable<GraphNode>
 {
-    protected string id;
-
     /// <summary>
     /// The unique identifier for this node.
     /// </summary>
     /// <value>A string representing the ID of this node.</value>
-    public string ID {
-        get => id;
-    }
-
-    protected string name;
+    public string ID { get; protected set;}
 
     /// <summary>
     /// The name of this node.
     /// </summary>
     /// <value>A string representing the name of this node.</value>
-    public string Name {
-        get => name;
-    }
-
-    protected List<GraphNode> children;
+    public string Name { get; protected set; }
 
     /// <summary>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
     /// <value>A list of GraphNode this node is pointing to, (i.e. children).</value>
-    public List<GraphNode> Children {
-        get => children;
-    }
+    public List<GraphNode> Children { get; protected set; }
 
-    protected Dictionary<string, string> props;
-
-    public Dictionary<string, string> Properties {
-        get => props;
-    }
+    public Dictionary<string, string> Properties { get; protected set; }
 
     public GraphNode(string name) : this(new Random().Next(), name) { }
 
@@ -187,24 +172,44 @@ public class GraphNode
 
     public GraphNode(string id, string text)
     {
-        this.id = id;
-        this.name = text;
-        props = new Dictionary<string, string>();
-        children = new List<GraphNode>();
+        ID = id;
+        Name = text;
+        Properties = new Dictionary<string, string>();
+        Children = new List<GraphNode>();
     }
 
     /// <summary>
     /// Add a child to this node.
     /// </summary>
     /// <param name="node">The node to add as a child.</param>
-    public void AddNode(GraphNode node)
-        => children.Add(node);
+    public GraphNode Add(GraphNode node) {
+        Children.Add(node);
 
-    public void AddProperty(string property, string value) {
-        if (props.ContainsKey(property))
-            props[property] = value;
-        else
-            props.Add(property, value);
+        return this;
+    }
+
+    public GraphNode SetProperty(string property, string value) {
+        if (!Properties.TryAdd(property, value)) {
+            Properties[property] = value;
+        }
+
+        return this;
+    }
+
+    public GraphNode SetColor(string color) {
+        if (!Properties.TryAdd("color", color)) {
+            Properties["color"] = color;
+        }
+
+        return this;
+    }
+
+    public GraphNode SetTooltip(string tooltipText) {
+        if (!Properties.TryAdd("tooltip", tooltipText)) {
+            Properties["tooltip"] = tooltipText;
+        }
+
+        return this;
     }
 
     public string ToText(List<GraphNode> registry)
@@ -213,12 +218,12 @@ public class GraphNode
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.Append($"\n\t" + id + " [label=" + name);
+        strBuilder.Append($"\n\t" + ID + " [label=" + Name);
 
-        if (props.Count != 0) {
+        if (Properties.Count != 0) {
             //strBuilder.Append("\t" + id + " [");
 
-            foreach (var property in props) {
+            foreach (var property in Properties) {
                 strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");
             }
 
@@ -228,10 +233,10 @@ public class GraphNode
         strBuilder.AppendLine("]");
 
         // For each node that is a children of this object
-        foreach (var child in children)
+        foreach (var child in Children)
         {
             // Append the connection of this node (this node's id -> child's id)
-            strBuilder.AppendLine("\t" + id + " -- " + child.id);
+            strBuilder.AppendLine("\t" + ID + " -- " + child.ID);
 
             // If this child hasn't been registered yet
             if (!registry.Contains(child))
@@ -247,4 +252,10 @@ public class GraphNode
         // Return the string builder
         return strBuilder.ToString();
     }
+
+    public IEnumerator<GraphNode> GetEnumerator()
+        => Children.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator();
 }

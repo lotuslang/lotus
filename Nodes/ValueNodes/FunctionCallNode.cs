@@ -21,38 +21,28 @@ public class FunctionCallNode : ValueNode
 
         if (FunctionName is IdentNode name) {
             root = new GraphNode(GetHashCode(), name.Representation + "(...)");
-
         } else {
-            root = new GraphNode(GetHashCode(), "call");
-
-            var called = new GraphNode("function");
-
-            called.AddNode(FunctionName.ToGraphNode());
-
-            root.AddNode(called);
+            root = new GraphNode(GetHashCode(), "call") {
+                new GraphNode("function") {
+                    FunctionName.ToGraphNode()
+                },
+            };
         }
 
-        root.AddProperty("color", "tomato");
-        root.AddProperty("tooltip", "call to " + nameof(FunctionCallNode));
+        root.SetColor("tomato")
+            .SetTooltip("call to " + nameof(FunctionCallNode));
 
         if (CallingParameters.Count == 0) {
-            root.AddNode(new GraphNode(CallingParameters.GetHashCode(), "(no args)"));
+            root.Add(new GraphNode(CallingParameters.GetHashCode(), "(no args)"));
 
             return root;
         }
 
         var argsNode = new GraphNode("args");
 
-        foreach (var parameter in CallingParameters)
-        {
-            var paramNode = parameter.ToGraphNode();
+        foreach (var parameter in CallingParameters) argsNode.Add(parameter.ToGraphNode().SetTooltip("argument"));
 
-            paramNode.AddProperty("tooltip", "argument");
-
-            argsNode.AddNode(paramNode);
-        }
-
-        root.AddNode(argsNode);
+        root.Add(argsNode);
 
         return root;
     }

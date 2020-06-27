@@ -24,22 +24,15 @@ public class IfNode : StatementNode
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "if");
-
-        // FIXME: Choose color
-        root.AddProperty("tooltip", "if statement");
-
-        var conditionNode = new GraphNode(HashCode.Combine(this, "condition"), "condition");
-
-        conditionNode.AddNode(Condition.ToGraphNode());
-        conditionNode.AddProperty("tooltip", "if condition");
-
-        root.AddNode(conditionNode);
-
-        root.AddNode(Body.ToGraphNode());
+        var root = new GraphNode(GetHashCode(), "if") {
+            new GraphNode(HashCode.Combine(this, "condition"), "condition") {
+                Condition.ToGraphNode()
+            }.SetTooltip("if condition"),
+            Body.ToGraphNode()
+        }.SetTooltip("if statement"); // FIXME: Choose color
 
         if (HasElse) {
-            root.AddNode(ElseNode!.ToGraphNode());
+            root.Add(ElseNode!.ToGraphNode());
         }
 
         return root;

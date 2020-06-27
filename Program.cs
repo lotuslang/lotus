@@ -37,7 +37,7 @@ class Program
 
         g.AddNodeProp("fontname", "Consolas, monospace");
         g.AddGraphProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("label", $"Abstract Syntax Tree of {parser.Position.filename}\\n\\n");
+        g.AddGraphProp("label", $"Abstract Syntax Tree of {tokenizer.Position.filename}\\n\\n");
         g.AddGraphProp("labelloc", "top");
 
         while (parser.Consume(out StatementNode node)) {

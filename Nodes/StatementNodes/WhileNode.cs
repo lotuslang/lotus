@@ -24,23 +24,11 @@ public class WhileNode : StatementNode
         DoToken = doToken;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), IsDoLoop ? "do-while" : "while");
-
-        // FIXME: Choose color
-        root.AddProperty("tooltip", IsDoLoop ? "do-while loop" : "while loop");
-
-        var conditionNode = new GraphNode(HashCode.Combine(this, "condition"), "condition");
-
-        // FIXME: Choose color
-        conditionNode.AddProperty("tooltip", "loop condition");
-
-        conditionNode.AddNode(Condition.ToGraphNode());
-
-        root.AddNode(conditionNode);
-
-        root.AddNode(Body.ToGraphNode());
-
-        return root;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), IsDoLoop ? "do-while" : "while") {
+            new GraphNode(HashCode.Combine(this, "condition"), "condition") {
+                Condition.ToGraphNode()
+            }.SetTooltip("loop condition"), // FIXME: Choose color
+            Body.ToGraphNode()
+        }.SetTooltip(IsDoLoop ? "do-while loop" : "while loop"); // FIXME: Choose color
 }

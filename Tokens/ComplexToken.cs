@@ -12,16 +12,11 @@ public class ComplexToken : Token
     public GraphNode ToGraphNode() {
         var output = new GraphNode(GetHashCode(), Representation);
 
-        output.AddProperty("color", "lightgrey");
+        output.SetColor("lightgrey");
 
         return output;
     }
 
-    public GraphNode ToGraphNode(string tooltip) {
-        var output = ToGraphNode();
-
-        output.AddProperty("tooltip", tooltip);
-
-        return output;
-    }
+    public GraphNode ToGraphNode(string tooltip)
+        => ToGraphNode().SetTooltip(tooltip);
 }

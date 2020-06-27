@@ -16,25 +16,20 @@ public class ImportNode : StatementNode
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "import");
+        var root = new GraphNode(GetHashCode(), "import") {
+            FromStatement.ToGraphNode()
+        }.SetColor("fuchsia")
+         .SetTooltip("import statement");
 
-        root.AddProperty("color", "fuchsia");
-        root.AddProperty("tooltip", "import statement");
-
-        var fromNode = FromStatement.ToGraphNode();
-
-        root.AddNode(fromNode);
-
-        var importsNode = new GraphNode(ImportsName.GetHashCode(), "imports\\nname");
-
-        importsNode.AddProperty("color", "peru");
-        importsNode.AddProperty("tooltip", "imports name");
+        var importsNode = new GraphNode(ImportsName.GetHashCode(), "imports\\nname")
+            .SetColor("peru")
+            .SetTooltip("imports name");
 
         foreach (var import in ImportsName) {
-            importsNode.AddNode(import.ToGraphNode());
+            importsNode.Add(import.ToGraphNode());
         }
 
-        root.AddNode(importsNode);
+        root.Add(importsNode);
 
         return root;
     }

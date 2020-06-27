@@ -19,18 +19,8 @@ public class ElseNode : StatementNode
         Body = ifNode.Body; // works like a pointer so it's fine
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "else");
-
-        // FIXME: Choose a color
-        root.AddProperty("tooltip", "else branch");
-
-        if (HasIf) {
-            root.AddNode(IfNode!.ToGraphNode());
-        } else {
-            root.AddNode(Body.ToGraphNode());
-        }
-
-        return root;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), "else") {
+            HasIf ? IfNode!.ToGraphNode() : Body.ToGraphNode()
+        }.SetTooltip("else branch"); // FIXME: Choose a color
 }

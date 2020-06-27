@@ -55,25 +55,13 @@ public class ForeachNode : StatementNode
         Body = body;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "foreach");
-
-        root.AddProperty("color", "pink");
-        root.AddProperty("tooltip", "foreach loop");
-
-        var inNode = new GraphNode(InToken.GetHashCode(), "in");
-
-        inNode.AddProperty("tooltip", "in iterator");
-
-        inNode.AddNode(ItemName.ToGraphNode());
-        inNode.AddNode(Collection.ToGraphNode());
-
-        root.AddNode(inNode);
-
-        var bodyNode = Body.ToGraphNode();
-
-        root.AddNode(bodyNode);
-
-        return root;
-    }
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), "foreach") {
+            new GraphNode(InToken.GetHashCode(), "in") {
+                ItemName.ToGraphNode(),
+                Collection.ToGraphNode()
+            }.SetTooltip("in iterator"),
+            Body.ToGraphNode(),
+        }.SetColor("pink")
+         .SetTooltip("foreach loop");
 }

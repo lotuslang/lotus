@@ -17,7 +17,7 @@ public class OperationNode : ValueNode
         get => Operands.Count switch {
             1 => OperationKind.Unary,
             2 => OperationKind.Binary,
-            3 => OperationKind.Trinary,
+            3 => OperationKind.Ternary,
             _ => OperationKind.Unknown
         };
     }
@@ -30,18 +30,19 @@ public class OperationNode : ValueNode
 
     public override GraphNode ToGraphNode() {
 
-        var root = new GraphNode(GetHashCode(), Representation);
-
-        root.AddProperty("color", "dodgerblue");
-        root.AddProperty("tooltip", nameof(OperationNode));
+        GraphNode root;
 
         if (Representation == "++" || Representation == "--") {
             root = new GraphNode(GetHashCode(), (OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + Representation);
+        } else {
+            root = new GraphNode(GetHashCode(), Representation);
         }
 
-        foreach (var child in Operands)
-        {
-            root.AddNode(child.ToGraphNode());
+        root.SetColor("dodgerblue")
+            .SetTooltip(nameof(OperationNode));
+
+        foreach (var child in Operands) {
+            root.Add(child.ToGraphNode());
         }
 
         return root;

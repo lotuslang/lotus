@@ -9,20 +9,13 @@ public class ArrayLiteralNode : ValueNode
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "array literal\\n(" + Content.Count + " item(s))");
-
-        root.AddProperty("color", "teal");
-        root.AddProperty("tooltip", "array init");
+        var root = new GraphNode(GetHashCode(), "array literal\\n(" + Content.Count + " item(s))")
+            .SetColor("teal")
+            .SetTooltip("array init");
 
         var itemCounter = 1;
 
-        foreach (var item in Content) {
-            var itemNode = item.ToGraphNode();
-
-            itemNode.AddProperty("tooltip", "item " + itemCounter++);
-
-            root.AddNode(itemNode);
-        }
+        foreach (var item in Content) root.Add(item.ToGraphNode().SetTooltip("item " + itemCounter++));
 
         return root;
     }

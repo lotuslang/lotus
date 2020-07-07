@@ -32,7 +32,7 @@ public class DeclarationNode : StatementNode
 
     public override GraphNode ToGraphNode()
         => new GraphNode(GetHashCode(), "var") {
-            Name.ToGraphNode("name"),
+            Name.ToGraphNode(tooltip: "name"),
             Value.ToGraphNode()
         }.SetColor("palegreen")
          .SetTooltip(nameof(DeclarationNode));

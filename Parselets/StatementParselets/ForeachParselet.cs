@@ -14,13 +14,13 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var itemNameToken = parser.Tokenizer.Consume();
 
-        if (!(itemNameToken is ComplexToken itemName && itemName == TokenKind.ident)) {
+        if (!(itemNameToken is ComplexToken itemName && itemName.Kind == TokenKind.ident)) {
             throw new UnexpectedTokenException(itemNameToken, "in a foreach header", TokenKind.ident);
         }
 
         var inToken = parser.Tokenizer.Consume();
 
-        if (!(inToken is ComplexToken @in && @in == "in")) {
+        if (!(inToken is ComplexToken inKeyword && inKeyword == "in")) {
             throw new UnexpectedTokenException(itemNameToken, "in a foreach header", "the 'in' keyword");
         }
 
@@ -36,6 +36,6 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var body = parser.ConsumeSimpleBlock();
 
-        return new ForeachNode(@foreach, @in, new IdentNode(itemNameToken.Representation, itemName), collectionName, body);
+        return new ForeachNode(@foreach, inKeyword, new IdentNode(itemNameToken.Representation, itemName), collectionName, body);
     }
 }

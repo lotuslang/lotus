@@ -12,7 +12,6 @@ usual checks like `is ComplexToken <token_name>` where we replace <token_name> b
 
 TODO:
      - class/interface/extends
-     - typed functions (return and parameters)
 
 TODO: re-write some parsing code (e.g. foreach parsing) to have a consistent style (e.g. consume nodes instead of tokens and
 then check if they are valid)

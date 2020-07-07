@@ -9,7 +9,7 @@ public static class Utilities
     public static readonly string[] keywords = new string[] {
         "var",
         "new",
-        "def",
+        "func",
         "return",
     };
 

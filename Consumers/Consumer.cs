@@ -68,6 +68,7 @@ public class Consumer<T> : IConsumer<T>
         pos.column--;
     }
 
+    [return: MaybeNull]
     public T Peek() {
         if (reconsumeFlag) return Current;
 

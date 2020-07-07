@@ -130,7 +130,7 @@ public class LotusGrammar : ReadOnlyGrammar
     private void InitializeStatementKinds() {
         internalGrammar
             .RegisterStatementKind("var", StatementKind.VariableDeclaration)
-            .RegisterStatementKind("def", StatementKind.FunctionDeclaration)
+            .RegisterStatementKind("func", StatementKind.FunctionDeclaration)
             .RegisterStatementKind("return", StatementKind.ReturnStatement)
             .RegisterStatementKind("from", StatementKind.FromStatement)
             .RegisterStatementKind("namespace", StatementKind.NamespaceStatement)

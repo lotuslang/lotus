@@ -6,41 +6,69 @@ public class FunctionDeclarationNode : StatementNode
 {
     internal bool isInternal = false;
 
+    public bool HasReturnType => ReturnType != ValueNode.NULL;
+
     public SimpleBlock Value { get; }
 
-    public ReadOnlyCollection<ComplexToken> Parameters { get; }
+    public ReadOnlyCollection<(ValueNode type, ComplexToken name)> Parameters { get; }
+
+    public ValueNode ReturnType { get; }
 
     public ComplexToken Name { get; }
 
     public FunctionDeclarationNode(SimpleBlock value,
-                                   IList<ComplexToken> parameters,
+                                   IList<(ValueNode, ComplexToken)> parameters,
+                                   ValueNode returnType,
                                    ComplexToken functionName,
-                                   ComplexToken defToken)
-        : base(defToken)
+                                   ComplexToken funcKeyword)
+        : base(funcKeyword)
     {
         if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (declaration)");
 
         Name = functionName;
         Value = value;
         Parameters = parameters.AsReadOnly();
+        ReturnType = returnType;
     }
 
     public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "def " + Name.Representation)
+        var root = new GraphNode(GetHashCode(), "func " + Name.Representation)
             .SetColor("indianred")
             .SetTooltip(nameof(FunctionDeclarationNode));
 
         if (Parameters.Count == 0) {
             root.Add(new GraphNode(Parameters.GetHashCode(), "(no params)"));
         } else {
-            var parameters = new GraphNode(Parameters.GetHashCode(), "param")
+            var parametersNode = new GraphNode(Parameters.GetHashCode(), "param")
                 .SetTooltip("parameters");
 
-            foreach (var parameter in Parameters) {
-                parameters.Add(parameter.ToGraphNode("parameter"));
+            foreach (var (type, name) in Parameters) { // FIXME: Write tooltips
+                if (type == ValueNode.NULL) {
+                    parametersNode.Add(name.ToGraphNode(tooltip: "parameter name"));
+
+                    continue;
+                }
+
+                if (type is IdentNode) {
+                    parametersNode.Add(new GraphNode(HashCode.Combine(type, name), name + "\\nof type " + type.Token));
+
+                    continue;
+                }
+
+                parametersNode.Add(new GraphNode(name.GetHashCode(), name) {
+                    new GraphNode(HashCode.Combine("type", name), "type") {
+                        type.ToGraphNode()
+                    }
+                });
             }
 
-            root.Add(parameters);
+            root.Add(parametersNode);
+        }
+
+        if (HasReturnType) {
+            root.Add(new GraphNode(HashCode.Combine(ReturnType, this), "return type") { // FIXME: Color & Tooltip
+                ReturnType.ToGraphNode()
+            });
         }
 
         root.Add(Value.ToGraphNode().SetTooltip("body"));

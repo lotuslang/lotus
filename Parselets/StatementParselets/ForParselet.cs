@@ -14,6 +14,7 @@ public sealed class ForParselet : IStatementParselet<ForNode>
 
         var commaCount = 0; // FIXME: I feel dirty
 
+        // no we can't use Parser.ConsumeCommaSeparatedList because here we can have empty "values"
         while (parser.Tokenizer.Peek() != ")") {
 
             if (parser.Tokenizer.Peek() == ",") {

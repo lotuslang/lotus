@@ -54,6 +54,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
                 // Logical OR operator a || b
                 return new OperatorToken(currChar +""+ input.Consume(), Precedence.Or, "left", input.Position);
             case '?':
+                // Ternary comparison operator a ? b : c
                 return new OperatorToken(currChar, Precedence.Ternary, "left", input.Position);
         }
 

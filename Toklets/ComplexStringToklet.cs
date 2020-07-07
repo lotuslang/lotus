@@ -46,7 +46,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                         throw new UnexpectedTokenException(currToken, "in an interpolated string", "`}`");
                     }
 
-                    if (currToken == TokenKind.EOF) {
+                    if (currToken.Kind == TokenKind.EOF) {
                         throw new UnexpectedEOF("in an interpolated string", $"`}}` followed by the string delimiter `{endingDelimiter}`", tokenizer.Position);
                     }
 

@@ -3,7 +3,7 @@
  * This is a test file for the parser.
  * It is meant to test each feature, even tho it doesn't
  * make any sense most of the times.
- * This should never throw.
+ * This should never throw once committed.
  *
  */
 
@@ -15,13 +15,17 @@ var a = 0
 
 var a = arr != [] ? arr : [0]
 
-def someFunc() {
+func someFunc() {
     print("called!")
 
     return
 }
 
-def someFunc2(a, b, c) {
+func someFunc1(a, string b, c): int {
+    
+}
+
+func someFunc2(a, b, c) {
     return rnd.Next()
 }
 

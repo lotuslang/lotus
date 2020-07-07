@@ -3,13 +3,13 @@ from std import math
 
 namespace my_nspace
 
-def someFunc() {
+func someFunc() {
     print("from someFunc")
 }
 
 someFunc()
 
-def add(i1, i2) {
+func add(i1, i2) {
 
     var temp = i1 + i2
 

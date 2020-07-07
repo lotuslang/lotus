@@ -9,7 +9,7 @@ public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
         var nameToken = parser.Tokenizer.Consume();
 
         // if the token isn't an identifier, throw an exception
-        if (!(nameToken is ComplexToken name && name == TokenKind.ident)) throw new UnexpectedTokenException(nameToken, TokenKind.ident);
+        if (!(nameToken is ComplexToken name && name.Kind == TokenKind.ident)) throw new UnexpectedTokenException(nameToken, TokenKind.ident);
 
         // consume a token
         var equalSign = parser.Tokenizer.Consume();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
@@ -12,15 +13,13 @@ public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
         if (leftSquareBracketToken != "[")
             throw new UnexpectedTokenException(leftSquareBracketToken, "in array index access", "[");
 
-        var index = parser.ConsumeValue();
+        parser.Tokenizer.Reconsume();
 
-        if (parser.Tokenizer.Consume() != "]") {
-            throw new UnexpectedTokenException(parser.Tokenizer.Current, "in array index access", "]");
-        }
+        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]");
 
         return new OperationNode(
             new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracketToken.Location),
-            new[] { array, index },
+            new[]{array}.Concat(indexes).ToArray(), // FIXME: It hurts my eyes
             OperationType.ArrayAccess
         );
     }

@@ -14,7 +14,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
         var funcNameToken = parser.Tokenizer.Consume();
 
         // if the token consumed was not an identifier, then throw an exception
-        if (!(funcNameToken is ComplexToken funcName && funcName == TokenKind.ident))
+        if (!(funcNameToken is ComplexToken funcName && funcName.Kind == TokenKind.ident))
             throw new UnexpectedTokenException(funcNameToken, "in function declaration", TokenKind.ident);
 
         if (parser.Tokenizer.Consume() != "(") {
@@ -22,41 +22,77 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
         }
 
         // function parameter list format :
-        // func Foo(someVar, string someStr, ...) -> int
+        // func Foo(someVar, string someStr, int [start, end]) -> int
         // { /* some code */ }
         //
 
         var parameters = new List<(ValueNode type, ComplexToken name)>();
 
         while (parser.Tokenizer.Peek() != ")") {
+
+            /*
+            * Ok, this needs a bit of explanation. So, I wanted to implement a syntactic shorthand I'd like to see
+            * in csharp (and other languages) that allows users to define the type of multiple parameters at once
+            * if they have the same type. It can be really long frustrating to have things like :
+            *
+            * ```
+            * int DoThing(int seed, int cookie, int hash, int secret, int key) {
+            *     return (new Random(seed).Next() * cookie ^ hash % key) & secret;
+            * }
+            * ```
+            *
+            * Therefore, I thought of a shorthand such as : `int DoThing(int [seed, cookie, hash, secret, key])`
+            * As you probably noticed, it is really similar to an array init/literal, which is honestly a good
+            * thing in my opinion.So I thought I would just parse the type, and then, if the next node wasn't an
+            * IdentNode, I would just use the ArrayLiteral parselet and register each parameter with the type.
+            *
+            * Yeah, that's not what happened.
+            *
+            * What I didn't notice is that int [a, b, c] is actually an array indexing, you just have to remove the
+            * space and it becomes quite apparent. I had to make array accesses able to handle commas, but I'm not
+            * happy about it because it made more to sense (to me) and was cleaner to parse the type first and then
+            * an array of names. But alas, I have to do this for now, and I don't think I could easily fix this without
+            * re-writing a special parsing algorithm in this method just for dots and parentheses.
+            */
+
             var typeOrName = parser.ConsumeValue();
 
-            ValueNode paramType;
-            ComplexToken paramName;
+            if (typeOrName is OperationNode typeNameArray) {
+                if (typeNameArray.OperationType != OperationType.ArrayAccess || typeNameArray.Operands.Count < 2) {
+                    throw new Exception();
+                }
 
-            if (parser.Tokenizer.Peek() != "," && parser.Tokenizer.Peek() != ")") {
+                var paramType = typeNameArray.Operands[0];
+
+                if (!Utilities.IsName(paramType)) {
+                    throw new Exception();
+                }
+
+                // we skip one cause the first operand is the type name
+                foreach (var nameNode in typeNameArray.Operands.Skip(1)) {
+                    if (!(nameNode is IdentNode paramNode)) {
+                        throw new Exception();
+                    }
+
+                    parameters.Add((paramType, paramNode.Token));
+                }
+            } else if (parser.Tokenizer.Peek() != "," && parser.Tokenizer.Peek() != ")") {
                 if (!Utilities.IsName(typeOrName)) {
                     throw new Exception();
                 }
 
-                paramType = typeOrName;
-
-                if (!(parser.ConsumeValue().Token is ComplexToken paramNameToken)) {
+                if (!(parser.Peek() is IdentNode nameNode)) {
                     throw new Exception();
                 }
 
-                paramName = paramNameToken;
+                parameters.Add((typeOrName, nameNode.Token));
             } else {
-                paramType = ValueNode.NULL;
-
-                if (!(typeOrName.Token is ComplexToken paramNameToken)) {
+                if (!(typeOrName is IdentNode paramName)) {
                     throw new Exception();
                 }
 
-                paramName = paramNameToken;
+                parameters.Add((ValueNode.NULL, paramName.Token));
             }
-
-            parameters.Add((paramType, paramName));
 
             if (parser.Tokenizer.Consume() != ",") {
                 if (parser.Tokenizer.Current == ")") {

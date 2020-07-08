@@ -21,12 +21,12 @@ func someFunc() {
     return
 }
 
-func someFunc1(a, string b, c): int {
-    
+func someFunc1(a, string [b, c], int d): int {
+    print(a.toString() + b + c);
 }
 
-func someFunc2(a, b, c) {
-    return rnd.Next()
+func someFunc2(int [seed, min, max]) {
+    return new Random(a).Next(b, c)
 }
 
 from origin import *

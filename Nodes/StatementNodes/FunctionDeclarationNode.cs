@@ -14,17 +14,15 @@ public class FunctionDeclarationNode : StatementNode
 
     public ValueNode ReturnType { get; }
 
-    public ComplexToken Name { get; }
+    public IdentToken Name { get; }
 
     public FunctionDeclarationNode(SimpleBlock value,
                                    IList<(ValueNode, ComplexToken)> parameters,
                                    ValueNode returnType,
-                                   ComplexToken functionName,
+                                   IdentToken functionName,
                                    ComplexToken funcKeyword)
         : base(funcKeyword)
     {
-        if (functionName != TokenKind.ident) throw new ArgumentException("The function name was not an identifier (declaration)");
-
         Name = functionName;
         Value = value;
         Parameters = parameters.AsReadOnly();

@@ -1,11 +1,11 @@
 using System;
 
-public sealed class StringToklet : IToklet<ComplexToken>
+public sealed class StringToklet : IToklet<StringToken>
 {
     public Predicate<IConsumer<char>> Condition
         => (input => input.Consume() == '\'' || input.Current == '"');
 
-    public ComplexToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
+    public StringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
 
         var endingDelimiter = input.Consume();
 
@@ -13,7 +13,7 @@ public sealed class StringToklet : IToklet<ComplexToken>
         var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexToken("", TokenKind.@string, input.Position);
+        var output = new StringToken("", input.Position);
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {

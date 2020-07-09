@@ -14,7 +14,7 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var itemNameToken = parser.Tokenizer.Consume();
 
-        if (!(itemNameToken is ComplexToken itemName && itemName.Kind == TokenKind.ident)) {
+        if (!(itemNameToken is IdentToken itemName)) {
             throw new UnexpectedTokenException(itemNameToken, "in a foreach header", TokenKind.ident);
         }
 

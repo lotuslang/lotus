@@ -128,7 +128,7 @@ public class Tokenizer : IConsumer<Token>
     public bool Consume([MaybeNullWhen(false)] out Token result) {
         result = Consume();
 
-        return result != TokenKind.EOF;
+        return result.Kind != TokenKind.EOF;
     }
 
     // Because of stupid interface rule

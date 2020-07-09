@@ -4,7 +4,7 @@ public class IdentNode : ValueNode
 
     public string Value { get; protected set; }
 
-    public IdentNode(string value, ComplexToken identToken) : base(value, identToken) {
+    public IdentNode(string value, IdentToken identToken) : base(value, identToken) {
         Token = identToken;
         Value = value;
     }

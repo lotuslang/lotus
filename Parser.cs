@@ -191,7 +191,7 @@ public class Parser : IConsumer<StatementNode>
         while (Tokenizer.Peek() != "}") {
             statements.Add(Consume());
 
-            if (Tokenizer.Peek() == TokenKind.EOF) {
+            if (Tokenizer.Peek().Kind == TokenKind.EOF) {
                 throw new UnexpectedTokenException(
                     Tokenizer.Consume(),
                     "in simple block",

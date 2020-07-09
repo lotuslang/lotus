@@ -12,7 +12,7 @@ public sealed class IdentToklet : IToklet<ComplexToken>
         var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexToken("", TokenKind.ident, input.Position);
+        var output = new IdentToken("", input.Position);
 
         // if the character is not a letter or a low line
         if (!(Char.IsLetter(currChar) || currChar == '_')) {

@@ -14,7 +14,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
         var funcNameToken = parser.Tokenizer.Consume();
 
         // if the token consumed was not an identifier, then throw an exception
-        if (!(funcNameToken is ComplexToken funcName && funcName.Kind == TokenKind.ident))
+        if (!(funcNameToken is IdentToken funcName))
             throw new UnexpectedTokenException(funcNameToken, "in function declaration", TokenKind.ident);
 
         if (parser.Tokenizer.Consume() != "(") {

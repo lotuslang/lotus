@@ -24,9 +24,6 @@ of the program. This is a *huge* upside.
 
 TODO: Replace *Exceptions with error codes, without throwing (probably would require semantic analysis)
 
-TODO: Implement typed parameters in function declarations (maybe have types in square brackets ? like print([string] s) {...} ?
-or maybe have them after the parameter's name like print(s : string) or print(s is/as string)
-
 TODO: Write documentation for the Grammar class
 
 TODO: Just write docs in general
@@ -40,6 +37,7 @@ TODO: IMPORTANT Write coding guidelines
 TODO: Make a color chart for node
 
 TODO: Do we preserve every token we can, even if they are obvious, or do we just ignore them ?
+- Some of them are gonna be tricky, e.g. "precedence parentheses"
 
 TODO: Find a way to flatten else-if chains (example in git stash) AND "clean" them, i.e. remove the pointers to the other ElseNodes
 that have been flattened

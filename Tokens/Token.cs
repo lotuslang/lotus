@@ -58,9 +58,9 @@ public class Token
         return rep.ToString();
     }
 
-    public static implicit operator TokenKind(Token token) {
+    /*public static implicit operator TokenKind(Token token) {
         return token.Kind;
-    }
+    }*/
 
     public static implicit operator string(Token token) {
         return token.rep.ToString();

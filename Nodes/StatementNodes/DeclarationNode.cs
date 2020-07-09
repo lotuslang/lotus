@@ -14,7 +14,7 @@ public class DeclarationNode : StatementNode
     /// The name of the variable being declared
     /// </summary>
     /// <value></value>
-    public ComplexToken Name { get; protected set; }
+    public IdentToken Name { get; protected set; }
 
     /// <summary>
     /// Creates a DeclarationNode.
@@ -23,9 +23,7 @@ public class DeclarationNode : StatementNode
     /// <param name="varName">The name of the variable</param>
     /// <param name="varKeywordToken">The token of the "var" keyword used</param>
     /// <returns></returns>
-    public DeclarationNode(ValueNode value, ComplexToken varName, ComplexToken varKeywordToken) : base(varKeywordToken) {
-        if (varName != TokenKind.ident) throw new ArgumentException("The variable name was not an identifier");
-
+    public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken) : base(varKeywordToken) {
         Name = varName;
         Value = value;
     }

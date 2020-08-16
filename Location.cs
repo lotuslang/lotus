@@ -28,6 +28,12 @@ public struct Location
     public override string ToString()
         => (string)this;
 
+    public void Deconstruct(out int line, out int column, out string filename) {
+        line = this.line;
+        column = this.column;
+        filename = this.filename;
+    }
+
     public static implicit operator string(Location loc) {
         return $"{loc.filename}({loc.line}, {loc.column})";
     }

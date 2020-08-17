@@ -56,17 +56,26 @@ public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
         // otherwise, it means that this is a grouping parenthesis and parse it as such
 
         if (parenToken != "(")
-            throw new UnexpectedTokenException(parenToken, "in grouping parenthesis or type casting", "(");
+            throw Logger.Fatal(new InvalidCallException(parenToken.Location));
 
         var value = parser.ConsumeValue();
 
         // if the next token isn't a right/closing parenthesis, throw an error
-        if (parser.Tokenizer.Consume() != ")")
-            throw new UnexpectedTokenException(parser.Tokenizer.Current, ")");
+        if (parser.Tokenizer.Consume() != ")") {
+            Logger.Error(new UnexpectedTokenException(
+                token: parser.Tokenizer.Current,
+                context: "after a parenthesized expression",
+                expected: ")"
+            ));
+
+            value.IsValid = false;
+
+            parser.Tokenizer.Reconsume();
+        }
 
         // if the value is a name (an identifier or an access operation), parse it as a type-cast expression
         if (Utilities.IsName(value))
-            return new TypeCastNode(value, parser.ConsumeValue(Precedence.TypeCast), parenToken);
+            return new TypeCastNode(value, parser.ConsumeValue(Precedence.TypeCast), parenToken, value.IsValid);
 
         // otherwise, parse it as a grouping parenthesis expression
         // (which is just returning the value)

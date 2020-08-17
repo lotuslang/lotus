@@ -17,6 +17,14 @@ public static class Utilities
         "print",
     };
 
+    public static int GetNumberOfDigits(int i) {
+        int count = 0;
+
+        do count++; while ((i /= 10) >= 1);
+
+        return count;
+    }
+
     public static bool IsName(ValueNode node) {
         if (node is IdentNode) return true;
 

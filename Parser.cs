@@ -33,7 +33,13 @@ public class Parser : IConsumer<StatementNode>
 
     protected Parser(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
-            throw new ArgumentNullException(nameof(grammar));
+            Logger.Warning(new InvalidCallException(
+                message : "Something tried to create a new Tokenizer with a null grammar."
+                        + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
+                location: Position
+            ));
+
+            grammar = new ReadOnlyGrammar();
         }
 
         Grammar = grammar;
@@ -112,7 +118,10 @@ public class Parser : IConsumer<StatementNode>
         }
 
         if (Tokenizer == null) {
-            throw new InternalErrorException(message: "The parser's tokenizer was null. Something went seriously wrong");
+            throw Logger.Fatal(new InternalErrorException(
+                message: "The parser's tokenizer was null. Something went seriously wrong",
+                location: this.Position
+            ));
         }
 
         // Consume a token
@@ -130,6 +139,8 @@ public class Parser : IConsumer<StatementNode>
             Current = ConsumeValue();
         }
 
+        if (Tokenizer.Peek() == ";") Tokenizer.Consume(); // advance tokenizer if we have a semicolon (we don't care)
+
         return Current;
     }
 
@@ -137,14 +148,18 @@ public class Parser : IConsumer<StatementNode>
         var token = Tokenizer.Consume();
 
         if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
-            throw new UnexpectedTokenException(token,
+            Logger.Error(new UnexpectedTokenException(token: token, expected: new[] {
                 TokenKind.@bool,
                 TokenKind.@operator,
                 TokenKind.@string,
                 TokenKind.complexString,
                 TokenKind.ident,
                 TokenKind.number
-            );
+            }));
+
+            //Tokenizer.Reconsume();
+
+            return ValueNode.NULL;
         }
 
         var left = Grammar.GetPrefixParselet(token).Parse(this, token);
@@ -172,6 +187,8 @@ public class Parser : IConsumer<StatementNode>
 
         Tokenizer.Reconsume();
 
+        //left.IsValid = isValid;
+
         return left;
     }
 
@@ -182,9 +199,17 @@ public class Parser : IConsumer<StatementNode>
             return new SimpleBlock(new[] { Consume() });
         }
 
+        var isValid = true;
+
         var bracket = Tokenizer.Consume();
 
-        if (bracket != "{") throw new UnexpectedTokenException(bracket, "at the start of simple block", "{");
+        if (bracket != "{") {
+            Logger.Error(new UnexpectedTokenException(
+                token: bracket,
+                context: "at the start of simple block (this probably means there was an internal error, please report this)",
+                expected: "{"
+            ));
+        }
 
         var statements = new List<StatementNode>();
 
@@ -192,13 +217,17 @@ public class Parser : IConsumer<StatementNode>
             statements.Add(Consume());
 
             if (Tokenizer.Peek().Kind == TokenKind.EOF) {
-                throw new UnexpectedTokenException(
-                    Tokenizer.Consume(),
-                    "in simple block",
-                    "a statement"
+                Logger.Error(new UnexpectedTokenException(
+                    token: Tokenizer.Consume(),
+                    context: "in simple block",
+                    expected: "a statement"
                     // Extendable version with TokenKind :
                     // Enum.GetValues(typeof(TokenKind)).Cast<TokenKind>().Where(value => value != TokenKind.EOF).ToArray()
-                );
+                ));
+
+                isValid = false;
+
+                break;
             }
 
             if (Tokenizer.Peek() == ";") Tokenizer.Consume();
@@ -209,52 +238,109 @@ public class Parser : IConsumer<StatementNode>
         if (bracket == ";") bracket = Tokenizer.Consume();
 
         if (bracket != "}") {
-            throw new UnexpectedTokenException(bracket, "in simple block", "}");
+            Logger.Error(new UnexpectedTokenException(
+                token: bracket,
+                context: "in simple block",
+                expected: "the character '}'"
+            ));
+
+            isValid = false;
+
+            Tokenizer.Reconsume();
         }
 
-        return new SimpleBlock(statements.ToArray());
+        return new SimpleBlock(statements.ToArray(), isValid);
     }
 
-    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end, int maxItemCount = -1) {
+    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end, ref bool isValid, int expectedItemCount = -1) {
         var startingDelimiter = Tokenizer.Consume();
 
         if (startingDelimiter.Representation != start) {
-            throw new UnexpectedTokenException(startingDelimiter, "in comma-separated list", start);
+            throw Logger.Fatal(new UnexpectedTokenException( // should we use InvalidCallException ?
+                token: startingDelimiter,
+                context: "in comma-separated list",
+                expected: start
+            ));
         }
 
         var items = new List<ValueNode>();
 
         var itemCount = 0;
 
-        while (itemCount++ != maxItemCount && Tokenizer.Peek() != end) {
+        //isValid = true;
+
+        while (Tokenizer.Peek() != end) {
 
             items.Add(ConsumeValue());
+
+            ++itemCount;
 
             if (Tokenizer.Consume() != ",") {
 
                 if (Tokenizer.Current == end) {
                     Tokenizer.Reconsume();
+
                     break;
                 }
 
-                throw new UnexpectedTokenException(Tokenizer.Current, "in comma-separated list", ",");
+                Logger.Error(new UnexpectedTokenException(
+                    token: Tokenizer.Current,
+                    context: "in comma-separated list",
+                    expected: ","
+                ));
+
+                isValid = false;
+
+                Tokenizer.Reconsume();
+
+                continue;
             }
 
+            // since we know that there's a comma right before, if there's an ending delimiter right after it,
+            // it's an error.
+            // Example : (hello, there, friend,) // right here
+            //           ----------------------^--------------
+            //                      litterally right there
             if (Tokenizer.Peek() == end) {
-                throw new UnexpectedTokenException(Tokenizer.Consume(), "in comma-separated list", "value");
+                Logger.Error(new UnexpectedTokenException(
+                    token: Tokenizer.Consume(),
+                    context: "in comma-separated list",
+                    expected: "value"
+                ));
+
+                isValid = false;
+
+                break;
             }
         }
 
-        if (Tokenizer.Consume() != end) {
-            throw new Exception();
+        if (Tokenizer.Consume() != end) { // we probably got an EOF
+            Logger.Error(new UnexpectedEOFException(
+                context: "in a comma-separated value list",
+                expected: "a closing parenthesis ')'",
+                location: Tokenizer.Position
+            ));
+
+            isValid = false;
         }
 
-        if (maxItemCount != -1 && itemCount != maxItemCount) {
-            throw new InternalErrorException(
-                "while parsing a comma-separated value list delimited by `" + start + "` and `" + end + "`",
-                "because there was too many values. Expected " + maxItemCount + ", but got only " + itemCount,
-                Position
-            );
+        if (expectedItemCount != -1 && itemCount != expectedItemCount) {
+
+            if (itemCount > expectedItemCount) {
+                Logger.Error(new LotusException(
+                    message: "There was too many values in a comma-separated value list. Expected "
+                           + expectedItemCount + ", but got " + itemCount,
+                    location: items.Last()?.Token.Location ?? Tokenizer.Position
+                ));
+            } else {
+                Logger.Error(new LotusException(
+                    message: "There wasn't enough values in a comma-separated value list. Expected "
+                           + expectedItemCount + ", but got " + itemCount,
+                    location: items.Last()?.Token.Location ?? Tokenizer.Position
+                ));
+            }
+
+            isValid = false;
         }
 
         return items.ToArray();

@@ -4,7 +4,9 @@ using System.Text;
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {rep.ToString()}")]
 public class Token
 {
-    public static readonly Token NULL = new Token('\0', TokenKind.EOF, new Location());
+    public static readonly Token NULL = new Token('\0', TokenKind.EOF, new Location(), false);
+
+    public bool IsValid { get; set; } // yes, we want it to be public for error-recovery stuff
 
     public TriviaToken? LeadingTrivia { get; protected set; }
 
@@ -12,29 +14,34 @@ public class Token
 
     public TokenKind Kind { get; protected set; }
 
-    protected StringBuilder rep;
+    protected string rep;
 
     public string Representation {
-        get => rep.ToString();
+        get => rep;
     }
 
     public Location Location { get; protected set; }
 
-    public Token(char representation, TokenKind kind, Location location, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : this(representation.ToString(), kind, location, leading, trailing) { }
+    public Token(char representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+        : this(representation.ToString(), kind, location, isValid, leading, trailing) { }
 
-    public Token(string representation, TokenKind kind, Location location, TriviaToken? leading = null, TriviaToken? trailing = null) {
-        rep = new StringBuilder();
-        rep.Append(representation);
+    public Token(string representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null) {
+        rep = representation;
         Kind = kind;
         Location = location;
         LeadingTrivia = leading;
         TrailingTrivia = trailing;
+        IsValid = isValid;
     }
 
     public void AddLeadingTrivia(TriviaToken trivia) {
         if (trivia is null) {
-            throw new ArgumentNullException(nameof(trivia));
+            Logger.Warning(new InvalidCallException(
+                message : "Something tried to add a null (leading) TriviaToken to this token, but that's not allowed",
+                location: Location
+            ));
+
+            return;
         }
 
         if (LeadingTrivia is null)
@@ -45,7 +52,12 @@ public class Token
 
     public void AddTrailingTrivia(TriviaToken trivia) {
         if (trivia is null) {
-            throw new ArgumentNullException(nameof(trivia));
+            Logger.Warning(new InvalidCallException(
+                message : "Something tried to add a null (trailing) TriviaToken to this token, but that's not allowed",
+                location: Location
+            ));
+
+            return;
         }
 
         if (TrailingTrivia is null)
@@ -55,14 +67,10 @@ public class Token
     }
 
     public override string ToString() {
-        return rep.ToString();
+        return rep;
     }
 
-    /*public static implicit operator TokenKind(Token token) {
-        return token.Kind;
-    }*/
-
     public static implicit operator string(Token token) {
-        return token.rep.ToString();
+        return token.rep;
     }
 }

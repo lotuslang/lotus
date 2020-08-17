@@ -9,7 +9,9 @@ public class ComplexStringNode : StringNode
         get => sections.AsReadOnly();
     }
 
-    public ComplexStringNode(ComplexStringToken token, IList<ValueNode> codeSections) : base(token.Representation, token) {
+    public ComplexStringNode(ComplexStringToken token, IList<ValueNode> codeSections, bool isValid = true)
+        : base(token.Representation, token, isValid)
+    {
         sections = new List<ValueNode>(codeSections);
     }
 

@@ -10,7 +10,7 @@ public class ImportNode : StatementNode
 
     internal bool IsEverything { get => ImportsName.Count == 0; }
 
-    public ImportNode(IList<ValueNode> imports, FromNode from, ComplexToken importToken) : base(importToken) {
+    public ImportNode(IList<ValueNode> imports, FromNode from, ComplexToken importToken, bool isValid = true) : base(importToken, isValid) {
         ImportsName = imports.AsReadOnly();
         FromStatement = from;
     }

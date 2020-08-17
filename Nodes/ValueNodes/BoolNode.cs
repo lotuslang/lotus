@@ -1,3 +1,5 @@
+using System;
+
 public class BoolNode : ValueNode
 {
     /// <summary>
@@ -6,11 +8,21 @@ public class BoolNode : ValueNode
     /// <value>The number represented by this object.</value>
     public bool Value { get; protected set; }
 
-    public BoolNode(bool value, Token boolToken) : base(value.ToString().ToLower(), boolToken)
-    {
+    public BoolNode(bool value, Token boolToken, bool isValid = true) : base(value.ToString().ToLower(), boolToken, isValid) {
         Value = value;
     }
 
-    public BoolNode(string repr, Token boolToken) : this(repr == "true", boolToken)
-    { }
+    public BoolNode(string repr, Token boolToken, bool isValid = true) : this(default(bool), boolToken, isValid)
+    {
+        var value = Value; // workaround for CS0206
+
+        if (isValid && !Boolean.TryParse(repr, out value)) {
+            throw Logger.Fatal(new InternalErrorException(
+                message: $"Could not parse string {repr} as a boolean because a bool can only take the values 'true' and 'false'",
+                Token.Location
+            ));
+        }
+
+        Value = value;
+    }
 }

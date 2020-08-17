@@ -4,14 +4,18 @@ public class StatementNode
 
     public string Representation { get; protected set; }
 
-    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, new Location()));
+    public bool IsValid { get; set; }
 
-    public StatementNode(string representation, Token token) {
+    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, new Location(), false), false);
+
+    public StatementNode(string representation, Token token, bool isValid = true) {
         Representation = representation;
         Token = token;
+
+        IsValid = isValid;
     }
 
-    public StatementNode(Token token) : this(token.Representation, token)
+    public StatementNode(Token token, bool isValid = true) : this(token.Representation, token, isValid)
     { }
 
     /// <summary>

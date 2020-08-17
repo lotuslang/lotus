@@ -4,7 +4,7 @@ public class ReturnNode : StatementNode
 
     public bool IsReturningValue => Value != ValueNode.NULL;
 
-    public ReturnNode(ValueNode value, ComplexToken returnToken) : base(returnToken) {
+    public ReturnNode(ValueNode value, ComplexToken returnToken, bool isValid = true) : base(returnToken, isValid) {
         Value = (value != null && value != ValueNode.NULL) ? value : ValueNode.NULL;
     }
 

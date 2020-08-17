@@ -20,8 +20,9 @@ public class FunctionDeclarationNode : StatementNode
                                    IList<(ValueNode, ComplexToken)> parameters,
                                    ValueNode returnType,
                                    IdentToken functionName,
-                                   ComplexToken funcKeyword)
-        : base(funcKeyword)
+                                   ComplexToken funcKeyword,
+                                   bool isValid = true)
+        : base(funcKeyword, isValid)
     {
         Name = functionName;
         Value = value;

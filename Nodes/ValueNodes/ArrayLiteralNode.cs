@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 public class ArrayLiteralNode : ValueNode
 {
     public ReadOnlyCollection<ValueNode> Content { get; }
-    public ArrayLiteralNode(IList<ValueNode> content, Token leftSquareBracketToken) : base(leftSquareBracketToken) {
+    public ArrayLiteralNode(IList<ValueNode> content, Token leftSquareBracketToken, bool isValid = true)
+    : base(leftSquareBracketToken, isValid)
+    {
         Content = content.AsReadOnly();
     }
 

@@ -2,11 +2,11 @@ using System;
 
 public sealed class IdentifierParselet : IPrefixParselet<IdentNode>
 {
-    public IdentNode Parse(Parser _, Token identToken) {
-        if (identToken is IdentToken ident) {
-            return new IdentNode(identToken.Representation, ident);
+    public IdentNode Parse(Parser _, Token token) {
+        if (token is IdentToken identToken) {
+            return new IdentNode(token.Representation, identToken);
         }
 
-        throw new ArgumentException("Token needs to be an identifier.");
+        throw Logger.Fatal(new InvalidCallException(token.Location));
     }
 }

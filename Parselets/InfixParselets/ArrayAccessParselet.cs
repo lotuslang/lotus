@@ -11,16 +11,19 @@ public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
     public OperationNode Parse(Parser parser, Token leftSquareBracketToken, ValueNode array) {
 
         if (leftSquareBracketToken != "[")
-            throw new UnexpectedTokenException(leftSquareBracketToken, "in array index access", "[");
+            throw Logger.Fatal(new InvalidCallException(leftSquareBracketToken.Location));
+
+        var isValid = true;
 
         parser.Tokenizer.Reconsume();
 
-        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]");
+        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]", ref isValid);
 
         return new OperationNode(
             new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracketToken.Location),
             new[]{array}.Concat(indexes).ToArray(), // FIXME: It hurts my eyes
-            OperationType.ArrayAccess
+            OperationType.ArrayAccess,
+            isValid
         );
     }
 }

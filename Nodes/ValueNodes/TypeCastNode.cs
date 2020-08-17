@@ -4,7 +4,7 @@ public class TypeCastNode : ValueNode
 
     public ValueNode Operand { get; protected set; }
 
-    public TypeCastNode(ValueNode type, ValueNode operand, Token parenToken) : base(parenToken) {
+    public TypeCastNode(ValueNode type, ValueNode operand, Token parenToken, bool isValid = true) : base(parenToken, isValid) {
         Type = type;
         Operand = operand;
     }

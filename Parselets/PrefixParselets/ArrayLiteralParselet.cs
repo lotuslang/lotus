@@ -5,13 +5,16 @@ public sealed class ArrayLiteralParselet : IPrefixParselet<ArrayLiteralNode>
 {
     public ArrayLiteralNode Parse(Parser parser, Token leftSquareBracket) {
 
-        if (leftSquareBracket != "[")
-            throw new ArgumentException("Token needs to be a '[' (left square bracket).");
+        if (leftSquareBracket != "[") {
+            throw Logger.Fatal(new InvalidCallException(leftSquareBracket.Location));
+        }
+
+        var isValid = true;
 
         parser.Tokenizer.Reconsume(); // reconsume the square bracket '['
 
-        var values = parser.ConsumeCommaSeparatedValueList("[", "]");
+        var values = parser.ConsumeCommaSeparatedValueList("[", "]", ref isValid);
 
-        return new ArrayLiteralNode(values, leftSquareBracket);
+        return new ArrayLiteralNode(values, leftSquareBracket, isValid);
     }
 }

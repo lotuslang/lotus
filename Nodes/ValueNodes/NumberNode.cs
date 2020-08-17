@@ -6,7 +6,7 @@ public class NumberNode : ValueNode
     /// <value>The number represented by this object.</value>
     public double Value { get; protected set; }
 
-    public NumberNode(double value, Token token) : base(value.ToString(), token) {
+    public NumberNode(double value, Token token, bool isValid = true) : base(value.ToString(), token, isValid) {
         Value = value;
     }
 

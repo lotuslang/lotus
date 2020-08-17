@@ -1,13 +1,13 @@
 public class ComplexToken : Token
 {
-    public ComplexToken(string representation, TokenKind kind, Location location, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, kind, location, leading, trailing) { }
+    public ComplexToken(string representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+        : base(representation, kind, location, isValid, leading, trailing) { }
 
-    public void Add(char ch)
-        => rep.Append(ch);
+    public virtual void Add(char ch)
+        => rep += ch;
 
-    public void Add(string str)
-        => rep.Append(str);
+    public virtual void Add(string str)
+        => rep += str;
 
     public GraphNode ToGraphNode() {
         var output = new GraphNode(GetHashCode(), Representation);

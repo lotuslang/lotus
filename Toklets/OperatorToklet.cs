@@ -125,6 +125,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             return new OperatorToken(currChar, Precedence.Unary, "right", input.Position);
         }
 
-        throw new InvalidInputException(currChar.ToString(), "as an operator", tokenizer.Position);
+        throw Logger.Fatal(new InvalidCallException(input.Position));
     }
 }

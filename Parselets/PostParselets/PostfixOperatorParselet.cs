@@ -21,6 +21,6 @@ public sealed class PostfixOperatorParselet : IPostfixParselet<OperationNode>
             );
         }
 
-        throw new ArgumentException(nameof(token) + " needs to be an operator.");
+        throw Logger.Fatal(new InvalidCallException(token.Location));
     }
 }

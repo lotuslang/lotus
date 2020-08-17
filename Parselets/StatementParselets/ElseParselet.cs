@@ -5,7 +5,7 @@ public class ElseParselet : IStatementParselet<ElseNode>
 {
     public ElseNode Parse(Parser parser, Token elseToken) {
         if (!(elseToken is ComplexToken elseKeyword && elseKeyword == "else")) {
-            throw new Exception();
+            throw Logger.Fatal(new InvalidCallException(elseToken.Location));
         }
 
         if (parser.Tokenizer.Peek() == "if") {

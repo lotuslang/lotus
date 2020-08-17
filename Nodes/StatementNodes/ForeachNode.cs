@@ -46,8 +46,13 @@ public class ForeachNode : StatementNode
     /// <param name="itemName">The name of the variable used in the loop</param>
     /// <param name="collectionName">The name of the collection being looped over</param>
     /// <param name="body">The body of the foreach loop</param>
-    public ForeachNode(ComplexToken foreachToken, ComplexToken inToken, IdentNode itemName, ValueNode collectionName, SimpleBlock body)
-        : base(foreachToken)
+    public ForeachNode(ComplexToken foreachToken,
+                       ComplexToken inToken,
+                       IdentNode itemName,
+                       ValueNode collectionName,
+                       SimpleBlock body,
+                       bool isValid = true)
+        : base(foreachToken, isValid)
     {
         InToken = inToken;
         ItemName = itemName;

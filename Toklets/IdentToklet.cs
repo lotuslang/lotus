@@ -16,12 +16,7 @@ public sealed class IdentToklet : IToklet<ComplexToken>
 
         // if the character is not a letter or a low line
         if (!(Char.IsLetter(currChar) || currChar == '_')) {
-            throw new InvalidInputException(
-                currChar.ToString(),
-                "as the beginning of an identifier",
-                "because identifiers can only start with a letter or an underscore",
-                tokenizer.Position
-            );
+            throw Logger.Fatal(new InvalidCallException(input.Position));
         }
 
         // while the current character is a letter, a digit, or a low line

@@ -22,7 +22,8 @@ public class OperationNode : ValueNode
         };
     }
 
-    public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType) : base(token)
+    public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType, bool isValid = true)
+        : base(token, isValid)
     {
         Operands = operands.AsReadOnly();
         OperationType = opType;

@@ -10,7 +10,8 @@ public sealed class PrefixOperatorParselet : IPrefixParselet<OperationNode>
 
     public OperationNode Parse(Parser parser, Token token) {
 
-        if (!(token is OperatorToken opToken)) throw new Exception();
+        if (!(token is OperatorToken opToken))
+            throw Logger.Fatal(new InvalidCallException(token.Location));
 
         return new OperationNode(opToken, new[] { parser.ConsumeValue(Precedence.Unary) }, opType);
     }

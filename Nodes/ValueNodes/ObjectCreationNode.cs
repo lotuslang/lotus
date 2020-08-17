@@ -2,7 +2,7 @@ public class ObjectCreationNode : ValueNode
 {
     public FunctionCallNode InvocationNode { get; protected set; }
 
-    public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken) : base(newToken) {
+    public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken, bool isValid = true) : base(newToken, isValid) {
         InvocationNode = invoke;
     }
 

@@ -6,8 +6,12 @@ public class SimpleBlock
 {
     public ReadOnlyCollection<StatementNode> Content { get; protected set; }
 
-    public SimpleBlock(IList<StatementNode> content) {
+    public bool IsValid { get; set; }
+
+    public SimpleBlock(IList<StatementNode> content, bool isValid = true) {
         Content = content.AsReadOnly();
+
+        IsValid = isValid;
     }
 
     public GraphNode ToGraphNode() {

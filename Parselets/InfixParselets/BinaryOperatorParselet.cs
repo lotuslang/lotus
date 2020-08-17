@@ -23,6 +23,6 @@ public sealed class BinaryOperatorParselet : IInfixParselet<OperationNode>
             );
         }
 
-        throw new ArgumentException("Token needs to be an operator.");
+        throw Logger.Fatal(new InvalidCallException(token.Location));
     }
 }

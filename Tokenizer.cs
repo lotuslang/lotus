@@ -32,7 +32,13 @@ public class Tokenizer : IConsumer<Token>
 
     protected Tokenizer(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
-            throw new ArgumentNullException(nameof(grammar));
+            Logger.Warning(new InvalidCallException(
+                message : "Something tried to create a new Tokenizer with a null grammar."
+                        + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
+                location: Position
+            ));
+
+            grammar = new ReadOnlyGrammar();
         }
 
         Grammar = grammar;
@@ -87,6 +93,7 @@ public class Tokenizer : IConsumer<Token>
             Current.Representation,
             Current.Kind,
             Current.Location,
+            Current.IsValid,
             Current.LeadingTrivia,
             Current.TrailingTrivia
         );
@@ -106,6 +113,7 @@ public class Tokenizer : IConsumer<Token>
             Current.Representation,
             Current.Kind,
             Current.Location,
+            Current.IsValid,
             Current.LeadingTrivia,
             Current.TrailingTrivia
         );

@@ -7,6 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 public class StringConsumer : IConsumer<char>
 {
+
+    public readonly static char EOF = '\u0003';
+
     protected Queue<char> reconsumeQueue;
 
     protected Stack<char> stack;
@@ -19,16 +22,16 @@ public class StringConsumer : IConsumer<char>
 
     public char Current { get; protected set; }
 
-    protected Location pos; // we keep it because it's faster performance-wise
+    protected Location pos; // we keep it because it's faster performance-wise (and also more convenient)
 
     public Location Position {
         get => pos;
     }
 
     protected StringConsumer() {
-        Current = '\u0003';
+        Current = EOF;
         stack = new Stack<char>();
-        pos = new Location(1, 0);
+        pos = new Location(1, -1);
         reconsumeQueue = new Queue<char>();
         lastPosition = new Location(0, -1);
     }
@@ -40,7 +43,7 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        pos = new Location(1, 0, fileName);
+        pos = new Location(1, -1, fileName);
     }
 
     public StringConsumer(StringConsumer consumer) : this() {
@@ -58,7 +61,7 @@ public class StringConsumer : IConsumer<char>
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
         stack = new Stack<char>(collection.Reverse());
 
-        pos = new Location(1, 0, fileName);
+        pos = new Location(1, -1, fileName);
     }
 
     public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
@@ -77,7 +80,7 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        pos = new Location(1, 0, fileName);
+        pos = new Location(1, -1, fileName);
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)
@@ -93,7 +96,7 @@ public class StringConsumer : IConsumer<char>
     public bool Consume([MaybeNullWhen(false)] out char result) {
         result = Consume();
 
-        return result != '\u0003';
+        return result != EOF;
     }
 
     public char Consume() {
@@ -113,7 +116,7 @@ public class StringConsumer : IConsumer<char>
         lastPosition = pos;
 
         if (Count == 0) {
-            Current = '\u0003';
+            Current = EOF;
 
             return Current;
         }
@@ -136,7 +139,7 @@ public class StringConsumer : IConsumer<char>
             return reconsumeQueue.Peek();
         }
 
-        if (Count == 0) return '\u0003';
+        if (Count == 0) return EOF;
 
         return stack.Peek();
     }

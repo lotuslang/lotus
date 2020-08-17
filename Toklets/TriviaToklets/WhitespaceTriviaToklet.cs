@@ -18,6 +18,10 @@ public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken
 
         var whitespaceChar = input.Consume();
 
+        if (!Char.IsWhiteSpace(whitespaceChar)) {
+            throw Logger.Fatal(new InvalidCallException(input.Position));
+        }
+
         int charCounter = 1;
 
         while (input.Consume(out char currChar) && currChar == whitespaceChar) charCounter++;

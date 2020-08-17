@@ -23,6 +23,8 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         var currChar = input.Consume();
 
+        var isValid = true;
+
         var origin = input.Position; // the position of the number's first character
 
         if (currChar == '+' || currChar == '-') {
@@ -91,22 +93,38 @@ public sealed class NumberToklet : IToklet<NumberToken>
             }
         }
 
-        // if the character is '.'
+        // if we have a decimal separator...
         if (currChar == '.') {
-            var str = numberStr.Append(currChar).ToString();
+            var str = numberStr.ToString() + currChar;
             if (str.Contains('e') || str.Contains('E')) {
-                throw new InvalidInputException(numberStr.Append(currChar).ToString(), "as a number", "because you cannot use a decimal separator after a power-of-ten separator", input.Position);
+                // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)
+                Logger.Error(new InvalidInputException(numberStr.ToString() + currChar, "as a number", "because you cannot use a decimal separator after a power-of-ten separator", input.Position));
+            } else {
+                // ...or there is a second decimal separator, which isn't valid either
+                Logger.Error(new InvalidInputException(numberStr.ToString() + currChar, "as a number", "because there already was a decimal separator earier", input.Position));
             }
-            throw new InvalidInputException(numberStr.Append(currChar).ToString(), "as a number", "because there already was a decimal separator earier", input.Position);
+
+            isValid = false;
+
+            // in both cases, if the next character is a digit, we consume it for error-recovery's sake
+            if (Char.IsDigit(input.Consume())) {
+                while (Char.IsDigit(input.Consume())); // consume until it's not a digit anymore (yes this is an empty loop, I know)
+            }
         }
 
-        // if the character is 'e' or 'E'
+        // we already had a "power-of-ten separator", so this is not valid.
         if (currChar == 'e' || currChar == 'E') {
-            throw new InvalidInputException(numberStr.Append(currChar).ToString(), "as a number", "because there already was a power-of-ten separator earlier", input.Position);
+            Logger.Error(new InvalidInputException(numberStr.ToString() + currChar, "as a number", "because there already was a power-of-ten separator earlier", input.Position));
+
+            isValid = false;
+
+            if (Condition(input)) { // FIXME: this is lazy
+                while (Char.IsDigit(input.Consume())); // consume until it's not a digit anymore (yes this is an empty loop, I know)
+            }
         }
 
         input.Reconsume();
 
-        return new NumberToken(numberStr.ToString(), origin);
+        return new NumberToken(numberStr.ToString(), origin, isValid);
     }
 }

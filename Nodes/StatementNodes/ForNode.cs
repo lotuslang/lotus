@@ -14,7 +14,7 @@ public class ForNode : StatementNode
         protected set;
     }
 
-    public ForNode(ComplexToken forToken, IList<StatementNode> header, SimpleBlock body) : base(forToken) {
+    public ForNode(ComplexToken forToken, IList<StatementNode> header, SimpleBlock body, bool isValid = true) : base(forToken, isValid) {
         Header = header.AsReadOnly();
         Body = body;
     }

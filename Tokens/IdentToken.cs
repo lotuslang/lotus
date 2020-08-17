@@ -1,5 +1,5 @@
 public class IdentToken : ComplexToken
 {
-    public IdentToken(string representation, Location location, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, TokenKind.ident, location, leading, trailing) { }
+    public IdentToken(string representation, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+        : base(representation, TokenKind.ident, location, isValid, leading, trailing) { }
 }

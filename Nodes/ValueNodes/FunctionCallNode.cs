@@ -7,8 +7,8 @@ public class FunctionCallNode : ValueNode
 
     public ValueNode FunctionName { get; protected set; }
 
-    public FunctionCallNode(IList<ValueNode> parameters, ValueNode functionName, Token functionToken)
-        : base(functionName.Representation + "(...)", functionToken)
+    public FunctionCallNode(IList<ValueNode> parameters, ValueNode functionName, Token functionToken, bool isValid = true)
+        : base(functionName.Representation + "(...)", functionToken, isValid)
     {
 
         FunctionName = functionName;

@@ -42,12 +42,28 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                     currToken = tokenizer.Consume();
 
-                    if (currToken == ";") {
-                        throw new UnexpectedTokenException(currToken, "in an interpolated string", "`}`");
+                    if (currToken == ";") { // FIXME: write a message to tell people that they can't use semicolons in interpolated strings
+                        Logger.Error(new UnexpectedTokenException(
+                            token: currToken,
+                            context: "in an interpolated string",
+                            expected: "`}`"
+                        ));
+
+                        output.IsValid = false;
+
+                        break;
                     }
 
                     if (currToken.Kind == TokenKind.EOF) {
-                        throw new UnexpectedEOF("in an interpolated string", $"`}}` followed by the string delimiter `{endingDelimiter}`", tokenizer.Position);
+                        Logger.Error(new UnexpectedEOFException(
+                            context: "in an interpolated string",
+                            expected: $"`}}` followed by the string delimiter `{endingDelimiter}`",
+                            tokenizer.Position
+                        ));
+
+                        output.IsValid = false;
+
+                        break;
                     }
 
                     tokenList.Add(currToken);
@@ -68,7 +84,15 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             output.Add(currChar);
 
             if (!input.Consume(out currChar)) {
-                throw new UnexpectedEOF("in a string", $"the string delimitier `{endingDelimiter}`", tokenizer.Position);
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in a string",
+                    expected: $"the string delimitier `{endingDelimiter}`",
+                    tokenizer.Position
+                ));
+
+                output.IsValid = false;
+
+                break;
             }
         }
 

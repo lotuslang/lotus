@@ -10,15 +10,15 @@ public class WhileNode : StatementNode
 
     public SimpleBlock Body { get; protected set; }
 
-    public WhileNode(ValueNode condition, SimpleBlock body, ComplexToken whileToken) : base(whileToken) {
+    public WhileNode(ValueNode condition, SimpleBlock body, ComplexToken whileToken, bool isValid = true) : base(whileToken, isValid) {
         Condition = condition;
         IsDoLoop = false;
         DoToken = null;
         Body = body;
     }
 
-    public WhileNode(ValueNode condition, SimpleBlock body, ComplexToken whileToken, ComplexToken doToken)
-        : this(condition, body, whileToken)
+    public WhileNode(ValueNode condition, SimpleBlock body, ComplexToken whileToken, ComplexToken doToken, bool isValid = true)
+        : this(condition, body, whileToken, isValid)
     {
         IsDoLoop = true;
         DoToken = doToken;

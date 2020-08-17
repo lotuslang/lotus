@@ -25,11 +25,9 @@ class Program
         var tokenizer = new LotusTokenizer(file);
 
         /*tokenizer = new LotusTokenizer(@"
-        while (isOk(i)) {
-            if (i % 30 == 0) continue;
-            i = i + rnd.Next();
-        }
-        ");*/
+""hell""();
+
+");*/
 
         var parser = new LotusParser(tokenizer);
 
@@ -44,7 +42,10 @@ class Program
             g.AddNode(node.ToGraphNode());
         }
 
-        Console.Write(g.ToText());
+        if (Logger.HasErrors)
+            Logger.PrintAllErrors();
+        else
+            Console.Write(g.ToText());
     }
 }
 #pragma warning restore

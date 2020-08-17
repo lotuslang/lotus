@@ -13,9 +13,10 @@ public class CommentTriviaToken : TriviaToken
     public CommentTriviaToken(string rep,
                               Location location,
                               IList<CommentTriviaToken>? inner = null,
+                              bool isValid = true,
                               TriviaToken? leading = null,
                               TriviaToken? trailing = null)
-        : base(rep, TriviaKind.comment, location, leading, trailing)
+        : base(rep, TriviaKind.comment, location, isValid, leading, trailing)
     {
         innerComments = inner ?? new List<CommentTriviaToken>();
     }

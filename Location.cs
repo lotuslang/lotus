@@ -17,14 +17,6 @@ public struct Location
         return $"In {filename}, at Line {line}, Column {column}";
     }
 
-    public Location With(int line = Int32.MinValue, int column = Int32.MinValue, string? filename = null) {
-        return new Location(
-            line == -1 ? this.line : line,
-            column == -1 ? this.column : column,
-            filename ?? this.filename
-        );
-    }
-
     public override string ToString()
         => (string)this;
 

@@ -13,7 +13,7 @@ arr.add([], arr)
 
 var a = 0
 
-var a = arr != [] ? arr : [0]
+var b = arr != [] ? arr : [0]
 
 func someFunc() {
     print("called!")
@@ -26,7 +26,7 @@ func someFunc1(a, string [b, c], int d): int {
 }
 
 func someFunc2(int [seed, min, max]) {
-    return new Random(a).Next(b, c)
+    return new Random(seed).Next(min, max)
 }
 
 from origin import *
@@ -56,7 +56,7 @@ if (a || b && c != d + e)
     print("tf")
 else if (this.otherCondition()) {
     print("maybe ?")
-} else { }
+} else { } // fuck it
 
 while (str.length < 20) {
     if (str[-1] == "z") continue;
@@ -70,4 +70,4 @@ while (_global++ < 13)
 
 /* some /* nested */ comments */
 
-// some on-line comment
+// some one-line comment

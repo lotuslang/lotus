@@ -9,12 +9,12 @@ public class ElseNode : StatementNode
 
     public bool HasIf { get => IfNode != null; }
 
-    public ElseNode(SimpleBlock body, ComplexToken elseToken) : base(elseToken) {
+    public ElseNode(SimpleBlock body, ComplexToken elseToken, bool isValid = true) : base(elseToken, isValid) {
         Body = body;
         IfNode = null;
     }
 
-    public ElseNode(IfNode ifNode, ComplexToken elseToken) : base(elseToken) {
+    public ElseNode(IfNode ifNode, ComplexToken elseToken, bool isValid = true) : base(elseToken, isValid) {
         IfNode = ifNode;
         Body = ifNode.Body; // works like a pointer so it's fine
     }

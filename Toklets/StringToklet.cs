@@ -22,7 +22,15 @@ public sealed class StringToklet : IToklet<StringToken>
             output.Add(currChar);
 
             if (!input.Consume(out currChar)) {
-                throw new UnexpectedEOF("in string", "a character or a delimiter (' or \")", input.Position);
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in string",
+                    expected: "a character or a delimiter (' or \")",
+                    location: input.Position
+                ));
+
+                output.IsValid = false;
+
+                break;
             }
         }
 

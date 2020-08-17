@@ -8,17 +8,34 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
 
         // if the token consumed was not "func", then throw an exception
         if (!(funcToken is ComplexToken funcKeyword && funcKeyword == "func"))
-            throw new UnexpectedTokenException("A function definition must start with the keyword 'func'", funcToken);
+            throw Logger.Fatal(new InvalidCallException(funcToken.Location));
+
+        var isValid = true;
 
         // consume the name of the function
         var funcNameToken = parser.Tokenizer.Consume();
 
         // if the token consumed was not an identifier, then throw an exception
-        if (!(funcNameToken is IdentToken funcName))
-            throw new UnexpectedTokenException(funcNameToken, "in function declaration", TokenKind.ident);
+        if (!(funcNameToken is IdentToken funcName)) {
+            Logger.Error(new UnexpectedTokenException(
+                token: funcNameToken,
+                context: "in function declaration",
+                expected: TokenKind.ident
+            ));
+
+            isValid = false;
+
+            if (funcNameToken == "(") parser.Tokenizer.Reconsume();
+
+            funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location, false);
+        }
 
         if (parser.Tokenizer.Consume() != "(") {
-            throw new Exception();
+            Logger.Error(new UnexpectedTokenException(
+                token: parser.Tokenizer.Current,
+                context: "in function parameter list",
+                expected: "("
+            ));
         }
 
         // function parameter list format :
@@ -28,12 +45,42 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
 
         var parameters = new List<(ValueNode type, ComplexToken name)>();
 
+        void addParameter(ValueNode type, ValueNode paramNameNode) {
+            if (type != ValueNode.NULL && !Utilities.IsName(type)) {
+                Logger.Error(new UnexpectedValueTypeException(
+                    node: type,
+                    context: "as a parameter type in a function's parameter list",
+                    expected: "a type name (a qualified name)"
+                ));
+
+                isValid = false;
+            }
+
+            if (!(paramNameNode is IdentNode paramName)) {
+                Logger.Error(new UnexpectedValueTypeException(
+                    node: paramNameNode,
+                    context: "as a parameter name in a function's parameter list",
+                    expected: "a simple name (an identifier)"
+                ));
+
+                isValid = false;
+
+                paramName = new IdentNode(
+                    paramNameNode.Representation,
+                    new IdentToken(paramNameNode.Representation, paramNameNode.Token.Location, false),
+                    false
+                );
+            }
+
+            parameters!.Add((type, paramName.Token));
+        }
+
         while (parser.Tokenizer.Peek() != ")") {
 
             /*
             * Ok, this needs a bit of explanation. So, I wanted to implement a syntactic shorthand I'd like to see
-            * in csharp (and other languages) that allows users to define the type of multiple parameters at once
-            * if they have the same type. It can be really long frustrating to have things like :
+            * in csharp (and other languages) that allows users to define the type of multiple parameters at the
+            * same time if they have the same type. It can be really long and frustrating to have things like :
             *
             * ```
             * int DoThing(int seed, int cookie, int hash, int secret, int key) {
@@ -42,58 +89,75 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             * ```
             *
             * Therefore, I thought of a shorthand such as : `int DoThing(int [seed, cookie, hash, secret, key])`
-            * As you probably noticed, it is really similar to an array init/literal, which is honestly a good
-            * thing in my opinion.So I thought I would just parse the type, and then, if the next node wasn't an
-            * IdentNode, I would just use the ArrayLiteral parselet and register each parameter with the type.
+            * As you probably noticed, it is really similar to an array init/literal (which is honestly a good
+            * thing in my opinion). So I thought I would just parse the type, and then, if the next node wasn't an
+            * IdentNode or a comma, I would just use the ArrayLiteral parselet and register each parameter with the type.
             *
             * Yeah, that's not what happened.
             *
-            * What I didn't notice is that int [a, b, c] is actually an array indexing, you just have to remove the
-            * space and it becomes quite apparent. I had to make array accesses able to handle commas, but I'm not
-            * happy about it because it made more to sense (to me) and was cleaner to parse the type first and then
-            * an array of names. But alas, I have to do this for now, and I don't think I could easily fix this without
-            * re-writing a special parsing algorithm in this method just for dots and parentheses.
+            * What I didn't notice is that int [a, b, c] has actually kind of the same syntax as array indexing,
+            * you just have to remove the space and it becomes quite apparent. I had to make array accesses able
+            * to handle commas, but I'm not happy about it because it made more to sense (to me) and was cleaner
+            * to parse the type first and then an array of names. But alas, I have to do this for now, and I don't
+            * think I could easily fix this without re-writing a special parsing algorithm in this method just
+            * for member-access/qualified-names (i.e. the dot operator).
+            *
+            * Future blokyk here : This is a nightmare to understand and refactor. Thanks.
             */
 
             var typeOrName = parser.ConsumeValue();
 
+            // i don't wanna talk about it any more than i already did
+
             if (typeOrName is OperationNode typeNameArray) {
-                if (typeNameArray.OperationType != OperationType.ArrayAccess || typeNameArray.Operands.Count < 2) {
-                    throw new Exception();
+                // if it's a list of parameters with the same type
+
+                // if this isn't an array-access-like thing
+                if (typeNameArray.OperationType != OperationType.ArrayAccess) {
+                    Logger.Error(new UnexpectedValueTypeException(
+                        node: typeNameArray,
+                        context: "as a typed parameter-group in a function's parameter list",
+                        expected: "a type name followed by an array-like syntax (e.g. int [param1, param2])"
+                    ));
+
+                    isValid = false;
+
+                    // FIXME: Maybe we could try to consume until there's either a comma or a parenthesis,
+                    // but if there isn't any (i.e. the function is malformed later on), we would have a problem :/
+
+                    goto LOOP_END_CHECK;
+                }
+
+                // if there's only one argument (illegal)
+                if (typeNameArray.Operands.Count < 2) {
+                    Logger.Error(new LotusException(
+                        message: "A typed parameter-group should declare at least two parameters, which is not the case here.",
+                        location: typeNameArray.Operands.First()?.Token?.Location ?? typeOrName.Token.Location
+                    ));
+
+                    isValid = false;
+
+                    if (typeNameArray.Operands.Count == 0) goto LOOP_END_CHECK;
                 }
 
                 var paramType = typeNameArray.Operands[0];
 
-                if (!Utilities.IsName(paramType)) {
-                    throw new Exception();
+                // iterate over every parameter name and add them to the list
+                // we skip one cause the first operand of an array access is the type name
+                foreach (var paramNameNode in typeNameArray.Operands.Skip(1)) {
+                    addParameter(paramType, paramNameNode);
                 }
+            } else if (parser.Tokenizer.Peek().Kind == TokenKind.ident) {
+                // if there's still an identifier after typeOrName,
+                // it's a typed parameter (and the name is the token we peeked at)
 
-                // we skip one cause the first operand is the type name
-                foreach (var nameNode in typeNameArray.Operands.Skip(1)) {
-                    if (!(nameNode is IdentNode paramNode)) {
-                        throw new Exception();
-                    }
-
-                    parameters.Add((paramType, paramNode.Token));
-                }
-            } else if (parser.Tokenizer.Peek() != "," && parser.Tokenizer.Peek() != ")") {
-                if (!Utilities.IsName(typeOrName)) {
-                    throw new Exception();
-                }
-
-                if (!(parser.Peek() is IdentNode nameNode)) {
-                    throw new Exception();
-                }
-
-                parameters.Add((typeOrName, nameNode.Token));
+                addParameter(typeOrName, parser.ConsumeValue());
             } else {
-                if (!(typeOrName is IdentNode paramName)) {
-                    throw new Exception();
-                }
-
-                parameters.Add((ValueNode.NULL, paramName.Token));
+                // otherwise, that means we have a parameter without type info
+                addParameter(ValueNode.NULL, typeOrName);
             }
 
+LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to alternatives
             if (parser.Tokenizer.Consume() != ",") {
                 if (parser.Tokenizer.Current == ")") {
                     parser.Tokenizer.Reconsume();
@@ -101,27 +165,56 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                     break;
                 }
 
-                throw new Exception(); // TODO: Write exceptions
+                Logger.Error(new UnexpectedTokenException(
+                    token: parser.Tokenizer.Current,
+                    context: "after a parameter in a function's parameter list",
+                    expected: "a comma or a parenthesis"
+                ));
+
+                isValid = false;
+
+                //parser.Tokenizer.Reconsume();
+
+                continue;
             }
 
             if (parser.Tokenizer.Peek() == ")") { // cause that would mean it is a comma followed directly by a paren
-                throw new Exception();
+                Logger.Error(new UnexpectedTokenException(
+                    token: parser.Tokenizer.Peek(),
+                    context: "after a comma in a function's parameter list",
+                    expected: "a parameter name or type"
+                ));
+
+                isValid = false;
             }
         }
 
+        // this means we probably broke because of an EOF
         if (parser.Tokenizer.Consume() != ")") {
-            throw new Exception("wtf did you break");
+            Logger.Error(new UnexpectedEOFException(
+                context: "in a function's parameter list",
+                expected: "a closing parenthesis ')'",
+                location: parser.Tokenizer.Position
+            ));
+
+            isValid = false;
         }
 
         var returnType = ValueNode.NULL;
 
         if (parser.Tokenizer.Peek() == ":") {
-            parser.Tokenizer.Consume(); // consume the arrow
+            parser.Tokenizer.Consume(); // consume the colon
 
             returnType = parser.ConsumeValue();
 
             if (!Utilities.IsName(returnType)) {
-                throw new Exception();
+                Logger.Error(new UnexpectedValueTypeException(
+                    node: returnType,
+                    context: "as a return type in a function declaration",
+                    expected: "a type name"
+                ));
+
+                isValid = false;
             }
         }
 
@@ -134,7 +227,8 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             parameters,
             returnType,
             funcName,
-            funcKeyword
+            funcKeyword,
+            isValid
         );
     }
 }

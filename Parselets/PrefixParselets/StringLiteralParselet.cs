@@ -12,13 +12,13 @@ public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
             foreach (var section in complexString.CodeSections) {
-                // FIXME: See Parser.ConsumeValue comment
+                // FIXME: See Parser.ConsumeValue comment (tldr Consumer can return null sometimes)
                 node.AddSection(new Parser(new Consumer<Token>(section), parser.Grammar).ConsumeValue());
             }
 
             return node;
         }
 
-        throw new ArgumentException("Token needs to be a string.");
+        throw Logger.Fatal(new InvalidCallException(token.Location));
     }
 }

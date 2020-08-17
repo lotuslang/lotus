@@ -2,11 +2,11 @@ using System;
 
 public sealed class BoolLiteralParselet : IPrefixParselet<BoolNode>
 {
-    public BoolNode Parse(Parser _, Token boolToken) {
-        if (boolToken is BoolToken boolean) {
-            return new BoolNode(boolean.Value, boolean);
+    public BoolNode Parse(Parser _, Token token) {
+        if (token is BoolToken boolToken) {
+            return new BoolNode(boolToken.Value, boolToken);
         }
 
-        throw new ArgumentException("Token needs to be a bool.");
+        throw Logger.Fatal(new InvalidCallException(token.Location));
     }
 }

@@ -12,10 +12,11 @@ public class ComplexStringToken : ComplexToken
     public ComplexStringToken(string representation,
                               IList<Token[]> codeSections,
                               Location location,
+                              bool isValid = true,
                               TriviaToken? leading = null,
                               TriviaToken? trailing = null
     )
-        : base(representation, TokenKind.complexString, location, leading, trailing)
+        : base(representation, TokenKind.complexString, location, isValid, leading, trailing)
     {
         sections = new List<Token[]>(codeSections);
     }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
+#nullable disable
 public class Consumer<T> : IConsumer<T>
 {
     private bool reconsumeFlag;
@@ -20,7 +21,7 @@ public class Consumer<T> : IConsumer<T>
 
     protected Consumer() {
         inputStack = new Stack<T>();
-        pos = new Location(1, 0);
+        pos = new Location(1, -1);
         Current = default(T)!;
     }
 
@@ -77,3 +78,4 @@ public class Consumer<T> : IConsumer<T>
         return result;
     }
 }
+#nullable restore

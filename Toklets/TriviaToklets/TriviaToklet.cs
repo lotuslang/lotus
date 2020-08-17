@@ -8,5 +8,5 @@ public class TriviaToklet : ITriviaToklet<TriviaToken>
 
     //[DoesNotReturn]
     public TriviaToken Consume(IConsumer<char> input, Tokenizer _)
-        => throw new InternalErrorException(message: "This method shouldn't have been called on the base class");
+        => throw Logger.Fatal(new InvalidCallException(input.Position));
 }

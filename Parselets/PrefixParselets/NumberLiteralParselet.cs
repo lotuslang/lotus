@@ -3,10 +3,10 @@ using System;
 public sealed class NumberLiteralParselet : IPrefixParselet<NumberNode>
 {
     public NumberNode Parse(Parser _, Token token) {
-        if (token is NumberToken number) {
-            return new NumberNode(number);
+        if (token is NumberToken numberToken) {
+            return new NumberNode(numberToken);
         }
 
-        throw new ArgumentException("Token needs to be a number.");
+        throw Logger.Fatal(new InvalidCallException(token.Location));
     }
 }

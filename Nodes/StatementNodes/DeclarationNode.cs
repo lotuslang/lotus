@@ -23,7 +23,9 @@ public class DeclarationNode : StatementNode
     /// <param name="varName">The name of the variable</param>
     /// <param name="varKeywordToken">The token of the "var" keyword used</param>
     /// <returns></returns>
-    public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken) : base(varKeywordToken) {
+    public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken, bool isValid = true)
+        : base(varKeywordToken, isValid)
+    {
         Name = varName;
         Value = value;
     }

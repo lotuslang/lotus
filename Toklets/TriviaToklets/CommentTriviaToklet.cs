@@ -22,10 +22,12 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
         var commentStart = input.Position;
 
+        var isValid = true;
+
         var currChar = input.Consume();
 
         if (currChar != '/') {
-            throw new InternalErrorException("while processing a comment", "because this method shouldn't have been called on this input", input.Position);
+            throw Logger.Fatal(new InvalidCallException(input.Position));
         }
 
         currChar = input.Consume();
@@ -65,7 +67,13 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             }
 
             if (input.Current == '\0' || input.Current == '\u0003') {
-                throw new InvalidInputException(strBuilder.ToString(), "in a multi-line comment", "the comment delimiter '*/'", input.Position);
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in a multi-line comment",
+                    expected: "the comment delimiter '*/'",
+                    input.Position
+                ));
+
+                isValid = false;
             }
 
             // consumes the remaining '/'
@@ -73,9 +81,9 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
             strBuilder.Append("*/");
 
-            return new CommentTriviaToken(strBuilder.ToString(), commentStart, inner: inner, trailing: tokenizer.ConsumeTrivia());
+            return new CommentTriviaToken(strBuilder.ToString(), commentStart, isValid: isValid, inner: inner, trailing: tokenizer.ConsumeTrivia());
         }
 
-        throw new InternalErrorException("while processing a comment", "because this method shouldn't have been called on this input", input.Position);
+        throw Logger.Fatal(new InvalidCallException(input.Position));
     }
 }

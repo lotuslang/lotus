@@ -11,14 +11,14 @@ public class IfNode : StatementNode
 
     public bool HasElse { get => ElseNode != null; }
 
-    public IfNode(ValueNode condition, SimpleBlock body, ComplexToken ifToken) : base(ifToken) {
+    public IfNode(ValueNode condition, SimpleBlock body, ComplexToken ifToken, bool isValid = true) : base(ifToken, isValid) {
         Condition = condition;
         Body = body;
         ElseNode = null;
     }
 
-    public IfNode(ValueNode condition, SimpleBlock body, ElseNode elseNode, ComplexToken ifToken)
-        : this(condition, body, ifToken)
+    public IfNode(ValueNode condition, SimpleBlock body, ElseNode elseNode, ComplexToken ifToken, bool isValid = true)
+        : this(condition, body, ifToken, isValid)
     {
         ElseNode = elseNode;
     }

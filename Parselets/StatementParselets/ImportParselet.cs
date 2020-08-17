@@ -3,16 +3,27 @@ using System.Collections.Generic;
 
 public sealed class ImportParselet : IStatementParselet<ImportNode>
 {
-    public ImportNode Parse(Parser parser, Token token) {
-        if (!(token is ComplexToken fromKeyword && token == "from"))
-            throw new UnexpectedTokenException(token, "in import statement", "from");
+    public ImportNode Parse(Parser parser, Token fromToken) {
+        if (!(fromToken is ComplexToken fromKeyword && fromToken == "from"))
+            throw Logger.Fatal(new InvalidCallException(fromToken.Location));
 
         var fromOrigin = parser.ConsumeValue();
 
-        if (!(Utilities.IsName(fromOrigin) || fromOrigin is StringNode))
-            throw new UnexpectedValueType(fromOrigin, "in from statement", "string or name");
+        var fromIsValid = true;
 
-        var from = new FromNode(fromOrigin, fromKeyword);
+        var importIsValid = true;
+
+        if (!(Utilities.IsName(fromOrigin) || fromOrigin is StringNode)) {
+            Logger.Error(new UnexpectedValueTypeException(
+                node: fromOrigin,
+                context: "in from statement",
+                expected: "string or name"
+            ));
+
+            fromIsValid = false;
+        }
+
+        var from = new FromNode(fromOrigin, fromKeyword, fromIsValid);
 
         // TODO: Would it be better to have parser.ConsumeValue() here ? it would probably do the same thing
         //
@@ -27,8 +38,17 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
         // I'm the most comfortable with)
         var importToken = parser.Tokenizer.Consume();
 
-        if (!(importToken is ComplexToken importKeyword && importToken == "import"))
-            throw new UnexpectedTokenException(importToken, "in import statement", "import");
+        if (!(importToken is ComplexToken importKeyword && importKeyword == "import")) {
+            Logger.Error(new UnexpectedTokenException(
+                token: importToken,
+                context: "in import statement",
+                expected: "import"
+            ));
+
+            importIsValid = false;
+
+            importKeyword = new ComplexToken(importToken.Representation, TokenKind.keyword, importToken.Location, false);
+        }
 
         if (parser.Tokenizer.Peek() == "*") {
             return new ImportNode(
@@ -43,14 +63,21 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
         do {
             var import = parser.ConsumeValue(); // consume the import's name
 
-            if (!(Utilities.IsName(import) || import.Representation == "*"))
-                throw new UnexpectedValueType(import, "in import statement", "name or the characters '*'");
+            if (!(Utilities.IsName(import) || import.Representation == "*")) {
+                Logger.Error(new UnexpectedValueTypeException(
+                    node: import,
+                    context: "in import statement",
+                    expected: "name or the characters '*'"
+                ));
+
+                importIsValid = false;
+            }
 
             importList.Add(import);
         } while (parser.Tokenizer.Consume() == ",");
 
         parser.Tokenizer.Reconsume();
 
-        return new ImportNode(importList, from, importKeyword);
+        return new ImportNode(importList, from, importKeyword, importIsValid);
     }
 }

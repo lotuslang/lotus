@@ -2,7 +2,8 @@ public sealed class ReturnParselet : IStatementParselet<ReturnNode>
 {
     public ReturnNode Parse(Parser parser, Token returnToken) {
 
-        if (!(returnToken is ComplexToken returnKeyword && returnKeyword == "return")) throw new UnexpectedTokenException(returnToken, "in return statement", "return");
+        if (!(returnToken is ComplexToken returnKeyword && returnKeyword == "return"))
+            throw Logger.Fatal(new InvalidCallException(returnToken.Location));
 
         if (parser.Tokenizer.Peek() == ";" || parser.Tokenizer.Peek() == "}") {
 

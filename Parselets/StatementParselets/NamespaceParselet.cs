@@ -2,15 +2,15 @@ using System;
 
 public sealed class NamespaceParselet : IStatementParselet<NamespaceNode>
 {
-    public NamespaceNode Parse(Parser parser, Token token) {
+    public NamespaceNode Parse(Parser parser, Token namespaceToken) {
         var name = parser.ConsumeValue();
 
-        if (token is ComplexToken namespaceToken && token == "namespace") {
+        if (namespaceToken is ComplexToken namespaceKeyword && namespaceKeyword == "namespace") {
             if (Utilities.IsName(name)) {
-                return new NamespaceNode(name, namespaceToken);
+                return new NamespaceNode(name, namespaceKeyword);
             }
         }
 
-        throw new UnexpectedTokenException(token, "in namespace statement", "namespace");
+        throw Logger.Fatal(new InvalidCallException(namespaceToken.Location));
     }
 }

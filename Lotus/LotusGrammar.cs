@@ -141,7 +141,8 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementKind("do", StatementKind.DoWhileStatement)
             .RegisterStatementKind("break", StatementKind.BreakStatement)
             .RegisterStatementKind("continue", StatementKind.ContinueStatement)
-            .RegisterStatementKind("using", StatementKind.UsingStatement);
+            .RegisterStatementKind("using", StatementKind.UsingStatement)
+            .RegisterStatementKind("print", StatementKind.PrintStatement);
     }
 
     private void InitializeStatementParselets() {
@@ -158,6 +159,7 @@ public class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParselet(StatementKind.DoWhileStatement, new DoWhileParselet())
             .RegisterStatementParselet(StatementKind.BreakStatement, new BreakParselet())
             .RegisterStatementParselet(StatementKind.ContinueStatement, new ContinueParselet())
-            .RegisterStatementParselet(StatementKind.UsingStatement, new UsingParselet());
+            .RegisterStatementParselet(StatementKind.UsingStatement, new UsingParselet())
+            .RegisterStatementParselet(StatementKind.PrintStatement, new PrintParselet());
     }
 }

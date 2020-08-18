@@ -12,4 +12,5 @@ public enum StatementKind {
     DoWhileStatement,
     BreakStatement,
     ContinueStatement,
+    UsingStatement,
 }

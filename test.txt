@@ -29,9 +29,9 @@ func someFunc2(int [seed, min, max]) {
     return new Random(seed).Next(min, max)
 }
 
-from origin import *
+from origin import someType
 
-from std import math
+using std.collections
 
 namespace my_space
 

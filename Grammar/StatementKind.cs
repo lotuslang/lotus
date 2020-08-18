@@ -13,4 +13,5 @@ public enum StatementKind {
     BreakStatement,
     ContinueStatement,
     UsingStatement,
+    PrintStatement,
 }

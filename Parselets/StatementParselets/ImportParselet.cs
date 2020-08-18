@@ -50,24 +50,16 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
             importKeyword = new ComplexToken(importToken.Representation, TokenKind.keyword, importToken.Location, false);
         }
 
-        if (parser.Tokenizer.Peek() == "*") {
-            return new ImportNode(
-                new[] { new ValueNode(parser.Tokenizer.Consume()) },
-                from,
-                importKeyword
-            );
-        }
-
         var importList = new List<ValueNode>();
 
         do {
             var import = parser.ConsumeValue(); // consume the import's name
 
-            if (!(Utilities.IsName(import) || import.Representation == "*")) {
+            if (!Utilities.IsName(import)) {
                 Logger.Error(new UnexpectedValueTypeException(
                     node: import,
                     context: "in import statement",
-                    expected: "name or the characters '*'"
+                    expected: "a type name"
                 ));
 
                 importIsValid = false;

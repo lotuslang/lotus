@@ -25,7 +25,7 @@ class Program
         var tokenizer = new LotusTokenizer(file);
 
         /*tokenizer = new LotusTokenizer(@"
-""hell""();
+(a a b)
 
 ");*/
 

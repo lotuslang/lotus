@@ -2,7 +2,7 @@ using System;
 
 public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
 {
-    public ValueNode Parse(Parser parser, Token parenToken) {
+    public ValueNode Parse(Parser parser, Token leftParenToken) {
         // This one is a bit tricky : when we have a left parenthesis, it could either be a type cast,
         // or a grouping parenthesis. For example, we need to differentiate between those two expressions :
         // (char)0
@@ -55,13 +55,15 @@ public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
         // If the check succeeds, we parse it as type-casting expression ;
         // otherwise, it means that this is a grouping parenthesis and parse it as such
 
-        if (parenToken != "(")
-            throw Logger.Fatal(new InvalidCallException(parenToken.Location));
+        if (leftParenToken != "(")
+            throw Logger.Fatal(new InvalidCallException(leftParenToken.Location));
 
         var value = parser.ConsumeValue();
 
+        var rightParenToken = parser.Tokenizer.Consume();
+
         // if the next token isn't a right/closing parenthesis, throw an error
-        if (parser.Tokenizer.Consume() != ")") {
+        if (rightParenToken != ")") {
             Logger.Error(new UnexpectedTokenException(
                 token: parser.Tokenizer.Current,
                 context: "after a parenthesized expression",
@@ -70,16 +72,16 @@ public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
 
             value.IsValid = false;
 
-            parser.Tokenizer.Reconsume();
+            parser.Tokenizer.Reconsume(); // TODO: could we try to parse this as a list of values (still throw tho)
         }
 
         // if the value is a name (an identifier or an access operation), parse it as a type-cast expression
         if (Utilities.IsName(value))
-            return new TypeCastNode(value, parser.ConsumeValue(Precedence.TypeCast), parenToken, value.IsValid);
+            return new TypeCastNode(value, parser.ConsumeValue(Precedence.TypeCast), leftParenToken, value.IsValid);
 
         // otherwise, parse it as a grouping parenthesis expression
         // (which is just returning the value)
 
-        return value;
+        return new ParenthesizedValueNode(leftParenToken, rightParenToken, value);
     }
 }

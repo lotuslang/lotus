@@ -43,9 +43,12 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
         // { /* some code */ }
         //
 
-        var parameters = new List<(ValueNode type, ComplexToken name)>();
+        var parameters = new List<FunctionParameter>();
 
         void addParameter(ValueNode type, ValueNode paramNameNode) {
+
+            bool isValid = true;
+
             if (type != ValueNode.NULL && !Utilities.IsName(type)) {
                 Logger.Error(new UnexpectedValueTypeException(
                     node: type,
@@ -54,6 +57,13 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 ));
 
                 isValid = false;
+            }
+
+            var defaultValue = ValueNode.NULL;
+
+            if (paramNameNode is OperationNode opNode && opNode.OperationType == OperationType.Assign) {
+                paramNameNode = opNode.Operands[0];
+                defaultValue = opNode.Operands[1];
             }
 
             if (!(paramNameNode is IdentNode paramName)) {
@@ -72,7 +82,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 );
             }
 
-            parameters!.Add((type, paramName.Token));
+            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, isValid));
         }
 
         while (parser.Tokenizer.Peek() != ")") {

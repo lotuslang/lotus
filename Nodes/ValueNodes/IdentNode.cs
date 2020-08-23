@@ -8,4 +8,7 @@ public class IdentNode : ValueNode
         Token = identToken;
         Value = value;
     }
+
+    public override GraphNode ToGraphNode()
+        => base.ToGraphNode().SetTooltip("ident");
 }

@@ -21,9 +21,9 @@ public class ImportNode : StatementNode
         }.SetColor("fuchsia")
          .SetTooltip("import statement");
 
-        var importsNode = new GraphNode(ImportsName.GetHashCode(), "imports\\nname")
+        var importsNode = new GraphNode(ImportsName.GetHashCode(), "import\\nnames")
             .SetColor("peru")
-            .SetTooltip("imports name");
+            .SetTooltip("import names");
 
         foreach (var import in ImportsName) {
             importsNode.Add(import.ToGraphNode());

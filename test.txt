@@ -26,7 +26,7 @@ func someFunc1(a, string [b, c], int d): int {
 }
 
 func someFunc2(int [seed, min, max]) {
-    return new Random(seed).Next(min, max)
+    return new Random(seed).next(min, max)
 }
 
 from origin import someType
@@ -61,7 +61,7 @@ else if (this.otherCondition()) {
 while (str.length < 20) {
     if (str[-1] == "z") continue;
 
-    str.concat(alphabet[rnd.Next(26)], rnd.Next(26))
+    str.concat(alphabet[rnd.next(26)], rnd.next(26))
 }
 
 do

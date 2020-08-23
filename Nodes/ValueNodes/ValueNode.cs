@@ -16,5 +16,5 @@ public class ValueNode : StatementNode
     public override GraphNode ToGraphNode()
         => new GraphNode(GetHashCode(), Representation)
             .SetColor("lightgrey")
-            .SetTooltip(nameof(ValueNode));
+            .SetTooltip(GetType().Name);
 }

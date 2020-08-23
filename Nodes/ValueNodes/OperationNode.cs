@@ -40,7 +40,7 @@ public class OperationNode : ValueNode
         }
 
         root.SetColor("dodgerblue")
-            .SetTooltip(nameof(OperationNode));
+            .SetTooltip(GetType().Name);
 
         foreach (var child in Operands) {
             root.Add(child.ToGraphNode());

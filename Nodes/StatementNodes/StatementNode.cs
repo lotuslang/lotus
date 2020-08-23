@@ -28,5 +28,5 @@ public class StatementNode
     public virtual GraphNode ToGraphNode()
         => new GraphNode(GetHashCode(), Representation)
             .SetColor("black")
-            .SetTooltip(nameof(StatementNode));
+            .SetTooltip(GetType().Name);
 }

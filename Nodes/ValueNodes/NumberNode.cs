@@ -12,4 +12,7 @@ public class NumberNode : ValueNode
 
     public NumberNode(NumberToken token) : this(token.Value, token)
     { }
+
+    public override GraphNode ToGraphNode()
+        => base.ToGraphNode().SetTooltip("number");
 }

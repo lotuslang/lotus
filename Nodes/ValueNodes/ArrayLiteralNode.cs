@@ -13,11 +13,11 @@ public class ArrayLiteralNode : ValueNode
     public override GraphNode ToGraphNode() {
         var root = new GraphNode(GetHashCode(), "array literal\\n(" + Content.Count + " item(s))")
             .SetColor("teal")
-            .SetTooltip("array init");
+            .SetTooltip("array literal");
 
-        var itemCounter = 1;
+        var itemCount = 0;
 
-        foreach (var item in Content) root.Add(item.ToGraphNode().SetTooltip("item " + itemCounter++));
+        foreach (var item in Content) root.Add(item.ToGraphNode().SetTooltip("item " + ++itemCount));
 
         return root;
     }

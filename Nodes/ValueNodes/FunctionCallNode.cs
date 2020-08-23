@@ -30,7 +30,7 @@ public class FunctionCallNode : ValueNode
         }
 
         root.SetColor("tomato")
-            .SetTooltip("call to " + nameof(FunctionCallNode));
+            .SetTooltip("call to a function");
 
         if (CallingParameters.Count == 0) {
             root.Add(new GraphNode(CallingParameters.GetHashCode(), "(no args)"));

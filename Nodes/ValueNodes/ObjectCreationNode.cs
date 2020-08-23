@@ -2,19 +2,21 @@ public class ObjectCreationNode : ValueNode
 {
     public FunctionCallNode InvocationNode { get; protected set; }
 
+    public ValueNode TypeName => InvocationNode.FunctionName;
+
     public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken, bool isValid = true) : base(newToken, isValid) {
         InvocationNode = invoke;
     }
 
     public override GraphNode ToGraphNode() {
         var root = new GraphNode(GetHashCode(), "obj creation") {
-            InvocationNode.FunctionName.ToGraphNode()
+            TypeName.ToGraphNode()
                 .SetColor("")
                 .SetTooltip("class name"),
         };
 
         root.SetColor("indigo")
-            .SetTooltip("ctor/object creation");
+            .SetTooltip("ctor class/object creation");
 
         if (InvocationNode.CallingParameters.Count == 0) {
             root.Add(new GraphNode(InvocationNode.CallingParameters.GetHashCode(), "(no args)"));

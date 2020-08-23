@@ -25,4 +25,7 @@ public class BoolNode : ValueNode
 
         Value = value;
     }
+
+    public override GraphNode ToGraphNode()
+        => new GraphNode(GetHashCode(), Value.ToString()).SetTooltip("bool literal");
 }

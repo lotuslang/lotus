@@ -25,7 +25,7 @@ func someFunc1(a, string [b, c], int d): int {
     print(a.toString() + b + c);
 }
 
-func someFunc2(int [seed, min, max]) {
+func someFunc2(int [seed, min = 0, max]) {
     return new Random(seed).next(min, max)
 }
 

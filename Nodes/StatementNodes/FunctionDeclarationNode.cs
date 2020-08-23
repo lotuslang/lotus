@@ -10,14 +10,14 @@ public class FunctionDeclarationNode : StatementNode
 
     public SimpleBlock Value { get; }
 
-    public ReadOnlyCollection<(ValueNode type, ComplexToken name)> Parameters { get; }
+    public ReadOnlyCollection<FunctionParameter> Parameters { get; }
 
     public ValueNode ReturnType { get; }
 
     public IdentToken Name { get; }
 
     public FunctionDeclarationNode(SimpleBlock value,
-                                   IList<(ValueNode, ComplexToken)> parameters,
+                                   IList<FunctionParameter> parameters,
                                    ValueNode returnType,
                                    IdentToken functionName,
                                    ComplexToken funcKeyword,
@@ -41,24 +41,21 @@ public class FunctionDeclarationNode : StatementNode
             var parametersNode = new GraphNode(Parameters.GetHashCode(), "param")
                 .SetTooltip("parameters");
 
-            foreach (var (type, name) in Parameters) { // FIXME: Write tooltips
-                if (type == ValueNode.NULL) {
-                    parametersNode.Add(name.ToGraphNode(tooltip: "parameter name"));
+            foreach (var parameter in Parameters) { // FIXME: Write tooltips
 
-                    continue;
+                var paramNameNode = parameter.Name.ToGraphNode();
+
+                if (parameter.Type == ValueNode.NULL) {
+                    paramNameNode.Add(new GraphNode(HashCode.Combine(ValueNode.NULL, parameter), "any"));
+                } else {
+                    paramNameNode.Add(parameter.Type.ToGraphNode());
                 }
 
-                if (type is IdentNode) {
-                    parametersNode.Add(new GraphNode(HashCode.Combine(type, name), name + "\\nof type " + type.Token));
-
-                    continue;
+                if (parameter.HasDefaultValue) {
+                    paramNameNode.Add(parameter.DefaultValue.ToGraphNode());
                 }
 
-                parametersNode.Add(new GraphNode(name.GetHashCode(), name) {
-                    new GraphNode(HashCode.Combine("type", name), "type") {
-                        type.ToGraphNode()
-                    }
-                });
+                parametersNode.Add(paramNameNode);
             }
 
             root.Add(parametersNode);
@@ -73,5 +70,25 @@ public class FunctionDeclarationNode : StatementNode
         root.Add(Value.ToGraphNode().SetTooltip("body"));
 
         return root;
+    }
+}
+
+public class FunctionParameter
+{
+    public ValueNode Type { get; }
+
+    public IdentNode Name { get; }
+
+    public ValueNode DefaultValue { get; }
+
+    public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
+
+    public bool IsValid { get; set; }
+
+    public FunctionParameter(ValueNode type, IdentNode name, ValueNode defaultValue, bool isValid = true) {
+        Type = type;
+        Name = name;
+        DefaultValue = defaultValue;
+        IsValid = isValid;
     }
 }

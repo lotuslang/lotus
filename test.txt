@@ -61,7 +61,7 @@ else if (this.otherCondition()) {
 while (str.length < 20) {
     if (str[-1] == "z") continue;
 
-    str.concat(alphabet[rnd.Next(26)], (string)rnd.Next(26))
+    str.concat(alphabet[rnd.Next(26)], rnd.Next(26))
 }
 
 do

@@ -6,7 +6,7 @@ public class StatementNode
 
     public bool IsValid { get; set; }
 
-    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, new Location(), false), false);
+    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, new Location(-1, -1), false), false);
 
     public StatementNode(string representation, Token token, bool isValid = true) {
         Representation = representation;

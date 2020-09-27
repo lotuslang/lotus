@@ -58,7 +58,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                         Logger.Error(new UnexpectedEOFException(
                             context: "in an interpolated string",
                             expected: $"`}}` followed by the string delimiter `{endingDelimiter}`",
-                            tokenizer.Position
+                            location: tokenizer.Position
                         ));
 
                         output.IsValid = false;

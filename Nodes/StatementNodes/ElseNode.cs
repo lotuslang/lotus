@@ -11,7 +11,7 @@ public class ElseNode : StatementNode
 
     public ElseNode(SimpleBlock body, ComplexToken elseToken, bool isValid = true) : base(elseToken, isValid) {
         Body = body;
-        IfNode = null;
+        IfNode = null; // FIXME: we shouldn't have pure nulls here. another reason to write nulls for every node
     }
 
     public ElseNode(IfNode ifNode, ComplexToken elseToken, bool isValid = true) : base(elseToken, isValid) {

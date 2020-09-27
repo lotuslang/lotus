@@ -11,6 +11,15 @@ public static class Utilities
         "new",
         "func",
         "return",
+        "for",
+        "while",
+        "foreach",
+        "if",
+        "else",
+        "from",
+        "import",
+        "using",
+        "namespace",
     };
 
     public static readonly string[] internalFunctions = new string[] {

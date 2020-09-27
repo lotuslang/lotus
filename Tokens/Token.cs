@@ -4,7 +4,7 @@ using System.Text;
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {rep.ToString()}")]
 public class Token
 {
-    public static readonly Token NULL = new Token('\0', TokenKind.EOF, new Location(), false);
+    public static readonly Token NULL = new Token('\0', TokenKind.EOF, new Location(-1, -1), false);
 
     public bool IsValid { get; set; } // yes, we want it to be public for error-recovery stuff
 

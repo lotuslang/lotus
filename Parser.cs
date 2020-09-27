@@ -100,7 +100,7 @@ public class Parser : IConsumer<StatementNode>
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise.</param>
     /// <returns>The StatementNode object consumed.</returns>
-    public bool Consume([MaybeNullWhen(false)] out StatementNode result) {
+    public bool Consume(out StatementNode result) {
         result = Consume(); // consume a StatementNode
 
         return result != StatementNode.NULL;
@@ -139,7 +139,7 @@ public class Parser : IConsumer<StatementNode>
             Current = ConsumeValue();
         }
 
-        if (Tokenizer.Peek() == ";") Tokenizer.Consume(); // advance tokenizer if we have a semicolon (we don't care)
+        while (Tokenizer.Peek() == ";") Tokenizer.Consume(); // advance tokenizer if we have a semicolon (we don't care about them)
 
         return Current;
     }
@@ -148,16 +148,17 @@ public class Parser : IConsumer<StatementNode>
         var token = Tokenizer.Consume();
 
         if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
-            Logger.Error(new UnexpectedTokenException(token: token, expected: new[] {
-                TokenKind.@bool,
-                TokenKind.@operator,
-                TokenKind.@string,
-                TokenKind.complexString,
-                TokenKind.ident,
-                TokenKind.number
-            }));
 
-            //Tokenizer.Reconsume();
+            if (token != ";") {
+                Logger.Error(new UnexpectedTokenException(token: token, expected: new[] {
+                    TokenKind.@bool,
+                    TokenKind.@operator,
+                    TokenKind.@string,
+                    TokenKind.complexString,
+                    TokenKind.ident,
+                    TokenKind.number
+                }));
+            }
 
             return ValueNode.NULL;
         }
@@ -196,20 +197,31 @@ public class Parser : IConsumer<StatementNode>
 
         // to consume a one-liner, you just consume a statement and return
         if (areOneLinersAllowed && Tokenizer.Peek() != "{") {
-            return new SimpleBlock(new[] { Consume() });
+            if (!Consume(out StatementNode statement)) {
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in simple block",
+                    expected: "a statement",
+                    location: Tokenizer.Current.Location
+                ));
+            }
+
+            return new SimpleBlock(new[] { statement });
         }
 
         var isValid = true;
 
-        var bracket = Tokenizer.Consume();
+        var bracket = Tokenizer.Peek();
 
+        // we don't have to check for EOF because that is (sorta) handled by "areOneLinersAllowed"
         if (bracket != "{") {
             Logger.Error(new UnexpectedTokenException(
                 token: bracket,
-                context: "at the start of simple block (this probably means there was an internal error, please report this)",
+                context: "at the start of simple block (this probably means there was an internal error, please report this!)",
                 expected: "{"
             ));
         }
+
+        Tokenizer.Consume();
 
         var statements = new List<StatementNode>();
 
@@ -217,12 +229,10 @@ public class Parser : IConsumer<StatementNode>
             statements.Add(Consume());
 
             if (Tokenizer.Peek().Kind == TokenKind.EOF) {
-                Logger.Error(new UnexpectedTokenException(
-                    token: Tokenizer.Consume(),
+                Logger.Error(new UnexpectedEOFException(
                     context: "in simple block",
-                    expected: "a statement"
-                    // Extendable version with TokenKind :
-                    // Enum.GetValues(typeof(TokenKind)).Cast<TokenKind>().Where(value => value != TokenKind.EOF).ToArray()
+                    expected: "a statement",
+                    location: Tokenizer.Current.Location
                 ));
 
                 isValid = false;
@@ -230,14 +240,22 @@ public class Parser : IConsumer<StatementNode>
                 break;
             }
 
-            if (Tokenizer.Peek() == ";") Tokenizer.Consume();
+            //if (Tokenizer.Peek() == ";") Tokenizer.Consume();
         }
 
-        bracket = Tokenizer.Consume();
+        if (Tokenizer.Peek() == ";") Tokenizer.Consume();
 
-        if (bracket == ";") bracket = Tokenizer.Consume();
+        bracket = Tokenizer.Peek();
 
-        if (bracket != "}") {
+        if (bracket.Kind == TokenKind.EOF) {
+            Logger.Error(new UnexpectedEOFException(
+                context: "in simple block",
+                expected: "the character '}'",
+                location: Tokenizer.Position
+            ));
+
+            isValid = false;
+        } else if (bracket != "}") {
             Logger.Error(new UnexpectedTokenException(
                 token: bracket,
                 context: "in simple block",
@@ -248,6 +266,8 @@ public class Parser : IConsumer<StatementNode>
 
             Tokenizer.Reconsume();
         }
+
+        Tokenizer.Consume();
 
         return new SimpleBlock(statements.ToArray(), isValid);
     }
@@ -267,8 +287,6 @@ public class Parser : IConsumer<StatementNode>
 
         var itemCount = 0;
 
-        //isValid = true;
-
         while (Tokenizer.Peek() != end) {
 
             items.Add(ConsumeValue());
@@ -281,6 +299,20 @@ public class Parser : IConsumer<StatementNode>
                     Tokenizer.Reconsume();
 
                     break;
+                }
+
+                var lastItem = items.Last();
+
+                if (Tokenizer.Current.Kind == TokenKind.keyword) {
+                    Tokenizer.Reconsume();
+
+                    isValid = false;
+
+                    break;
+                }
+
+                if (!isValid || !lastItem.IsValid) {
+                    continue;
                 }
 
                 Logger.Error(new UnexpectedTokenException(
@@ -314,7 +346,7 @@ public class Parser : IConsumer<StatementNode>
             }
         }
 
-        if (Tokenizer.Consume() != end) { // we probably got an EOF
+        if (isValid && Tokenizer.Consume() != end) { // we probably got an EOF
             Logger.Error(new UnexpectedEOFException(
                 context: "in a comma-separated value list",
                 expected: "a closing parenthesis ')'",
@@ -324,7 +356,7 @@ public class Parser : IConsumer<StatementNode>
             isValid = false;
         }
 
-        if (expectedItemCount != -1 && itemCount != expectedItemCount) {
+        if (isValid && expectedItemCount != -1 && itemCount != expectedItemCount) {
 
             if (itemCount > expectedItemCount) {
                 Logger.Error(new LotusException(

@@ -22,12 +22,14 @@ public static class Logger
     public static void Error(LotusException e)
         => exceptions.Enqueue((e, e.Position));
 
+    public static void Error(string message, Location location)
+        => exceptions.Enqueue((new Exception(message), location));
+
     public static Exception Fatal(Exception e)
         => e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
 
     public static void PrintAllErrors() {
         foreach (var (exception, location) in exceptions) {
-            //Console.Error.WriteLine($"An exception occurred at position {location} of type {exception.GetType().Name} : ");
             Console.Error.WriteLine(exception.Message); // TODO: colour stuff
 
             Console.Error.WriteLine();
@@ -42,6 +44,8 @@ public static class Logger
         }
     }
 
+    // !! WARNING !! I had to invoke dark powers to write those functions, hopefully without bugs, so edit with *extreme* care
+    // It takes way longer to figure this out well enough than it looks, so please again : beware !
     private static string GetTextAt(Location position) {
         var (line, column, file) = position;
 
@@ -85,6 +89,7 @@ public static class Logger
 
     }
 
+    // This took way longer than it looks, trust me.
     private static string GetLineAt(int line, string file) {
 
         var sourceText = File.ReadAllLines(file);

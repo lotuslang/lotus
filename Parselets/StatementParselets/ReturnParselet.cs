@@ -5,10 +5,7 @@ public sealed class ReturnParselet : IStatementParselet<ReturnNode>
         if (!(returnToken is ComplexToken returnKeyword && returnKeyword == "return"))
             throw Logger.Fatal(new InvalidCallException(returnToken.Location));
 
-        if (parser.Tokenizer.Peek() == ";" || parser.Tokenizer.Peek() == "}") {
-
-            if (parser.Tokenizer.Peek() == ";") parser.Tokenizer.Consume();
-
+        if (parser.Tokenizer.Peek() == "}") {
             return new ReturnNode(ValueNode.NULL, returnKeyword);
         }
 

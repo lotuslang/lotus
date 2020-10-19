@@ -42,18 +42,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                     currToken = tokenizer.Consume();
 
-                    if (currToken == ";") { // FIXME: write a message to tell people that they can't use semicolons in interpolated strings
-                        Logger.Error(new UnexpectedTokenException(
-                            token: currToken,
-                            context: "in an interpolated string",
-                            expected: "`}`"
-                        ));
-
-                        output.IsValid = false;
-
-                        break;
-                    }
-
                     if (currToken.Kind == TokenKind.EOF) {
                         Logger.Error(new UnexpectedEOFException(
                             context: "in an interpolated string",
@@ -73,7 +61,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                 output.Add("{" + (output.CodeSections.Count - 1) + "}");
 
-                tokenizer.Consume(preserveTrivia: true); // consume the '}'
+                tokenizer.Consume(); // consume the '}'
 
                 currChar = input.Consume();
 

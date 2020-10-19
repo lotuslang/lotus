@@ -28,6 +28,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterTriviaToklet(new CommentTriviaToklet())
             .RegisterTriviaToklet(new WhitespaceTriviaToklet())
             .RegisterTriviaToklet(new NewlineTriviaToklet())
+            .RegisterTriviaToklet(new CharacterTriviaToklet(';'))
             .RegisterTriviaToklet(new TriviaToklet());
     }
 

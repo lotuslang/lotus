@@ -18,7 +18,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             }
         );
 
-    public CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
+    private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {
 
         var commentStart = input.Position;
 
@@ -56,7 +56,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
                     // reconsume the '/'
                     input.Reconsume();
 
-                    inner.Add(Consume(input, tokenizer) as CommentTriviaToken);
+                    inner.Add(Consume(input, tokenizer, isInner: true));
 
                     strBuilder.Append(inner[^1].Representation);
 
@@ -81,9 +81,19 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
             strBuilder.Append("*/");
 
-            return new CommentTriviaToken(strBuilder.ToString(), commentStart, isValid: isValid, inner: inner, trailing: tokenizer.ConsumeTrivia());
+            return new CommentTriviaToken(
+                strBuilder.ToString(),
+                commentStart,
+                isValid: isValid,
+                inner: inner,
+                // if this comment is a comment *inside* a comment, then don't consume anything afterwards
+                trailing: isInner ? TriviaToken.NULL : tokenizer.ConsumeTrivia()
+            );
         }
 
         throw Logger.Fatal(new InvalidCallException(input.Position));
     }
+
+    public CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer)
+        => Consume(input, tokenizer, isInner: false);
 }

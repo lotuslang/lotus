@@ -26,9 +26,9 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new LotusTokenizer(file);
 
-        /*tokenizer = new LotusTokenizer(@"
+        tokenizer = new LotusTokenizer(@"
 $""hello {""benjamin""} ! Today will be {3} {4651} {7654} {3} {.656} {true} {798 % 64 * 32^8}""
-");*/
+");
 
         var parser = new LotusParser(tokenizer);
 

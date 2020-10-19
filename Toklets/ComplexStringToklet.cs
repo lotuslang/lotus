@@ -38,7 +38,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                 var tokenList = new List<Token>();
                 Token currToken;
 
-                while (tokenizer.Peek(preserveTrivia: true) != "}") {
+                while (tokenizer.Peek() != "}") {
 
                     currToken = tokenizer.Consume();
 
@@ -61,15 +61,12 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                 output.Add("{" + (output.CodeSections.Count - 1) + "}");
 
-                tokenizer.Consume(); // consume the '}'
-
-                currChar = input.Consume();
-
-                //Console.WriteLine(tokenizer.Current + " " + input.Current);
-                continue;
+                if (tokenizer.Consume(preserveTrivia: true).TrailingTrivia != null) {
+                    output.Add(tokenizer.Current.TrailingTrivia!.Representation);
+                }
+            } else {
+                output.Add(currChar);
             }
-
-            output.Add(currChar);
 
             if (!input.Consume(out currChar)) {
                 Logger.Error(new UnexpectedEOFException(

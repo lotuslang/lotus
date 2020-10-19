@@ -51,6 +51,13 @@ public class Consumer<T> : IConsumer<T>
 
     [return: MaybeNull]
     public T Consume() {
+
+        if (reconsumeFlag) {
+            reconsumeFlag = false;
+            pos.column++;
+            return Current;
+        }
+
         if (inputStack.Count == 0) {
             Current = default(T)!;
             return Current;

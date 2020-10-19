@@ -9,6 +9,5 @@ public class IdentNode : ValueNode
         Value = value;
     }
 
-    public override GraphNode ToGraphNode()
-        => base.ToGraphNode().SetTooltip("ident");
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

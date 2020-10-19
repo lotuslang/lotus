@@ -63,6 +63,8 @@ public class Token
             TrailingTrivia.AddTrailingTrivia(trivia);
     }
 
+    public virtual T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
+
     public override string ToString() {
         return rep;
     }

@@ -26,11 +26,5 @@ public class WhileNode : StatementNode
         DoToken = doToken;
     }
 
-    public override GraphNode ToGraphNode()
-        => new GraphNode(GetHashCode(), IsDoLoop ? "do-while" : "while") {
-            new GraphNode(HashCode.Combine(this, "condition"), "condition") {
-                Condition.ToGraphNode()
-            }.SetTooltip("loop condition"), // FIXME: Choose color
-            Body.ToGraphNode()
-        }.SetTooltip(IsDoLoop ? "do-while loop" : "while loop"); // FIXME: Choose color
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

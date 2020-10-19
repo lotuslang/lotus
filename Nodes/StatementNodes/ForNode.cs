@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -24,24 +23,5 @@ public class ForNode : StatementNode
         Body = body;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "for loop"); // FIXME: choose color and tooltip
-
-        if (Header.Count != 0) {
-            var headerNode = new GraphNode(Header.GetHashCode(), "header")
-                .SetColor("deepskyblue")
-                .SetTooltip("for-loop header");
-
-            foreach (var statement in Header) headerNode.Add(statement.ToGraphNode());
-
-            root.Add(headerNode);
-
-        } else {
-            root.Add(new GraphNode(Header.GetHashCode(), "(empty header)"));
-        }
-
-        root.Add(Body.ToGraphNode());
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

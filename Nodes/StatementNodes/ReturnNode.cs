@@ -8,15 +8,5 @@ public class ReturnNode : StatementNode
         Value = (value != null && value != ValueNode.NULL) ? value : ValueNode.NULL;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "return")
-            .SetColor("brown")
-            .SetTooltip("return");
-
-        if (IsReturningValue) {
-            root.Add(Value.ToGraphNode());
-        }
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

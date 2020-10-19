@@ -6,10 +6,5 @@ public class NamespaceNode : StatementNode
         NamespaceName = namespaceName;
     }
 
-    public override GraphNode ToGraphNode()
-        => new GraphNode(GetHashCode(), "namespace") {
-            NamespaceName.ToGraphNode()
-                .SetTooltip("namespace name")
-        }.SetColor("cornflowerblue")
-         .SetTooltip("namespace declaration");
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

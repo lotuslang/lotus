@@ -8,30 +8,5 @@ public class ObjectCreationNode : ValueNode
         InvocationNode = invoke;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "obj creation") {
-            TypeName.ToGraphNode()
-                .SetColor("")
-                .SetTooltip("class name"),
-        };
-
-        root.SetColor("indigo")
-            .SetTooltip("ctor class/object creation");
-
-        if (InvocationNode.CallingParameters.Count == 0) {
-            root.Add(new GraphNode(InvocationNode.CallingParameters.GetHashCode(), "(no args)"));
-
-            return root;
-        }
-
-        var argsNode = new GraphNode("args");
-
-        foreach (var parameter in InvocationNode.CallingParameters) {
-            argsNode.Add(parameter.ToGraphNode().SetTooltip("argument"));
-        }
-
-        root.Add(argsNode);
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

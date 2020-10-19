@@ -9,4 +9,6 @@ public class NewlineTriviaToken : WhitespaceTriviaToken
     {
         Kind = TriviaKind.newline;
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

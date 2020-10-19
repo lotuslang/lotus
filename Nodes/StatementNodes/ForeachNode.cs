@@ -59,13 +59,5 @@ public class ForeachNode : StatementNode
         Body = body;
     }
 
-    public override GraphNode ToGraphNode()
-        => new GraphNode(GetHashCode(), "foreach") {
-            new GraphNode(InToken.GetHashCode(), "in") {
-                ItemName.ToGraphNode(),
-                Collection.ToGraphNode()
-            }.SetTooltip("in iterator"),
-            Body.ToGraphNode(),
-        }.SetColor("pink")
-         .SetTooltip("foreach loop");
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

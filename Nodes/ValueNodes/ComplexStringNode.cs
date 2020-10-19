@@ -19,19 +19,6 @@ public class ComplexStringNode : StringNode
     public void AddSection(ValueNode section) {
         sections.Add(section);
     }
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), Representation);
 
-        if (CodeSections.Count != 0) {
-            var sectionNode = new GraphNode(HashCode.Combine(this, "sections"), "code sections");
-
-            foreach (var section in CodeSections) {
-                sectionNode.Add(section.ToGraphNode());
-            }
-
-            root.Add(sectionNode);
-        }
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

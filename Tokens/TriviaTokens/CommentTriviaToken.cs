@@ -24,4 +24,6 @@ public class CommentTriviaToken : TriviaToken
     public void AddComment(CommentTriviaToken comment) {
         innerComments.Add(comment);
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

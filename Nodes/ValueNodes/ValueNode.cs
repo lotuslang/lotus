@@ -13,8 +13,5 @@ public class ValueNode : StatementNode
     public ValueNode(string rep, Token token, bool isValid = true) : base(rep, token, isValid)
     { }
 
-    public override GraphNode ToGraphNode()
-        => new GraphNode(GetHashCode(), Representation)
-            .SetColor("lightgrey")
-            .SetTooltip(GetType().Name);
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

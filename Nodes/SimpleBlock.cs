@@ -29,14 +29,4 @@ public class SimpleBlock
     {
         IsOneLiner = true;
     }
-
-    public GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "block")
-            .SetColor("darkviolet")
-            .SetTooltip(nameof(SimpleBlock));
-
-        foreach (var statement in Content) root.Add(statement.ToGraphNode());
-
-        return root;
-    }
 }

@@ -33,10 +33,5 @@ public class DeclarationNode : StatementNode
         Value = value;
     }
 
-    public override GraphNode ToGraphNode()
-        => new GraphNode(GetHashCode(), "var") {
-            Name.ToGraphNode(tooltip: "name"),
-            Value.ToGraphNode()
-        }.SetColor("palegreen")
-         .SetTooltip(nameof(DeclarationNode));
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

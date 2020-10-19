@@ -12,22 +12,5 @@ public class ImportNode : StatementNode
         FromStatement = from;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "import") {
-            FromStatement.ToGraphNode()
-        }.SetColor("fuchsia")
-         .SetTooltip("import statement");
-
-        var importsNode = new GraphNode(ImportsName.GetHashCode(), "import\\nnames")
-            .SetColor("peru")
-            .SetTooltip("import names");
-
-        foreach (var import in ImportsName) {
-            importsNode.Add(import.ToGraphNode());
-        }
-
-        root.Add(importsNode);
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

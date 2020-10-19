@@ -18,15 +18,5 @@ public class StatementNode
     public StatementNode(Token token, bool isValid = true) : this(token.Representation, token, isValid)
     { }
 
-    /// <summary>
-    /// Uses the node's state to turn it into a GraphNode.
-    ///
-    /// Derived classes each differ in how they do it,
-    /// and this method should be implemented by them.
-    /// </summary>
-    /// <returns>A GraphNode representing the state of the node</returns>
-    public virtual GraphNode ToGraphNode()
-        => new GraphNode(GetHashCode(), Representation)
-            .SetColor("black")
-            .SetTooltip(GetType().Name);
+    public virtual T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

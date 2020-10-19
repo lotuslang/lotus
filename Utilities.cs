@@ -34,22 +34,7 @@ public static class Utilities
         return count;
     }
 
-    public static bool IsName(ValueNode node) {
-        if (node is IdentNode) return true;
-
-        if (node is OperationNode op && op.OperationType == OperationType.Access) {
-            if (op.Operands.Count != 2) return false;
-
-            // we only need to check the left-hand operand, because we know the right-hand operand
-            // is an IdentNode, because an access operation is defined as :
-            //  access-operation :
-            //      value '.' identifier
-            // hence, the left-hand side
-            return IsName(op.Operands[0]);
-        }
-
-        return false;
-    }
+    public static bool IsName(ValueNode node) => ASTHelper.IsName(node);
 
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         where TKey : notnull
@@ -72,5 +57,43 @@ public static class Utilities
         }
 
         return default(T)!;
+    }
+
+    public static string Join<T>(string separator, Func<T, string> convert, params T[] value) => Join(separator, convert, coll: value);
+
+    public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
+        var count = coll.Count();
+        if (count == 0) {
+            return "";
+        } else if (count == 1) {
+            return convert(coll.First());
+        } else if (count < 20) {
+            var output = "";
+
+            foreach (var item in coll) output += convert(item) + separator;
+
+
+            if (separator.Length != 0)
+                output = output.Remove(output.Length - separator.Length);
+
+            return output;
+        } else {
+            var output = new System.Text.StringBuilder();
+
+            foreach (var item in coll) output.Append(convert(item) + separator);
+
+            if (separator.Length != 0)
+                output = output.Remove(output.Length - separator.Length, separator.Length);
+
+            return output.ToString();
+        }
+    }
+
+    public static GraphNode Apply(this GraphNode node, Func<GraphNode, GraphNode> transform) {
+        foreach (GraphNode child in node.Children) {
+            child.Apply(transform);
+        }
+
+        return transform(node);
     }
 }

@@ -12,4 +12,6 @@ public class WhitespaceTriviaToken : TriviaToken
     {
         WhitespaceCount = count;
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

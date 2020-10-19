@@ -42,47 +42,7 @@ public class FunctionDeclarationNode : StatementNode
         ColonToken = colonToken;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "func " + Name.Representation)
-            .SetColor("indianred")
-            .SetTooltip(nameof(FunctionDeclarationNode));
-
-        if (Parameters.Count == 0) {
-            root.Add(new GraphNode(Parameters.GetHashCode(), "(no params)"));
-        } else {
-            var parametersNode = new GraphNode(Parameters.GetHashCode(), "param")
-                .SetTooltip("parameters");
-
-            foreach (var parameter in Parameters) { // FIXME: Write tooltips
-
-                var paramNameNode = parameter.Name.ToGraphNode();
-
-                if (parameter.Type == ValueNode.NULL) {
-                    paramNameNode.Add(new GraphNode(HashCode.Combine(ValueNode.NULL, parameter), "any"));
-                } else {
-                    paramNameNode.Add(parameter.Type.ToGraphNode());
-                }
-
-                if (parameter.HasDefaultValue) {
-                    paramNameNode.Add(parameter.DefaultValue.ToGraphNode());
-                }
-
-                parametersNode.Add(paramNameNode);
-            }
-
-            root.Add(parametersNode);
-        }
-
-        if (HasReturnType) {
-            root.Add(new GraphNode(HashCode.Combine(ReturnType, this), "return type") { // FIXME: Color & Tooltip
-                ReturnType.ToGraphNode()
-            });
-        }
-
-        root.Add(Body.ToGraphNode().SetTooltip("body"));
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }
 
 public class FunctionParameter

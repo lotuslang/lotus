@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 
 #pragma warning disable
 class Program
 {
-    static void Main(string[] _) {
+    static void Main(string[] args) {
 
 		// Lil hack for our visual studio (win and mac) users, whose IDE thinks it's a rebel
         // because it doesn't use the same working directory as literally every other
@@ -25,27 +27,99 @@ class Program
         var tokenizer = new LotusTokenizer(file);
 
         /*tokenizer = new LotusTokenizer(@"
-(a a b)
-
+$""hello {""benjamin""} ! Today will be {3} {4651} {7654} {3} {.656} {true} {798 % 64 * 32^8}""
 ");*/
 
         var parser = new LotusParser(tokenizer);
 
-        var g = new Graph("AST");
-
-        g.AddNodeProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("label", $"Abstract Syntax Tree of {tokenizer.Position.filename}\\n\\n");
-        g.AddGraphProp("labelloc", "top");
+        var nodes = new List<StatementNode>();
 
         while (parser.Consume(out StatementNode node)) {
-            g.AddNode(node.ToGraphNode());
+            nodes.Add(node);
         }
 
-        if (Logger.HasErrors)
+        //Console.Write(g.ToText());
+
+        //Console.WriteLine(ASTHelper.IsName(nodes[0]));
+
+        if (Logger.HasErrors) {
             Logger.PrintAllErrors();
-        else
+            return;
+        }
+
+        if (args.Length == 0 || args[0] == "graph") {
+            var g = new Graph("AST");
+
+            g.AddNodeProp("fontname", "Consolas, monospace");
+            g.AddGraphProp("fontname", "Consolas, monospace");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.Name}\\n\\n");
+            g.AddGraphProp("labelloc", "top");
+
+            if (args.Length == 2) {
+                if (args[1] == "constant") {
+                    foreach (var node in nodes) {
+                        g.AddNode(ASTHelper.ShowConstants(node));
+                    }
+                } else {
+                    Console.WriteLine("Could not understand option " + args[1]);
+                    return;
+                }
+            } else {
+                foreach (var node in nodes) {
+                    g.AddNode(ASTHelper.ToGraphNode(node));
+                }
+            }
+
             Console.Write(g.ToText());
+            return;
+        }
+
+        if (args[0] == "constant") {
+            IEnumerable<StatementNode> values;
+
+            if (args.Length == 2) {
+                if (args[1] == "all") {
+                    values = nodes.SelectMany(ASTHelper.ExtractValue);
+                } else {
+                    Console.WriteLine("Could not understand option " + args[1]);
+                    return;
+                }
+            } else {
+                values = nodes.Where(node => node is ValueNode);
+            }
+
+            foreach (var node in values) {
+                Console.WriteLine(
+                    ASTHelper.PrintValue(node as ValueNode)
+                  + (ASTHelper.IsContant(node as ValueNode) ? " => is a constant." : " => isn't a constant.")
+                );
+            }
+
+            return;
+        }
+
+        if (args[0] == "print") {
+            if (args.Length == 2) {
+                if (args[1] == "all") {
+                    foreach (var node in nodes.Where(node => node is ValueNode)) {
+                        Console.Write(ASTHelper.PrintValue(node as ValueNode));
+                    }
+                } else {
+                    Console.WriteLine("Could not understand option " + args[1]);
+                    return;
+                }
+            } else {
+                foreach (var node in nodes) {
+                    Console.Write(ASTHelper.PrintStatement(node));
+                }
+            }
+
+            // print the last (EOF) token, which is not consumed by the parser
+            Console.Write(ASTHelper.PrintToken(tokenizer.Current)[..^2]);
+            return;
+        }
+
+        Console.WriteLine("Could not understand option " + args[0]);
     }
 }
 #pragma warning restore

@@ -20,35 +20,5 @@ public class FunctionCallNode : ValueNode
         CallingParameters = parameters.AsReadOnly();
     }
 
-    public override GraphNode ToGraphNode() {
-
-        GraphNode root;
-
-        if (FunctionName is IdentNode name) {
-            root = new GraphNode(GetHashCode(), name.Representation + "(...)");
-        } else {
-            root = new GraphNode(GetHashCode(), "call") {
-                new GraphNode("function") {
-                    FunctionName.ToGraphNode()
-                },
-            };
-        }
-
-        root.SetColor("tomato")
-            .SetTooltip("call to a function");
-
-        if (CallingParameters.Count == 0) {
-            root.Add(new GraphNode(CallingParameters.GetHashCode(), "(no args)"));
-
-            return root;
-        }
-
-        var argsNode = new GraphNode("args");
-
-        foreach (var parameter in CallingParameters) argsNode.Add(parameter.ToGraphNode().SetTooltip("argument"));
-
-        root.Add(argsNode);
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

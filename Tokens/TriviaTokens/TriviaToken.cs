@@ -8,4 +8,6 @@ public class TriviaToken : Token
         : base(rep, TokenKind.trivia, location, isValid, leading, trailing) {
         Kind = kind;
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

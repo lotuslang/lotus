@@ -9,14 +9,5 @@ public class ComplexToken : Token
     public virtual void Add(string str)
         => rep += str;
 
-    public GraphNode ToGraphNode() {
-        var output = new GraphNode(GetHashCode(), Representation);
-
-        output.SetColor("lightgrey");
-
-        return output;
-    }
-
-    public GraphNode ToGraphNode(string tooltip)
-        => ToGraphNode().SetTooltip(tooltip);
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class Utilities
 {
-    public static readonly string[] keywords = new string[] {
+    public static readonly HashSet<string> keywords = new HashSet<string> {
         "var",
         "new",
         "func",
@@ -22,7 +22,7 @@ public static class Utilities
         "namespace",
     };
 
-    public static readonly string[] internalFunctions = new string[] {
+    public static readonly HashSet<string> internalFunctions = new HashSet<string> {
         "print",
     };
 

@@ -139,7 +139,7 @@ public class Parser : IConsumer<StatementNode>
             Current = ConsumeValue();
         }
 
-        while (Tokenizer.Peek() == ";") Tokenizer.Consume(); // advance tokenizer if we have a semicolon (we don't care about them)
+        //while (Tokenizer.Peek() == ";") Tokenizer.Consume(); // advance tokenizer if we have a semicolon (we don't care about them)
 
         return Current;
     }
@@ -170,7 +170,7 @@ public class Parser : IConsumer<StatementNode>
         // it might be null because the complex-string parsing algorithm uses a Consumer<T>,
         // not a tokenizer, and it returns null when there's no more to consume
         // FIXME: This
-        if (token == null || token == ";") {
+        if (token == null) {
             return left;
         }
 

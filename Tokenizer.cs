@@ -164,7 +164,7 @@ public class Tokenizer : IConsumer<Token>
 
         input.Reconsume();
 
-        if (!preserveTrivia) {
+        if (!preserveTrivia && input.Peek() != ',') {
             var leadingTrivia = ConsumeTrivia();
 
             Current = Grammar.MatchToklet(input).Consume(input, this);
@@ -176,11 +176,9 @@ public class Tokenizer : IConsumer<Token>
 
                 if (!(trailingTrivia is null)) Current.AddTrailingTrivia(trailingTrivia);
             }
-
-            return Current;
+        } else {
+            Current = Grammar.MatchToklet(input).Consume(input, this);
         }
-
-        Current = Grammar.MatchToklet(input).Consume(input, this);
 
         return Current;
     }
@@ -190,6 +188,6 @@ public class Tokenizer : IConsumer<Token>
 
         if (triviaToklet is null) return TriviaToken.NULL;
 
-        return triviaToklet.Consume(input, this) as TriviaToken;
+        return triviaToklet.Consume(input, this);
     }
 }

@@ -41,6 +41,6 @@ public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
         var value = parser.ConsumeValue();
 
         // return that value
-        return new DeclarationNode(value, name, varKeyword, isValid);
+        return new DeclarationNode(value, name, varKeyword, equalSign, isValid);
     }
 }

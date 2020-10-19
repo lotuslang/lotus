@@ -7,9 +7,11 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var isValid = true;
 
-        if (parser.Tokenizer.Consume() != "(") {
+        var openingParen = parser.Tokenizer.Consume();
+
+        if (openingParen != "(") {
             Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
+                token: openingParen,
                 context: "in foreach header",
                 expected: "an open parenthesis '('"
             ));
@@ -21,7 +23,7 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var itemNameToken = parser.Tokenizer.Consume();
 
-        if (!(itemNameToken is IdentToken itemName && itemName != "in")) { // because in is a reserved keyword
+        if (!(itemNameToken is IdentToken itemName && itemName != "in")) { // because `in` is a reserved keyword
             Logger.Error(new UnexpectedTokenException(
                 token: itemNameToken,
                 context: "in a foreach header",
@@ -53,9 +55,11 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var collectionName = parser.ConsumeValue();
 
-        if (parser.Tokenizer.Consume() != ")") {
+        var closingParen = parser.Tokenizer.Consume();
+
+        if (closingParen != ")") {
             Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
+                token: closingParen,
                 context: "in a foreach header",
                 expected: "a closing parenthesis ')'"
             ));
@@ -67,6 +71,15 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var body = parser.ConsumeSimpleBlock();
 
-        return new ForeachNode(foreachKeyword, inKeyword, new IdentNode(itemNameToken.Representation, itemName), collectionName, body, isValid);
+        return new ForeachNode(
+            foreachKeyword,
+            inKeyword,
+            new IdentNode(itemNameToken.Representation, itemName),
+            collectionName,
+            body,
+            openingParen,
+            closingParen,
+            isValid
+        );
     }
 }

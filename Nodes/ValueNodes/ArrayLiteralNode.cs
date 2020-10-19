@@ -4,10 +4,14 @@ using System.Collections.ObjectModel;
 public class ArrayLiteralNode : ValueNode
 {
     public ReadOnlyCollection<ValueNode> Content { get; }
-    public ArrayLiteralNode(IList<ValueNode> content, Token leftSquareBracketToken, bool isValid = true)
+
+    public Token ClosingBracket { get; }
+
+    public ArrayLiteralNode(IList<ValueNode> content, Token leftSquareBracketToken, Token rightBracket, bool isValid = true)
     : base(leftSquareBracketToken, isValid)
     {
         Content = content.AsReadOnly();
+        ClosingBracket = rightBracket;
     }
 
     public override GraphNode ToGraphNode() {

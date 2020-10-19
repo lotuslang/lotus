@@ -2,22 +2,24 @@ using System;
 
 public class WhileNode : StatementNode
 {
-    public bool IsDoLoop { get; protected set; }
+    public bool IsDoLoop { get; }
 
-    public ComplexToken? DoToken { get; protected set; }
+    public ComplexToken? DoToken { get; }
 
-    public ValueNode Condition { get; protected set; }
+    public ParenthesizedValueNode Condition { get; }
 
-    public SimpleBlock Body { get; protected set; }
+    public SimpleBlock Body { get; }
 
-    public WhileNode(ValueNode condition, SimpleBlock body, ComplexToken whileToken, bool isValid = true) : base(whileToken, isValid) {
+    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken whileToken, bool isValid = true)
+        : base(whileToken, isValid)
+    {
         Condition = condition;
         IsDoLoop = false;
         DoToken = null;
         Body = body;
     }
 
-    public WhileNode(ValueNode condition, SimpleBlock body, ComplexToken whileToken, ComplexToken doToken, bool isValid = true)
+    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken whileToken, ComplexToken doToken, bool isValid = true)
         : this(condition, body, whileToken, isValid)
     {
         IsDoLoop = true;

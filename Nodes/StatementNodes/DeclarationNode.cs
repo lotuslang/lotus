@@ -16,6 +16,8 @@ public class DeclarationNode : StatementNode
     /// <value></value>
     public IdentToken Name { get; protected set; }
 
+    public Token EqualToken { get; }
+
     /// <summary>
     /// Creates a DeclarationNode.
     /// </summary>
@@ -23,9 +25,10 @@ public class DeclarationNode : StatementNode
     /// <param name="varName">The name of the variable</param>
     /// <param name="varKeywordToken">The token of the "var" keyword used</param>
     /// <returns></returns>
-    public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken, bool isValid = true)
+    public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken, Token equalToken, bool isValid = true)
         : base(varKeywordToken, isValid)
     {
+        EqualToken = equalToken;
         Name = varName;
         Value = value;
     }

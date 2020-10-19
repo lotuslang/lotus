@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 
 public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
 {
@@ -6,22 +6,31 @@ public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
         get => Precedence.ArrayAccess;
     }
 
-    public OperationNode Parse(Parser parser, Token leftSquareBracketToken, ValueNode array) {
+    public OperationNode Parse(Parser parser, Token openingBracket, ValueNode array) {
 
-        if (leftSquareBracketToken != "[")
-            throw Logger.Fatal(new InvalidCallException(leftSquareBracketToken.Location));
+        if (openingBracket != "[")
+            throw Logger.Fatal(new InvalidCallException(openingBracket.Location));
 
         var isValid = true;
 
         parser.Tokenizer.Reconsume();
 
-        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]", ref isValid);
+        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]", ref isValid, out Token closingBracket);
 
         return new OperationNode(
-            new OperatorToken('[', Precedence.ArrayAccess, true, leftSquareBracketToken.Location),
+            new OperatorToken(
+                '[',
+                Precedence.ArrayAccess,
+                true,
+                openingBracket.Location,
+                openingBracket.IsValid,
+                leading: openingBracket.LeadingTrivia,
+                trailing: openingBracket.TrailingTrivia
+            ),
             new[]{array}.Concat(indexes).ToArray(), // FIXME: It hurts my eyes
             OperationType.ArrayAccess,
-            isValid
+            isValid,
+            additionalTokens: closingBracket
         );
     }
 }

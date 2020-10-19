@@ -208,21 +208,23 @@ public class Parser : IConsumer<StatementNode>
                 isValid = false;
             }
 
-            return new SimpleBlock(new[] { statement }, isValid);
+            return new SimpleBlock(statement, statement.Token.Location, isValid);
         }
 
-        var bracket = Tokenizer.Peek();
+        var openingBracket = Tokenizer.Consume();
 
         // we don't have to check for EOF because that is (sorta) handled by "areOneLinersAllowed"
-        if (bracket != "{") {
+        if (openingBracket != "{") {
             Logger.Error(new UnexpectedTokenException(
-                token: bracket,
+                token: openingBracket,
                 context: "at the start of simple block (this probably means there was an internal error, please report this!)",
                 expected: "{"
             ));
+
+            Tokenizer.Reconsume();
         }
 
-        Tokenizer.Consume();
+        var location = openingBracket.Location;
 
         var statements = new List<StatementNode>();
 
@@ -244,11 +246,9 @@ public class Parser : IConsumer<StatementNode>
             //if (Tokenizer.Peek() == ";") Tokenizer.Consume();
         }
 
-        if (Tokenizer.Peek() == ";") Tokenizer.Consume();
+        var closingBracket = Tokenizer.Peek();
 
-        bracket = Tokenizer.Peek();
-
-        if (bracket.Kind == TokenKind.EOF) {
+        if (closingBracket.Kind == TokenKind.EOF) {
             Logger.Error(new UnexpectedEOFException(
                 context: "in simple block",
                 expected: "the character '}'",
@@ -256,9 +256,9 @@ public class Parser : IConsumer<StatementNode>
             ));
 
             isValid = false;
-        } else if (bracket != "}") {
+        } else if (closingBracket != "}") {
             Logger.Error(new UnexpectedTokenException(
-                token: bracket,
+                token: closingBracket,
                 context: "in simple block",
                 expected: "the character '}'"
             ));
@@ -270,10 +270,10 @@ public class Parser : IConsumer<StatementNode>
 
         Tokenizer.Consume();
 
-        return new SimpleBlock(statements.ToArray(), isValid);
+        return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
 
-    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end, ref bool isValid, int expectedItemCount = -1) {
+    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end, ref bool isValid, out Token endingToken, int expectedItemCount = -1) {
         var startingDelimiter = Tokenizer.Consume();
 
         if (startingDelimiter.Representation != start) {
@@ -347,7 +347,9 @@ public class Parser : IConsumer<StatementNode>
             }
         }
 
-        if (isValid && Tokenizer.Consume() != end) { // we probably got an EOF
+        endingToken = Tokenizer.Consume();
+
+        if (isValid && endingToken != end) { // we probably got an EOF
             Logger.Error(new UnexpectedEOFException(
                 context: "in a comma-separated value list",
                 expected: "a closing parenthesis ')'",

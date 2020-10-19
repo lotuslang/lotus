@@ -1,4 +1,4 @@
-public sealed class ObjectCreationParselet : IPrefixParselet<ObjectCreationNode>
+﻿public sealed class ObjectCreationParselet : IPrefixParselet<ObjectCreationNode>
 {
     public ObjectCreationNode Parse(Parser parser, Token newToken) {
 
@@ -22,7 +22,7 @@ public sealed class ObjectCreationParselet : IPrefixParselet<ObjectCreationNode>
 
             isValid = false;
 
-            call = new FunctionCallNode(new ValueNode[0], invoc, Token.NULL, false);
+            call = new FunctionCallNode(new ValueNode[0], invoc, Token.NULL, Token.NULL, Token.NULL, isValid: false);
 
             parser.Tokenizer.Reconsume();
         }

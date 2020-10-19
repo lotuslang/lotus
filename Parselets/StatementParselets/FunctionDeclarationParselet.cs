@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 
 public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDeclarationNode>
@@ -109,14 +109,17 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             *
             * Yeah, that's not what happened.
             *
-            * What I didn't notice is that int [a, b, c] has actually kind of the same syntax as array indexing,
+            * What I didn't notice is that int [a, b, c] has actually kind of the same syntax as array indexing;
             * you just have to remove the space and it becomes quite apparent. I had to make array accesses able
-            * to handle commas, but I'm not happy about it because it made more to sense (to me) and was cleaner
-            * to parse the type first and then an array of names. But alas, I have to do this for now, and I don't
+            * to handle commas, but I'm not happy about it because it made more sense (to me) and was cleaner to
+            * parse the type first and then an array of names. But alas, I have to do this for now, and I don't
             * think I could easily fix this without re-writing a special parsing algorithm in this method just
             * for member-access/qualified-names (i.e. the dot operator).
             *
             * Future blokyk here : This is a nightmare to understand and refactor. Thanks.
+            *
+            * Future future blokyk : I hate all of you. I have to modify this for the printers and this is just
+            * disgusting to look at. Fuck all of you.
             */
 
             var typeOrName = parser.ConsumeValue();

@@ -31,4 +31,6 @@ public class OperatorToken : Token
     {
         Kind = token.Kind == TokenKind.function ? TokenKind.function : TokenKind.@operator;
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

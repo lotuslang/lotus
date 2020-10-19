@@ -14,15 +14,5 @@ public class ArrayLiteralNode : ValueNode
         ClosingBracket = rightBracket;
     }
 
-    public override GraphNode ToGraphNode() {
-        var root = new GraphNode(GetHashCode(), "array literal\\n(" + Content.Count + " item(s))")
-            .SetColor("teal")
-            .SetTooltip("array literal");
-
-        var itemCount = 0;
-
-        foreach (var item in Content) root.Add(item.ToGraphNode().SetTooltip("item " + ++itemCount));
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

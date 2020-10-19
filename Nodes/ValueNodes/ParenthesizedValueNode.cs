@@ -12,7 +12,5 @@ public class ParenthesizedValueNode : ValueNode
         Value = value;
     }
 
-    public override GraphNode ToGraphNode() {
-        return Value.ToGraphNode();
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

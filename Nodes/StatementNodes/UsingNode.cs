@@ -7,9 +7,5 @@ public class UsingNode : StatementNode
         ImportName = importName;
     }
 
-    public override GraphNode ToGraphNode()
-        =>  new GraphNode(GetHashCode(), "using") {
-                ImportName.ToGraphNode()
-            }.SetColor("")
-             .SetTooltip(""); // FIXME: find color
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

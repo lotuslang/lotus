@@ -37,4 +37,6 @@ public class NumberToken : ComplexToken
                 location: Location
             ));
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

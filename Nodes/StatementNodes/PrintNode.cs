@@ -6,9 +6,5 @@ public class PrintNode : StatementNode
         Value = node;
     }
 
-    public override GraphNode ToGraphNode()
-        =>  new GraphNode(GetHashCode(), "print") {
-                Value.ToGraphNode()
-            }.SetColor("")
-             .SetTooltip(""); // FIXME: find color
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

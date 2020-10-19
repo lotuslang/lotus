@@ -30,23 +30,5 @@ public class OperationNode : ValueNode
         AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
     }
 
-    public override GraphNode ToGraphNode() {
-
-        GraphNode root;
-
-        if (Representation == "++" || Representation == "--") {
-            root = new GraphNode(GetHashCode(), (OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + Representation);
-        } else {
-            root = new GraphNode(GetHashCode(), Representation);
-        }
-
-        root.SetColor("dodgerblue")
-            .SetTooltip(GetType().Name);
-
-        foreach (var child in Operands) {
-            root.Add(child.ToGraphNode());
-        }
-
-        return root;
-    }
+    public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

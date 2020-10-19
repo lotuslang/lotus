@@ -24,4 +24,6 @@ public class ComplexStringToken : ComplexToken
     public void AddSection(Token[] section) {
         sections.Add(section);
     }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

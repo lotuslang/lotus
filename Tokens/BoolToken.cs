@@ -22,4 +22,6 @@ public class BoolToken : ComplexToken
 
     public BoolToken(bool value, Location location) : base(value.ToString().ToLower(), TokenKind.@bool, location)
     { }
+
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -11,22 +11,37 @@ arr = [ 36, 845, 215, "he", true, [ .5465, 486513], aur, /* wtf */ new String() 
 
 arr.add([], arr)
 
+n   =  5
+    *  ("hello " + "world")
+    ^^ (1 / 3 != 3 / 1)
+    && (6 * 9 == 9 * 6)
+    || !(-6 * -1 == 6)
+    *  (89 < 8 * 9)
+    +  (45 >= 44)
+    %  (48946 == 498431 - 46413 ? 2^7 : 2^6)
+    && !true
+
+
+
 var a = 0
 
 var b = arr != [] ? arr : [0]
 
-func someFunc() {
-    print("called!")
-
-    return
-}
-
+// NOTE: Function that have parameters with the `type [a, b]` syntax will not be printed
+// exactly as they appear in the file. Instead, their parameters will be printed as `type a,type  b`
+// I think this is fine for now, since the fix would be non-trivial and it wouldn't change much
 func someFunc1(a, string [b, c], int d): int {
     print(a.toString() + b + c);
 }
 
 func someFunc2(int [seed, min = 0, max]) {
     return new Random(seed).next(min, max)
+}
+
+func someFunc() {
+    print("called!")
+
+    return
 }
 
 from origin import someType
@@ -47,7 +62,7 @@ for (var i = 0, i < 10, i++) {
     print(i)
 }
 
-for (var _ = i, i > 10, --i) { }
+for (var j = i, i > 10, --i) { }
 
 if (condition)
     print("it's true")

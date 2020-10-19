@@ -102,7 +102,7 @@ public class Graph
         strBuilder.AppendLine();
 
         // A list of GraphNode to keep track of visited nodes
-        var registry = new List<GraphNode>();
+        var registry = new HashSet<GraphNode>();
 
         // For each independent tree in this graph
         foreach (var node in rootNodes)
@@ -143,7 +143,7 @@ public class Graph
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{name}:{label}")]
+[System.Diagnostics.DebuggerDisplay("{ID}:{Name}")]
 public class GraphNode : IEnumerable<GraphNode>
 {
     /// <summary>
@@ -212,7 +212,7 @@ public class GraphNode : IEnumerable<GraphNode>
         return this;
     }
 
-    public string ToText(List<GraphNode> registry)
+    public string ToText(HashSet<GraphNode> registry)
     {
         // Create a new string builder
         var strBuilder = new StringBuilder();
@@ -238,15 +238,11 @@ public class GraphNode : IEnumerable<GraphNode>
             // Append the connection of this node (this node's id -> child's id)
             strBuilder.AppendLine("\t" + ID + " -- " + child.ID);
 
-            // If this child hasn't been registered yet
-            if (!registry.Contains(child))
-            {
-                // Register this child
-                registry.Add(child);
+            // Register this child
+            registry.Add(child);
 
-                // Then append the representation of the child
-                strBuilder.Append("\t" + child.ToText(registry));
-            }
+            // Then append the representation of the child
+            strBuilder.Append("\t" + child.ToText(registry));
         }
 
         // Return the string builder

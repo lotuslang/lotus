@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 
 [Serializable]
-public class UnexpectedEOFException : LotusException
+public sealed class UnexpectedEOFException : LotusException
 {
     public UnexpectedEOFException(Location location, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(

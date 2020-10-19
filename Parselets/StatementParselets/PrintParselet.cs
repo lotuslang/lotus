@@ -1,4 +1,4 @@
-public class PrintParselet : IStatementParselet<PrintNode>
+public sealed class PrintParselet : IStatementParselet<PrintNode>
 {
     public PrintNode Parse(Parser parser, Token printToken) {
         if (!(printToken is ComplexToken printKeyword && printKeyword == "print")) {

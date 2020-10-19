@@ -1,6 +1,4 @@
-using System;
-
-public class TernaryOperatorParselet : IInfixParselet<OperationNode>
+public sealed class TernaryOperatorParselet : IInfixParselet<OperationNode>
 {
     public Precedence Precedence => Precedence.Ternary;
 

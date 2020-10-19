@@ -1,5 +1,3 @@
-using System;
-
 public sealed class BinaryOperatorParselet : IInfixParselet<OperationNode>
 {
     public Precedence Precedence { get; }

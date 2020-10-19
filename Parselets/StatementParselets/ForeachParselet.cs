@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 {
     public ForeachNode Parse(Parser parser, Token foreachToken)

@@ -1,5 +1,3 @@
-using System;
-
 public sealed class IdentifierParselet : IPrefixParselet<IdentNode>
 {
     public IdentNode Parse(Parser _, Token token) {

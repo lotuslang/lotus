@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 public sealed class ImportParselet : IStatementParselet<ImportNode>

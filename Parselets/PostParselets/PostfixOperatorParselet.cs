@@ -1,5 +1,3 @@
-using System;
-
 public sealed class PostfixOperatorParselet : IPostfixParselet<OperationNode>
 {
     public Precedence Precedence { get; }

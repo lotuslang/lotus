@@ -194,6 +194,7 @@ public class Parser : IConsumer<StatementNode>
     }
 
     public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
+        var isValid = true;
 
         // to consume a one-liner, you just consume a statement and return
         if (areOneLinersAllowed && Tokenizer.Peek() != "{") {
@@ -203,12 +204,12 @@ public class Parser : IConsumer<StatementNode>
                     expected: "a statement",
                     location: Tokenizer.Current.Location
                 ));
+
+                isValid = false;
             }
 
-            return new SimpleBlock(new[] { statement });
+            return new SimpleBlock(new[] { statement }, isValid);
         }
-
-        var isValid = true;
 
         var bracket = Tokenizer.Peek();
 

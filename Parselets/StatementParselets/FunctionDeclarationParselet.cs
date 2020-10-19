@@ -29,16 +29,18 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location, false);
         }
 
-        if (parser.Tokenizer.Consume() != "(") {
+        var openingParen = parser.Tokenizer.Consume();
+
+        if (openingParen != "(") {
             Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
+                token: openingParen,
                 context: "in function parameter list",
                 expected: "("
             ));
         }
 
         // function parameter list format :
-        // func Foo(someVar, string someStr, int [start, end]) -> int
+        // func Foo(someVar, string someStr, int [start, end]) : int
         // { /* some code */ }
         //
 
@@ -60,8 +62,11 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
 
             var defaultValue = ValueNode.NULL;
 
+            var equalSign = Token.NULL;
+
             if (paramNameNode is OperationNode opNode && opNode.OperationType == OperationType.Assign) {
                 paramNameNode = opNode.Operands[0];
+                equalSign = opNode.Token;
                 defaultValue = opNode.Operands[1];
             }
 
@@ -81,7 +86,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 );
             }
 
-            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, isValid));
+            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, equalSign, isValid));
         }
 
         while (parser.Tokenizer.Peek() != ")") {
@@ -198,8 +203,10 @@ LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to al
             }
         }
 
+        var closingParen = parser.Tokenizer.Consume();
+
         // this means we probably broke because of an EOF
-        if (parser.Tokenizer.Consume() != ")") {
+        if (closingParen != ")") {
             Logger.Error(new UnexpectedEOFException(
                 context: "in a function's parameter list",
                 expected: "a closing parenthesis ')'",
@@ -211,8 +218,10 @@ LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to al
 
         var returnType = ValueNode.NULL;
 
+        var colonToken = Token.NULL;
+
         if (parser.Tokenizer.Peek() == ":") {
-            parser.Tokenizer.Consume(); // consume the colon
+            colonToken = parser.Tokenizer.Consume(); // consume the colon
 
             returnType = parser.ConsumeValue();
 
@@ -237,6 +246,9 @@ LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to al
             returnType,
             funcName,
             funcKeyword,
+            openingParen,
+            closingParen,
+            colonToken,
             isValid
         );
     }

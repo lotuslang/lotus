@@ -10,9 +10,11 @@ public sealed class ForParselet : IStatementParselet<ForNode>
 
         var isValid = true;
 
-        if (parser.Tokenizer.Consume() != "(") {
+        var openingParen = parser.Tokenizer.Consume();
+
+        if (openingParen != "(") {
             Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
+                token: openingParen,
                 context: "in for loop header",
                 expected: "an opening parenthesis '('"
             ));
@@ -64,7 +66,7 @@ public sealed class ForParselet : IStatementParselet<ForNode>
             commaCount++;
         }
 
-        parser.Tokenizer.Consume(); // consume the ')'
+        var closingParen = parser.Tokenizer.Consume(); // consume the ')'
 
         if (header.Count > 3) {// FIXME: Choose an appropriate exception
             Logger.Error(new LotusException(
@@ -82,6 +84,6 @@ public sealed class ForParselet : IStatementParselet<ForNode>
 
         var body = parser.ConsumeSimpleBlock();
 
-        return new ForNode(forKeyword, header.ToArray(), body, isValid);
+        return new ForNode(forKeyword, header.ToArray(), body, openingParen, closingParen, isValid);
     }
 }

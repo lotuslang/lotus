@@ -2,21 +2,23 @@ using System;
 
 public class IfNode : StatementNode
 {
-    public ValueNode Condition { get; protected set; }
+    public ParenthesizedValueNode Condition { get; }
 
-    public SimpleBlock Body { get; protected set; }
+    public SimpleBlock Body { get; }
 
-    public ElseNode? ElseNode { get; protected set; }
+    public ElseNode? ElseNode { get; }
 
     public bool HasElse { get => ElseNode != null; }
 
-    public IfNode(ValueNode condition, SimpleBlock body, ComplexToken ifToken, bool isValid = true) : base(ifToken, isValid) {
+    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken ifToken, bool isValid = true)
+        : base(ifToken, isValid)
+    {
         Condition = condition;
         Body = body;
         ElseNode = null;
     }
 
-    public IfNode(ValueNode condition, SimpleBlock body, ElseNode elseNode, ComplexToken ifToken, bool isValid = true)
+    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ElseNode elseNode, ComplexToken ifToken, bool isValid = true)
         : this(condition, body, ifToken, isValid)
     {
         ElseNode = elseNode;

@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 public class OperationNode : ValueNode
 {
-    public new OperatorToken Token { get => Token; }
+    public ReadOnlyCollection<Token> AdditionalTokens { get; }
 
     /// <summary>
     /// The operands of this operation
@@ -22,11 +22,12 @@ public class OperationNode : ValueNode
         };
     }
 
-    public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType, bool isValid = true)
+    public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType, bool isValid = true, params Token[] additionalTokens)
         : base(token, isValid)
     {
         Operands = operands.AsReadOnly();
         OperationType = opType;
+        AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
     }
 
     public override GraphNode ToGraphNode() {

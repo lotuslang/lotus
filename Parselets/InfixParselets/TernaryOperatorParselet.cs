@@ -11,9 +11,11 @@ public sealed class TernaryOperatorParselet : IInfixParselet<OperationNode>
 
         var firstValue = parser.ConsumeValue();
 
-        if (parser.Tokenizer.Consume() != ":") {
+        var colon = parser.Tokenizer.Consume();
+
+        if (colon != ":") {
             Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
+                token: colon,
                 context: "in a ternary operator",
                 expected: "the character ':'"
             ));
@@ -25,6 +27,6 @@ public sealed class TernaryOperatorParselet : IInfixParselet<OperationNode>
 
         var secondValue = parser.ConsumeValue();
 
-        return new OperationNode(questionMarkOperator, new[] {condition, firstValue, secondValue}, OperationType.Conditional, isValid);
+        return new OperationNode(questionMarkOperator, new[] {condition, firstValue, secondValue}, OperationType.Conditional, isValid, colon);
     }
 }

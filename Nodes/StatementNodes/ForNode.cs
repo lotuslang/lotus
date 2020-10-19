@@ -7,14 +7,19 @@ using System.Collections.ObjectModel;
 /// </summary>
 public class ForNode : StatementNode
 {
-    public ReadOnlyCollection<StatementNode> Header { get; protected set; }
+    public ReadOnlyCollection<StatementNode> Header { get; }
 
-    public SimpleBlock Body {
-        get;
-        protected set;
-    }
+    public Token OpeningParenthesis { get; }
 
-    public ForNode(ComplexToken forToken, IList<StatementNode> header, SimpleBlock body, bool isValid = true) : base(forToken, isValid) {
+    public Token ClosingParenthesis { get; }
+
+    public SimpleBlock Body { get; }
+
+    public ForNode(ComplexToken forToken, IList<StatementNode> header, SimpleBlock body, Token openingParen, Token closingParen, bool isValid = true)
+        : base(forToken, isValid)
+    {
+        OpeningParenthesis = openingParen;
+        ClosingParenthesis = closingParen;
         Header = header.AsReadOnly();
         Body = body;
     }

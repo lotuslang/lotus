@@ -30,31 +30,18 @@ public sealed class DoWhileParselet : IStatementParselet<WhileNode>
             );
         }
 
-        // Wondering why do we do that ? See note in IfParselet.cs
-        if (parser.Tokenizer.Consume() != "(") {
-            Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
-                context: "while parsing the condition of a do-while loop",
-                expected: "an opening parenthesis '('"
+        var conditionNode = parser.ConsumeValue();
+
+        if (!(conditionNode is ParenthesizedValueNode condition)) {
+            Logger.Error(new UnexpectedValueTypeException(
+                node: conditionNode,
+                context: "as an do-while-loop condition",
+                expected: "a condition between parenthesis (e.g. `(a == b)`)"
             ));
 
             isValid = false;
 
-            parser.Tokenizer.Reconsume();
-        }
-
-        var condition = parser.ConsumeValue();
-
-        if (parser.Tokenizer.Consume() != ")") {
-            Logger.Error(new UnexpectedTokenException(
-                token: parser.Tokenizer.Current,
-                context: "while parsing the condition of a do-while loop",
-                expected: "a closing parenthesis ')'"
-            ));
-
-            isValid = false;
-
-            parser.Tokenizer.Reconsume();
+            condition = new ParenthesizedValueNode(Token.NULL, Token.NULL, conditionNode);
         }
 
         return new WhileNode(condition, body, whileKeyword, doKeyword, isValid);

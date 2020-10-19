@@ -8,7 +8,7 @@ public class FunctionDeclarationNode : StatementNode
 
     public bool HasReturnType => ReturnType != ValueNode.NULL;
 
-    public SimpleBlock Value { get; }
+    public SimpleBlock Body { get; }
 
     public ReadOnlyCollection<FunctionParameter> Parameters { get; }
 
@@ -16,18 +16,30 @@ public class FunctionDeclarationNode : StatementNode
 
     public IdentToken Name { get; }
 
-    public FunctionDeclarationNode(SimpleBlock value,
+    public Token OpeningParenthesis { get; }
+
+    public Token ClosingParenthesis { get; }
+
+    public Token ColonToken { get; }
+
+    public FunctionDeclarationNode(SimpleBlock body,
                                    IList<FunctionParameter> parameters,
                                    ValueNode returnType,
                                    IdentToken functionName,
                                    ComplexToken funcKeyword,
+                                   Token openingParen,
+                                   Token closingParen,
+                                   Token colonToken,
                                    bool isValid = true)
         : base(funcKeyword, isValid)
     {
         Name = functionName;
-        Value = value;
+        Body = body;
         Parameters = parameters.AsReadOnly();
         ReturnType = returnType;
+        OpeningParenthesis = openingParen;
+        ClosingParenthesis = closingParen;
+        ColonToken = colonToken;
     }
 
     public override GraphNode ToGraphNode() {
@@ -67,7 +79,7 @@ public class FunctionDeclarationNode : StatementNode
             });
         }
 
-        root.Add(Value.ToGraphNode().SetTooltip("body"));
+        root.Add(Body.ToGraphNode().SetTooltip("body"));
 
         return root;
     }
@@ -79,15 +91,18 @@ public class FunctionParameter
 
     public IdentNode Name { get; }
 
+    public Token EqualSign { get; }
+
     public ValueNode DefaultValue { get; }
 
     public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
 
     public bool IsValid { get; set; }
 
-    public FunctionParameter(ValueNode type, IdentNode name, ValueNode defaultValue, bool isValid = true) {
+    public FunctionParameter(ValueNode type, IdentNode name, ValueNode defaultValue, Token equalSign, bool isValid = true) {
         Type = type;
         Name = name;
+        EqualSign = equalSign;
         DefaultValue = defaultValue;
         IsValid = isValid;
     }

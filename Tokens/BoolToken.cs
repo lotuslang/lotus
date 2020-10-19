@@ -10,7 +10,7 @@ public class BoolToken : ComplexToken
     }
 
     public BoolToken(string representation, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, TokenKind.number, location, isValid, leading, trailing)
+        : base(representation, TokenKind.@bool, location, isValid, leading, trailing)
     {
         if (representation.Length != 0 && !Boolean.TryParse(representation, out val)) {
             throw Logger.Fatal(new InternalErrorException(

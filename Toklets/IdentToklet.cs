@@ -33,6 +33,10 @@ public sealed class IdentToklet : IToklet<ComplexToken>
         // since our while loop has exited) to make sure it is processed by the tokenizer afterwards
         input.Reconsume();
 
+        if (output == "true" || output == "false") {
+            return new BoolToken(output, output.Location);
+        }
+
         if (Utilities.keywords.Contains(output)) {
             return new ComplexToken(output, TokenKind.keyword, output.Location);
         }

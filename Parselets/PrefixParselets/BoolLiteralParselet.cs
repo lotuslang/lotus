@@ -1,5 +1,3 @@
-using System;
-
 public sealed class BoolLiteralParselet : IPrefixParselet<BoolNode>
 {
     public BoolNode Parse(Parser _, Token token) {

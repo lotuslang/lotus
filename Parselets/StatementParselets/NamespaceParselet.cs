@@ -1,5 +1,3 @@
-using System;
-
 public sealed class NamespaceParselet : IStatementParselet<NamespaceNode>
 {
     public NamespaceNode Parse(Parser parser, Token namespaceToken) {

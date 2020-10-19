@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Globalization;
 using System.Collections.Generic;
 
-public class LotusTokenizer : Tokenizer
+public sealed class LotusTokenizer : Tokenizer
 {
 
     public LotusTokenizer(StringConsumer stringConsumer) : base(stringConsumer, new LotusGrammar())

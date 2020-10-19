@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-public class IfParselet : IStatementParselet<IfNode>
+public sealed class IfParselet : IStatementParselet<IfNode>
 {
     public IfNode Parse(Parser parser, Token ifToken) {
         if (!(ifToken is ComplexToken ifKeyword && ifKeyword == "if")) {

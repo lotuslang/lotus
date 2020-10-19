@@ -1,6 +1,3 @@
-using System;
-using System.Text;
-
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {rep.ToString()}")]
 public class Token
 {

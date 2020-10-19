@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
 using System.Collections.Generic;
 
-public class LotusParser : Parser
+public sealed class LotusParser : Parser
 {
 
     public LotusParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar()) { }

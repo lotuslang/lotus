@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-public class ElseParselet : IStatementParselet<ElseNode>
+public sealed class ElseParselet : IStatementParselet<ElseNode>
 {
     public ElseNode Parse(Parser parser, Token elseToken) {
         if (!(elseToken is ComplexToken elseKeyword && elseKeyword == "else")) {

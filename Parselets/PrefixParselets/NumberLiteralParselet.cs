@@ -1,5 +1,3 @@
-using System;
-
 public sealed class NumberLiteralParselet : IPrefixParselet<NumberNode>
 {
     public NumberNode Parse(Parser _, Token token) {

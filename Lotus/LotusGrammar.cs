@@ -1,9 +1,4 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-public class LotusGrammar : ReadOnlyGrammar
+public sealed class LotusGrammar : ReadOnlyGrammar
 {
     private readonly Grammar internalGrammar = new Grammar();
 

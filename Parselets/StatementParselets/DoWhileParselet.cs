@@ -1,6 +1,4 @@
-using System;
-
-public class DoWhileParselet : IStatementParselet<WhileNode>
+public sealed class DoWhileParselet : IStatementParselet<WhileNode>
 {
     public WhileNode Parse(Parser parser, Token doToken) {
         if (!(doToken is ComplexToken doKeyword && doKeyword == "do")) {

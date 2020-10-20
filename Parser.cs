@@ -160,7 +160,7 @@ public class Parser : IConsumer<StatementNode>
                 }));
             }
 
-            return ValueNode.NULL;
+            return new ValueNode(token, false);
         }
 
         var left = Grammar.GetPrefixParselet(token).Parse(this, token);

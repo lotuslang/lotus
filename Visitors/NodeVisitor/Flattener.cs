@@ -40,7 +40,7 @@ public sealed class Flattener : NodeVisitor<IEnumerable<StatementNode>>
             if (param.HasDefaultValue) output.Concat(Visit(param.DefaultValue!));
         }
 
-        return output.Concat(Visit(node.Body)).Append(node); ;
+        return output.Concat(Visit(node.Body)).Append(node);
     }
 
     public override IEnumerable<StatementNode> Visit(IfNode node)

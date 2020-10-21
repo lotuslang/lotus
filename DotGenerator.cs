@@ -122,24 +122,30 @@ public class Graph
     }
 
     public void AddGraphProp(string property, string value) {
-            if (graphprops.ContainsKey(property))
-                graphprops[property] = value;
-            else
-                graphprops.Add(property, value);
+        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+            return;
+        if (graphprops.ContainsKey(property))
+            graphprops[property] = value;
+        else
+            graphprops.Add(property, value);
     }
 
     public void AddNodeProp(string property, string value) {
-            if (nodeprops.ContainsKey(property))
-                nodeprops[property] = value;
-            else
-                nodeprops.Add(property, value);
+        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+            return;
+        if (nodeprops.ContainsKey(property))
+            nodeprops[property] = value;
+        else
+            nodeprops.Add(property, value);
     }
 
     public void AddEdgeProp(string property, string value) {
-            if (edgeprops.ContainsKey(property))
-                edgeprops[property] = value;
-            else
-                edgeprops.Add(property, value);
+        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+            return;
+        if (edgeprops.ContainsKey(property))
+            edgeprops[property] = value;
+        else
+            edgeprops.Add(property, value);
     }
 }
 
@@ -189,6 +195,9 @@ public class GraphNode : IEnumerable<GraphNode>
     }
 
     public GraphNode SetProperty(string property, string value) {
+        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+            return this;
+
         if (!Properties.TryAdd(property, value)) {
             Properties[property] = value;
         }
@@ -196,21 +205,11 @@ public class GraphNode : IEnumerable<GraphNode>
         return this;
     }
 
-    public GraphNode SetColor(string color) {
-        if (!Properties.TryAdd("color", color)) {
-            Properties["color"] = color;
-        }
+    public GraphNode SetColor(string color)
+        => SetProperty("color", color);
 
-        return this;
-    }
-
-    public GraphNode SetTooltip(string tooltipText) {
-        if (!Properties.TryAdd("tooltip", tooltipText)) {
-            Properties["tooltip"] = tooltipText;
-        }
-
-        return this;
-    }
+    public GraphNode SetTooltip(string tooltipText)
+        => SetProperty("tooltip", tooltipText);
 
     public string ToText(HashSet<GraphNode> registry)
     {

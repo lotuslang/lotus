@@ -23,16 +23,34 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 
         var itemNameToken = parser.Tokenizer.Consume();
 
-        if (!(itemNameToken is IdentToken itemName && itemName != "in")) { // because `in` is a reserved keyword
-            Logger.Error(new UnexpectedTokenException(
-                token: itemNameToken,
-                context: "in a foreach header",
-                expected: TokenKind.ident
-            ));
+        if (!(itemNameToken is IdentToken itemName)) { // because `in` is a reserved keyword
+            if (itemNameToken == "in") {
+                if (parser.Tokenizer.Peek() == "in") { // if the next token is 'in' again, it probably in was meant as a variable name
+                    Logger.Error(new UnexpectedTokenException(
+                        message: "You cannot use 'in' as a variable name because it is a reserved keyword",
+                        token: itemNameToken
+                    ));
+                } else { // otherwise, it probably means that the user forgot the item name
+                    Logger.Error(new UnexpectedTokenException(
+                        message: "Did you forget to specify a name for each item in the collection ? Or did you mean to ignore the item ? "
+                                + "If you just want to iterate over a collection without using an item each time, you can either discard the variable with "
+                                + "the special name '_', or use a for loop instead",
+                        token: itemNameToken
+                    ));
+
+                    // no we DON'T reconsume because the tokenizer already has the result of Peek() in its reconsumeQueue and reconsuming the 'in' token would
+                    // put it at the back of the queue, so the result of Peek() would come BEFORE the 'in' token
+                    // also it doesn't really have any negative side-effect, contrary to trying to reconsume the 'in' token
+                }
+            } else {
+                Logger.Error(new UnexpectedTokenException(
+                    token: itemNameToken,
+                    context: "in a foreach header",
+                    expected: TokenKind.ident
+                ));
+            }
 
             isValid = false;
-
-            if (itemNameToken == "in") parser.Tokenizer.Reconsume();
 
             itemName = new IdentToken(itemNameToken.Representation, itemNameToken.Location, false);
         }

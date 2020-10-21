@@ -14,6 +14,7 @@ public static class Utilities
         "for",
         "while",
         "foreach",
+        "in",
         "if",
         "else",
         "from",

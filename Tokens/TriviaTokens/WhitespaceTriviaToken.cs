@@ -4,7 +4,7 @@ public class WhitespaceTriviaToken : TriviaToken
 
     public WhitespaceTriviaToken(char whitespaceChar,
                                  int count,
-                                 Location location,
+                                 LocationRange location,
                                  bool isValid = true,
                                  TriviaToken? leading = null,
                                  TriviaToken? trailing = null)

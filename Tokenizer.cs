@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Text;
-using System.Globalization;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,9 +8,19 @@ public class Tokenizer : IConsumer<Token>
 
     public Token Current { get; protected set; }
 
+    public Token Default {
+        get {
+            var output = Token.NULL;
+
+            output.Location = Position;
+
+            return output;
+        }
+    }
+
     protected Queue<Token> reconsumeQueue;
 
-    public Location Position {
+    public LocationRange Position {
         get => Current.Location;
     }
 
@@ -35,7 +43,7 @@ public class Tokenizer : IConsumer<Token>
             Logger.Warning(new InvalidCallException(
                 message : "Something tried to create a new Tokenizer with a null grammar."
                         + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
-                location: Position
+                range: Position
             ));
 
             grammar = new ReadOnlyGrammar();
@@ -77,7 +85,7 @@ public class Tokenizer : IConsumer<Token>
     { }
 
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out Token? token) && Object.ReferenceEquals(token!, Current)) {
+        if (reconsumeQueue.TryPeek(out Token? token) && Object.ReferenceEquals(token, Current)) {
             Console.WriteLine("Calling reconsume multiple times in a row !");
             return;
         }
@@ -127,6 +135,7 @@ public class Tokenizer : IConsumer<Token>
         Current = oldCurrent;
 
         foreach (var token in output.Reverse()) {
+            // no we don't put it in the same loop as Consume() because then it would just consume the reconsume indefinitely
             reconsumeQueue.Enqueue(token);
         }
 
@@ -156,8 +165,12 @@ public class Tokenizer : IConsumer<Token>
         // although, you'll also need to modify the parser and parselets because they might not work correctly
 
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
-        if (currChar == '\u0003' || currChar == '\0') {
+        if (currChar == input.Default) {
+            var lastPos = Position;
+
             Current = Token.NULL;
+
+            Current.Location = lastPos;
 
             return Current;
         }

@@ -15,7 +15,7 @@ public class ForNode : StatementNode
     public SimpleBlock Body { get; }
 
     public ForNode(ComplexToken forToken, IList<StatementNode> header, SimpleBlock body, Token openingParen, Token closingParen, bool isValid = true)
-        : base(forToken, isValid)
+        : base(forToken, new LocationRange(forToken.Location, body.Location), isValid)
     {
         OpeningParenthesis = openingParen;
         ClosingParenthesis = closingParen;

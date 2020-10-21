@@ -10,6 +10,8 @@ public class StringConsumer : IConsumer<char>
 
     public readonly static char EOF = '\u0003';
 
+    public char Default => EOF;
+
     protected Queue<char> reconsumeQueue;
 
     protected Stack<char> stack;
@@ -22,9 +24,9 @@ public class StringConsumer : IConsumer<char>
 
     public char Current { get; protected set; }
 
-    protected Location pos; // we keep it because it's faster performance-wise (and also more convenient)
+    protected Location pos; // we keep it because it's more convenient and makes sense since a character always has an atomic location
 
-    public Location Position {
+    public LocationRange Position {
         get => pos;
     }
 
@@ -43,7 +45,7 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        pos = new Location(1, -1, fileName);
+        pos = new Location(1, -1, filename: fileName);
     }
 
     public StringConsumer(StringConsumer consumer) : this() {
@@ -51,7 +53,7 @@ public class StringConsumer : IConsumer<char>
 
         Current = consumer.Current;
 
-        pos = new Location(consumer.pos.line, consumer.pos.column, consumer.pos.filename);
+        pos = new Location(consumer.pos.line, consumer.pos.column, filename: consumer.pos.filename);
 
         reconsumeQueue = new Queue<char>(consumer.reconsumeQueue);
 
@@ -61,7 +63,7 @@ public class StringConsumer : IConsumer<char>
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
         stack = new Stack<char>(collection.Reverse());
 
-        pos = new Location(1, -1, fileName);
+        pos = new Location(1, -1, filename: fileName);
     }
 
     public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
@@ -80,7 +82,7 @@ public class StringConsumer : IConsumer<char>
 
         stack = new Stack<char>(stack);
 
-        pos = new Location(1, -1, fileName);
+        pos = new Location(1, -1, filename: fileName);
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd().Split('\n'), fileName)

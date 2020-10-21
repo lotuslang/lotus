@@ -23,11 +23,18 @@ public class OperationNode : ValueNode
     }
 
     public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType, bool isValid = true, params Token[] additionalTokens)
-        : base(token, isValid)
+        : base(token, token.Location, isValid)
     {
         Operands = operands.AsReadOnly();
         OperationType = opType;
         AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
+
+        Location = OperationKind switch {
+            OperationKind.Unary => new LocationRange(token.Location, operands[0].Location),
+            OperationKind.Binary => new LocationRange(operands[0].Location, operands[1].Location),
+            OperationKind.Ternary => new LocationRange(operands[0].Location, operands[2].Location),
+            _ => Token.Location
+        };
     }
 
     public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);

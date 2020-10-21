@@ -19,7 +19,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
     public ComplexStringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
 
-
         // consume the '$' in front
         input.Consume();
 
@@ -46,7 +45,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                         Logger.Error(new UnexpectedEOFException(
                             context: "in an interpolated string",
                             expected: $"`}}` followed by the string delimiter `{endingDelimiter}`",
-                            location: tokenizer.Position
+                            range: new LocationRange(output.Location, tokenizer.Position)
                         ));
 
                         output.IsValid = false;
@@ -72,7 +71,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                 Logger.Error(new UnexpectedEOFException(
                     context: "in a string",
                     expected: $"the string delimitier `{endingDelimiter}`",
-                    tokenizer.Position
+                    range: new LocationRange(output.Location, tokenizer.Position)
                 ));
 
                 output.IsValid = false;
@@ -80,6 +79,8 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                 break;
             }
         }
+
+        output.Location = new LocationRange(output.Location, tokenizer.Position);
 
         return output;
     }

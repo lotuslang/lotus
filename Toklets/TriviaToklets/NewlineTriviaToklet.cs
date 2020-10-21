@@ -9,7 +9,7 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
         var startingPosition = input.Position;
 
         if (input.Consume() != '\n' && input.Current != '\r')
-            throw Logger.Fatal(new InvalidCallException(input.Position));
+            throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));
 
         int charCounter = 1;
 
@@ -18,6 +18,6 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 
         input.Reconsume();
 
-        return new NewlineTriviaToken(charCounter, startingPosition, trailing: tokenizer.ConsumeTrivia());
+        return new NewlineTriviaToken(charCounter, new LocationRange(startingPosition, input.Position), trailing: tokenizer.ConsumeTrivia());
     }
 }

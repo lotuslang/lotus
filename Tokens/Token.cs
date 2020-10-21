@@ -17,15 +17,18 @@ public class Token
         get => rep;
     }
 
-    public Location Location { get; protected set; }
+    public LocationRange Location { get; set; }
 
     public Token(char representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : this(representation.ToString(), kind, location, isValid, leading, trailing) { }
 
-    public Token(string representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null) {
+    public Token(char representation, TokenKind kind, LocationRange range, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+        : this(representation.ToString(), kind, range, isValid, leading, trailing) { }
+
+    public Token(string representation, TokenKind kind, LocationRange range, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null) {
         rep = representation;
         Kind = kind;
-        Location = location;
+        Location = range;
         LeadingTrivia = leading;
         TrailingTrivia = trailing;
         IsValid = isValid;
@@ -35,7 +38,7 @@ public class Token
         if (trivia is null) {
             Logger.Warning(new InvalidCallException(
                 message : "Something tried to add a null (leading) TriviaToken to this token, but that's not allowed",
-                location: Location
+                range: Location
             ));
 
             return;
@@ -51,7 +54,7 @@ public class Token
         if (trivia is null) {
             Logger.Warning(new InvalidCallException(
                 message : "Something tried to add a null (trailing) TriviaToken to this token, but that's not allowed",
-                location: Location
+                range: Location
             ));
 
             return;

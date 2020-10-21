@@ -33,6 +33,8 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
         var currChar = input.Consume();
 
+        var currPos = input.Position;
+
         // easy and clear switches
         switch (currChar) {
             case '*':
@@ -49,10 +51,10 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
                 return new OperatorToken(currChar, Precedence.Access, "left", input.Position);
             case '&' when input.Peek() == '&':
                 // Logical AND operator a && b
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.And, "left", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.And, "left", new LocationRange(currPos, input.Position));
             case '|' when input.Peek() == '|':
                 // Logical OR operator a || b
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.Or, "left", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.Or, "left", new LocationRange(currPos, input.Position));
             case '?':
                 // Ternary comparison operator a ? b : c
                 return new OperatorToken(currChar, Precedence.Ternary, "left", input.Position);
@@ -63,7 +65,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
         if (currChar == '+' || currChar == '-') {
 
             if (input.Peek() == currChar) {
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.Unary, "right", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.Unary, "right", new LocationRange(currPos, input.Position));
             }
 
             return new OperatorToken(currChar, Precedence.Addition, "left", input.Position);
@@ -73,7 +75,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             if (input.Peek() == '^') {
                 input.Consume(); // consume the '^' we just peeked at
 
-                return new OperatorToken("^^", Precedence.Xor, "left", input.Position);
+                return new OperatorToken("^^", Precedence.Xor, "left", new LocationRange(currPos, input.Position));
             }
 
             // Power/Exponent operator a ^ b
@@ -85,7 +87,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
             // Equality comparison operator a == b
             if (input.Peek() == '=') {
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.Equal, "left", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.Equal, "left", new LocationRange(currPos, input.Position));
             }
 
             // Assignment operator a = b
@@ -96,7 +98,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
             // Greater-than-or-equal comparison operator a >= b
             if (input.Peek() == '=') {
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.GreaterThanOrEqual, "left", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.GreaterThanOrEqual, "left", new LocationRange(currPos, input.Position));
             }
 
             // Greater-than comparison operator a > b
@@ -107,7 +109,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
             // Less-than-or-equal comparison operator a <= b
             if (input.Peek() == '=') {
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.LessThanOrEqual, "left", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.LessThanOrEqual, "left", new LocationRange(currPos, input.Position));
             }
 
             // Less-than comparison operator a < b
@@ -118,13 +120,13 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
             // Not-equal comparison operator a != b
             if (input.Peek() == '=') {
-                return new OperatorToken(currChar +""+ input.Consume(), Precedence.NotEqual, "left", input.Position);
+                return new OperatorToken(currChar +""+ input.Consume(), Precedence.NotEqual, "left", new LocationRange(currPos, input.Position));
             }
 
             // Unary logical NOT operator !a
             return new OperatorToken(currChar, Precedence.Unary, "right", input.Position);
         }
 
-        throw Logger.Fatal(new InvalidCallException(input.Position));
+        throw Logger.Fatal(new InvalidCallException(new LocationRange(currPos, input.Position)));
     }
 }

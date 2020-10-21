@@ -5,27 +5,28 @@ using System.Runtime.CompilerServices;
 [Serializable]
 public sealed class UnexpectedEOFException : LotusException
 {
-    public UnexpectedEOFException(Location location, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
+
+    public UnexpectedEOFException(LocationRange range, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(
-            $"Unexpected EOF encountered at location {location}. No more info available."
-                + $"(from {Path.GetFileNameWithoutExtension(callerPath)}.{caller})",
-            location,
+             $"Unexpected EOF encountered {GetRangeString(range)}. No more info available."
+            +$"(from {Path.GetFileNameWithoutExtension(callerPath)}.{caller})",
+            range,
             caller,
             callerPath
         ) { }
 
-    public UnexpectedEOFException(string message, Location location, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
+    public UnexpectedEOFException(string message, LocationRange range, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(
-            $"Unexpected EOF encountered at location {location}. {message}.",
-            location,
+            $"{range}: Unexpected EOF encountered. {message}.",
+            range,
             caller,
             callerPath
         ) { }
 
-    public UnexpectedEOFException(string context, string expected, Location location, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
+    public UnexpectedEOFException(string context, string expected, LocationRange range, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(
-            $"Unexpected EOF encountered at location {location} {context}. Expected {expected}.",
-            location,
+            $"{range}: Unexpected EOF encountered {context}. Expected {expected}.",
+            range,
             caller,
             callerPath
         ) { }

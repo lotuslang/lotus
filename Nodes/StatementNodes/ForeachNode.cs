@@ -49,7 +49,7 @@ public class ForeachNode : StatementNode
                        Token openParen,
                        Token closeParen,
                        bool isValid = true)
-        : base(foreachToken, isValid)
+        : base(foreachToken, new LocationRange(foreachToken.Location, body.Location), isValid)
     {
         InToken = inToken;
         OpeningParenthesis = openParen;

@@ -25,7 +25,7 @@ public sealed class StringToklet : IToklet<StringToken>
                 Logger.Error(new UnexpectedEOFException(
                     context: "in string",
                     expected: "a character or a delimiter (' or \")",
-                    location: input.Position
+                    range: input.Position
                 ));
 
                 output.IsValid = false;
@@ -33,6 +33,8 @@ public sealed class StringToklet : IToklet<StringToken>
                 break;
             }
         }
+
+        output.Location = new LocationRange(output.Location, input.Position);
 
         // return the output token
         return output;

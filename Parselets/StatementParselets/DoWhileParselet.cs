@@ -19,6 +19,13 @@ public sealed class DoWhileParselet : IStatementParselet<WhileNode>
             isValid = false;
 
             if (parser.Tokenizer.Current == "(") {
+                Logger.exceptions.Dequeue(); // remove the last exception
+
+                Logger.Error(new UnexpectedTokenException(
+                    message: "Did you forget the 'while' keyword before the condition ?",
+                    token: parser.Tokenizer.Current
+                ));
+
                 parser.Tokenizer.Reconsume();
             }
 

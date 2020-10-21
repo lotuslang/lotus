@@ -2,7 +2,9 @@ public class NamespaceNode : StatementNode
 {
     public ValueNode NamespaceName { get; protected set; }
 
-    public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken, bool isValid = true) : base(namespaceToken, isValid) {
+    public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken, bool isValid = true)
+        : base(namespaceToken, new LocationRange(namespaceToken.Location, namespaceName.Location), isValid)
+    {
         NamespaceName = namespaceName;
     }
 

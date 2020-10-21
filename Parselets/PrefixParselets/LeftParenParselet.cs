@@ -3,6 +3,14 @@ public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
     public ValueNode Parse(Parser parser, Token leftParenToken) {
         if (leftParenToken != "(")
             throw Logger.Fatal(new InvalidCallException(leftParenToken.Location));
+        if (parser.Tokenizer.Peek() == ")") {
+            Logger.Error(new UnexpectedTokenException(
+                message: "Empty \"expression parentheses\" are not allowed. Did you forget a name or a value ?",
+                token: parser.Tokenizer.Consume()
+            ) { Position = new LocationRange(leftParenToken.Location, parser.Tokenizer.Current.Location)});
+
+            return new ParenthesizedValueNode(leftParenToken, parser.Tokenizer.Current, ValueNode.NULL, isValid: false);
+        }
 
         var value = parser.ConsumeValue();
 

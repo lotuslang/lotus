@@ -13,11 +13,13 @@ public class Consumer<T> : IConsumer<T>
     [property: AllowNull]
     public T Current { get; protected set; }
 
+    public T Default => default(T);
+
     // we keep it because it's cleaner and faster performance-wise than copying and storing
     // at each modification
     protected Location pos;
 
-    public Location Position => pos;
+    public LocationRange Position => pos;
 
     protected Consumer() {
         inputStack = new Stack<T>();

@@ -9,7 +9,7 @@ public class BoolToken : ComplexToken
         get => val;
     }
 
-    public BoolToken(string representation, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+    public BoolToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(representation, TokenKind.@bool, location, isValid, leading, trailing)
     {
         if (representation.Length != 0 && !Boolean.TryParse(representation, out val)) {

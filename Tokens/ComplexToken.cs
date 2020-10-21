@@ -1,6 +1,6 @@
 public class ComplexToken : Token
 {
-    public ComplexToken(string representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+    public ComplexToken(string representation, TokenKind kind, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(representation, kind, location, isValid, leading, trailing) { }
 
     public virtual void Add(char ch)

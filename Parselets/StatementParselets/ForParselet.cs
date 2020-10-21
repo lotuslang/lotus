@@ -36,7 +36,7 @@ public sealed class ForParselet : IStatementParselet<ForNode>
 
                 // add an empty statement
                 // (can't use StatementNode.NULL because of position + this is a valid statement, whereas NULL is not)
-                header.Add(new StatementNode("", new Token('\0', TokenKind.EOF, parser.Position)));
+                header.Add(new StatementNode("", new Token('\0', TokenKind.EOF, parser.Position), parser.Position));
 
                 continue;
             }
@@ -71,7 +71,7 @@ public sealed class ForParselet : IStatementParselet<ForNode>
         if (header.Count > 3) {// FIXME: Choose an appropriate exception
             Logger.Error(new LotusException(
                 message: "Too many statements in for-loop header (expected 3 statements (max), got " + header.Count + " statements).",
-                location: header[^1].Token.Location
+                range: header[^1].Token.Location
             ));
 
             isValid = false;
@@ -80,7 +80,7 @@ public sealed class ForParselet : IStatementParselet<ForNode>
         // if there's not enough statements in the header (happens when the last statement in not specified),
         // add an empty statement
         // (can't use StatementNode.NULL because of position + this is a valid statement, whereas NULL is not)
-        if (header.Count == 2) header.Add(new StatementNode("", new Token('\0', TokenKind.EOF, parser.Position)));
+        if (header.Count == 2) header.Add(new StatementNode("", new Token('\0', TokenKind.EOF, parser.Position), parser.Position));
 
         var body = parser.ConsumeSimpleBlock();
 

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 public interface IConsumer<T>
@@ -11,7 +8,9 @@ public interface IConsumer<T>
     /// <value>Last object consumed.</value>
     T Current { get; }
 
-    Location Position { get; }
+    T Default { get; }
+
+    LocationRange Position { get; }
 
     /// <summary>
     /// Reconsumes the last object, so that the next time the Consume() method is called,

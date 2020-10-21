@@ -31,7 +31,7 @@ public class FunctionDeclarationNode : StatementNode
                                    Token closingParen,
                                    Token colonToken,
                                    bool isValid = true)
-        : base(funcKeyword, isValid)
+        : base(funcKeyword, new LocationRange(funcKeyword.Location, body.Location), isValid)
     {
         Name = functionName;
         Body = body;

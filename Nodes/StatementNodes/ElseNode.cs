@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 public class ElseNode : StatementNode
 {
     public SimpleBlock Body { get; protected set; }
@@ -9,12 +6,16 @@ public class ElseNode : StatementNode
 
     public bool HasIf { get => IfNode != null; }
 
-    public ElseNode(SimpleBlock body, ComplexToken elseToken, bool isValid = true) : base(elseToken, isValid) {
+    public ElseNode(SimpleBlock body, ComplexToken elseToken, bool isValid = true)
+        : base(elseToken, new LocationRange(elseToken.Location, body.Location), isValid)
+    {
         Body = body;
         IfNode = null; // FIXME: we shouldn't have pure nulls here. another reason to write nulls for every node
     }
 
-    public ElseNode(IfNode ifNode, ComplexToken elseToken, bool isValid = true) : base(elseToken, isValid) {
+    public ElseNode(IfNode ifNode, ComplexToken elseToken, bool isValid = true)
+        : base(elseToken, new LocationRange(elseToken.Location, ifNode.Location), isValid)
+    {
         IfNode = ifNode;
         Body = ifNode.Body; // works like a pointer so it's fine
     }

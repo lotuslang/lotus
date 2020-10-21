@@ -149,7 +149,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 if (typeNameArray.Operands.Count < 2) {
                     Logger.Error(new LotusException(
                         message: "A typed parameter-group should declare at least two parameters, which is not the case here.",
-                        location: typeNameArray.Operands.First()?.Token?.Location ?? typeOrName.Token.Location
+                        range: typeNameArray.Operands.First()?.Token?.Location ?? typeOrName.Token.Location
                     ));
 
                     isValid = false;
@@ -190,17 +190,17 @@ LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to al
 
                 isValid = false;
 
-                //parser.Tokenizer.Reconsume();
+                parser.Tokenizer.Reconsume();
 
                 continue;
             }
 
-            if (parser.Tokenizer.Peek() == ")") { // cause that would mean it is a comma followed directly by a paren
+            if (parser.Tokenizer.Peek() == ")") { // cause that would mean it is a comma followed directly by a parenthesis
                 Logger.Error(new UnexpectedTokenException(
                     token: parser.Tokenizer.Peek(),
                     context: "after a comma in a function's parameter list",
-                    expected: "a parameter name or type"
-                ));
+                    expected: "a parameter name or type. Did you forget a parameter ?"
+                ) { Position = new LocationRange(parser.Tokenizer.Current.Location, parser.Tokenizer.Peek().Location) });
 
                 isValid = false;
             }
@@ -213,7 +213,7 @@ LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to al
             Logger.Error(new UnexpectedEOFException(
                 context: "in a function's parameter list",
                 expected: "a closing parenthesis ')'",
-                location: parser.Tokenizer.Position
+                range: parser.Tokenizer.Position
             ));
 
             isValid = false;

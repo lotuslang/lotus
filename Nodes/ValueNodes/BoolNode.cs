@@ -8,7 +8,9 @@ public class BoolNode : ValueNode
     /// <value>The number represented by this object.</value>
     public bool Value { get; protected set; }
 
-    public BoolNode(bool value, Token boolToken, bool isValid = true) : base(value.ToString().ToLower(), boolToken, isValid) {
+    public BoolNode(bool value, Token boolToken, bool isValid = true)
+        : base(value.ToString(), boolToken, boolToken.Location, isValid)
+    {
         Value = value;
     }
 

@@ -11,47 +11,47 @@ public sealed class ConstantVisualizer : NodeGraphMaker
     }
 
     protected override GraphNode Default(ValueNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(ValueNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(BoolNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(ComplexStringNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(FunctionCallNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(IdentNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(NumberNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(ObjectCreationNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(OperationNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(ParenthesizedValueNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(StringNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 
     public override GraphNode Visit(TupleNode node) {

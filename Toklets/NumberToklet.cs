@@ -9,7 +9,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
                 if (Char.IsDigit(current)) return true;
 
-                if (current == '+' || current == '-' || current == '.') {
+                if (current == '.') {
                     return Char.IsDigit(input.Consume());
                 }
 
@@ -26,11 +26,6 @@ public sealed class NumberToklet : IToklet<NumberToken>
         var isValid = true;
 
         var originPos = input.Position; // the position of the number's first character
-
-        if (currChar == '+' || currChar == '-') {
-            numberStr.Append(currChar);
-            currChar = input.Consume();
-        }
 
         // while the current character is a digit
         while (Char.IsDigit(currChar)) {

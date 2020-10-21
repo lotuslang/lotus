@@ -12,19 +12,6 @@ public sealed class ValuePrinter : NodeVisitor<string>
         => ASTHelper.PrintToken(node.Token);
 
 
-    public override string Visit(ArrayLiteralNode node) {
-        var output = ASTHelper.PrintToken(node.Token);
-
-        foreach (var value in node.Content) {
-            output += Print(value) + ",";
-        }
-
-        // if we added things to `output`
-        if (output.Length != 1) output = output.Remove(output.Length - 1);
-
-        return output + ASTHelper.PrintToken(node.ClosingBracket);
-    }
-
     public override string Visit(BoolNode node)
         => ASTHelper.PrintToken(node.Token);
 
@@ -95,9 +82,9 @@ public sealed class ValuePrinter : NodeVisitor<string>
 
     public override string Visit(FunctionCallNode node)
         => Print(node.FunctionName)
-         + ASTHelper.PrintToken(node.OpeningParenthesis)
-         + Utilities.Join(",", Print, node.CallingParameters)
-         + ASTHelper.PrintToken(node.ClosingParenthesis);
+         + ASTHelper.PrintToken(node.ArgList.OpeningToken)
+         + Utilities.Join(",", Print, node.ArgList)
+         + ASTHelper.PrintToken(node.ArgList.ClosingToken);
 
     public override string Visit(ObjectCreationNode node)
         => ASTHelper.PrintToken(node.Token) + Print(node.InvocationNode);
@@ -155,7 +142,16 @@ public sealed class ValuePrinter : NodeVisitor<string>
     }
 
     public override string Visit(ParenthesizedValueNode node)
-        => ASTHelper.PrintToken(node.Token) + Print(node.Value) + ASTHelper.PrintToken(node.RightParenthesis);
+        => ASTHelper.PrintToken(node.OpeningToken) + Print(node.Value) + ASTHelper.PrintToken(node.ClosingToken);
+
+
+    public override string Visit(TupleNode node) {
+        var output = ASTHelper.PrintToken(node.OpeningToken);
+
+        foreach (var value in node.Values) output += Print(value) + ",";
+
+        return output + ASTHelper.PrintToken(node.ClosingToken);
+    }
 
     public override string Visit(SimpleBlock block)
         => throw Logger.Fatal(new InvalidCallException("ValuePrinter cannot print blocks", block.Location));

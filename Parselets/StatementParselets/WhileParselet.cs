@@ -12,13 +12,21 @@ public sealed class WhileParselet : IStatementParselet<WhileNode>
         if (!(conditionNode is ParenthesizedValueNode condition)) {
             Logger.Error(new UnexpectedValueTypeException(
                 node: conditionNode,
-                context: "as an while-loop condition",
+                context: "as a while-loop condition",
                 expected: "a condition between parenthesis (e.g. `(a == b)`)"
             ));
 
             isValid = false;
 
-            condition = new ParenthesizedValueNode(Token.NULL, Token.NULL, conditionNode);
+            if (conditionNode is TupleNode tuple) {
+                condition = new ParenthesizedValueNode(
+                    tuple.Count == 0 ? ValueNode.NULL : tuple.Values[0],
+                    tuple.OpeningToken,
+                    tuple.ClosingToken
+                );
+            } else {
+                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL);
+            }
         }
 
         var body = parser.ConsumeSimpleBlock();

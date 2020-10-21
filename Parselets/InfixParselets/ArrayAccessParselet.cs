@@ -15,7 +15,7 @@ public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
 
         parser.Tokenizer.Reconsume();
 
-        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]", ref isValid, out Token closingBracket);
+        var indexes = parser.ConsumeCommaSeparatedValueList("[", "]");
 
         return new OperationNode(
             new OperatorToken(
@@ -27,10 +27,10 @@ public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
                 leading: openingBracket.LeadingTrivia,
                 trailing: openingBracket.TrailingTrivia
             ),
-            new[]{array}.Concat(indexes).ToArray(), // FIXME: It hurts my eyes
+            new[]{array}.Concat(indexes.Values).ToArray(), // FIXME: It hurts my eyes
             OperationType.ArrayAccess,
-            isValid,
-            additionalTokens: closingBracket
+            isValid && indexes.IsValid,
+            additionalTokens: indexes.ClosingToken
         );
     }
 }

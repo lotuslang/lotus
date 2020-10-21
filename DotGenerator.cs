@@ -156,7 +156,7 @@ public class GraphNode : IEnumerable<GraphNode>
     /// The name of this node.
     /// </summary>
     /// <value>A string representing the name of this node.</value>
-    public string Name { get; protected set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// The children of this node, i.e. the nodes this node points to.

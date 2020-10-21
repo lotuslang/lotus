@@ -292,8 +292,10 @@ public class Parser : IConsumer<StatementNode>
         return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
 
-    public ValueNode[] ConsumeCommaSeparatedValueList(string start, string end, ref bool isValid, out Token endingToken, int expectedItemCount = -1) {
+    public TupleNode ConsumeCommaSeparatedValueList(string start, string end, int expectedItemCount = -1) {
         var startingDelimiter = Tokenizer.Consume();
+
+        var isValid = true;
 
         if (startingDelimiter.Representation != start) {
             Logger.Warning(new UnexpectedTokenException( // should we use InvalidCallException ?
@@ -336,9 +338,8 @@ public class Parser : IConsumer<StatementNode>
                 }
 
                 Logger.Error(new UnexpectedTokenException(
-                    token: Tokenizer.Current,
-                    context: "in comma-separated list",
-                    expected: ","
+                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected '(' or ','",
+                    token: Tokenizer.Current
                 ));
 
                 isValid = false;
@@ -366,7 +367,7 @@ public class Parser : IConsumer<StatementNode>
             }
         }
 
-        endingToken = Tokenizer.Consume();
+        var endingToken = Tokenizer.Consume();
 
         if (isValid && endingToken != end) { // we probably got an EOF
             Logger.Error(new UnexpectedEOFException(
@@ -397,6 +398,6 @@ public class Parser : IConsumer<StatementNode>
             isValid = false;
         }
 
-        return items.ToArray();
+        return new TupleNode(items, startingDelimiter, endingToken, isValid);
     }
 }

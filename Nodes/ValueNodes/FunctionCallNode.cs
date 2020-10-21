@@ -12,7 +12,7 @@ public class FunctionCallNode : ValueNode
     public Token ClosingParenthesis { get; }
 
     public FunctionCallNode(IList<ValueNode> parameters, ValueNode functionName, Token functionToken, Token leftParen, Token rightParen, bool isValid = true)
-        : base(functionName.Representation + "(...)", functionToken, isValid)
+        : base(functionName.Representation + "(...)", functionToken, new LocationRange(leftParen.Location, rightParen.Location), isValid)
     {
         OpeningParenthesis = leftParen;
         ClosingParenthesis = rightParen;

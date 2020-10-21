@@ -7,13 +7,13 @@ public class NumberToken : ComplexToken
 
     public double Value { get => val; }
 
-    public NumberToken(string representation, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
+    public NumberToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(representation, TokenKind.number, location, isValid, leading, trailing)
     {
         if (isValid && representation.Length != 0 && !Double.TryParse(representation, out val))
             throw Logger.Fatal(new InternalErrorException(
                 message: "This NumberToken has been marked valid, but could not parse string '" + representation + "' as a number",
-                location: Location
+                range: Location
             ));
     }
 
@@ -25,7 +25,7 @@ public class NumberToken : ComplexToken
         if (IsValid && !Double.TryParse(Representation, out val))
             throw Logger.Fatal(new InternalErrorException(
                 message: "This NumberToken has been marked valid, but could not parse string '" + Representation + "' as a number",
-                location: Location
+                range: Location
             ));
     }
 
@@ -34,7 +34,7 @@ public class NumberToken : ComplexToken
         if (IsValid && !Double.TryParse(Representation, out val))
             throw Logger.Fatal(new InternalErrorException(
                 message: "This NumberToken has been marked valid, but could not parse string '" + Representation + "' as a number",
-                location: Location
+                range: Location
             ));
     }
 

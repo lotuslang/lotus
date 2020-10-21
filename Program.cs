@@ -26,9 +26,7 @@ class Program
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new LotusTokenizer(file);
 
-        tokenizer = new LotusTokenizer(@"
-$""hello {""benjamin""} ! Today will be {3} {4651} {7654} {3} {.656} {true} {798 % 64 * 32^8}""
-");
+        /*tokenizer = new LotusTokenizer(@"return (hello + world)");*/
 
         var parser = new LotusParser(tokenizer);
 
@@ -37,6 +35,8 @@ $""hello {""benjamin""} ! Today will be {3} {4651} {7654} {3} {.656} {true} {798
         while (parser.Consume(out StatementNode node)) {
             nodes.Add(node);
         }
+
+        //Console.Error.WriteLine(Logger.GetTextAt(new LocationRange(14, 22, 1, 1, "test.txt")));
 
         //Console.Write(g.ToText());
 

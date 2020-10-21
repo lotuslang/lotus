@@ -11,7 +11,7 @@ public class ComplexStringToken : ComplexToken
 
     public ComplexStringToken(string representation,
                               IList<Token[]> codeSections,
-                              Location location,
+                              LocationRange location,
                               bool isValid = true,
                               TriviaToken? leading = null,
                               TriviaToken? trailing = null

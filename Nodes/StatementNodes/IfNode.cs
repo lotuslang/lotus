@@ -11,7 +11,7 @@ public class IfNode : StatementNode
     public bool HasElse { get => ElseNode != null; }
 
     public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken ifToken, bool isValid = true)
-        : base(ifToken, isValid)
+        : base(ifToken, new LocationRange(ifToken.Location, body.Location), isValid)
     {
         Condition = condition;
         Body = body;

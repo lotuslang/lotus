@@ -16,7 +16,7 @@ public sealed class IdentToklet : IToklet<ComplexToken>
 
         // if the character is not a letter or a low line
         if (!(Char.IsLetter(currChar) || currChar == '_')) {
-            throw Logger.Fatal(new InvalidCallException(input.Position));
+            throw Logger.Fatal(new InvalidCallException(new LocationRange(output.Location, input.Position)));
         }
 
         // while the current character is a letter, a digit, or a low line
@@ -34,12 +34,14 @@ public sealed class IdentToklet : IToklet<ComplexToken>
         input.Reconsume();
 
         if (output == "true" || output == "false") {
-            return new BoolToken(output, output.Location);
+            return new BoolToken(output, new LocationRange(output.Location, input.Position));
         }
 
         if (Utilities.keywords.Contains(output)) {
-            return new ComplexToken(output, TokenKind.keyword, output.Location);
+            return new ComplexToken(output, TokenKind.keyword, new LocationRange(output.Location, input.Position));
         }
+
+        output.Location = new LocationRange(output.Location, input.Position);
 
         // return the output token
         return output;

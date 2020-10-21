@@ -6,7 +6,7 @@ public sealed class ReturnParselet : IStatementParselet<ReturnNode>
             throw Logger.Fatal(new InvalidCallException(returnToken.Location));
 
         if (parser.Tokenizer.Peek() == "}") {
-            return new ReturnNode(ValueNode.NULL, returnKeyword);
+            return new ReturnNode(returnKeyword);
         }
 
         var value = parser.ConsumeValue();

@@ -7,7 +7,9 @@ public class ImportNode : StatementNode
 
     public FromNode FromStatement { get; protected set; }
 
-    public ImportNode(IList<ValueNode> imports, FromNode from, ComplexToken importToken, bool isValid = true) : base(importToken, isValid) {
+    public ImportNode(IList<ValueNode> imports, FromNode from, ComplexToken importToken, bool isValid = true)
+        : base(importToken, new LocationRange(from.Location, imports[0].Location), isValid)
+    {
         ImportsName = imports.AsReadOnly();
         FromStatement = from;
     }

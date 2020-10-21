@@ -7,8 +7,8 @@ public class ArrayLiteralNode : ValueNode
 
     public Token ClosingBracket { get; }
 
-    public ArrayLiteralNode(IList<ValueNode> content, Token leftSquareBracketToken, Token rightBracket, bool isValid = true)
-    : base(leftSquareBracketToken, isValid)
+    public ArrayLiteralNode(IList<ValueNode> content, Token leftBracket, Token rightBracket, bool isValid = true)
+        : base(leftBracket, new LocationRange(leftBracket.Location, rightBracket.Location), isValid)
     {
         Content = content.AsReadOnly();
         ClosingBracket = rightBracket;

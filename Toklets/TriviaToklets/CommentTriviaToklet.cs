@@ -20,7 +20,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {
 
-        var commentStart = input.Position;
+        var startingPosition = input.Position;
 
         var isValid = true;
 
@@ -42,7 +42,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
             strBuilder.Append('\n');
 
-            return new CommentTriviaToken(strBuilder.ToString(), commentStart, trailing: tokenizer.ConsumeTrivia());
+            return new CommentTriviaToken(strBuilder.ToString(), new LocationRange(startingPosition, input.Position), trailing: tokenizer.ConsumeTrivia());
         }
 
         if (currChar == '*') {
@@ -70,7 +70,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
                 Logger.Error(new UnexpectedEOFException(
                     context: "in a multi-line comment",
                     expected: "the comment delimiter '*/'",
-                    input.Position
+                    new LocationRange(startingPosition, input.Position)
                 ));
 
                 isValid = false;
@@ -83,7 +83,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
             return new CommentTriviaToken(
                 strBuilder.ToString(),
-                commentStart,
+                new LocationRange(startingPosition, input.Position),
                 isValid: isValid,
                 inner: inner,
                 // if this comment is a comment *inside* a comment, then don't consume anything afterwards
@@ -91,7 +91,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             );
         }
 
-        throw Logger.Fatal(new InvalidCallException(input.Position));
+        throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));
     }
 
     public CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer)

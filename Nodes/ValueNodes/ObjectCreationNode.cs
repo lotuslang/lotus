@@ -4,7 +4,9 @@ public class ObjectCreationNode : ValueNode
 
     public ValueNode TypeName => InvocationNode.FunctionName;
 
-    public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken, bool isValid = true) : base(newToken, isValid) {
+    public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken, bool isValid = true)
+        : base(newToken, new LocationRange(newToken.Location, invoke.Location), isValid)
+    {
         InvocationNode = invoke;
     }
 

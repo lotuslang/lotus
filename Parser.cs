@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 public class Parser : IConsumer<StatementNode>
 {
@@ -9,7 +8,7 @@ public class Parser : IConsumer<StatementNode>
 
     public IConsumer<Token> Tokenizer { get; }
 
-    public Location Position {
+    public LocationRange Position {
         get => Current.Token.Location;
     }
 
@@ -18,6 +17,16 @@ public class Parser : IConsumer<StatementNode>
     /// </summary>
     /// <value>The last StatementNode consumed.</value>
     public StatementNode Current { get; protected set; }
+
+    public StatementNode Default {
+        get {
+            var output = StatementNode.NULL;
+
+            output.Location = Position;
+
+            return output;
+        }
+    }
 
     public ReadOnlyGrammar Grammar { get; protected set; }
 
@@ -34,9 +43,9 @@ public class Parser : IConsumer<StatementNode>
     protected Parser(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
             Logger.Warning(new InvalidCallException(
-                message : "Something tried to create a new Tokenizer with a null grammar."
+                message : "Something tried to create a new Parser with a null grammar."
                         + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
-                location: Position
+                range: Position
             ));
 
             grammar = new ReadOnlyGrammar();
@@ -103,7 +112,7 @@ public class Parser : IConsumer<StatementNode>
     public bool Consume(out StatementNode result) {
         result = Consume(); // consume a StatementNode
 
-        return result != StatementNode.NULL;
+        return result != Default;
     }
 
     /// <summary>
@@ -120,7 +129,7 @@ public class Parser : IConsumer<StatementNode>
         if (Tokenizer == null) {
             throw Logger.Fatal(new InternalErrorException(
                 message: "The parser's tokenizer was null. Something went seriously wrong",
-                location: this.Position
+                range: Position
             ));
         }
 
@@ -128,7 +137,9 @@ public class Parser : IConsumer<StatementNode>
         var currToken = Tokenizer.Consume();
 
         // if the token is EOF, return ValueNode.NULL
-        if (currToken == "\u0003" || currToken == "\0") return StatementNode.NULL;
+        if (currToken == Tokenizer.Default || currToken == "\u0003") {
+            return (Current = Default);
+        }
 
         var statementKind = Grammar.GetStatementKind(currToken);
 
@@ -149,18 +160,26 @@ public class Parser : IConsumer<StatementNode>
 
         if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
 
-            if (token != ";") {
-                Logger.Error(new UnexpectedTokenException(token: token, expected: new[] {
-                    TokenKind.@bool,
-                    TokenKind.@operator,
-                    TokenKind.@string,
-                    TokenKind.complexString,
-                    TokenKind.ident,
-                    TokenKind.number
-                }));
+            if (token.Kind == TokenKind.EOF) {
+                Logger.Error(new UnexpectedEOFException(
+                    message: "Encountered an EOF where a value was expected",
+                    range: Position
+                ));
+            } else if (token != ";") {
+                Logger.Error(new UnexpectedTokenException(
+                    token: token,
+                    expected: new[] {
+                        TokenKind.@bool,
+                        TokenKind.@operator,
+                        TokenKind.@string,
+                        TokenKind.complexString,
+                        TokenKind.ident,
+                        TokenKind.number
+                    }
+                ));
             }
 
-            return new ValueNode(token, false);
+            return new ValueNode(token, Position, false);
         }
 
         var left = Grammar.GetPrefixParselet(token).Parse(this, token);
@@ -202,7 +221,7 @@ public class Parser : IConsumer<StatementNode>
                 Logger.Error(new UnexpectedEOFException(
                     context: "in simple block",
                     expected: "a statement",
-                    location: Tokenizer.Current.Location
+                    range: Tokenizer.Current.Location
                 ));
 
                 isValid = false;
@@ -235,7 +254,7 @@ public class Parser : IConsumer<StatementNode>
                 Logger.Error(new UnexpectedEOFException(
                     context: "in simple block",
                     expected: "a statement",
-                    location: Tokenizer.Current.Location
+                    range: Tokenizer.Current.Location
                 ));
 
                 isValid = false;
@@ -252,7 +271,7 @@ public class Parser : IConsumer<StatementNode>
             Logger.Error(new UnexpectedEOFException(
                 context: "in simple block",
                 expected: "the character '}'",
-                location: Tokenizer.Position
+                range: Tokenizer.Position
             ));
 
             isValid = false;
@@ -277,7 +296,7 @@ public class Parser : IConsumer<StatementNode>
         var startingDelimiter = Tokenizer.Consume();
 
         if (startingDelimiter.Representation != start) {
-            throw Logger.Fatal(new UnexpectedTokenException( // should we use InvalidCallException ?
+            Logger.Warning(new UnexpectedTokenException( // should we use InvalidCallException ?
                 token: startingDelimiter,
                 context: "in comma-separated list",
                 expected: start
@@ -353,7 +372,7 @@ public class Parser : IConsumer<StatementNode>
             Logger.Error(new UnexpectedEOFException(
                 context: "in a comma-separated value list",
                 expected: "a closing parenthesis ')'",
-                location: Tokenizer.Position
+                range: Tokenizer.Position
             ));
 
             isValid = false;
@@ -365,13 +384,13 @@ public class Parser : IConsumer<StatementNode>
                 Logger.Error(new LotusException(
                     message: "There was too many values in a comma-separated value list. Expected "
                            + expectedItemCount + ", but got " + itemCount,
-                    location: items.Last()?.Token.Location ?? Tokenizer.Position
+                    range: items.Last()?.Token.Location ?? Tokenizer.Position
                 ));
             } else {
                 Logger.Error(new LotusException(
                     message: "There wasn't enough values in a comma-separated value list. Expected "
                            + expectedItemCount + ", but got " + itemCount,
-                    location: items.Last()?.Token.Location ?? Tokenizer.Position
+                    range: items.Last()?.Token.Location ?? Tokenizer.Position
                 ));
             }
 

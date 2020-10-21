@@ -5,7 +5,7 @@ public class ParenthesizedValueNode : ValueNode
     public ValueNode Value { get; }
 
     public ParenthesizedValueNode(Token leftParen, Token rightParen, ValueNode value, bool isValid = true)
-        : base(leftParen, isValid)
+        : base(leftParen, new LocationRange(leftParen.Location, rightParen.Location), isValid)
     {
         RightParenthesis = rightParen;
 

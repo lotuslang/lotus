@@ -2,7 +2,7 @@ public class PrintNode : StatementNode
 {
     public ValueNode Value { get; }
 
-    public PrintNode(ComplexToken printToken, ValueNode node) : base(printToken) {
+    public PrintNode(ComplexToken printToken, ValueNode node) : base(printToken, printToken.Location) {
         Value = node;
     }
 

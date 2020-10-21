@@ -63,7 +63,7 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
                         message: "Wildcards ('*') are not allowed in import statements. Use a `using` statement instead. "
                                 +"For example, you could write : 'using " + ASTHelper.PrintValue(from.OriginName) + "' "
                                 +"at the top of your file.",
-                        location: import.Token.Location
+                        range: import.Token.Location
                     ));
                 } else {
                     Logger.Error(new UnexpectedValueTypeException(

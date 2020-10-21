@@ -11,7 +11,7 @@ public class WhileNode : StatementNode
     public SimpleBlock Body { get; }
 
     public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken whileToken, bool isValid = true)
-        : base(whileToken, isValid)
+        : base(whileToken, new LocationRange(whileToken.Location, body.Location), isValid)
     {
         Condition = condition;
         IsDoLoop = false;
@@ -23,6 +23,7 @@ public class WhileNode : StatementNode
         : this(condition, body, whileToken, isValid)
     {
         IsDoLoop = true;
+        Location = new LocationRange(doToken.Location, condition.Location);
         DoToken = doToken;
     }
 

@@ -26,7 +26,7 @@ public class DeclarationNode : StatementNode
     /// <param name="varKeywordToken">The token of the "var" keyword used</param>
     /// <returns></returns>
     public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken, Token equalToken, bool isValid = true)
-        : base(varKeywordToken, isValid)
+        : base(varKeywordToken, new LocationRange(varKeywordToken.Location, value.Location), isValid)
     {
         EqualToken = equalToken;
         Name = varName;

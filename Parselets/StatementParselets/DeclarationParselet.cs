@@ -22,7 +22,16 @@ public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
 
             name = new IdentToken(nameToken.Representation, nameToken.Location, false);
 
-            if (nameToken == "=") parser.Tokenizer.Reconsume(); // FIXME: Specific error message
+            if (nameToken == "=") {
+                Logger.exceptions.Dequeue(); // remove the last exception
+
+                Logger.Error(new UnexpectedTokenException(
+                    message: "Did you forget to specify a variable name ?",
+                    token: nameToken
+                ));
+
+                parser.Tokenizer.Reconsume();
+            }
         }
 
         // consume a token

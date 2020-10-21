@@ -19,7 +19,7 @@ public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken
         var whitespaceChar = input.Consume();
 
         if (!Char.IsWhiteSpace(whitespaceChar)) {
-            throw Logger.Fatal(new InvalidCallException(input.Position));
+            throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));
         }
 
         int charCounter = 1;
@@ -28,6 +28,6 @@ public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken
 
         input.Reconsume();
 
-        return new WhitespaceTriviaToken(whitespaceChar, charCounter, startingPosition, trailing: tokenizer.ConsumeTrivia());
+        return new WhitespaceTriviaToken(whitespaceChar, charCounter, new LocationRange(startingPosition, input.Position), trailing: tokenizer.ConsumeTrivia());
     }
 }

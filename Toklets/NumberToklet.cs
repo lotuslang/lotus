@@ -25,7 +25,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         var isValid = true;
 
-        var origin = input.Position; // the position of the number's first character
+        var originPos = input.Position; // the position of the number's first character
 
         if (currChar == '+' || currChar == '-') {
             numberStr.Append(currChar);
@@ -98,10 +98,20 @@ public sealed class NumberToklet : IToklet<NumberToken>
             var str = numberStr.ToString() + currChar;
             if (str.Contains('e') || str.Contains('E')) {
                 // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)
-                Logger.Error(new InvalidInputException(numberStr.ToString() + currChar, "as a number", "because you cannot use a decimal separator after a power-of-ten separator", input.Position));
+                Logger.Error(new InvalidInputException(
+                    input: numberStr.ToString() + currChar,
+                    context: "as a number",
+                    reason: "because you cannot use a decimal separator after a power-of-ten separator",
+                    range: new LocationRange(originPos, input.Position)
+                ));
             } else {
                 // ...or there is a second decimal separator, which isn't valid either
-                Logger.Error(new InvalidInputException(numberStr.ToString() + currChar, "as a number", "because there already was a decimal separator earier", input.Position));
+                Logger.Error(new InvalidInputException(
+                    input: numberStr.ToString() + currChar,
+                    context: "as a number",
+                    reason: "because there already was a decimal separator earier",
+                    range: new LocationRange(originPos, input.Position)
+                ));
             }
 
             isValid = false;
@@ -114,7 +124,12 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // we already had a "power-of-ten separator", so this is not valid.
         if (currChar == 'e' || currChar == 'E') {
-            Logger.Error(new InvalidInputException(numberStr.ToString() + currChar, "as a number", "because there already was a power-of-ten separator earlier", input.Position));
+            Logger.Error(new InvalidInputException(
+                input: numberStr.ToString() + currChar,
+                context: "as a number",
+                reason: "because there already was a power-of-ten separator earlier",
+                range: new LocationRange(originPos, input.Position)
+            ));
 
             isValid = false;
 
@@ -125,6 +140,6 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         input.Reconsume();
 
-        return new NumberToken(numberStr.ToString(), origin, isValid);
+        return new NumberToken(numberStr.ToString(), new LocationRange(originPos, input.Position), isValid);
     }
 }

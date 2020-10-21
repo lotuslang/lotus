@@ -11,7 +11,7 @@ public class CommentTriviaToken : TriviaToken
     }
 
     public CommentTriviaToken(string rep,
-                              Location location,
+                              LocationRange location,
                               IList<CommentTriviaToken>? inner = null,
                               bool isValid = true,
                               TriviaToken? leading = null,

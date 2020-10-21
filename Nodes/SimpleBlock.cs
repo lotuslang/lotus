@@ -5,7 +5,7 @@ public class SimpleBlock
 {
     public ReadOnlyCollection<StatementNode> Content { get; }
 
-    public Location Location { get; }
+    public LocationRange Location { get; }
 
     public bool IsValid { get; set; }
 
@@ -15,7 +15,10 @@ public class SimpleBlock
 
     public Token ClosingToken { get; }
 
-    public SimpleBlock(IList<StatementNode> content, Location location, Token openingToken, Token closingToken, bool isValid = true) {
+    public SimpleBlock(IList<StatementNode> content, Token openingToken, Token closingToken, bool isValid = true)
+        : this(content, new LocationRange(openingToken.Location, closingToken.Location), openingToken, closingToken, isValid) { }
+
+    public SimpleBlock(IList<StatementNode> content, LocationRange location, Token openingToken, Token closingToken, bool isValid = true) {
         Content = content.AsReadOnly();
         Location = location;
         OpeningToken = openingToken;
@@ -24,7 +27,7 @@ public class SimpleBlock
         IsOneLiner = false;
     }
 
-    public SimpleBlock(StatementNode content, Location location, bool isValid = true)
+    public SimpleBlock(StatementNode content, LocationRange location, bool isValid = true)
         : this(new[] { content }, location, Token.NULL, Token.NULL, isValid)
     {
         IsOneLiner = true;

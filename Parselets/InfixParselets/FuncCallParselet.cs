@@ -23,8 +23,13 @@ public sealed class FuncCallParselet : IInfixParselet<FunctionCallNode>
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 
-        var args = parser.ConsumeCommaSeparatedValueList("(", ")", ref isValid, out Token rightParen);
+        var argsTuple = parser.ConsumeCommaSeparatedValueList("(", ")");
 
-        return new FunctionCallNode(args, function, function.Token, leftParen, rightParen, isValid);
+        return new FunctionCallNode(
+            argsTuple,
+            function,
+            function.Token,
+            isValid && argsTuple.IsValid
+        );
     }
 }

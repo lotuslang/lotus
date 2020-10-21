@@ -30,7 +30,6 @@ public abstract class NodeVisitor<T>
 
     public virtual T Visit(ValueNode node) => Default(node);
 
-    public virtual T Visit(ArrayLiteralNode node) => Default(node);
     public virtual T Visit(BoolNode node) => Default(node);
     public virtual T Visit(ComplexStringNode node) => Default(node);
     public virtual T Visit(FunctionCallNode node) => Default(node);
@@ -38,8 +37,9 @@ public abstract class NodeVisitor<T>
     public virtual T Visit(NumberNode node) => Default(node);
     public virtual T Visit(ObjectCreationNode node) => Default(node);
     public virtual T Visit(OperationNode node) => Default(node);
-    public virtual T Visit(ParenthesizedValueNode node) => Default(node);
+    public virtual T Visit(ParenthesizedValueNode node) => Visit(node as TupleNode);
     public virtual T Visit(StringNode node) => Default(node);
+    public virtual T Visit(TupleNode node) => Default(node);
 
     public abstract T Visit(SimpleBlock block);
 }

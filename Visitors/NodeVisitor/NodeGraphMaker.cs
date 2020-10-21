@@ -189,19 +189,6 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
             .SetColor("lightgrey")
             .SetTooltip(GetType().Name);
 
-
-    public override GraphNode Visit(ArrayLiteralNode node) {
-        var root = new GraphNode(node.GetHashCode(), "array literal\\n(" + node.Content.Count + " item(s))")
-            .SetColor("teal")
-            .SetTooltip("array literal");
-
-        var itemCount = 0;
-
-        foreach (var item in node.Content) root.Add(ToGraphNode(item).SetTooltip("item " + ++itemCount));
-
-        return root;
-    }
-
     public override GraphNode Visit(BoolNode node)
         => Default(node).SetTooltip("bool literal");
 
@@ -237,15 +224,15 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
         root.SetColor("tomato")
             .SetTooltip("call to a function");
 
-        if (node.CallingParameters.Count == 0) {
-            root.Add(new GraphNode(node.CallingParameters.GetHashCode(), "(no args)"));
+        if (node.ArgList.Count == 0) {
+            root.Add(new GraphNode(node.ArgList.GetHashCode(), "(no args)"));
 
             return root;
         }
 
-        var argsNode = new GraphNode("args");
+        var argsNode = ToGraphNode(node.ArgList).SetTooltip("argument");
 
-        foreach (var parameter in node.CallingParameters) argsNode.Add(ToGraphNode(parameter).SetTooltip("argument"));
+        argsNode.Name = "args";
 
         root.Add(argsNode);
 
@@ -268,17 +255,15 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
         root.SetColor("indigo")
             .SetTooltip("ctor class/object creation");
 
-        if (node.InvocationNode.CallingParameters.Count == 0) {
-            root.Add(new GraphNode(node.InvocationNode.CallingParameters.GetHashCode(), "(no args)"));
+        if (node.InvocationNode.ArgList.Count == 0) {
+            root.Add(new GraphNode(node.InvocationNode.ArgList.GetHashCode(), "(no args)"));
 
             return root;
         }
 
-        var argsNode = new GraphNode("args");
+        var argsNode = ToGraphNode(node.InvocationNode.ArgList).SetTooltip("argument");
 
-        foreach (var parameter in node.InvocationNode.CallingParameters) {
-            argsNode.Add(ToGraphNode(parameter).SetTooltip("argument"));
-        }
+        argsNode.Name = "args";
 
         root.Add(argsNode);
 
@@ -311,6 +296,18 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
         => new GraphNode(node.GetHashCode(), "'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
             .SetColor("orange")
             .SetTooltip(nameof(StringNode));
+
+    public override GraphNode Visit(TupleNode node) {
+        var root = new GraphNode(node.GetHashCode(), node.Count == 0 ? "Empty tuple" : "Tuple with\\n" + node.Count + " elements")
+                        .SetColor("")
+                        .SetTooltip("tuple");
+
+        foreach (var value in node.Values) {
+            root.Add(ToGraphNode(value));
+        }
+
+        return root;
+    }
 
     public override GraphNode Visit(SimpleBlock block) {
         var root = new GraphNode(block.GetHashCode(), "block")

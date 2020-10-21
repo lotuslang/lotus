@@ -1,23 +1,14 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
 public class FunctionCallNode : ValueNode
 {
-    public ReadOnlyCollection<ValueNode> CallingParameters { get; }
+    public TupleNode ArgList { get; }
 
     public ValueNode FunctionName { get; protected set; }
 
-    public Token OpeningParenthesis { get; }
-
-    public Token ClosingParenthesis { get; }
-
-    public FunctionCallNode(IList<ValueNode> parameters, ValueNode functionName, Token functionToken, Token leftParen, Token rightParen, bool isValid = true)
-        : base(functionName.Representation + "(...)", functionToken, new LocationRange(leftParen.Location, rightParen.Location), isValid)
+    public FunctionCallNode(TupleNode args, ValueNode functionName, Token functionToken, bool isValid = true)
+        : base(functionName.Representation + "(...)", functionToken, args.Location, isValid)
     {
-        OpeningParenthesis = leftParen;
-        ClosingParenthesis = rightParen;
         FunctionName = functionName;
-        CallingParameters = parameters.AsReadOnly();
+        ArgList = args;
     }
 
     public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);

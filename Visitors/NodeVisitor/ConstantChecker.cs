@@ -10,8 +10,6 @@ public sealed class ConstantChecker : NodeVisitor<bool>
         => false;
 
 
-    public override bool Visit(ArrayLiteralNode node)
-        => node.Content.All(IsContant);
 
     public override bool Visit(ComplexStringNode node)
         => node.CodeSections.All(IsContant);
@@ -41,6 +39,9 @@ public sealed class ConstantChecker : NodeVisitor<bool>
 
     public override bool Visit(StringNode node)
         => true;
+
+    public override bool Visit(TupleNode node)
+        => node.Values.All(IsContant);
 
 
     public override bool Visit(SimpleBlock block)

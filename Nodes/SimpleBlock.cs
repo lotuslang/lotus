@@ -15,6 +15,8 @@ public class SimpleBlock
 
     public Token ClosingToken { get; }
 
+    public int Count => Content.Count;
+
     public SimpleBlock(IList<StatementNode> content, Token openingToken, Token closingToken, bool isValid = true)
         : this(content, new LocationRange(openingToken.Location, closingToken.Location), openingToken, closingToken, isValid) { }
 

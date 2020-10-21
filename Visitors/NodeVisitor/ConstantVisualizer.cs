@@ -18,10 +18,6 @@ public sealed class ConstantVisualizer : NodeGraphMaker
         return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
     }
 
-    public override GraphNode Visit(ArrayLiteralNode node) {
-        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
-    }
-
     public override GraphNode Visit(BoolNode node) {
         return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
     }
@@ -55,6 +51,10 @@ public sealed class ConstantVisualizer : NodeGraphMaker
     }
 
     public override GraphNode Visit(StringNode node) {
+        return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
+    }
+
+    public override GraphNode Visit(TupleNode node) {
         return base.Visit(node).SetColor(ASTHelper.IsContant(node) ? "green" : "red");
     }
 

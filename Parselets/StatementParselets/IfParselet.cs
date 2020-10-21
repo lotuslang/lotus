@@ -18,7 +18,15 @@ public sealed class IfParselet : IStatementParselet<IfNode>
 
             isValid = false;
 
-            condition = new ParenthesizedValueNode(Token.NULL, Token.NULL, conditionNode);
+            if (conditionNode is TupleNode tuple) {
+                condition = new ParenthesizedValueNode(
+                    tuple.Count == 0 ? ValueNode.NULL : tuple.Values[0],
+                    tuple.OpeningToken,
+                    tuple.ClosingToken
+                );
+            } else {
+                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL);
+            }
         }
 
         var body = parser.ConsumeSimpleBlock();

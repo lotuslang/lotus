@@ -25,7 +25,7 @@ n   =  5
 
 var a = 0
 
-var b = arr != [] ? arr : [0]
+var b = arr != [] ? arr : [ 0 ]
 
 // NOTE: Function that have parameters with the `type [a, b]` syntax will not be printed
 // exactly as they appear in the file. Instead, their parameters will be printed as `type a,type  b`

@@ -48,7 +48,15 @@ public sealed class DoWhileParselet : IStatementParselet<WhileNode>
 
             isValid = false;
 
-            condition = new ParenthesizedValueNode(Token.NULL, Token.NULL, conditionNode);
+            if (conditionNode is TupleNode tuple) {
+                condition = new ParenthesizedValueNode(
+                    tuple.Count == 0 ? ValueNode.NULL : tuple.Values[0],
+                    tuple.OpeningToken,
+                    tuple.ClosingToken
+                );
+            } else {
+                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL);
+            }
         }
 
         return new WhileNode(condition, body, whileKeyword, doKeyword, isValid);

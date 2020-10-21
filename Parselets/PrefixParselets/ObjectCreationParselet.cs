@@ -22,7 +22,7 @@
 
             isValid = false;
 
-            call = new FunctionCallNode(new ValueNode[0], invoc, Token.NULL, Token.NULL, Token.NULL, isValid: false);
+            call = new FunctionCallNode(new TupleNode(new ValueNode[0], Token.NULL, Token.NULL), invoc, invoc.Token, isValid: false);
 
             parser.Tokenizer.Reconsume();
         }

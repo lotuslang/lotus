@@ -1,7 +1,7 @@
 public sealed class NamespaceParselet : IStatementParselet<NamespaceNode>
 {
-    public NamespaceNode Parse(Parser parser, Token namespaceToken) {
-        var name = parser.ConsumeValue();
+    public NamespaceNode Parse(StatementParser parser, Token namespaceToken) {
+        var name = parser.ExpressionParser.ConsumeValue();
 
         if (namespaceToken is ComplexToken namespaceKeyword && namespaceKeyword == "namespace") {
             if (Utilities.IsName(name)) {

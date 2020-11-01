@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Globalization;
 
 #pragma warning disable
 class Program
@@ -16,11 +17,14 @@ class Program
 
         Directory.SetCurrentDirectory(
             Directory.GetParent(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
-				.Parent
-				.Parent
-				.FullName
+                .Parent
+                .Parent
+                .FullName
         );
 #endif
+
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
         var file = new FileInfo(Directory.GetCurrentDirectory() + "/test.txt");
 
         // Initializes the tokenizer with the content of the "sample.txt" file
@@ -28,7 +32,7 @@ class Program
 
         /*tokenizer = new LotusTokenizer(@"return (hello + world)");*/
 
-        var parser = new LotusParser(tokenizer);
+        var parser = new StatementParser(tokenizer);
 
         var nodes = new List<StatementNode>();
 

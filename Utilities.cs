@@ -49,7 +49,7 @@ public static class Utilities
 
     [return: MaybeNull]
     public static T Find<T>(this ICollection<T> collection, Predicate<T> match) {
-        if(match is null) {
+        if (match is null) {
             throw new ArgumentNullException(nameof(match));
         }
 

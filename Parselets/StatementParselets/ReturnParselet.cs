@@ -1,6 +1,6 @@
 public sealed class ReturnParselet : IStatementParselet<ReturnNode>
 {
-    public ReturnNode Parse(Parser parser, Token returnToken) {
+    public ReturnNode Parse(StatementParser parser, Token returnToken) {
 
         if (!(returnToken is ComplexToken returnKeyword && returnKeyword == "return"))
             throw Logger.Fatal(new InvalidCallException(returnToken.Location));
@@ -9,7 +9,7 @@ public sealed class ReturnParselet : IStatementParselet<ReturnNode>
             return new ReturnNode(returnKeyword);
         }
 
-        var value = parser.ConsumeValue();
+        var value = parser.ExpressionParser.ConsumeValue();
 
         return new ReturnNode(value, returnKeyword);
     }

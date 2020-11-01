@@ -1,13 +1,13 @@
 public sealed class WhileParselet : IStatementParselet<WhileNode>
 {
-    public WhileNode Parse(Parser parser, Token whileToken) {
+    public WhileNode Parse(StatementParser parser, Token whileToken) {
         if (!(whileToken is ComplexToken whileKeyword && whileKeyword == "while")) {
             throw Logger.Fatal(new InvalidCallException(whileToken.Location));
         }
 
         var isValid = true;
 
-        var conditionNode = parser.ConsumeValue();
+        var conditionNode = parser.ExpressionParser.ConsumeValue();
 
         if (!(conditionNode is ParenthesizedValueNode condition)) {
             Logger.Error(new UnexpectedValueTypeException(

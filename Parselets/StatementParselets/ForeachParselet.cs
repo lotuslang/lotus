@@ -1,7 +1,6 @@
 public sealed class ForeachParselet : IStatementParselet<ForeachNode>
 {
-    public ForeachNode Parse(Parser parser, Token foreachToken)
-    {
+    public ForeachNode Parse(StatementParser parser, Token foreachToken) {
         if (!(foreachToken is ComplexToken foreachKeyword && foreachKeyword == "foreach"))
             throw Logger.Fatal(new InvalidCallException(foreachToken.Location));
 
@@ -71,7 +70,7 @@ public sealed class ForeachParselet : IStatementParselet<ForeachNode>
             inKeyword = new ComplexToken(inToken.Representation, inToken.Kind, inToken.Location, false);
         }
 
-        var collectionName = parser.ConsumeValue();
+        var collectionName = parser.ExpressionParser.ConsumeValue();
 
         var closingParen = parser.Tokenizer.Consume();
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDeclarationNode>
 {
-    public FunctionDeclarationNode Parse(Parser parser, Token funcToken) {
+    public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
 
         // if the token consumed was not "func", then throw an exception
         if (!(funcToken is ComplexToken funcKeyword && funcKeyword == "func"))
@@ -122,7 +122,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             * disgusting to look at. Fuck all of you.
             */
 
-            var typeOrName = parser.ConsumeValue();
+            var typeOrName = parser.ExpressionParser.ConsumeValue();
 
             // i don't wanna talk about it any more than i already did
 
@@ -168,13 +168,13 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 // if there's still an identifier after typeOrName,
                 // it's a typed parameter (and the name is the token we peeked at)
 
-                addParameter(typeOrName, parser.ConsumeValue());
+                addParameter(typeOrName, parser.ExpressionParser.ConsumeValue());
             } else {
                 // otherwise, that means we have a parameter without type info
                 addParameter(ValueNode.NULL, typeOrName);
             }
 
-LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to alternatives
+        LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to alternatives
             if (parser.Tokenizer.Consume() != ",") {
                 if (parser.Tokenizer.Current == ")") {
                     parser.Tokenizer.Reconsume();
@@ -226,7 +226,7 @@ LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to al
         if (parser.Tokenizer.Peek() == ":") {
             colonToken = parser.Tokenizer.Consume(); // consume the colon
 
-            returnType = parser.ConsumeValue();
+            returnType = parser.ExpressionParser.ConsumeValue();
 
             if (!Utilities.IsName(returnType)) {
                 Logger.Error(new UnexpectedValueTypeException(

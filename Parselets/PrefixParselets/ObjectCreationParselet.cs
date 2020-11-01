@@ -1,6 +1,6 @@
 ﻿public sealed class ObjectCreationParselet : IPrefixParselet<ObjectCreationNode>
 {
-    public ObjectCreationNode Parse(Parser parser, Token newToken) {
+    public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
 
         // if the token isn't the keyword "new", throw an exception
         if (!(newToken is ComplexToken newKeyword && newKeyword == "new"))

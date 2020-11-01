@@ -218,7 +218,7 @@ public static class Logger
 
     private static string PrintLineAt(int line, string file) {
 
-        var sourceText = File.ReadLines(file).Skip(line-1).FirstOrDefault();
+        var sourceText = File.ReadLines(file).Skip(line - 1).FirstOrDefault();
 
         if (line < 1 || sourceText == null) return "";
 
@@ -228,7 +228,7 @@ public static class Logger
     // This took way longer than it looks, trust me.
     private static string PrintLineAt(int line, string file, char separator) {
 
-        var sourceText = File.ReadLines(file).Skip(line-1).FirstOrDefault();
+        var sourceText = File.ReadLines(file).Skip(line - 1).FirstOrDefault();
 
         if (line < 1 || sourceText == null) return "";
 

@@ -10,7 +10,7 @@ public sealed class PostfixOperatorParselet : IPostfixParselet<OperationNode>
         opType = operation;
     }
 
-    public OperationNode Parse(Parser parser, Token token, ValueNode left) {
+    public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
         if (token is OperatorToken operatorToken) {
             return new OperationNode(
                 operatorToken,

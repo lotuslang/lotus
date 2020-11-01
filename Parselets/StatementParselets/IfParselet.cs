@@ -1,13 +1,13 @@
 public sealed class IfParselet : IStatementParselet<IfNode>
 {
-    public IfNode Parse(Parser parser, Token ifToken) {
+    public IfNode Parse(StatementParser parser, Token ifToken) {
         if (!(ifToken is ComplexToken ifKeyword && ifKeyword == "if")) {
             throw Logger.Fatal(new InvalidCallException(ifToken.Location));
         }
 
         var isValid = true;
 
-        var conditionNode = parser.ConsumeValue();
+        var conditionNode = parser.ExpressionParser.ConsumeValue();
 
         if (!(conditionNode is ParenthesizedValueNode condition)) {
             Logger.Error(new UnexpectedValueTypeException(

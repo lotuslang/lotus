@@ -1,6 +1,6 @@
 public sealed class BreakParselet : IStatementParselet<BreakNode>
 {
-    public BreakNode Parse(Parser parser, Token breakToken) {
+    public BreakNode Parse(StatementParser parser, Token breakToken) {
         if (!(breakToken is ComplexToken breakKeyword && breakKeyword == "break")) {
             throw Logger.Fatal(new InvalidCallException(breakToken.Location));
         }

@@ -1,6 +1,6 @@
 public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
 {
-    public DeclarationNode Parse(Parser parser, Token varToken) {
+    public DeclarationNode Parse(StatementParser parser, Token varToken) {
 
         var isValid = true;
 
@@ -47,7 +47,7 @@ public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
         }
 
         // consume a ValueNode (which is the value of the variable we're declaring)
-        var value = parser.ConsumeValue();
+        var value = parser.ExpressionParser.ConsumeValue();
 
         // return that value
         return new DeclarationNode(value, name, varKeyword, equalSign, isValid);

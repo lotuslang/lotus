@@ -41,7 +41,7 @@ public class Tokenizer : IConsumer<Token>
     protected Tokenizer(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
             Logger.Warning(new InvalidCallException(
-                message : "Something tried to create a new Tokenizer with a null grammar."
+                message: "Something tried to create a new Tokenizer with a null grammar."
                         + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
                 range: Position
             ));
@@ -66,8 +66,7 @@ public class Tokenizer : IConsumer<Token>
         }
     }
 
-    public Tokenizer(Tokenizer tokenizer) : this(tokenizer, tokenizer.Grammar)
-    { }
+    public Tokenizer(Tokenizer tokenizer) : this(tokenizer, tokenizer.Grammar) { }
 
     public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer.input, grammar) {
         reconsumeQueue = new Queue<Token>(tokenizer.reconsumeQueue);
@@ -75,14 +74,11 @@ public class Tokenizer : IConsumer<Token>
         Current = tokenizer.Current;
     }
 
-    public Tokenizer(System.IO.FileInfo fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar)
-    { }
+    public Tokenizer(System.IO.FileInfo fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar) { }
 
-    public Tokenizer(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar)
-    { }
+    public Tokenizer(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
-    public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar)
-    { }
+    public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
     public void Reconsume() {
         if (reconsumeQueue.TryPeek(out Token? token) && Object.ReferenceEquals(token, Current)) {

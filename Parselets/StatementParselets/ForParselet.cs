@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public sealed class ForParselet : IStatementParselet<ForNode>
 {
-    public ForNode Parse(Parser parser, Token forToken) {
+    public ForNode Parse(StatementParser parser, Token forToken) {
         if (!(forToken is ComplexToken forKeyword && forKeyword == "for"))
             throw Logger.Fatal(new InvalidCallException(forToken.Location));
 

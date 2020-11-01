@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 public sealed class ImportParselet : IStatementParselet<ImportNode>
 {
-    public ImportNode Parse(Parser parser, Token fromToken) {
+    public ImportNode Parse(StatementParser parser, Token fromToken) {
         if (!(fromToken is ComplexToken fromKeyword && fromToken == "from"))
             throw Logger.Fatal(new InvalidCallException(fromToken.Location));
 
-        var fromOrigin = parser.ConsumeValue();
+        var fromOrigin = parser.ExpressionParser.ConsumeValue();
 
         var fromIsValid = true;
 
@@ -52,7 +52,7 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
         var importList = new List<ValueNode>();
 
         do {
-            var import = parser.ConsumeValue(); // consume the import's name
+            var import = parser.ExpressionParser.ConsumeValue(); // consume the import's name
 
             if (!Utilities.IsName(import)) {
 
@@ -61,8 +61,8 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
 
                     Logger.Error(new LotusException(
                         message: "Wildcards ('*') are not allowed in import statements. Use a `using` statement instead. "
-                                +"For example, you could write : 'using " + ASTHelper.PrintValue(from.OriginName) + "' "
-                                +"at the top of your file.",
+                                + "For example, you could write : 'using " + ASTHelper.PrintValue(from.OriginName) + "' "
+                                + "at the top of your file.",
                         range: import.Token.Location
                     ));
                 } else {

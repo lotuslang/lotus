@@ -4,7 +4,7 @@ public sealed class FuncCallParselet : IInfixParselet<FunctionCallNode>
         get => Precedence.FuncCall;
     }
 
-    public FunctionCallNode Parse(Parser parser, Token leftParen, ValueNode function) {
+    public FunctionCallNode Parse(ExpressionParser parser, Token leftParen, ValueNode function) {
         if (leftParen != "(")
             throw Logger.Fatal(new InvalidCallException(leftParen.Location));
 
@@ -23,7 +23,7 @@ public sealed class FuncCallParselet : IInfixParselet<FunctionCallNode>
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 
-        var argsTuple = parser.ConsumeCommaSeparatedValueList("(", ")");
+        var argsTuple = parser.ConsumeTuple("(", ")");
 
         return new FunctionCallNode(
             argsTuple,

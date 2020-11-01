@@ -1,6 +1,6 @@
 public sealed class ContinueParselet : IStatementParselet<ContinueNode>
 {
-    public ContinueNode Parse(Parser parser, Token continueToken) {
+    public ContinueNode Parse(StatementParser parser, Token continueToken) {
         if (!(continueToken is ComplexToken continueKeyword && continueKeyword == "continue")) {
             throw Logger.Fatal(new InvalidCallException(continueToken.Location));
         }

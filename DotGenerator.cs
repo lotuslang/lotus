@@ -44,8 +44,7 @@ public class Graph
         get => edgeprops;
     }
 
-    public Graph(string name)
-    {
+    public Graph(string name) {
         this.name = name;
         rootNodes = new List<GraphNode>();
         graphprops = new Dictionary<string, string>();
@@ -64,8 +63,7 @@ public class Graph
     /// A representation of this graph in the 'dot' language (https://www.graphviz.org/doc/info/lang.html).
     /// </summary>
     /// <returns>A single string of 'dot' representing this entire graph.</returns>
-    public string ToText()
-    {
+    public string ToText() {
         // Create a new string builder
         var strBuilder = new StringBuilder();
 
@@ -105,8 +103,7 @@ public class Graph
         var registry = new HashSet<GraphNode>();
 
         // For each independent tree in this graph
-        foreach (var node in rootNodes)
-        {
+        foreach (var node in rootNodes) {
             // Add the root node to the registry
             registry.Add(node);
 
@@ -156,7 +153,7 @@ public class GraphNode : IEnumerable<GraphNode>
     /// The unique identifier for this node.
     /// </summary>
     /// <value>A string representing the ID of this node.</value>
-    public string ID { get; protected set;}
+    public string ID { get; protected set; }
 
     /// <summary>
     /// The name of this node.
@@ -176,8 +173,7 @@ public class GraphNode : IEnumerable<GraphNode>
 
     public GraphNode(int id, string text) : this(id.ToString(), "\"" + text + "\"") { }
 
-    public GraphNode(string id, string text)
-    {
+    public GraphNode(string id, string text) {
         ID = id;
         Name = text;
         Properties = new Dictionary<string, string>();
@@ -211,8 +207,7 @@ public class GraphNode : IEnumerable<GraphNode>
     public GraphNode SetTooltip(string tooltipText)
         => SetProperty("tooltip", tooltipText);
 
-    public string ToText(HashSet<GraphNode> registry)
-    {
+    public string ToText(HashSet<GraphNode> registry) {
         // Create a new string builder
         var strBuilder = new StringBuilder();
 
@@ -232,8 +227,7 @@ public class GraphNode : IEnumerable<GraphNode>
         strBuilder.AppendLine("]");
 
         // For each node that is a children of this object
-        foreach (var child in Children)
-        {
+        foreach (var child in Children) {
             // Append the connection of this node (this node's id -> child's id)
             strBuilder.AppendLine("\t" + ID + " -- " + child.ID);
 

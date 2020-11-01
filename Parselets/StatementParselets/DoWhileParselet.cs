@@ -1,6 +1,6 @@
 public sealed class DoWhileParselet : IStatementParselet<WhileNode>
 {
-    public WhileNode Parse(Parser parser, Token doToken) {
+    public WhileNode Parse(StatementParser parser, Token doToken) {
         if (!(doToken is ComplexToken doKeyword && doKeyword == "do")) {
             throw Logger.Fatal(new InvalidCallException(doToken.Location));
         }
@@ -37,7 +37,7 @@ public sealed class DoWhileParselet : IStatementParselet<WhileNode>
             );
         }
 
-        var conditionNode = parser.ConsumeValue();
+        var conditionNode = parser.ExpressionParser.ConsumeValue();
 
         if (!(conditionNode is ParenthesizedValueNode condition)) {
             Logger.Error(new UnexpectedValueTypeException(

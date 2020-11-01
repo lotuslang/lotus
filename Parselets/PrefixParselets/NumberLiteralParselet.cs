@@ -1,6 +1,6 @@
 public sealed class NumberLiteralParselet : IPrefixParselet<NumberNode>
 {
-    public NumberNode Parse(Parser _, Token token) {
+    public NumberNode Parse(ExpressionParser parser, Token token) {
         if (token is NumberToken numberToken) {
             return new NumberNode(numberToken);
         }

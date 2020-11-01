@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
 {
-    public StringNode Parse(Parser parser, Token token) {
+    public StringNode Parse(ExpressionParser parser, Token token) {
         if (token.Kind == TokenKind.@string) {
             return new StringNode(token.Representation, token);
         }
@@ -12,7 +12,7 @@ public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
 
             foreach (var section in complexString.CodeSections) {
                 // FIXME: See Parser.ConsumeValue comment (tldr Consumer can return null sometimes)
-                node.AddSection(new Parser(new Consumer<Token>(section), parser.Grammar).ConsumeValue());
+                node.AddSection(new ExpressionParser(new Consumer<Token>(section)).ConsumeValue());
             }
 
             return node;

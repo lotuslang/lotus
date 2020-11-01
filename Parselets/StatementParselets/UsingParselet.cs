@@ -1,10 +1,10 @@
 public sealed class UsingParselet : IStatementParselet<UsingNode>
 {
-    public UsingNode Parse(Parser parser, Token usingToken) {
+    public UsingNode Parse(StatementParser parser, Token usingToken) {
         if (!(usingToken is ComplexToken usingKeyword && usingToken == "using"))
             throw Logger.Fatal(new InvalidCallException(usingToken.Location));
 
-        var importName = parser.ConsumeValue();
+        var importName = parser.ExpressionParser.ConsumeValue();
 
         var isValid = true;
 

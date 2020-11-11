@@ -78,6 +78,8 @@ class Program
             return;
         }
 
+        if (args[0] == "silent") return;
+
         if (args[0] == "constant") {
             IEnumerable<StatementNode> values;
 

@@ -18,6 +18,8 @@ public static class ASTHelper
 
     public static readonly ValueExtractor ValueExtractor = new ValueExtractor();
 
+    public static readonly StatementExtractor StatementExtractor = new StatementExtractor();
+
     public static readonly Flattener Flattener = new Flattener();
 
     public static readonly ConstantVisualizer ConstantVisualizer = new ConstantVisualizer();
@@ -38,6 +40,8 @@ public static class ASTHelper
     public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
 
     public static IEnumerable<ValueNode> ExtractValue(StatementNode node) => ValueExtractor.ExtractValue(node);
+
+    public static IEnumerable<StatementNode> ExtractStatement(StatementNode node) => StatementExtractor.ExtractStatement(node);
 
     public static IEnumerable<StatementNode> Flatten(StatementNode node) => Flattener.Flatten(node);
 

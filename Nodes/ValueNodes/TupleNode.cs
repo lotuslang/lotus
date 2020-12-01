@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 
 public class TupleNode : ValueNode
 {
+    public new static readonly TupleNode NULL = new TupleNode(new ValueNode[0], Token.NULL, Token.NULL, false);
     public Token ClosingToken { get; }
 
     public Token OpeningToken => Token;

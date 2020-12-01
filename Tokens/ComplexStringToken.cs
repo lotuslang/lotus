@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 
 public class ComplexStringToken : ComplexToken
 {
+    public new static readonly ComplexStringToken NULL = new ComplexStringToken("", new Token[0][], LocationRange.NULL, false);
+
     protected List<Token[]> sections;
 
     public ReadOnlyCollection<Token[]> CodeSections {

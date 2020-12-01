@@ -1,5 +1,7 @@
 public class StringToken : ComplexToken
 {
+    public new static readonly StringToken NULL = new StringToken("", LocationRange.NULL, false);
+
     public StringToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(representation, TokenKind.@string, location, isValid, leading, trailing) { }
 

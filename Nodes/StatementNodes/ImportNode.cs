@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 
 public class ImportNode : StatementNode
 {
+    public new static readonly ImportNode NULL = new ImportNode(new ValueNode[0], FromNode.NULL, ComplexToken.NULL, false);
+
     public ReadOnlyCollection<ValueNode> ImportsName { get; protected set; }
 
     public FromNode FromStatement { get; protected set; }

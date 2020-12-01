@@ -1,5 +1,6 @@
 public class WhitespaceTriviaToken : TriviaToken
 {
+    public new static readonly WhitespaceTriviaToken NULL = new WhitespaceTriviaToken('\0', 0, LocationRange.NULL, false);
     public int WhitespaceCount { get; protected set; }
 
     public WhitespaceTriviaToken(char whitespaceChar,

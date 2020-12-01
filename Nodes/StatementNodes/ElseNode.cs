@@ -1,5 +1,7 @@
 public class ElseNode : StatementNode
 {
+    public new static readonly ElseNode NULL = new ElseNode(SimpleBlock.NULL, ComplexToken.NULL, false);
+
     public SimpleBlock Body { get; protected set; }
 
     public IfNode? IfNode { get; protected set; }

@@ -4,6 +4,19 @@ using System.Collections.ObjectModel;
 
 public class FunctionDeclarationNode : StatementNode
 {
+    public new static readonly FunctionDeclarationNode NULL
+        = new FunctionDeclarationNode(
+            SimpleBlock.NULL,
+            new FunctionParameter[0],
+            ValueNode.NULL,
+            IdentToken.NULL,
+            ComplexToken.NULL,
+            Token.NULL,
+            Token.NULL,
+            Token.NULL,
+            false
+        );
+
     internal bool isInternal = false;
 
     public bool HasReturnType => ReturnType != ValueNode.NULL;

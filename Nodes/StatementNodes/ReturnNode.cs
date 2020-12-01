@@ -1,5 +1,7 @@
 public class ReturnNode : StatementNode
 {
+    public new static readonly ReturnNode NULL = new ReturnNode(ValueNode.NULL, ComplexToken.NULL, false);
+
     public ValueNode Value { get; protected set; }
 
     public bool IsReturningValue => Value != ValueNode.NULL;

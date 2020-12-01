@@ -1,5 +1,6 @@
 public class NewlineTriviaToken : WhitespaceTriviaToken
 {
+    public new static readonly NewlineTriviaToken NULL = new NewlineTriviaToken(0, LocationRange.NULL, false);
     public NewlineTriviaToken(int count,
                               LocationRange location,
                               bool isValid = true,

@@ -1,4 +1,5 @@
 public enum TokenKind {
+    EOF = 0,
     delim,
     ident,
     number,
@@ -9,5 +10,4 @@ public enum TokenKind {
     @operator,
     keyword,
     trivia,
-    EOF
 }

@@ -1,5 +1,7 @@
 public class StatementNode
 {
+    public static readonly StatementNode NULL = new StatementNode("", Token.NULL, LocationRange.NULL, false);
+
     public Token Token { get; protected set; }
 
     public LocationRange Location { get; set; }
@@ -7,8 +9,6 @@ public class StatementNode
     public string Representation { get; protected set; }
 
     public bool IsValid { get; set; }
-
-    public static readonly StatementNode NULL = new StatementNode("", new Token('\0', TokenKind.EOF, new Location(-1, -1), false), new Location(-1, -1), false);
 
     public StatementNode(string representation, Token token, LocationRange range, bool isValid = true) {
         Representation = representation;

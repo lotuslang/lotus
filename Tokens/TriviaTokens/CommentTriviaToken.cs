@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 
 public class CommentTriviaToken : TriviaToken
 {
+    public new static readonly CommentTriviaToken NULL = new CommentTriviaToken("", LocationRange.NULL, isValid: false);
     protected IList<CommentTriviaToken> innerComments;
 
     public ReadOnlyCollection<CommentTriviaToken> InnerComments {

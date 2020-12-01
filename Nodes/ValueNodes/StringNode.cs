@@ -1,5 +1,6 @@
 public class StringNode : ValueNode
 {
+    public new static readonly StringNode NULL = new StringNode("", Token.NULL, false);
     /// <summary>
     /// The value of this StringNode.
     /// </summary>

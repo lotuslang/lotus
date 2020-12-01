@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 
 public class OperationNode : ValueNode
 {
+    public new static readonly OperationNode NULL = new OperationNode(OperatorToken.NULL, new ValueNode[0], OperationType.Unknown, false);
+
     public ReadOnlyCollection<Token> AdditionalTokens { get; }
 
     public new OperatorToken Token { get; protected set; }

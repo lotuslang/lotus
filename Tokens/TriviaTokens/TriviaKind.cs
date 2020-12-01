@@ -1,3 +1,7 @@
 public enum TriviaKind {
-    whitespace, newline, comment, character, EOF
+    EOF = 0,
+    whitespace,
+    newline,
+    comment,
+    character,
 }

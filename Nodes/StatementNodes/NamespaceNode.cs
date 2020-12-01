@@ -1,5 +1,7 @@
 public class NamespaceNode : StatementNode
 {
+    public new static readonly NamespaceNode NULL = new NamespaceNode(ValueNode.NULL, ComplexToken.NULL, false);
+
     public ValueNode NamespaceName { get; protected set; }
 
     public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken, bool isValid = true)

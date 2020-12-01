@@ -3,6 +3,9 @@ using System;
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
 public class BoolToken : ComplexToken
 {
+    public new static readonly Token NULL = new BoolToken(false, LocationRange.NULL, false);
+
+    // no you can't remove it because properties can't be the out parameter in the "TryParse" call
     protected bool val;
 
     public bool Value {
@@ -22,7 +25,9 @@ public class BoolToken : ComplexToken
 
     public BoolToken(bool value, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(value.ToString().ToLower(), TokenKind.@bool, location, isValid, leading, trailing)
-    { }
+    {
+        val = value;
+    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

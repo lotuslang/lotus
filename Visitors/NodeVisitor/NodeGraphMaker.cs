@@ -163,7 +163,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
                 var paramNameNode = ToGraphNode(parameter.Name);
 
                 if (parameter.Type == ValueNode.NULL) {
-                    paramNameNode.Add(new GraphNode(HashCode.Combine(ValueNode.NULL, parameter), "any"));
+                    paramNameNode.Add(new GraphNode(DeterministicHashCode.Combine(ValueNode.NULL, parameter), "any"));
                 } else {
                     paramNameNode.Add(ToGraphNode(parameter.Type));
                 }
@@ -179,7 +179,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
         }
 
         if (node.HasReturnType) {
-            root.Add(new GraphNode(HashCode.Combine(node.ReturnType, node), "return type") { // FIXME: Color & Tooltip
+            root.Add(new GraphNode(DeterministicHashCode.Combine(node.ReturnType, node), "return type") { // FIXME: Color & Tooltip
                 ToGraphNode(node.ReturnType)
             });
         }
@@ -191,7 +191,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
 
     public override GraphNode Visit(IfNode node) {
         var root = new GraphNode(node.GetHashCode(), "if") {
-            new GraphNode(HashCode.Combine(node, "condition"), "condition") {
+            new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
                 ToGraphNode(node.Condition)
             }.SetColor(IfCondition.color)
              .SetTooltip(IfCondition.tooltip),
@@ -257,7 +257,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
 
     public override GraphNode Visit(WhileNode node)
         => new GraphNode(node.GetHashCode(), node.IsDoLoop ? "do-while" : "while") {
-                new GraphNode(HashCode.Combine(node, "condition"), "condition") {
+                new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
                     ToGraphNode(node.Condition)
                 }.SetColor(WhileCondition.color)
                  .SetTooltip(WhileCondition.tooltip),
@@ -283,7 +283,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
                         .SetTooltip(ComplexString.tooltip);
 
         if (node.CodeSections.Count != 0) {
-            var sectionNode = new GraphNode(HashCode.Combine(node, "sections"), "code sections");
+            var sectionNode = new GraphNode(DeterministicHashCode.Combine(node, "sections"), "code sections");
 
             foreach (var section in node.CodeSections) {
                 sectionNode.Add(ToGraphNode(section));
@@ -302,7 +302,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
             root = new GraphNode(node.GetHashCode(), name.Representation + "(...)");
         } else {
             root = new GraphNode(node.GetHashCode(), "call") {
-                new GraphNode("function") {
+                new GraphNode(DeterministicHashCode.Combine(node.FunctionName, "function"), "function") {
                     ToGraphNode(node.FunctionName)
                 },
             };

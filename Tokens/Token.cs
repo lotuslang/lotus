@@ -66,6 +66,10 @@ public class Token
             TrailingTrivia.AddTrailingTrivia(trivia);
     }
 
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 
     public override string ToString() {

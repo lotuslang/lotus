@@ -5,6 +5,8 @@ public class OperationNode : ValueNode
 {
     public ReadOnlyCollection<Token> AdditionalTokens { get; }
 
+    public new OperatorToken Token { get; protected set; }
+
     /// <summary>
     /// The operands of this operation
     /// </summary>
@@ -28,6 +30,7 @@ public class OperationNode : ValueNode
         Operands = operands.AsReadOnly();
         OperationType = opType;
         AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
+        Token = token;
 
         Location = OperationKind switch {
             OperationKind.Unary => new LocationRange(token.Location, operands[0].Location),
@@ -37,5 +40,9 @@ public class OperationNode : ValueNode
         };
     }
 
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

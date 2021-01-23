@@ -7,4 +7,10 @@ public class CharacterTriviaToken : TriviaToken
     {
         Character = c;
     }
+
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
 }

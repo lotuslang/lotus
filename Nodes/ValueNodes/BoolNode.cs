@@ -8,13 +8,16 @@ public class BoolNode : ValueNode
     /// <value>The number represented by this object.</value>
     public bool Value { get; protected set; }
 
-    public BoolNode(bool value, Token boolToken, bool isValid = true)
+    public new BoolToken Token { get; protected set; }
+
+    public BoolNode(bool value, BoolToken boolToken, bool isValid = true)
         : base(value.ToString(), boolToken, boolToken.Location, isValid)
     {
         Value = value;
+        Token = boolToken;
     }
 
-    public BoolNode(string repr, Token boolToken, bool isValid = true) : this(default(bool), boolToken, isValid)
+    public BoolNode(string repr, BoolToken boolToken, bool isValid = true) : this(default(bool), boolToken, isValid)
     {
         var value = Value; // workaround for CS0206
 
@@ -28,5 +31,9 @@ public class BoolNode : ValueNode
         Value = value;
     }
 
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

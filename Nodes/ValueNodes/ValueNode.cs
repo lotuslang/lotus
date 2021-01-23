@@ -13,5 +13,9 @@ public class ValueNode : StatementNode
     public ValueNode(string rep, Token token, LocationRange range, bool isValid = true) : base(rep, token, range, isValid)
     { }
 
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(NodeVisitor<T> visitor) => visitor.Visit(this);
 }

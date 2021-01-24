@@ -1,5 +1,7 @@
 public class ObjectCreationNode : ValueNode
 {
+    public new static readonly ObjectCreationNode NULL = new ObjectCreationNode(FunctionCallNode.NULL, ComplexToken.NULL, false);
+
     public FunctionCallNode InvocationNode { get; protected set; }
 
     public new ComplexToken Token { get; protected set; }

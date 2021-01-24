@@ -1,5 +1,7 @@
 public readonly struct LocationRange
 {
+    public static readonly LocationRange NULL = new LocationRange(Location.NULL, Location.NULL);
+
     public readonly int firstLine;
 
     public readonly int lastLine;

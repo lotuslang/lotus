@@ -1,3 +1,13 @@
 public enum TokenKind {
-    delim, ident, number, function, @bool, @string, complexString, @operator, keyword, EOF, trivia
+    EOF = 0,
+    delim,
+    ident,
+    number,
+    function,
+    @bool,
+    @string,
+    complexString,
+    @operator,
+    keyword,
+    trivia,
 }

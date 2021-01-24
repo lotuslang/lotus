@@ -1,5 +1,7 @@
 public struct Location
 {
+    public static readonly Location NULL = new Location(-1, -1);
+
     public int line;
     public int column;
 

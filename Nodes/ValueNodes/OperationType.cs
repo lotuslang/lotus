@@ -1,4 +1,5 @@
 public enum OperationType {
+    Unknown = 0,
     Positive, // +a
     Negative, // -a
     Not, // !a

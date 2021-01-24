@@ -1,5 +1,7 @@
 public class FunctionCallNode : ValueNode
 {
+    public new static readonly FunctionCallNode NULL = new FunctionCallNode(TupleNode.NULL, ValueNode.NULL, Token.NULL, false);
+
     public TupleNode ArgList { get; }
 
     public ValueNode FunctionName { get; protected set; }

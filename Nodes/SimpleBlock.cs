@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 
 public class SimpleBlock
 {
+    public static readonly SimpleBlock NULL = new SimpleBlock(new StatementNode[0], Token.NULL, Token.NULL, false);
+
     public ReadOnlyCollection<StatementNode> Content { get; }
 
     public LocationRange Location { get; }

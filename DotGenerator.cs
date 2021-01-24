@@ -112,7 +112,7 @@ public class Graph
         }
 
         // Close the graph by a closing curly bracket on a new line
-        strBuilder.AppendLine("\n}");
+        strBuilder.AppendLine("\n}\n//" + GetHashCode());
 
         // Return the string builder
         return strBuilder.ToString();
@@ -143,6 +143,20 @@ public class Graph
             edgeprops[property] = value;
         else
             edgeprops.Add(property, value);
+    }
+
+    public override int GetHashCode() {
+        var code = new DeterministicHashCode();
+
+        foreach (var node in rootNodes) {
+            code.Add(node, new GraphNodeComparer());
+        }
+
+        code.Add(GraphProps);
+        code.Add(NodeProps);
+        code.Add(EdgeProps);
+
+        return code.ToHashCode();
     }
 }
 
@@ -207,39 +221,47 @@ public class GraphNode : IEnumerable<GraphNode>
     public GraphNode SetTooltip(string tooltipText)
         => SetProperty("tooltip", tooltipText);
 
-    public string ToText(HashSet<GraphNode> registry) {
+    public string ToText(HashSet<GraphNode> registry, int tabs = 2) {
         // Create a new string builder
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.Append($"\n\t" + ID + " [label=" + Name);
+        strBuilder.Append($"\n" + new string('\t', tabs-1) + ID + " [label=" + Name);
 
-        if (Properties.Count != 0) {
-            //strBuilder.Append("\t" + id + " [");
-
-            foreach (var property in Properties) {
-                strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");
-            }
-
-            //strBuilder.Remove(strBuilder.Length - 1, 1);
+        foreach (var property in Properties) {
+            strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");
         }
 
         strBuilder.AppendLine("]");
 
+        if (Children.Count == 0) return strBuilder.ToString();
+
         // For each node that is a children of this object
         foreach (var child in Children) {
-            // Append the connection of this node (this node's id -> child's id)
-            strBuilder.AppendLine("\t" + ID + " -- " + child.ID);
+
+            strBuilder.Append(new string('\t', tabs) + ID + " -- " + child.ID);
 
             // Register this child
             registry.Add(child);
 
             // Then append the representation of the child
-            strBuilder.Append("\t" + child.ToText(registry));
+            strBuilder.Append(new string('\t', tabs) + child.ToText(registry, tabs+1));
         }
 
         // Return the string builder
-        return strBuilder.ToString();
+        return strBuilder.AppendLine().ToString();
+    }
+
+    public override int GetHashCode() {
+        var code = new DeterministicHashCode();
+
+        code.Add(Name, new StringComparer());
+
+        foreach (var node in Children) {
+            code.Add(node, new GraphNodeComparer());
+        }
+
+        return code.ToHashCode();
     }
 
     public IEnumerator<GraphNode> GetEnumerator()
@@ -247,4 +269,53 @@ public class GraphNode : IEnumerable<GraphNode>
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
+}
+
+public class GraphNodeComparer : IEqualityComparer<GraphNode>
+{
+    public bool Equals(GraphNode? n1, GraphNode? n2) => n1?.GetHashCode() == n2?.GetHashCode();
+
+    public int GetHashCode(GraphNode n) => n.GetHashCode();
+}
+
+public class StringComparer : IEqualityComparer<string>
+{
+    public bool Equals(string? s1, string? s2) => GetHashCode(s1!) == GetHashCode(s2!);
+
+    public int GetHashCode(string str) {
+        unchecked
+        {
+            int hash1 = 5381;
+            int hash2 = hash1;
+
+            for(int i = 0; i < str.Length && str[i] != '\0'; i += 2)
+            {
+                hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                if (i == str.Length - 1 || str[i+1] == '\0')
+                    break;
+                hash2 = ((hash2 << 5) + hash2) ^ str[i+1];
+            }
+
+            return hash1 + (hash2*1566083941);
+        }
+    }
+}
+
+public struct DeterministicHashCode
+{
+    private int current;
+
+    private static readonly StringComparer stringComparer = new StringComparer();
+
+    public void Add<T1>(T1 value) => current = current * 21 + value!.GetHashCode();
+
+    public void Add<T1>(T1 value, IEqualityComparer<T1> eq) => current = current * 21 + eq.GetHashCode(value!);
+
+    public static int Combine<T1>(T1 t1, string s) => t1!.GetHashCode() * 21 + stringComparer.GetHashCode(s);
+
+    public static int Combine<T1>(string s, T1 t1) => stringComparer.GetHashCode(s) * 21 + t1!.GetHashCode();
+
+    public static int Combine<T1, T2>(T1 t1, T2 t2) => t1!.GetHashCode() * 21 + t2!.GetHashCode();
+
+    public int ToHashCode() => current;
 }

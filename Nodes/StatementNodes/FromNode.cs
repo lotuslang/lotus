@@ -1,5 +1,7 @@
 public class FromNode : StatementNode
 {
+    public new static readonly FromNode NULL = new FromNode(ValueNode.NULL, ComplexToken.NULL, false);
+
     public ValueNode OriginName { get; protected set; }
 
     internal FromNode(ValueNode originName, ComplexToken fromToken, bool isValid = true)

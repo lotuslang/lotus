@@ -1,5 +1,6 @@
 public class UsingNode : StatementNode
 {
+    public new static readonly UsingNode NULL = new UsingNode(ComplexToken.NULL, ValueNode.NULL, false);
 
     public ValueNode ImportName { get; }
 

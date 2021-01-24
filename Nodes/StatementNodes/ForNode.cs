@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 /// </summary>
 public class ForNode : StatementNode
 {
+    public new static readonly ForNode NULL = new ForNode(ComplexToken.NULL, new StatementNode[0], SimpleBlock.NULL, Token.NULL, Token.NULL, false);
+
     public ReadOnlyCollection<StatementNode> Header { get; }
 
     public Token OpeningParenthesis { get; }

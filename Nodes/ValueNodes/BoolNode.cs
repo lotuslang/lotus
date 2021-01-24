@@ -2,6 +2,8 @@ using System;
 
 public class BoolNode : ValueNode
 {
+    public new static readonly BoolNode NULL = new BoolNode(false, BoolToken.NULL, false);
+
     /// <summary>
     /// The value of this StringNode.
     /// </summary>

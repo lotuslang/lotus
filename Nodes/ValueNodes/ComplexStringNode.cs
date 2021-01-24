@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 
 public class ComplexStringNode : StringNode
 {
+    public new static readonly ComplexStringNode NULL = new ComplexStringNode(ComplexStringToken.NULL, new ValueNode[0], false);
+
     protected List<ValueNode> sections;
 
     public ReadOnlyCollection<ValueNode> CodeSections {

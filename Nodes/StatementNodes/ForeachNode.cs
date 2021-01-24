@@ -3,6 +3,19 @@
 /// </summary>
 public class ForeachNode : StatementNode
 {
+    public new static readonly ForeachNode NULL
+        = new ForeachNode(
+            ComplexToken.NULL,
+            ComplexToken.NULL,
+            IdentNode.NULL,
+            ValueNode.NULL,
+            SimpleBlock.NULL,
+            Token.NULL,
+            Token.NULL,
+            false
+        );
+
+
     /// <summary>
     /// The token of the "in" keyword used
     /// </summary>

@@ -1,5 +1,7 @@
 public class IdentNode : ValueNode
 {
+    public new static readonly IdentNode NULL = new IdentNode("", IdentToken.NULL, false);
+
     public new ComplexToken Token { get; }
 
     public string Value { get; protected set; }

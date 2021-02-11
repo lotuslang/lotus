@@ -56,7 +56,7 @@ public class Consumer<T> : IConsumer<T>
 
         if (reconsumeFlag) {
             reconsumeFlag = false;
-            pos.column++;
+            pos = pos with { column = pos.column + 1 };
             return Current;
         }
 
@@ -65,7 +65,7 @@ public class Consumer<T> : IConsumer<T>
             return Current;
         }
 
-        pos.column++;
+        pos = pos with { column = pos.column + 1 };
 
         Current = inputStack.Pop();
 
@@ -75,7 +75,7 @@ public class Consumer<T> : IConsumer<T>
     public void Reconsume() {
         reconsumeFlag = true;
 
-        pos.column--;
+        pos = pos with { column = pos.column - 1 };
     }
 
     [return: MaybeNull]

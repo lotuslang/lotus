@@ -1,6 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-public interface IConsumer<T>
+public interface IConsumer<T> : IEnumerable<T>
 {
     /// <summary>
     /// Gets the last object consumed by this IConsumer.
@@ -33,6 +35,10 @@ public interface IConsumer<T>
     bool Consume([MaybeNullWhen(false)] out T item);
 
     T Peek();
+
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ConsumerEnumerator<T>(this);
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     //T[] Peek(int n);
 }

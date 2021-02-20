@@ -14,51 +14,61 @@ public class ReadOnlyGrammar
 
     public virtual ReadOnlyDictionary<ExpressionKind, IPrefixParslet<ValueNode>> PrefixParslets {
         get => prefixParslets.AsReadOnly();
+        init => prefixParslets = value;
     }
 
     protected IDictionary<ExpressionKind, IInfixParslet<ValueNode>> infixParslets;
 
     public virtual ReadOnlyDictionary<ExpressionKind, IInfixParslet<ValueNode>> InfixParslets {
         get => infixParslets.AsReadOnly();
+        init => infixParslets = value;
     }
 
     protected IDictionary<ExpressionKind, IPostfixParslet<ValueNode>> postfixParslets;
 
     public virtual ReadOnlyDictionary<ExpressionKind, IPostfixParslet<ValueNode>> PostfixParslets {
         get => postfixParslets.AsReadOnly();
+        init => postfixParslets = value;
     }
 
     protected IDictionary<StatementKind, IStatementParslet<StatementNode>> statementParslets;
 
     public virtual ReadOnlyDictionary<StatementKind, IStatementParslet<StatementNode>> StatementParslets {
         get => statementParslets.AsReadOnly();
+        init => statementParslets = value;
     }
 
     protected IDictionary<string, ExpressionKind> expressionKinds;
 
     public virtual ReadOnlyDictionary<string, ExpressionKind> ExpressionKinds {
         get => expressionKinds.AsReadOnly();
+        init => expressionKinds = value;
     }
 
     protected IDictionary<string, StatementKind> statementKinds;
 
     public virtual ReadOnlyDictionary<string, StatementKind> StatementKinds {
         get => statementKinds.AsReadOnly();
+        init => statementKinds = value;
     }
 
     protected ICollection<IToklet<Token>> toklets;
 
     public virtual ReadOnlyCollection<IToklet<Token>> Toklets {
         get => toklets.AsReadOnly();
+        init => toklets = value;
     }
 
     protected ICollection<ITriviaToklet<TriviaToken>> triviaToklets;
 
     public virtual ReadOnlyCollection<ITriviaToklet<TriviaToken>> TriviaToklets {
         get => triviaToklets.AsReadOnly();
+        init => triviaToklets = value;
     }
 
 #pragma warning disable CS8618
+    public ReadOnlyGrammar() { }
+
     public ReadOnlyGrammar(
         IDictionary<ExpressionKind, IPrefixParslet<ValueNode>>? prefixParslets = null,
         IDictionary<ExpressionKind, IInfixParslet<ValueNode>>? infixParslets = null,

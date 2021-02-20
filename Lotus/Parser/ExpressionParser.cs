@@ -69,10 +69,7 @@ public class ExpressionParser : Parser
 
         token = Tokenizer.Consume();
 
-        // it might be null because the complex-string parsing algorithm uses a Consumer<T>,
-        // not a tokenizer, and it returns null when there's no more to consume
-        // FIXME: This
-        if (token == null) {
+        if (token == Tokenizer.Default) {
             return left;
         }
 

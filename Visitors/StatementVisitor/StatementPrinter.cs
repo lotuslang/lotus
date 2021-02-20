@@ -37,7 +37,7 @@ public sealed class StatementPrinter : StatementVisitor<string>
     public override string Visit(FunctionDeclarationNode node) {
         var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.Name) + ASTHelper.PrintToken(node.OpeningParenthesis);
 
-        static string printParameter(FunctionParameter param) {
+        static string printParameter(FunctionArgument param) {
             var output = "";
 
             if (param.Type != ValueNode.NULL) output += ASTHelper.PrintValue(param.Type);

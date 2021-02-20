@@ -92,8 +92,7 @@ public class ReadOnlyGrammar
             grammar.statementKinds,
             grammar.toklets,
             grammar.triviaToklets
-        )
-    { }
+        ) { }
 
     /// <summary>
     /// Should only be called right after the (potentially derived) class' initialization

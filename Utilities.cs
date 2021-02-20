@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -27,7 +28,8 @@ public static class Utilities
         "print",
     };
 
-    public static int GetNumberOfDigits(int i) {
+    public static int GetNumberOfDigits(int i)
+    {
         int count = 0;
 
         do count++; while ((i /= 10) >= 1);
@@ -59,7 +61,8 @@ public static class Utilities
             throw new ArgumentNullException(nameof(match));
         }
 
-        foreach (var item in collection) {
+        foreach (var item in collection)
+        {
             if (match(item)) return item;
         }
 
@@ -85,13 +88,19 @@ public static class Utilities
 
     public static string Join<T>(string separator, Func<T, string> convert, params T[] value) => Join(separator, convert, coll: value);
 
-    public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
+    public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll)
+    {
         var count = coll.Count();
-        if (count == 0) {
+        if (count == 0)
+        {
             return "";
-        } else if (count == 1) {
+        }
+        else if (count == 1)
+        {
             return convert(coll.First());
-        } else if (count < 20) {
+        }
+        else if (count < 20)
+        {
             var output = "";
 
             foreach (var item in coll) output += convert(item) + separator;
@@ -101,7 +110,9 @@ public static class Utilities
                 output = output.Remove(output.Length - separator.Length);
 
             return output;
-        } else {
+        }
+        else
+        {
             var output = new System.Text.StringBuilder();
 
             foreach (var item in coll) output.Append(convert(item) + separator);

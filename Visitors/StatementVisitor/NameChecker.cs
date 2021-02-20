@@ -20,6 +20,9 @@ public sealed class NameChecker : StatementVisitor<bool>
         return false;
     }
 
+    // is it really useful ? i mean, you shouldn't use statements with this anyway, so...
+    public override bool Visit(StatementExpressionNode node) => IsName(node.Value);
+
     public override bool Visit(IdentNode node) => true;
 
     public override bool Visit(ParenthesizedValueNode node) => node.Values.Accept(this);

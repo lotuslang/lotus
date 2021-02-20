@@ -132,7 +132,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParslet("func", new FunctionDeclarationParslet())
             .RegisterStatementParslet("return", new ReturnParslet())
             .RegisterStatementParslet("from", new ImportParslet())
-            .RegisterStatementParslet("namespace", new NamespaceParslet())
+            //TODO:.RegisterStatementParslet("namespace", new NamespaceParslet())
             .RegisterStatementParslet("foreach", new ForeachParslet())
             .RegisterStatementParslet("for", new ForParslet())
             .RegisterStatementParslet("if", new IfParslet())

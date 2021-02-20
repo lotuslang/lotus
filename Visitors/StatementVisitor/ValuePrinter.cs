@@ -12,6 +12,8 @@ public sealed class ValuePrinter : StatementVisitor<string>
         => ASTHelper.PrintToken(node.Token);
 
 
+    public override string Visit(StatementExpressionNode node) => Print(node.Value);
+
     public override string Visit(BoolNode node)
         => ASTHelper.PrintToken(node.Token);
 

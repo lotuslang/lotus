@@ -225,11 +225,11 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(NamespaceNode node)
+    /*TODO:public override GraphNode Visit(NamespaceNode node)
         => new GraphNode(node.GetHashCode(), "namespace") {
                 ToGraphNode(node.NamespaceName).SetTooltip("namespace name")
             }.SetColor(Namespace.color)
-             .SetTooltip(Namespace.tooltip);
+             .SetTooltip(Namespace.tooltip);*/
 
     public override GraphNode Visit(PrintNode node)
         => new GraphNode(node.GetHashCode(), "print") {
@@ -248,6 +248,8 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
 
         return root;
     }
+
+    public override GraphNode Visit(StatementExpressionNode node) => ToGraphNode(node.Value);
 
     public override GraphNode Visit(UsingNode node)
         => new GraphNode(node.GetHashCode(), "using") {
@@ -411,6 +413,7 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
     }
 
     public GraphNode ToGraphNode(StatementNode node) => node.Accept(this);
+    public GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
     public GraphNode ToGraphNode(SimpleBlock block) => Visit(block);
 }

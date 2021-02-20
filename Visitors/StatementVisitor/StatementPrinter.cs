@@ -69,8 +69,8 @@ public sealed class StatementPrinter : StatementVisitor<string>
          + ASTHelper.PrintToken(node.Token)
          + Utilities.Join(",", ASTHelper.PrintValue, node.ImportsName);
 
-    public override string Visit(NamespaceNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.NamespaceName);
+    /*TODO:public override string Visit(NamespaceNode node)
+        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.NamespaceName);*/
 
     public override string Visit(PrintNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Value);
@@ -78,6 +78,8 @@ public sealed class StatementPrinter : StatementVisitor<string>
     public override string Visit(ReturnNode node)
         => ASTHelper.PrintToken(node.Token)
          + (node.IsReturningValue ? ASTHelper.PrintValue(node.Value) : "");
+
+    public override string Visit(StatementExpressionNode node) => ASTHelper.PrintValue(node.Value);
 
     public override string Visit(UsingNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.ImportName);

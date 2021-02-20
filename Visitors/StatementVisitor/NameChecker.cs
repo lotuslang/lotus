@@ -1,4 +1,4 @@
-public sealed class NameChecker : NodeVisitor<bool>
+public sealed class NameChecker : StatementVisitor<bool>
 {
 
     protected override bool Default(StatementNode node) => false;
@@ -22,7 +22,7 @@ public sealed class NameChecker : NodeVisitor<bool>
 
     public override bool Visit(IdentNode node) => true;
 
-    public override bool Visit(ParenthesizedValueNode node) => node.Value.Accept(this);
+    public override bool Visit(ParenthesizedValueNode node) => node.Values.Accept(this);
 
     public override bool Visit(SimpleBlock block) => false;
 

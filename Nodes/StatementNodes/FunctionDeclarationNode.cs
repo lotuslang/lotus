@@ -7,7 +7,7 @@ public class FunctionDeclarationNode : StatementNode
     public new static readonly FunctionDeclarationNode NULL
         = new FunctionDeclarationNode(
             SimpleBlock.NULL,
-            new FunctionParameter[0],
+            new FunctionArgument[0],
             ValueNode.NULL,
             IdentToken.NULL,
             ComplexToken.NULL,
@@ -23,7 +23,7 @@ public class FunctionDeclarationNode : StatementNode
 
     public SimpleBlock Body { get; }
 
-    public ReadOnlyCollection<FunctionParameter> Parameters { get; }
+    public ReadOnlyCollection<FunctionArgument> Parameters { get; }
 
     public ValueNode ReturnType { get; }
 
@@ -36,7 +36,7 @@ public class FunctionDeclarationNode : StatementNode
     public Token ColonToken { get; }
 
     public FunctionDeclarationNode(SimpleBlock body,
-                                   IList<FunctionParameter> parameters,
+                                   IList<FunctionArgument> parameters,
                                    ValueNode returnType,
                                    IdentToken functionName,
                                    ComplexToken funcKeyword,
@@ -62,7 +62,7 @@ public class FunctionDeclarationNode : StatementNode
     public override T Accept<T>(StatementVisitor<T> visitor) => visitor.Visit(this);
 }
 
-public class FunctionParameter
+public class FunctionArgument
 {
     public ValueNode Type { get; }
 
@@ -76,7 +76,7 @@ public class FunctionParameter
 
     public bool IsValid { get; set; }
 
-    public FunctionParameter(ValueNode type, IdentNode name, ValueNode defaultValue, Token equalSign, bool isValid = true) {
+    public FunctionArgument(ValueNode type, IdentNode name, ValueNode defaultValue, Token equalSign, bool isValid = true) {
         Type = type;
         Name = name;
         EqualSign = equalSign;

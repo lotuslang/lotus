@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections.Generic;
 
 public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDeclarationNode>
@@ -44,7 +44,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
         // { /* some code */ }
         //
 
-        var parameters = new List<FunctionParameter>();
+        var parameters = new List<FunctionArgument>();
 
         void addParameter(ValueNode type, ValueNode paramNameNode) {
 
@@ -86,7 +86,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 );
             }
 
-            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, equalSign, isValid));
+            parameters!.Add(new FunctionArgument(type, paramName, defaultValue, equalSign, isValid));
         }
 
         while (parser.Tokenizer.Peek() != ")") {

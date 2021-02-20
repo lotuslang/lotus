@@ -141,7 +141,7 @@ public class ExpressionParser : Parser
                 }
 
                 Logger.Error(new UnexpectedTokenException(
-                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected '(' or ','",
+                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected ')' or ','",
                     token: Tokenizer.Current
                 ));
 

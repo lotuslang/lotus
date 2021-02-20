@@ -1,4 +1,4 @@
-public sealed class DeclarationParselet : IStatementParselet<DeclarationNode>
+public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
 {
     public DeclarationNode Parse(StatementParser parser, Token varToken) {
 

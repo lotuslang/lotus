@@ -1,4 +1,4 @@
-public sealed class NamespaceParselet : IStatementParselet<NamespaceNode>
+public sealed class NamespaceParslet : IStatementParslet<NamespaceNode>
 {
     public NamespaceNode Parse(StatementParser parser, Token namespaceToken) {
         var name = parser.ExpressionParser.ConsumeValue();

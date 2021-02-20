@@ -1,4 +1,4 @@
-public sealed class FuncCallParselet : IInfixParselet<FunctionCallNode>
+public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
 {
     public Precedence Precedence {
         get => Precedence.FuncCall;

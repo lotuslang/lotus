@@ -6,9 +6,9 @@ public sealed class LotusGrammar : ReadOnlyGrammar
         InitializeToklets();
         InitializeTriviaToklets();
         InitializeExpressionKinds();
-        InitializeExpressionParselets();
+        InitializeExpressionParslets();
         InitializeStatementKinds();
-        InitializeStatementParselets();
+        InitializeStatementParslets();
 
         base.Initialize(internalGrammar);
     }
@@ -32,15 +32,15 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterTriviaToklet(new TriviaToklet());
     }
 
-    private void InitializeExpressionParselets() {
+    private void InitializeExpressionParslets() {
 
         // values
         internalGrammar
-            .RegisterPrefix(ExpressionKind.Number, new NumberLiteralParselet())
-            .RegisterPrefix(ExpressionKind.String, new StringLiteralParselet())
-            .RegisterPrefix(ExpressionKind.Identifier, new IdentifierParselet())
-            .RegisterPrefix(ExpressionKind.Boolean, new BoolLiteralParselet())
-            .RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParselet());
+            .RegisterPrefix(ExpressionKind.Number, new NumberLiteralParslet())
+            .RegisterPrefix(ExpressionKind.String, new StringLiteralParslet())
+            .RegisterPrefix(ExpressionKind.Identifier, new IdentifierParslet())
+            .RegisterPrefix(ExpressionKind.Boolean, new BoolLiteralParslet())
+            .RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParslet());
 
         // prefix operators
         internalGrammar
@@ -50,10 +50,10 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterPrefixOperator(ExpressionKind.Increment, OperationType.PrefixIncrement)
             .RegisterPrefixOperator(ExpressionKind.Decrement, OperationType.PrefixDecrement);
 
-        // misc prefix parselets
+        // misc prefix parslets
         internalGrammar
-            .RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParselet())
-            .RegisterPrefix(ExpressionKind.New, new ObjectCreationParselet());
+            .RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParslet())
+            .RegisterPrefix(ExpressionKind.New, new ObjectCreationParslet());
 
         // infix binary operators
         internalGrammar
@@ -75,11 +75,11 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterInfixBinaryOperator(ExpressionKind.Access, Precedence.Access, OperationType.Access)
             .RegisterInfixBinaryOperator(ExpressionKind.Assignment, Precedence.Assignment, OperationType.Assign);
 
-        // misc infix parselets
+        // misc infix parslets
         internalGrammar
-            .RegisterInfix(ExpressionKind.Array, new ArrayAccessParselet())
-            .RegisterInfix(ExpressionKind.LeftParen, new FuncCallParselet())
-            .RegisterInfix(ExpressionKind.Ternary, new TernaryOperatorParselet());
+            .RegisterInfix(ExpressionKind.Array, new ArrayAccessParslet())
+            .RegisterInfix(ExpressionKind.LeftParen, new FuncCallParslet())
+            .RegisterInfix(ExpressionKind.Ternary, new TernaryOperatorParslet());
 
         // postfix operators
         internalGrammar
@@ -141,21 +141,21 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementKind("print", StatementKind.PrintStatement);
     }
 
-    private void InitializeStatementParselets() {
+    private void InitializeStatementParslets() {
         internalGrammar
-            .RegisterStatementParselet(StatementKind.VariableDeclaration, new DeclarationParselet())
-            .RegisterStatementParselet(StatementKind.FunctionDeclaration, new FunctionDeclarationParselet())
-            .RegisterStatementParselet(StatementKind.ReturnStatement, new ReturnParselet())
-            .RegisterStatementParselet(StatementKind.FromStatement, new ImportParselet())
-            .RegisterStatementParselet(StatementKind.NamespaceStatement, new NamespaceParselet())
-            .RegisterStatementParselet(StatementKind.ForeachLoop, new ForeachParselet())
-            .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet())
-            .RegisterStatementParselet(StatementKind.IfStatement, new IfParselet())
-            .RegisterStatementParselet(StatementKind.WhileStatement, new WhileParselet())
-            .RegisterStatementParselet(StatementKind.DoWhileStatement, new DoWhileParselet())
-            .RegisterStatementParselet(StatementKind.BreakStatement, new BreakParselet())
-            .RegisterStatementParselet(StatementKind.ContinueStatement, new ContinueParselet())
-            .RegisterStatementParselet(StatementKind.UsingStatement, new UsingParselet())
-            .RegisterStatementParselet(StatementKind.PrintStatement, new PrintParselet());
+            .RegisterStatementParslet(StatementKind.VariableDeclaration, new DeclarationParslet())
+            .RegisterStatementParslet(StatementKind.FunctionDeclaration, new FunctionDeclarationParslet())
+            .RegisterStatementParslet(StatementKind.ReturnStatement, new ReturnParslet())
+            .RegisterStatementParslet(StatementKind.FromStatement, new ImportParslet())
+            .RegisterStatementParslet(StatementKind.NamespaceStatement, new NamespaceParslet())
+            .RegisterStatementParslet(StatementKind.ForeachLoop, new ForeachParslet())
+            .RegisterStatementParslet(StatementKind.ForLoop, new ForParslet())
+            .RegisterStatementParslet(StatementKind.IfStatement, new IfParslet())
+            .RegisterStatementParslet(StatementKind.WhileStatement, new WhileParslet())
+            .RegisterStatementParslet(StatementKind.DoWhileStatement, new DoWhileParslet())
+            .RegisterStatementParslet(StatementKind.BreakStatement, new BreakParslet())
+            .RegisterStatementParslet(StatementKind.ContinueStatement, new ContinueParslet())
+            .RegisterStatementParslet(StatementKind.UsingStatement, new UsingParslet())
+            .RegisterStatementParslet(StatementKind.PrintStatement, new PrintParslet());
     }
 }

@@ -58,7 +58,7 @@ public class StatementParser : Parser
         var statementKind = Grammar.GetStatementKind(currToken);
 
         if (statementKind != StatementKind.NotAStatement) {
-            Current = Grammar.GetStatementParselet(statementKind).Parse(this, currToken);
+            Current = Grammar.GetStatementParslet(statementKind).Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();
             Current = ExpressionParser.Consume();

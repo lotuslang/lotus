@@ -65,7 +65,7 @@ public class ExpressionParser : Parser
             return new ValueNode(token, Position, false);
         }
 
-        var left = Grammar.GetPrefixParselet(token).Parse(this, token);
+        var left = Grammar.GetPrefixParslet(token).Parse(this, token);
 
         token = Tokenizer.Consume();
 
@@ -77,13 +77,13 @@ public class ExpressionParser : Parser
         }
 
         if (Grammar.IsPostfix(Grammar.GetExpressionKind(token))) {
-            left = Grammar.GetPostfixParselet(token).Parse(this, token, left);
+            left = Grammar.GetPostfixParslet(token).Parse(this, token, left);
 
             token = Tokenizer.Consume();
         }
 
         while (precedence < Grammar.GetPrecedence(token)) {
-            left = Grammar.GetOperatorParselet(token).Parse(this, token, left);
+            left = Grammar.GetOperatorParslet(token).Parse(this, token, left);
 
             token = Tokenizer.Consume();
         }

@@ -1,4 +1,4 @@
-public sealed class WhileParselet : IStatementParselet<WhileNode>
+public sealed class WhileParslet : IStatementParslet<WhileNode>
 {
     public WhileNode Parse(StatementParser parser, Token whileToken) {
         if (!(whileToken is ComplexToken whileKeyword && whileKeyword == "while")) {

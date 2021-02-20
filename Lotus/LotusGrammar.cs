@@ -7,7 +7,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
         InitializeTriviaToklets();
         InitializeExpressionKinds();
         InitializeExpressionParslets();
-        InitializeStatementKinds();
         InitializeStatementParslets();
 
         base.Initialize(internalGrammar);
@@ -123,39 +122,21 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterExpressionKind("?", ExpressionKind.Ternary);
     }
 
-    private void InitializeStatementKinds() {
-        internalGrammar
-            .RegisterStatementKind("var", StatementKind.VariableDeclaration)
-            .RegisterStatementKind("func", StatementKind.FunctionDeclaration)
-            .RegisterStatementKind("return", StatementKind.ReturnStatement)
-            .RegisterStatementKind("from", StatementKind.FromStatement)
-            .RegisterStatementKind("namespace", StatementKind.NamespaceStatement)
-            .RegisterStatementKind("foreach", StatementKind.ForeachLoop)
-            .RegisterStatementKind("for", StatementKind.ForLoop)
-            .RegisterStatementKind("if", StatementKind.IfStatement)
-            .RegisterStatementKind("while", StatementKind.WhileStatement)
-            .RegisterStatementKind("do", StatementKind.DoWhileStatement)
-            .RegisterStatementKind("break", StatementKind.BreakStatement)
-            .RegisterStatementKind("continue", StatementKind.ContinueStatement)
-            .RegisterStatementKind("using", StatementKind.UsingStatement)
-            .RegisterStatementKind("print", StatementKind.PrintStatement);
-    }
-
     private void InitializeStatementParslets() {
         internalGrammar
-            .RegisterStatementParslet(StatementKind.VariableDeclaration, new DeclarationParslet())
-            .RegisterStatementParslet(StatementKind.FunctionDeclaration, new FunctionDeclarationParslet())
-            .RegisterStatementParslet(StatementKind.ReturnStatement, new ReturnParslet())
-            .RegisterStatementParslet(StatementKind.FromStatement, new ImportParslet())
-            .RegisterStatementParslet(StatementKind.NamespaceStatement, new NamespaceParslet())
-            .RegisterStatementParslet(StatementKind.ForeachLoop, new ForeachParslet())
-            .RegisterStatementParslet(StatementKind.ForLoop, new ForParslet())
-            .RegisterStatementParslet(StatementKind.IfStatement, new IfParslet())
-            .RegisterStatementParslet(StatementKind.WhileStatement, new WhileParslet())
-            .RegisterStatementParslet(StatementKind.DoWhileStatement, new DoWhileParslet())
-            .RegisterStatementParslet(StatementKind.BreakStatement, new BreakParslet())
-            .RegisterStatementParslet(StatementKind.ContinueStatement, new ContinueParslet())
-            .RegisterStatementParslet(StatementKind.UsingStatement, new UsingParslet())
-            .RegisterStatementParslet(StatementKind.PrintStatement, new PrintParslet());
+            .RegisterStatementParslet("var", new DeclarationParslet())
+            .RegisterStatementParslet("func", new FunctionDeclarationParslet())
+            .RegisterStatementParslet("return", new ReturnParslet())
+            .RegisterStatementParslet("from", new ImportParslet())
+            .RegisterStatementParslet("namespace", new NamespaceParslet())
+            .RegisterStatementParslet("foreach", new ForeachParslet())
+            .RegisterStatementParslet("for", new ForParslet())
+            .RegisterStatementParslet("if", new IfParslet())
+            .RegisterStatementParslet("while", new WhileParslet())
+            .RegisterStatementParslet("do", new DoWhileParslet())
+            .RegisterStatementParslet("break", new BreakParslet())
+            .RegisterStatementParslet("continue", new ContinueParslet())
+            .RegisterStatementParslet("using", new UsingParslet())
+            .RegisterStatementParslet("print", new PrintParslet());
     }
 }

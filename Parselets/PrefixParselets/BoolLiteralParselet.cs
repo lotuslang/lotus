@@ -1,4 +1,4 @@
-public sealed class BoolLiteralParselet : IPrefixParselet<BoolNode>
+public sealed class BoolLiteralParslet : IPrefixParslet<BoolNode>
 {
     public BoolNode Parse(ExpressionParser parser, Token token) {
         if (token is BoolToken boolToken) {

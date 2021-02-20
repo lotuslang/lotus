@@ -1,4 +1,4 @@
-public sealed class LeftParenParselet : IPrefixParselet<ValueNode>
+public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
 {
     public ValueNode Parse(ExpressionParser parser, Token leftParenToken) {
         if (leftParenToken != "(")

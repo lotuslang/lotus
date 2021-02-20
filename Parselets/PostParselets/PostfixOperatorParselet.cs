@@ -1,10 +1,10 @@
-public sealed class PostfixOperatorParselet : IPostfixParselet<OperationNode>
+public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
 {
     public Precedence Precedence { get; }
 
     readonly OperationType opType;
 
-    public PostfixOperatorParselet(OperationType operation) {
+    public PostfixOperatorParslet(OperationType operation) {
         Precedence = Precedence.Unary;
 
         opType = operation;

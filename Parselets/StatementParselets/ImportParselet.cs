@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public sealed class ImportParselet : IStatementParselet<ImportNode>
+public sealed class ImportParslet : IStatementParslet<ImportNode>
 {
     public ImportNode Parse(StatementParser parser, Token fromToken) {
         if (!(fromToken is ComplexToken fromKeyword && fromToken == "from"))
@@ -33,7 +33,7 @@ public sealed class ImportParselet : IStatementParselet<ImportNode>
         // The problem is that I don't really like exposing the Tokenizer to the public, because that is supposed to be an
         // "implementation detail", and it's kinda against the encapsulation principle (but I mean at this point this whole
         // thing could probably be written in weird F# since there's so much immutability. We only need OOP for the Tokens,
-        // Nodes, Parselets and Toklets, because OOP is way easier to use to create a SyntaxTree and it's also the model
+        // Nodes, Parslets and Toklets, because OOP is way easier to use to create a SyntaxTree and it's also the model
         // I'm the most comfortable with)
         var importToken = parser.Tokenizer.Consume();
 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
+public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
 {
     public StringNode Parse(ExpressionParser parser, Token token) {
         if (token.Kind == TokenKind.@string) {

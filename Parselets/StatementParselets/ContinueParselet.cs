@@ -1,4 +1,4 @@
-public sealed class ContinueParselet : IStatementParselet<ContinueNode>
+public sealed class ContinueParslet : IStatementParslet<ContinueNode>
 {
     public ContinueNode Parse(StatementParser parser, Token continueToken) {
         if (!(continueToken is ComplexToken continueKeyword && continueKeyword == "continue")) {

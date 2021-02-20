@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public sealed class ForParselet : IStatementParselet<ForNode>
+public sealed class ForParslet : IStatementParslet<ForNode>
 {
     public ForNode Parse(StatementParser parser, Token forToken) {
         if (!(forToken is ComplexToken forKeyword && forKeyword == "for"))

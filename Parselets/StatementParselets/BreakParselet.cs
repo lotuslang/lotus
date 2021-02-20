@@ -1,4 +1,4 @@
-public sealed class BreakParselet : IStatementParselet<BreakNode>
+public sealed class BreakParslet : IStatementParslet<BreakNode>
 {
     public BreakNode Parse(StatementParser parser, Token breakToken) {
         if (!(breakToken is ComplexToken breakKeyword && breakKeyword == "break")) {

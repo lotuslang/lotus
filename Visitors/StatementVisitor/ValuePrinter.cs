@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 
-public sealed class ValuePrinter : NodeVisitor<string>
+public sealed class ValuePrinter : StatementVisitor<string>
 {
 
     protected override string Default(StatementNode node)
@@ -142,7 +142,7 @@ public sealed class ValuePrinter : NodeVisitor<string>
     }
 
     public override string Visit(ParenthesizedValueNode node)
-        => ASTHelper.PrintToken(node.OpeningToken) + Print(node.Value) + ASTHelper.PrintToken(node.ClosingToken);
+        => ASTHelper.PrintToken(node.OpeningToken) + Print(node.Values) + ASTHelper.PrintToken(node.ClosingToken);
 
 
     public override string Visit(TupleNode node) {

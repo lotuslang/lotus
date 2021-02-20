@@ -1,7 +1,7 @@
 #nullable disable
 #pragma warning disable IDE0034
 
-public abstract class NodeVisitor<T>
+public abstract class StatementVisitor<T>
 {
     protected abstract T Default(StatementNode node);
 

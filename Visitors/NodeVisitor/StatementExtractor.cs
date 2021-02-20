@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public sealed class StatementExtractor : NodeVisitor<IEnumerable<StatementNode>>
 {
-    private static readonly StatementNode[] emptyArray = new ValueNode[0];
+    private static readonly StatementNode[] emptyArray = new StatementNode[0];
 
     protected override IEnumerable<StatementNode> Default(StatementNode node)
         => emptyArray;

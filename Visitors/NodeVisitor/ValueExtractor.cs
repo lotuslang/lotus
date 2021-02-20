@@ -13,6 +13,7 @@ public sealed class ValueExtractor : NodeVisitor<IEnumerable<ValueNode>>
         => emptyArray;
 
 
+
     public override IEnumerable<ValueNode> Visit(DeclarationNode node)
         => new[] { node.Value };
 
@@ -30,6 +31,8 @@ public sealed class ValueExtractor : NodeVisitor<IEnumerable<ValueNode>>
 
     public override IEnumerable<ValueNode> Visit(ReturnNode node)
         => node.IsReturningValue ? new[] { node.Value } : emptyArray;
+
+    public override IEnumerable<ValueNode> Visit(StatementExpressionNode node) => ExtractValue(node.Value);
 
     public override IEnumerable<ValueNode> Visit(WhileNode node)
         => new[] { node.Condition };
@@ -58,4 +61,6 @@ public sealed class ValueExtractor : NodeVisitor<IEnumerable<ValueNode>>
         => emptyArray;
 
     public IEnumerable<ValueNode> ExtractValue(StatementNode node) => node.Accept(this);
+
+    public IEnumerable<ValueNode> ExtractValue(ValueNode node) => node.Accept(this);
 }

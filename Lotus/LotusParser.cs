@@ -2,19 +2,22 @@ using System.Collections.Generic;
 
 public abstract class LotusParser : Parser
 {
+    public TopLevelParser TopLevelParser { get; }
 
     public StatementParser StatementParser { get; }
 
     public ExpressionParser ExpressionParser { get; }
 
-    public LotusParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar()) {
+    public LotusParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) {
+        TopLevelParser = new TopLevelParser(tokenConsumer);
         StatementParser = new StatementParser(tokenConsumer);
         ExpressionParser = new ExpressionParser(tokenConsumer);
     }
 
-    public LotusParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, new LotusGrammar()) {
-        StatementParser = new StatementParser(nodeConsumer);
-        ExpressionParser = new ExpressionParser(nodeConsumer);
+    public LotusParser(IConsumer<Node> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
+        TopLevelParser = new TopLevelParser(nodeConsumer);
+        StatementParser = TopLevelParser.StatementParser;
+        ExpressionParser = StatementParser.ExpressionParser;
     }
 
     public LotusParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }

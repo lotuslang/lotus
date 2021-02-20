@@ -1,7 +1,7 @@
 #nullable disable
 #pragma warning disable IDE0034
 
-public abstract class NodeVisitor<T>
+public abstract class NodeVisitor<T> // TODO: !!! separate statements and values !!!
 {
     protected abstract T Default(StatementNode node);
 
@@ -21,9 +21,10 @@ public abstract class NodeVisitor<T>
     public virtual T Visit(FunctionDeclarationNode node) => Default(node);
     public virtual T Visit(IfNode node) => Default(node);
     public virtual T Visit(ImportNode node) => Default(node);
-    public virtual T Visit(NamespaceNode node) => Default(node);
+    //TODO: public virtual T Visit(NamespaceNode node) => Default(node);
     public virtual T Visit(PrintNode node) => Default(node);
     public virtual T Visit(ReturnNode node) => Default(node);
+    public virtual T Visit(StatementExpressionNode node) => Default(node as StatementNode);
     public virtual T Visit(UsingNode node) => Default(node);
     public virtual T Visit(WhileNode node) => Default(node);
 

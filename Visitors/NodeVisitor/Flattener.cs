@@ -11,10 +11,10 @@ public sealed class Flattener : NodeVisitor<IEnumerable<StatementNode>>
         => new[] { node };
 
     protected override IEnumerable<StatementNode> Default(ValueNode node)
-        => new[] { node };
+        => new[] { (StatementExpressionNode)node };
 
     public override IEnumerable<StatementNode> Visit(DeclarationNode node)
-        => new StatementNode[] { node.Value, node };
+        => new StatementNode[] { (StatementExpressionNode)node.Value, node };
 
     public override IEnumerable<StatementNode> Visit(ElseNode node)
         => (node.HasIf ? Flatten(node.IfNode!) : emptyArray)
@@ -57,29 +57,31 @@ public sealed class Flattener : NodeVisitor<IEnumerable<StatementNode>>
         => (node.IsReturningValue ? Visit(node.Value) : emptyArray)
                 .Append(node);
 
+    public override IEnumerable<StatementNode> Visit(StatementExpressionNode node) => Flatten(node.Value);
+
     public override IEnumerable<StatementNode> Visit(WhileNode node)
         => (node.IsDoLoop ? Visit(node.Body).Concat(Visit(node.Condition)) : Visit(node.Condition).Concat(Visit(node.Body)))
                 .Append(node);
 
     public override IEnumerable<StatementNode> Visit(OperationNode node)
         => node.Operands.SelectMany(Flatten)
-                .Append(node);
+                .Append((StatementExpressionNode)node);
 
     public override IEnumerable<StatementNode> Visit(FunctionCallNode node)
         => node.ArgList.Values.SelectMany(Flatten)
-                .Append(node);
+                .Append((StatementExpressionNode)node);
 
     public override IEnumerable<StatementNode> Visit(ObjectCreationNode node)
         => Flatten(node.InvocationNode)
-                .Append(node);
+                .Append((StatementExpressionNode)node);
 
     public override IEnumerable<StatementNode> Visit(ParenthesizedValueNode node)
         => Flatten(node.Value)
-                .Append(node);
+                .Append((StatementExpressionNode)node);
 
     public override IEnumerable<StatementNode> Visit(TupleNode node)
         =>  node.Values.SelectMany(Flatten)
-                .Append(node);
+                .Append((StatementExpressionNode)node);
 
     // TODO: Find an easier/clearer/faster way to do this
     public override IEnumerable<StatementNode> Visit(SimpleBlock block)
@@ -98,4 +100,6 @@ public sealed class Flattener : NodeVisitor<IEnumerable<StatementNode>>
                 .Select(Flatten)
                 .SelectMany(node => node);
     public IEnumerable<StatementNode> Flatten(StatementNode node) => node.Accept(this);
+
+    public IEnumerable<StatementNode> Flatten(ValueNode node) => node.Accept(this);
 }

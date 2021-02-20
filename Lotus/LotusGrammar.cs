@@ -2,7 +2,11 @@ public sealed class LotusGrammar : ReadOnlyGrammar
 {
     private readonly Grammar internalGrammar = new Grammar();
 
-    public LotusGrammar() : base() {
+    private static readonly LotusGrammar _instance = new LotusGrammar();
+
+    public static LotusGrammar Instance => _instance;
+
+    private LotusGrammar() : base() {
         InitializeToklets();
         InitializeTriviaToklets();
         InitializeExpressionKinds();
@@ -129,7 +133,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementKind("func", StatementKind.FunctionDeclaration)
             .RegisterStatementKind("return", StatementKind.ReturnStatement)
             .RegisterStatementKind("from", StatementKind.FromStatement)
-            .RegisterStatementKind("namespace", StatementKind.NamespaceStatement)
+            //TODO:.RegisterStatementKind("namespace", StatementKind.NamespaceStatement)
             .RegisterStatementKind("foreach", StatementKind.ForeachLoop)
             .RegisterStatementKind("for", StatementKind.ForLoop)
             .RegisterStatementKind("if", StatementKind.IfStatement)
@@ -147,7 +151,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParselet(StatementKind.FunctionDeclaration, new FunctionDeclarationParselet())
             .RegisterStatementParselet(StatementKind.ReturnStatement, new ReturnParselet())
             .RegisterStatementParselet(StatementKind.FromStatement, new ImportParselet())
-            .RegisterStatementParselet(StatementKind.NamespaceStatement, new NamespaceParselet())
+            //TODO:.RegisterStatementParselet(StatementKind.NamespaceStatement, new NamespaceParselet())
             .RegisterStatementParselet(StatementKind.ForeachLoop, new ForeachParselet())
             .RegisterStatementParselet(StatementKind.ForLoop, new ForParselet())
             .RegisterStatementParselet(StatementKind.IfStatement, new IfParselet())

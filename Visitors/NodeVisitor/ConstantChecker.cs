@@ -11,6 +11,9 @@ public sealed class ConstantChecker : NodeVisitor<bool>
 
 
 
+    // is it really useful ? i mean, you shouldn't use statements with this anyway, so...
+    public override bool Visit(StatementExpressionNode node) => IsContant(node.Value);
+
     public override bool Visit(ComplexStringNode node)
         => node.CodeSections.All(IsContant);
 

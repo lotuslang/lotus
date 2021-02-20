@@ -35,8 +35,8 @@ class Program
 
         var nodes = new List<StatementNode>();
 
-        while (parser.Consume(out StatementNode node)) {
-            nodes.Add(node);
+        while (parser.Consume(out Node node)) {
+            nodes.Add(node as StatementNode);
         }
 
         //Console.Error.WriteLine(Logger.GetTextAt(new LocationRange(14, 22, 1, 1, "test.txt")));
@@ -80,7 +80,7 @@ class Program
         if (args[0] == "silent") return;
 
         if (args[0] == "constant") {
-            IEnumerable<StatementNode> values;
+            IEnumerable<ValueNode> values;
 
             if (args.Length == 2) {
                 if (args[1] == "all") {
@@ -90,7 +90,7 @@ class Program
                     return;
                 }
             } else {
-                values = nodes.Where(node => node is ValueNode);
+                values = nodes.WhereType<ValueNode>();
             }
 
             foreach (var node in values) {
@@ -106,8 +106,8 @@ class Program
         if (args[0] == "print") {
             if (args.Length == 2) {
                 if (args[1] == "all") {
-                    foreach (var node in nodes.Where(node => node is ValueNode)) {
-                        Console.Write(ASTHelper.PrintValue(node as ValueNode));
+                    foreach (var node in nodes.WhereType<ValueNode>()) {
+                        Console.Write(ASTHelper.PrintValue(node));
                     }
                 } else {
                     Console.WriteLine("Could not understand option " + args[1]);

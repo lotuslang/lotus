@@ -20,11 +20,14 @@ public sealed class NameChecker : NodeVisitor<bool>
         return false;
     }
 
+    // is it really useful ? i mean, you shouldn't use statements with this anyway, so...
+    public override bool Visit(StatementExpressionNode node) => IsName(node.Value);
+
     public override bool Visit(IdentNode node) => true;
 
     public override bool Visit(ParenthesizedValueNode node) => node.Value.Accept(this);
 
     public override bool Visit(SimpleBlock block) => false;
 
-    public bool IsName(StatementNode node) => node.Accept(new NameChecker());
+    public bool IsName(ValueNode node) => node.Accept(new NameChecker());
 }

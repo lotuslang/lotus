@@ -1,12 +1,21 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
-public class ExpressionParser : Parser
+public class ExpressionParser : Parser, IConsumer<ValueNode>
 {
-    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar()) { }
+    ValueNode IConsumer<ValueNode>.Current => (base.Current as StatementExpressionNode)!.Value;
 
-    public ExpressionParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, new LotusGrammar()) { }
+    public new ValueNode Default => ValueNode.NULL;
+
+    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
+
+    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(LotusGrammar.Instance) {
+        while (nodeConsumer.Consume(out ValueNode? node)) {
+            reconsumeQueue.Enqueue(node);
+        }
+    }
 
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 
@@ -18,10 +27,10 @@ public class ExpressionParser : Parser
 
 
     public override StatementNode Peek()
-        => new ExpressionParser(this).Consume();
+        => new ExpressionParser(this as Parser).Consume();
 
     public override StatementNode[] Peek(int n) {
-        var parser = new ExpressionParser(this);
+        var parser = new ExpressionParser(this as Parser);
 
         var output = new List<StatementNode>();
 
@@ -32,10 +41,10 @@ public class ExpressionParser : Parser
         return output.ToArray();
     }
 
-    public override StatementNode Consume() {
+    public override StatementExpressionNode Consume() {
         base.Consume();
 
-        return ConsumeValue(Precedence.Comma);
+        return (StatementExpressionNode)ConsumeValue(Precedence.Comma);
     }
 
     public ValueNode ConsumeValue(Precedence precedence = 0) {
@@ -202,5 +211,20 @@ public class ExpressionParser : Parser
         }
 
         return new TupleNode(items, startingDelimiter, endingToken, isValid);
+    }
+
+    ValueNode IConsumer<ValueNode>.Consume()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool Consume([MaybeNullWhen(false)] out ValueNode item)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    ValueNode IConsumer<ValueNode>.Peek()
+    {
+        throw new System.NotImplementedException();
     }
 }

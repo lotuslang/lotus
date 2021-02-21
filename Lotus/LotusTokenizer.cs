@@ -3,13 +3,13 @@ using System.Collections.Generic;
 public sealed class LotusTokenizer : Tokenizer
 {
 
-    public LotusTokenizer(StringConsumer stringConsumer) : base(stringConsumer, new LotusGrammar())
+    public LotusTokenizer(StringConsumer stringConsumer) : base(stringConsumer, LotusGrammar.Instance)
     { }
 
-    public LotusTokenizer(IConsumer<char> consumer) : base(consumer, new LotusGrammar())
+    public LotusTokenizer(IConsumer<char> consumer) : base(consumer, LotusGrammar.Instance)
     { }
 
-    public LotusTokenizer(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar())
+    public LotusTokenizer(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
     { }
 
     public LotusTokenizer(LotusTokenizer tokenizer) : base(tokenizer, tokenizer.Grammar)

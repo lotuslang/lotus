@@ -124,6 +124,33 @@ class Program
             return;
         }
 
+        if (args[0] == "hash") {
+            var g = new Graph("AST");
+
+            g.AddNodeProp("fontname", "Consolas, monospace");
+            g.AddGraphProp("fontname", "Consolas, monospace");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.Name}\\n\\n");
+            g.AddGraphProp("labelloc", "top");
+
+            if (args.Length == 2) {
+                if (args[1] == "constant") {
+                    foreach (var node in nodes) {
+                        g.AddNode(ASTHelper.ShowConstants(node));
+                    }
+                } else {
+                    Console.WriteLine("Could not understand option " + args[1]);
+                    return;
+                }
+            } else {
+                foreach (var node in nodes) {
+                    g.AddNode(ASTHelper.ToGraphNode(node));
+                }
+            }
+
+            Console.WriteLine(g.GetHashCode());
+            return;
+        }
+
         Console.WriteLine("Could not understand option " + args[0]);
     }
 }

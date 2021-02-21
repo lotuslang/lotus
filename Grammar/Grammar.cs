@@ -9,6 +9,7 @@ public class Grammar : ReadOnlyGrammar
         IDictionary<ExpressionKind, IInfixParslet<ValueNode>>? infixParslets = null,
         IDictionary<ExpressionKind, IPostfixParslet<ValueNode>>? postfixParslets = null,
         IDictionary<string, IStatementParslet<StatementNode>>? statementParslets = null,
+        IDictionary<string, ITopLevelParslet<TopLevelNode>>? topLevelParslets = null,
         IDictionary<string, ExpressionKind>? expressionKinds = null,
         ICollection<IToklet<Token>>? toklets = null,
         ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
@@ -18,6 +19,7 @@ public class Grammar : ReadOnlyGrammar
             infixParslets,
             postfixParslets,
             statementParslets,
+            topLevelParslets,
             expressionKinds,
             toklets,
             triviaToklets
@@ -75,8 +77,14 @@ public class Grammar : ReadOnlyGrammar
         return this;
     }
 
-    public Grammar RegisterStatementParslet(string s, IStatementParslet<StatementNode> parslet) {
-        statementParslets.Add(s, parslet);
+    public Grammar RegisterStatementParslet(string representation, IStatementParslet<StatementNode> parslet) {
+        statementParslets.Add(representation, parslet);
+
+        return this;
+    }
+
+    public Grammar RegisterTopLevelParslets(string representation, ITopLevelParslet<TopLevelNode> parslet) {
+        topLevelParslets.Add(representation, parslet);
 
         return this;
     }

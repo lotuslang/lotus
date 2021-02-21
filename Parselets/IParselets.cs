@@ -21,7 +21,7 @@ public interface IStatementParslet<out T> where T : StatementNode
     T Parse(StatementParser parser, Token token);
 }
 
-public interface ITopLevelParselet<out T> where T: TopLevelNode
+public interface ITopLevelParslet<out T> where T: TopLevelNode
 {
     T Parse(TopLevelParser parser, Token token);
 }

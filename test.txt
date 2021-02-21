@@ -50,7 +50,7 @@ from origin import someType
 
 using std.collections
 
-//TODO:namespace my_space
+namespace my_space
 
 foreach (item in collection) { }
 

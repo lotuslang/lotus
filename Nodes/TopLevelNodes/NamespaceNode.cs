@@ -4,9 +4,15 @@ public class NamespaceNode : TopLevelNode
 
     public ValueNode NamespaceName { get; protected set; }
 
-    public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken, bool isValid = true) : base(Token.NULL)
-        //: base(namespaceToken, new LocationRange(namespaceToken.Location, namespaceName.Location), isValid)
+    public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken, bool isValid = true)
+        : base(namespaceToken, new LocationRange(namespaceToken.Location, namespaceName.Location), isValid)
     {
         NamespaceName = namespaceName;
     }
+
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public override T Accept<T>(TopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

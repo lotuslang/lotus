@@ -14,15 +14,11 @@ public abstract class StatementVisitor<T>
     public virtual T Visit(ElseNode node) => Default(node);
     public virtual T Visit(ForeachNode node) => Default(node);
     public virtual T Visit(ForNode node) => Default(node);
-    public virtual T Visit(FromNode node) => Default(node);
     public virtual T Visit(FunctionDeclarationNode node) => Default(node);
     public virtual T Visit(IfNode node) => Default(node);
-    public virtual T Visit(ImportNode node) => Default(node);
-    //TODO: public virtual T Visit(NamespaceNode node) => Default(node);
     public virtual T Visit(PrintNode node) => Default(node);
     public virtual T Visit(ReturnNode node) => Default(node);
     public virtual T Visit(StatementExpressionNode node) => Default(node as StatementNode);
-    public virtual T Visit(UsingNode node) => Default(node);
     public virtual T Visit(WhileNode node) => Default(node);
 
 

@@ -39,6 +39,13 @@ public class ReadOnlyGrammar
         init => statementParslets = value;
     }
 
+    public IDictionary<string, ITopLevelParslet<TopLevelNode>> topLevelParslets;
+
+    public virtual ReadOnlyDictionary<string, ITopLevelParslet<TopLevelNode>> TopLevelParslets {
+        get => topLevelParslets.AsReadOnly();
+        init => topLevelParslets = value;
+    }
+
     protected IDictionary<string, ExpressionKind> expressionKinds;
 
     public virtual ReadOnlyDictionary<string, ExpressionKind> ExpressionKinds {
@@ -66,6 +73,7 @@ public class ReadOnlyGrammar
         IDictionary<ExpressionKind, IInfixParslet<ValueNode>>? infixParslets = null,
         IDictionary<ExpressionKind, IPostfixParslet<ValueNode>>? postfixParslets = null,
         IDictionary<string, IStatementParslet<StatementNode>>? statementParslets = null,
+        IDictionary<string, ITopLevelParslet<TopLevelNode>>? topLevelParslets = null,
         IDictionary<string, ExpressionKind>? expressionKinds = null,
         ICollection<IToklet<Token>>? toklets = null,
         ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
@@ -75,6 +83,7 @@ public class ReadOnlyGrammar
             infixParslets,
             postfixParslets,
             statementParslets,
+            topLevelParslets,
             expressionKinds,
             toklets,
             triviaToklets
@@ -88,6 +97,7 @@ public class ReadOnlyGrammar
             grammar.infixParslets,
             grammar.postfixParslets,
             grammar.statementParslets,
+            grammar.topLevelParslets,
             grammar.expressionKinds,
             grammar.toklets,
             grammar.triviaToklets
@@ -103,6 +113,7 @@ public class ReadOnlyGrammar
             grammar.infixParslets,
             grammar.postfixParslets,
             grammar.statementParslets,
+            grammar.topLevelParslets,
             grammar.expressionKinds,
             grammar.toklets,
             grammar.triviaToklets
@@ -118,6 +129,7 @@ public class ReadOnlyGrammar
         IDictionary<ExpressionKind, IInfixParslet<ValueNode>>? infixParslets = null,
         IDictionary<ExpressionKind, IPostfixParslet<ValueNode>>? postfixParslets = null,
         IDictionary<string, IStatementParslet<StatementNode>>? statementParslets = null,
+        IDictionary<string, ITopLevelParslet<TopLevelNode>>? topLevelParslets = null,
         IDictionary<string, ExpressionKind>? expressionKinds = null,
         ICollection<IToklet<Token>>? toklets = null,
         ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
@@ -126,6 +138,7 @@ public class ReadOnlyGrammar
         this.infixParslets = infixParslets ?? new Dictionary<ExpressionKind, IInfixParslet<ValueNode>>();
         this.postfixParslets = postfixParslets ?? new Dictionary<ExpressionKind, IPostfixParslet<ValueNode>>();
         this.statementParslets = statementParslets ?? new Dictionary<string, IStatementParslet<StatementNode>>();
+        this.topLevelParslets = topLevelParslets ?? new Dictionary<string, ITopLevelParslet<TopLevelNode>>();
 
         this.expressionKinds = expressionKinds ?? new Dictionary<string, ExpressionKind>();
 
@@ -190,6 +203,23 @@ public class ReadOnlyGrammar
         }
 
         if (!statementParslets.TryGetValue(token, out parselet)) return false;
+
+        return true;
+    }
+
+    public ITopLevelParslet<TopLevelNode> GetTopLevelParslet(Token token)
+        => GetTopLevelParslet(token.Representation);
+
+    public ITopLevelParslet<TopLevelNode> GetTopLevelParslet(string s)
+        => topLevelParslets[s];
+
+    public bool TryGetTopLevelParslet(Token token, [MaybeNullWhen(false)] out ITopLevelParslet<TopLevelNode> parselet) {
+        if (token is null) {
+            parselet = null!;
+            return false;
+        }
+
+        if (!topLevelParslets.TryGetValue(token, out parselet)) return false;
 
         return true;
     }

@@ -2,15 +2,20 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
-public class StatementParser : Parser
+public class StatementParser : Parser<StatementNode>
 {
     public ExpressionParser ExpressionParser { get; protected set; }
 
-    public new StatementNode Current { get; protected set; }
+    public override StatementNode Current {
+        get;
+        protected set;
+    }
+
+    public new static readonly StatementNode ConstantDefault = StatementNode.NULL;
 
     public StatementNode Default {
         get {
-            var output = StatementNode.NULL;
+            var output = ConstantDefault;
 
             output.Location = Position;
 
@@ -19,7 +24,8 @@ public class StatementParser : Parser
     }
 
     protected void Init() {
-        ExpressionParser = new ExpressionParser(this);
+        ExpressionParser = new ExpressionParser(Tokenizer);
+        Current = ConstantDefault;
     }
 
 #nullable disable
@@ -27,10 +33,7 @@ public class StatementParser : Parser
         Init();
     }
 
-    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(LotusGrammar.Instance) {
-        while (nodeConsumer.Consume(out StatementNode node)) {
-            reconsumeQueue.Enqueue(node);
-        }
+    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
         Init();
     }
 
@@ -40,7 +43,7 @@ public class StatementParser : Parser
 
     public StatementParser(FileInfo file) : this(new LotusTokenizer(file)) { }
 
-    public StatementParser(Parser parser) : base(parser) {
+    public StatementParser(Parser<StatementNode> parser) : base(parser) {
         Init();
     }
 #nullable enable
@@ -60,12 +63,6 @@ public class StatementParser : Parser
         return output.ToArray();
     }
 
-    public bool Consume(out StatementNode result) {
-        result = Consume(); // consume a StatementNode
-
-        return result != Default;
-    }
-
     public override StatementNode Consume() {
         base.Consume();
 
@@ -74,17 +71,17 @@ public class StatementParser : Parser
 
         // if the token is EOF, return StatementNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
-            return ((Current = Default) as StatementNode)!;
+            return (Current = Default);
         }
 
         if (Grammar.TryGetStatementParslet(currToken, out var parslet)) {
             Current = parslet.Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();
-            Current = ExpressionParser.Consume();
+            Current = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
-        return (Current as StatementNode)!;
+        return Current;
     }
 
     public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true)

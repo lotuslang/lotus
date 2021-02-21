@@ -3,14 +3,34 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
-public class TopLevelParser : Parser
+public class TopLevelParser : Parser<TopLevelNode>
 {
     public StatementParser StatementParser { get; private set; }
 
     public ExpressionParser ExpressionParser => StatementParser.ExpressionParser;
 
+    private TopLevelNode current = ConstantDefault;
+
+    public override TopLevelNode Current {
+        get;
+        protected set;
+    }
+
+    public new static readonly TopLevelNode ConstantDefault = TopLevelNode.NULL;
+
+    public override TopLevelNode Default {
+        get {
+            var output = ConstantDefault;
+
+            output.Location = Position;
+
+            return output;
+        }
+    }
+
     protected void Init() {
-        StatementParser = new StatementParser(this);
+        StatementParser = new StatementParser(Tokenizer);
+        Current = ConstantDefault;
     }
 
 #nullable disable
@@ -18,7 +38,7 @@ public class TopLevelParser : Parser
         Init();
     }
 
-    public TopLevelParser(IConsumer<Node> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
+    public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
         Init();
     }
 
@@ -28,7 +48,7 @@ public class TopLevelParser : Parser
 
     public TopLevelParser(FileInfo file) : this(new LotusTokenizer(file)) { }
 
-    public TopLevelParser(Parser parser) : base(parser) {
+    public TopLevelParser(Parser<TopLevelNode> parser) : base(parser, LotusGrammar.Instance) {
         Init();
     }
 #nullable enable
@@ -48,15 +68,23 @@ public class TopLevelParser : Parser
         return output.ToArray();
     }
 
-    public bool Consume(out TopLevelNode result) {
-        result = Consume(); // consume a StatementNode
-
-        return result != Default;
-    }
-
     public override TopLevelNode Consume() {
         base.Consume();
 
-        
+        var currToken = Tokenizer.Consume();
+
+        // if the token is EOF, return TopLevelNode.NULL
+        if (currToken == Tokenizer.Default || currToken == "\u0003") {
+            return (Current = Default);
+        }
+
+        if (Grammar.TryGetTopLevelParslet(currToken, out var parslet)) {
+            Current = parslet.Parse(this, currToken);
+        } else {
+            Tokenizer.Reconsume();
+            Current = new TopLevelStatementNode(StatementParser.Consume());
+        }
+
+        return Current;
     }
 }

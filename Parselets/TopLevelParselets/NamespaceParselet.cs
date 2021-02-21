@@ -1,4 +1,4 @@
-public sealed class NamespaceParselet : ITopLevelParselet<NamespaceNode>
+public sealed class NamespaceParslet : ITopLevelParslet<NamespaceNode>
 {
     public NamespaceNode Parse(TopLevelParser parser, Token namespaceToken) {
         var name = parser.ExpressionParser.ConsumeValue();

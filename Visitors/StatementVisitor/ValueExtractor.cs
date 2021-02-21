@@ -13,7 +13,6 @@ public sealed class ValueExtractor : StatementVisitor<IEnumerable<ValueNode>>
         => emptyArray;
 
 
-
     public override IEnumerable<ValueNode> Visit(DeclarationNode node)
         => new[] { node.Value };
 

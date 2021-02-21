@@ -30,10 +30,6 @@ public sealed class StatementPrinter : StatementVisitor<string>
          + ASTHelper.PrintToken(node.ClosingParenthesis)
          + Visit(node.Body);
 
-    public override string Visit(FromNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintValue(node.OriginName);
-
     public override string Visit(FunctionDeclarationNode node) {
         var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.Name) + ASTHelper.PrintToken(node.OpeningParenthesis);
 
@@ -64,14 +60,6 @@ public sealed class StatementPrinter : StatementVisitor<string>
          + Visit(node.Body)
          + (node.HasElse ? Print(node.ElseNode!) : "");
 
-    public override string Visit(ImportNode node)
-        => Visit(node.FromStatement)
-         + ASTHelper.PrintToken(node.Token)
-         + Utilities.Join(",", ASTHelper.PrintValue, node.ImportsName);
-
-    public override string Visit(NamespaceNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.NamespaceName);
-
     public override string Visit(PrintNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Value);
 
@@ -79,8 +67,7 @@ public sealed class StatementPrinter : StatementVisitor<string>
         => ASTHelper.PrintToken(node.Token)
          + (node.IsReturningValue ? ASTHelper.PrintValue(node.Value) : "");
 
-    public override string Visit(UsingNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.ImportName);
+    public override string Visit(StatementExpressionNode node) => ASTHelper.PrintValue(node.Value);
 
     public override string Visit(WhileNode node)
         => node.IsDoLoop ?

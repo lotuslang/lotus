@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public abstract class Parser : IConsumer<StatementNode>
+public abstract class Parser<T> : IConsumer<T> where T : Node
 {
-    private readonly Queue<StatementNode> reconsumeQueue;
+    protected readonly Queue<T> reconsumeQueue;
 
     public IConsumer<Token> Tokenizer { get; }
 
@@ -16,12 +16,12 @@ public abstract class Parser : IConsumer<StatementNode>
     /// Gets the last StatementNode object consumed by this instance.
     /// </summary>
     /// <value>The last StatementNode consumed.</value>
-    public StatementNode Current { get; protected set; }
+    public abstract T Current { get; protected set; }
 
     /// <summary>
     /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="StatementNode.NULL"/>
     /// </summary>
-    public static readonly StatementNode ConstantDefault = StatementNode.NULL;
+    public static readonly T ConstantDefault = (Node.NULL as T)!;
 
     /// <summary>
     /// Returns the value of <see cref="Parser.ConstantDefault"/> BUT adjusted for the current position. <br/>
@@ -29,8 +29,7 @@ public abstract class Parser : IConsumer<StatementNode>
     /// and the parser will always return a node with relevant position, even if it is EOF and other things that
     /// prompt for the use of <see cref="StatementNode.NULL"/>
     /// </summary>
-    /// <value></value>
-    public StatementNode Default {
+    public virtual T Default {
         get {
             var output = ConstantDefault;
 
@@ -44,7 +43,7 @@ public abstract class Parser : IConsumer<StatementNode>
 
 #pragma warning disable CS8618
     protected Parser() {
-        reconsumeQueue = new Queue<StatementNode>();
+        reconsumeQueue = new Queue<T>();
 
         Current = ConstantDefault;
 
@@ -70,13 +69,16 @@ public abstract class Parser : IConsumer<StatementNode>
 
     public Parser(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(grammar) {
         Tokenizer = tokenConsumer;
-        reconsumeQueue = new Queue<StatementNode>();
     }
 
-    public Parser(IConsumer<StatementNode> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
-        while (nodeConsumer.Consume(out StatementNode? node)) {
+    public Parser(IConsumer<T> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+        foreach (var node in nodeConsumer) {
             reconsumeQueue.Enqueue(node);
         }
+    }
+
+    public Parser(IEnumerable<Token> tokens, ReadOnlyGrammar grammar) : this(grammar) {
+        Tokenizer = new Consumer<Token>(tokens, Token.NULL);
     }
 
     public Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
@@ -85,35 +87,34 @@ public abstract class Parser : IConsumer<StatementNode>
 
     public Parser(System.IO.FileInfo file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
 
-    public Parser(Parser parser) : this(parser.Grammar) {
+    public Parser(Parser<T> parser) : this(parser.Grammar) {
         reconsumeQueue = parser.reconsumeQueue;
         Tokenizer = parser.Tokenizer;
         Current = parser.Current;
     }
 
-    public Parser(Parser parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
-        reconsumeQueue = new Queue<StatementNode>(parser.reconsumeQueue);
-
+    public Parser(Parser<T> parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
+        reconsumeQueue = parser.reconsumeQueue;
         Current = parser.Current;
     }
 
     /// <summary>
-    /// Reconsumes the last StatementNode object.
+    /// Reconsumes the last Node object.
     /// </summary>
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out StatementNode? node) && Object.ReferenceEquals(node, Current)) return;
+        if (reconsumeQueue.TryPeek(out T? node) && Object.ReferenceEquals(node, Current)) return;
     }
 
-    public abstract StatementNode Peek();
+    public abstract T Peek();
 
-    public abstract StatementNode[] Peek(int n);
+    public abstract T[] Peek(int n);
 
     /// <summary>
     /// Consumes a StatementNode object and returns it.
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise.</param>
     /// <returns>The StatementNode object consumed.</returns>
-    public bool Consume(out StatementNode result) {
+    public virtual bool Consume(out T result) {
         result = Consume(); // consume a StatementNode
 
         return result != Default;
@@ -123,8 +124,7 @@ public abstract class Parser : IConsumer<StatementNode>
     /// Consume a StatementNode object and returns it.
     /// </summary>
     /// <returns>The StatementNode object consumed.</returns>
-    public virtual StatementNode Consume() {
-
+    public virtual T Consume() {
         // If we are instructed to reconsume the last node, then dequeue a node from the reconsumeQueue and return it
         if (reconsumeQueue.Count != 0) {
             return reconsumeQueue.Dequeue();
@@ -138,85 +138,5 @@ public abstract class Parser : IConsumer<StatementNode>
         }
 
         return Default;
-    }
-
-    public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
-        var isValid = true;
-
-        // to consume a one-liner, you just consume a statement and return
-        if (areOneLinersAllowed && Tokenizer.Peek() != "{") {
-            if (!Consume(out StatementNode statement)) {
-                Logger.Error(new UnexpectedEOFException(
-                    context: "in simple block",
-                    expected: "a statement",
-                    range: Tokenizer.Current.Location
-                ));
-
-                isValid = false;
-            }
-
-            return new SimpleBlock(statement, statement.Token.Location, isValid);
-        }
-
-        var openingBracket = Tokenizer.Consume();
-
-        // we don't have to check for EOF because that is (sorta) handled by "areOneLinersAllowed"
-        if (openingBracket != "{") {
-            Logger.Error(new UnexpectedTokenException(
-                token: openingBracket,
-                context: "at the start of simple block (this probably means there was an internal error, please report this!)",
-                expected: "{"
-            ));
-
-            Tokenizer.Reconsume();
-        }
-
-        var location = openingBracket.Location;
-
-        var statements = new List<StatementNode>();
-
-        while (Tokenizer.Peek() != "}") {
-            statements.Add(Consume());
-
-            if (Tokenizer.Peek().Kind == TokenKind.EOF) {
-                Logger.Error(new UnexpectedEOFException(
-                    context: "in simple block",
-                    expected: "a statement",
-                    range: Tokenizer.Current.Location
-                ));
-
-                isValid = false;
-
-                break;
-            }
-
-            //if (Tokenizer.Peek() == ";") Tokenizer.Consume();
-        }
-
-        var closingBracket = Tokenizer.Peek();
-
-        if (closingBracket.Kind == TokenKind.EOF) {
-            Logger.Error(new UnexpectedEOFException(
-                context: "in simple block",
-                expected: "the character '}'",
-                range: Tokenizer.Position
-            ));
-
-            isValid = false;
-        } else if (closingBracket != "}") {
-            Logger.Error(new UnexpectedTokenException(
-                token: closingBracket,
-                context: "in simple block",
-                expected: "the character '}'"
-            ));
-
-            isValid = false;
-
-            Tokenizer.Reconsume();
-        }
-
-        Tokenizer.Consume();
-
-        return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
 }

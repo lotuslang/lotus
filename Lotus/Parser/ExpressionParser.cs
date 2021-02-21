@@ -2,28 +2,47 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
-public class ExpressionParser : Parser
+public class ExpressionParser : Parser<ValueNode>
 {
+    public override ValueNode Current {
+        get;
+        protected set;
+    } = ConstantDefault;
+
+    public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
+
+    public override ValueNode Default {
+        get {
+            var output = ConstantDefault;
+
+            output.Location = Position;
+
+            return output;
+        }
+    }
+
     public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
 
-    public ExpressionParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) { }
+    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) { }
 
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
+
+    public ExpressionParser(IEnumerable<Token> tokens) : base(tokens, LotusGrammar.Instance) { }
 
     public ExpressionParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
     public ExpressionParser(FileInfo file) : this(new LotusTokenizer(file)) { }
 
-    public ExpressionParser(Parser parser) : base(parser) { }
+    public ExpressionParser(Parser<ValueNode> parser) : base(parser) { }
 
 
-    public override StatementNode Peek()
+    public override ValueNode Peek()
         => new ExpressionParser(this).Consume();
 
-    public override StatementNode[] Peek(int n) {
+    public override ValueNode[] Peek(int n) {
         var parser = new ExpressionParser(this);
 
-        var output = new List<StatementNode>();
+        var output = new List<ValueNode>();
 
         for (int i = 0; i < n; i++) {
             output.Add(parser.Consume());
@@ -32,7 +51,7 @@ public class ExpressionParser : Parser
         return output.ToArray();
     }
 
-    public override StatementNode Consume() {
+    public override ValueNode Consume() {
         base.Consume();
 
         return ConsumeValue(Precedence.Comma);

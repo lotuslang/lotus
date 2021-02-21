@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-public sealed class ImportParslet : IStatementParslet<ImportNode>
+public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
-    public ImportNode Parse(StatementParser parser, Token fromToken) {
+    public ImportNode Parse(TopLevelParser parser, Token fromToken) {
         if (!(fromToken is ComplexToken fromKeyword && fromToken == "from"))
             throw Logger.Fatal(new InvalidCallException(fromToken.Location));
 

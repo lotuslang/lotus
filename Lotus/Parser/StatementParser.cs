@@ -1,12 +1,31 @@
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
-public class StatementParser : Parser
+public class StatementParser : Parser<StatementNode>
 {
     public ExpressionParser ExpressionParser { get; protected set; }
 
+    public override StatementNode Current {
+        get;
+        protected set;
+    }
+
+    public new static readonly StatementNode ConstantDefault = StatementNode.NULL;
+
+    public override StatementNode Default {
+        get {
+            var output = ConstantDefault;
+
+            output.Location = Position;
+
+            return output;
+        }
+    }
+
     protected void Init() {
-        ExpressionParser = new ExpressionParser(this);
+        ExpressionParser = new ExpressionParser(Tokenizer);
+        Current = ConstantDefault;
     }
 
 #nullable disable
@@ -24,7 +43,7 @@ public class StatementParser : Parser
 
     public StatementParser(FileInfo file) : this(new LotusTokenizer(file)) { }
 
-    public StatementParser(Parser parser) : base(parser) {
+    public StatementParser(Parser<StatementNode> parser) : base(parser) {
         Init();
     }
 #nullable enable
@@ -59,9 +78,98 @@ public class StatementParser : Parser
             Current = parslet.Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();
-            Current = ExpressionParser.Consume();
+            Current = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
         return Current;
+    }
+
+    public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true)
+    {
+        var isValid = true;
+
+        // to consume a one-liner, you just consume a statement and return
+        if (areOneLinersAllowed && Tokenizer.Peek() != "{")
+        {
+            if (!Consume(out StatementNode statement))
+            {
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in simple block",
+                    expected: "a statement",
+                    range: Tokenizer.Current.Location
+                ));
+
+                isValid = false;
+            }
+
+            return new SimpleBlock(statement, statement.Token.Location, isValid);
+        }
+
+        var openingBracket = Tokenizer.Consume();
+
+        // we don't have to check for EOF because that is (sorta) handled by "areOneLinersAllowed"
+        if (openingBracket != "{")
+        {
+            Logger.Error(new UnexpectedTokenException(
+                token: openingBracket,
+                context: "at the start of simple block (this probably means there was an internal error, please report this!)",
+                expected: "{"
+            ));
+
+            Tokenizer.Reconsume();
+        }
+
+        var location = openingBracket.Location;
+
+        var statements = new List<StatementNode>();
+
+        while (Tokenizer.Peek() != "}")
+        {
+            statements.Add(Consume());
+
+            if (Tokenizer.Peek().Kind == TokenKind.EOF)
+            {
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in simple block",
+                    expected: "a statement",
+                    range: Tokenizer.Current.Location
+                ));
+
+                isValid = false;
+
+                break;
+            }
+
+            //if (Tokenizer.Peek() == ";") Tokenizer.Consume();
+        }
+
+        var closingBracket = Tokenizer.Peek();
+
+        if (closingBracket.Kind == TokenKind.EOF)
+        {
+            Logger.Error(new UnexpectedEOFException(
+                context: "in simple block",
+                expected: "the character '}'",
+                range: Tokenizer.Position
+            ));
+
+            isValid = false;
+        }
+        else if (closingBracket != "}")
+        {
+            Logger.Error(new UnexpectedTokenException(
+                token: closingBracket,
+                context: "in simple block",
+                expected: "the character '}'"
+            ));
+
+            isValid = false;
+
+            Tokenizer.Reconsume();
+        }
+
+        Tokenizer.Consume();
+
+        return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-public class NodeGraphMaker : StatementVisitor<GraphNode>
+public class StatementGraphMaker : StatementVisitor<GraphNode>
 {
 
     protected readonly (string tooltip, string color) Break = ("break keyword", "");
@@ -17,28 +17,17 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
     protected readonly (string tooltip, string color) For = ("for loop", "");
     protected readonly (string tooltip, string color) ForHeader = ("for-loop header", "deepskyblue");
 
-    protected readonly (string tooltip, string color) From = ("from statement", "navy");
-    protected readonly (string tooltip, string color) FromOrigin = ("origin name", "");
-
     protected readonly (string tooltip, string color) FuncDec = ("FunctionDeclarationNode", "indianred");
     protected readonly (string tooltip, string color) FuncDecParameters = ("parameters", "");
 
     protected readonly (string tooltip, string color) If = ("if statement", "");
     protected readonly (string tooltip, string color) IfCondition = ("if condition", "");
 
-    protected readonly (string tooltip, string color) Import = ("import statement", "fuchsia");
-    protected readonly (string tooltip, string color) ImportNames = ("import names", "peru");
-
-    protected readonly (string tooltip, string color) Namespace = ("namespace declaration", "cornflowerblue");
-    protected readonly (string tooltip, string color) NamespaceName = ("namespace name", "");
-
     protected readonly (string tooltip, string color) Print = ("PrintNode", "");
 
     protected readonly (string tooltip, string color) Return = ("return statement", "brown");
 
     protected readonly (string tooltip, string color) Statement = ("StatementNode", "black");
-
-    protected readonly (string tooltip, string color) Using = ("UsingNode", "");
 
     protected readonly (string tooltip, string color) While = ("(do-)while loop", "pink");
     protected readonly (string tooltip, string color) WhileCondition = ("loop condition", "");
@@ -72,6 +61,9 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
     protected readonly (string tooltip, string color) SimpleBlock = ("body", "darkviolet");
 
 
+    // TODO: This is used by basically all nodes to be able to get the basic GraphNode
+    // If you change this, be very careful ! You could end up with a stack overflow of
+    // a completely different graph !
     protected override GraphNode Default(StatementNode node) => Visit(node);
     protected override GraphNode Default(ValueNode node) => Visit(node);
 
@@ -139,13 +131,6 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(FromNode node)
-        => new GraphNode(node.GetHashCode(), "from") {
-               ToGraphNode(node.OriginName)
-                   .SetTooltip("origin name")
-           }.SetColor(From.color)
-            .SetTooltip(From.tooltip);
-
     public override GraphNode Visit(FunctionDeclarationNode node) {
         var root = new GraphNode(node.GetHashCode(), "func " + node.Name.Representation)
                         .SetColor(FuncDec.color)
@@ -206,31 +191,6 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(ImportNode node){
-        var root = new GraphNode(node.GetHashCode(), "import") {
-            ToGraphNode(node.FromStatement)
-        }.SetColor(Import.color)
-         .SetTooltip(Import.tooltip);
-
-        var importsNode = new GraphNode(node.ImportsName.GetHashCode(), "import\\nnames")
-            .SetColor(ImportNames.color)
-            .SetTooltip(ImportNames.tooltip);
-
-        foreach (var import in node.ImportsName) {
-            importsNode.Add(ToGraphNode(import));
-        }
-
-        root.Add(importsNode);
-
-        return root;
-    }
-
-    public override GraphNode Visit(NamespaceNode node)
-        => new GraphNode(node.GetHashCode(), "namespace") {
-                ToGraphNode(node.NamespaceName).SetTooltip("namespace name")
-            }.SetColor(Namespace.color)
-             .SetTooltip(Namespace.tooltip);
-
     public override GraphNode Visit(PrintNode node)
         => new GraphNode(node.GetHashCode(), "print") {
                 ToGraphNode(node.Value)
@@ -249,11 +209,9 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(UsingNode node)
-        => new GraphNode(node.GetHashCode(), "using") {
-                ToGraphNode(node.ImportName)
-            }.SetColor(Using.color)
-             .SetTooltip(Using.tooltip);
+    public override GraphNode Visit(StatementExpressionNode node)
+        => ToGraphNode(node.Value);
+
 
     public override GraphNode Visit(WhileNode node)
         => new GraphNode(node.GetHashCode(), node.IsDoLoop ? "do-while" : "while") {
@@ -411,6 +369,7 @@ public class NodeGraphMaker : StatementVisitor<GraphNode>
     }
 
     public GraphNode ToGraphNode(StatementNode node) => node.Accept(this);
+    public GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
     public GraphNode ToGraphNode(SimpleBlock block) => Visit(block);
 }

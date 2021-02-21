@@ -1,6 +1,6 @@
-public sealed class UsingParslet : IStatementParslet<UsingNode>
+public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 {
-    public UsingNode Parse(StatementParser parser, Token usingToken) {
+    public UsingNode Parse(TopLevelParser parser, Token usingToken) {
         if (!(usingToken is ComplexToken usingKeyword && usingToken == "using"))
             throw Logger.Fatal(new InvalidCallException(usingToken.Location));
 

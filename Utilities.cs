@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -35,7 +36,7 @@ public static class Utilities
         return count;
     }
 
-    public static bool IsName(ValueNode node) => ASTHelper.IsName(node);
+    public static bool IsName(ValueNode node) => ASTHelper.IsName((StatementExpressionNode)node);
 
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         where TKey : notnull
@@ -131,7 +132,7 @@ public static class Utilities
 
 		foreach (var item in list) {
 			if (item is TValid validItem) valid.Add(validItem);
-			else invalid.Add((item as TInvalid)!);
+            else invalid.Add((TInvalid)item!);
 		}
 
 		return (valid, invalid);
@@ -141,7 +142,7 @@ public static class Utilities
 		=> SplitByType<TOther, TMatch, TOther>(list);
 
 	// the loops you have to jump through sometimes...
-	public static IEnumerable<TMatch> WhereType<T, TMatch>(this IEnumerable<T> list) {
+	public static IEnumerable<TMatch> WhereType<TMatch>(this IEnumerable list) {
 		foreach (var item in list) {
 			if (item is TMatch matched) yield return matched;
 		}

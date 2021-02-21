@@ -158,7 +158,7 @@ public class Tokenizer : IConsumer<Token>
         var currChar = input.Consume();
 
         // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
-        // although, you'll also need to modify the parser and parselets because they might not work correctly
+        // although, you'll also need to modify the parser and parslets because they might not work correctly
 
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
         if (currChar == input.Default) {

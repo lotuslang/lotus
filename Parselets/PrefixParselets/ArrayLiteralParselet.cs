@@ -1,4 +1,4 @@
-public sealed class ArrayLiteralParselet : IPrefixParselet<TupleNode>
+public sealed class ArrayLiteralParslet : IPrefixParslet<TupleNode>
 {
     public TupleNode Parse(ExpressionParser parser, Token leftBracket) {
         if (leftBracket != "[")

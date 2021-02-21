@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public sealed class ValueExtractor : NodeVisitor<IEnumerable<ValueNode>>
+public sealed class ValueExtractor : StatementVisitor<IEnumerable<ValueNode>>
 {
     private static readonly ValueNode[] emptyArray = new ValueNode[0];
 
@@ -51,7 +51,7 @@ public sealed class ValueExtractor : NodeVisitor<IEnumerable<ValueNode>>
         => node.Operands;
 
     public override IEnumerable<ValueNode> Visit(ParenthesizedValueNode node)
-        => new[] { node.Value };
+        => new[] { node.Values };
 
     public override IEnumerable<ValueNode> Visit(TupleNode node)
         => node.Values;

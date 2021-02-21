@@ -1,4 +1,4 @@
-public sealed class ReturnParselet : IStatementParselet<ReturnNode>
+public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 {
     public ReturnNode Parse(StatementParser parser, Token returnToken) {
 

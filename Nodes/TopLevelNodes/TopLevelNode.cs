@@ -1,4 +1,6 @@
 public class TopLevelNode : Node
 {
-    public TopLevelNode(Token token) : base(token) { }
+    public new static readonly TopLevelNode NULL = new TopLevelNode(Token.NULL, false);
+
+    public TopLevelNode(Token token, bool isValid = true) : base(token) { }
 }

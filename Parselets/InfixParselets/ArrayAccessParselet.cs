@@ -1,6 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 
-public sealed class ArrayAccessParselet : IInfixParselet<OperationNode>
+public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence {
         get => Precedence.ArrayAccess;

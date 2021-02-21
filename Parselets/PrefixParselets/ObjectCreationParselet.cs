@@ -1,4 +1,4 @@
-﻿public sealed class ObjectCreationParselet : IPrefixParselet<ObjectCreationNode>
+public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 {
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
 

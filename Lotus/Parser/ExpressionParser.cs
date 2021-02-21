@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -74,25 +75,22 @@ public class ExpressionParser : Parser, IConsumer<ValueNode>
             return new ValueNode(token, Position, false);
         }
 
-        var left = Grammar.GetPrefixParselet(token).Parse(this, token);
+        var left = Grammar.GetPrefixParslet(token).Parse(this, token);
 
         token = Tokenizer.Consume();
 
-        // it might be null because the complex-string parsing algorithm uses a Consumer<T>,
-        // not a tokenizer, and it returns null when there's no more to consume
-        // FIXME: This
-        if (token == null) {
+        if (token == Tokenizer.Default) {
             return left;
         }
 
         if (Grammar.IsPostfix(Grammar.GetExpressionKind(token))) {
-            left = Grammar.GetPostfixParselet(token).Parse(this, token, left);
+            left = Grammar.GetPostfixParslet(token).Parse(this, token, left);
 
             token = Tokenizer.Consume();
         }
 
         while (precedence < Grammar.GetPrecedence(token)) {
-            left = Grammar.GetOperatorParselet(token).Parse(this, token, left);
+            left = Grammar.GetOperatorParslet(token).Parse(this, token, left);
 
             token = Tokenizer.Consume();
         }
@@ -150,7 +148,7 @@ public class ExpressionParser : Parser, IConsumer<ValueNode>
                 }
 
                 Logger.Error(new UnexpectedTokenException(
-                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected '(' or ','",
+                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected ')' or ','",
                     token: Tokenizer.Current
                 ));
 
@@ -214,17 +212,18 @@ public class ExpressionParser : Parser, IConsumer<ValueNode>
     }
 
     ValueNode IConsumer<ValueNode>.Consume()
-    {
-        throw new System.NotImplementedException();
-    }
+        => Consume();
 
-    public bool Consume([MaybeNullWhen(false)] out ValueNode item)
-    {
-        throw new System.NotImplementedException();
+    public bool Consume(out ValueNode item) {
+        item = Consume();
+
+        return item != Default;
     }
 
     ValueNode IConsumer<ValueNode>.Peek()
-    {
-        throw new System.NotImplementedException();
-    }
+        => new ExpressionParser(this as Parser).Consume().Value;
+
+    IEnumerator<ValueNode> IEnumerable<ValueNode>.GetEnumerator() => new ConsumerEnumerator<ValueNode>(this);
+
+    IEnumerator IEnumerable.GetEnumerator() => new ConsumerEnumerator<ValueNode>(this);
 }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-#nullable disable
 public class Consumer<T> : IConsumer<T>
 {
     private bool reconsumeFlag;
@@ -13,7 +12,7 @@ public class Consumer<T> : IConsumer<T>
     [property: AllowNull]
     public T Current { get; protected set; }
 
-    public T Default => default(T);
+    public T Default { get; protected set; }
 
     // we keep it because it's cleaner and faster performance-wise than copying and storing
     // at each modification
@@ -24,15 +23,19 @@ public class Consumer<T> : IConsumer<T>
     protected Consumer() {
         inputStack = new Stack<T>();
         pos = new Location(1, -1);
-        Current = default(T)!;
+        Default = default(T)!;
+        Current = Default;
     }
 
-    public Consumer(IEnumerable<T> enumerable) : this() {
+    public Consumer(IEnumerable<T> enumerable, T defaultValue) : this() {
+        Default = defaultValue;
         inputStack = new Stack<T>(enumerable.Reverse());
     }
 
     public Consumer(IConsumer<T> consumer) : this() {
-        while (consumer.Consume(out T item)) {
+        Default = consumer.Default;
+
+        foreach (var item in consumer) {
             inputStack.Push(item);
         }
 
@@ -51,12 +54,11 @@ public class Consumer<T> : IConsumer<T>
         return true;
     }
 
-    [return: MaybeNull]
     public T Consume() {
 
         if (reconsumeFlag) {
             reconsumeFlag = false;
-            pos.column++;
+            pos = pos with { column = pos.column + 1 };
             return Current;
         }
 
@@ -65,7 +67,7 @@ public class Consumer<T> : IConsumer<T>
             return Current;
         }
 
-        pos.column++;
+        pos = pos with { column = pos.column + 1 };
 
         Current = inputStack.Pop();
 
@@ -75,16 +77,15 @@ public class Consumer<T> : IConsumer<T>
     public void Reconsume() {
         reconsumeFlag = true;
 
-        pos.column--;
+        pos = pos with { column = pos.column - 1 };
     }
 
-    [return: MaybeNull]
+
     public T Peek() {
         if (reconsumeFlag) return Current;
 
-        inputStack.TryPeek(out T result);
+        if (!inputStack.TryPeek(out T? result)) result = Default;
 
         return result;
     }
 }
-#nullable restore

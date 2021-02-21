@@ -1,4 +1,4 @@
-public sealed class ElseParselet : IStatementParselet<ElseNode>
+public sealed class ElseParslet : IStatementParslet<ElseNode>
 {
     public ElseNode Parse(StatementParser parser, Token elseToken) {
         if (!(elseToken is ComplexToken elseKeyword && elseKeyword == "else")) {
@@ -6,7 +6,7 @@ public sealed class ElseParselet : IStatementParselet<ElseNode>
         }
 
         if (parser.Tokenizer.Peek() == "if") {
-            var ifNode = new IfParselet().Parse(parser, parser.Tokenizer.Consume());
+            var ifNode = new IfParslet().Parse(parser, parser.Tokenizer.Consume());
 
             return new ElseNode(ifNode, elseKeyword);
         }

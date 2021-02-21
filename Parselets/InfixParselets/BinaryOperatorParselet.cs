@@ -1,10 +1,10 @@
-public sealed class BinaryOperatorParselet : IInfixParselet<OperationNode>
+public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence { get; }
 
     readonly OperationType opType;
 
-    public BinaryOperatorParselet(Precedence precedence, OperationType operation) {
+    public BinaryOperatorParslet(Precedence precedence, OperationType operation) {
         Precedence = precedence;
         opType = operation;
     }

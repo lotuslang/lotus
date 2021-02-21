@@ -1,13 +1,23 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using System.IO;
 
 public class TopLevelParser : Parser
 {
     public StatementParser StatementParser { get; private set; }
 
     public ExpressionParser ExpressionParser => StatementParser.ExpressionParser;
+
+    public override TopLevelNode Default {
+        get {
+            var output = TopLevelNode.NULL;
+
+            output.Location = Position;
+
+            return output;
+        }
+    }
 
     protected void Init() {
         StatementParser = new StatementParser(this);
@@ -57,6 +67,6 @@ public class TopLevelParser : Parser
     public override TopLevelNode Consume() {
         base.Consume();
 
-        
+        return Default;
     }
 }

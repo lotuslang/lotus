@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public sealed class StatementExtractor : NodeVisitor<IEnumerable<StatementNode>>
+public sealed class StatementExtractor : StatementVisitor<IEnumerable<StatementNode>>
 {
     private static readonly StatementNode[] emptyArray = new StatementNode[0];
 

@@ -18,6 +18,17 @@ public abstract class Parser : IConsumer<Node>
     /// <value>The last StatementNode consumed.</value>
     public virtual Node Current { get; protected set; }
 
+    /// <summary>
+    /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="StatementNode.NULL"/>
+    /// </summary>
+    public static readonly StatementNode ConstantDefault = StatementNode.NULL;
+
+    /// <summary>
+    /// Returns the value of <see cref="Parser.ConstantDefault"/> BUT adjusted for the current position. <br/>
+    /// Most of the time, this is the variable you want, because when comparing nodes, position is important,
+    /// and the parser will always return a node with relevant position, even if it is EOF and other things that
+    /// prompt for the use of <see cref="StatementNode.NULL"/>
+    /// </summary>
     public virtual Node Default {
         get {
             var output = StatementNode.NULL;

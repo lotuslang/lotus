@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public sealed class Flattener : NodeVisitor<IEnumerable<StatementNode>>
+public sealed class Flattener : StatementVisitor<IEnumerable<StatementNode>>
 {
 
     private static readonly StatementNode[] emptyArray = new StatementNode[0];
@@ -76,7 +76,7 @@ public sealed class Flattener : NodeVisitor<IEnumerable<StatementNode>>
                 .Append((StatementExpressionNode)node);
 
     public override IEnumerable<StatementNode> Visit(ParenthesizedValueNode node)
-        => Flatten(node.Value)
+        => Flatten(node.Values)
                 .Append((StatementExpressionNode)node);
 
     public override IEnumerable<StatementNode> Visit(TupleNode node)

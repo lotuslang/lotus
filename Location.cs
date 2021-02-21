@@ -1,4 +1,4 @@
-public struct Location
+/*public struct LocationR
 {
     public static readonly Location NULL = new Location(-1, -1);
 
@@ -27,4 +27,17 @@ public struct Location
     public static implicit operator string(Location loc) {
         return $"{loc.filename}({loc.line}, {loc.column})";
     }
+}*/
+
+public record Location(int line, int column, string filename = "<std>") {
+    public static readonly Location NULL = new Location(-1, -1);
+
+    public static implicit operator LocationRange(Location loc) => new LocationRange(loc, loc);
+
+    public static implicit operator string(Location loc) {
+        return $"{loc.filename}({loc.line}, {loc.column})";
+    }
+
+    public override string ToString()
+        => this;
 }

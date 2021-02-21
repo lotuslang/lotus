@@ -1,4 +1,4 @@
-public sealed class UsingParselet : IStatementParselet<UsingNode>
+public sealed class UsingParslet : IStatementParslet<UsingNode>
 {
     public UsingNode Parse(StatementParser parser, Token usingToken) {
         if (!(usingToken is ComplexToken usingKeyword && usingToken == "using"))

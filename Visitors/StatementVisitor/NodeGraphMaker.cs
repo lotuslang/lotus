@@ -1,6 +1,6 @@
 using System;
 
-public class NodeGraphMaker : NodeVisitor<GraphNode>
+public class NodeGraphMaker : StatementVisitor<GraphNode>
 {
 
     protected readonly (string tooltip, string color) Break = ("break keyword", "");
@@ -383,7 +383,7 @@ public class NodeGraphMaker : NodeVisitor<GraphNode>
     }
 
     public override GraphNode Visit(ParenthesizedValueNode node)
-        => ToGraphNode(node.Value);
+        => ToGraphNode(node.Values);
 
     public override GraphNode Visit(StringNode node)
         => new GraphNode(node.GetHashCode(), "'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")

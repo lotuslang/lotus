@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
+public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
 {
     public StringNode Parse(ExpressionParser parser, Token token) {
         if (token.Kind == TokenKind.@string) {
@@ -12,7 +12,7 @@ public sealed class StringLiteralParselet : IPrefixParselet<StringNode>
 
             foreach (var section in complexString.CodeSections) {
                 // FIXME: See Parser.ConsumeValue comment (tldr Consumer can return null sometimes)
-                node.AddSection(new ExpressionParser(new Consumer<Token>(section)).ConsumeValue());
+                node.AddSection(new ExpressionParser(new Consumer<Token>(section, Token.NULL)).ConsumeValue());
             }
 
             return node;

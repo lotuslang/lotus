@@ -1,8 +1,8 @@
-public sealed class PrefixOperatorParselet : IPrefixParselet<OperationNode>
+public sealed class PrefixOperatorParslet : IPrefixParslet<OperationNode>
 {
     readonly OperationType opType;
 
-    public PrefixOperatorParselet(OperationType operation) {
+    public PrefixOperatorParslet(OperationType operation) {
         opType = operation;
     }
 

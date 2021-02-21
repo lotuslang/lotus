@@ -72,15 +72,13 @@ public class StatementParser : Parser
         // Consume a token
         var currToken = Tokenizer.Consume();
 
-        // if the token is EOF, return ValueNode.NULL
+        // if the token is EOF, return StatementNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
             return ((Current = Default) as StatementNode)!;
         }
 
-        var statementKind = Grammar.GetStatementKind(currToken);
-
-        if (statementKind != StatementKind.NotAStatement) {
-            Current = Grammar.GetStatementParselet(statementKind).Parse(this, currToken);
+        if (Grammar.TryGetStatementParslet(currToken, out var parslet)) {
+            Current = parslet.Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();
             Current = ExpressionParser.Consume();

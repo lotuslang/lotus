@@ -1,6 +1,6 @@
 using System.Linq;
 
-public sealed class ConstantChecker : NodeVisitor<bool>
+public sealed class ConstantChecker : StatementVisitor<bool>
 {
     protected override bool Default(StatementNode node)
         => throw Logger.Fatal(new InvalidCallException("ConstantChecker cannot check statement like " + node.GetType().Name, node.Token.Location));
@@ -38,7 +38,7 @@ public sealed class ConstantChecker : NodeVisitor<bool>
     }
 
     public override bool Visit(ParenthesizedValueNode node)
-        => IsContant(node.Value);
+        => IsContant(node.Values);
 
     public override bool Visit(StringNode node)
         => true;

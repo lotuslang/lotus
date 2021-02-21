@@ -1,7 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections.Generic;
 
-public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDeclarationNode>
+public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDeclarationNode>
 {
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
 
@@ -44,7 +44,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
         // { /* some code */ }
         //
 
-        var parameters = new List<FunctionParameter>();
+        var parameters = new List<FunctionArgument>();
 
         void addParameter(ValueNode type, ValueNode paramNameNode) {
 
@@ -86,7 +86,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
                 );
             }
 
-            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, equalSign, isValid));
+            parameters!.Add(new FunctionArgument(type, paramName, defaultValue, equalSign, isValid));
         }
 
         while (parser.Tokenizer.Peek() != ")") {
@@ -105,7 +105,7 @@ public sealed class FunctionDeclarationParselet : IStatementParselet<FunctionDec
             * Therefore, I thought of a shorthand such as : `int DoThing(int [seed, cookie, hash, secret, key])`
             * As you probably noticed, it is really similar to an array init/literal (which is honestly a good
             * thing in my opinion). So I thought I would just parse the type, and then, if the next node wasn't an
-            * IdentNode or a comma, I would just use the ArrayLiteral parselet and register each parameter with the type.
+            * IdentNode or a comma, I would just use the ArrayLiteral parslet and register each parameter with the type.
             *
             * Yeah, that's not what happened.
             *

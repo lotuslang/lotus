@@ -1,4 +1,4 @@
-public sealed class ForeachParselet : IStatementParselet<ForeachNode>
+public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 {
     public ForeachNode Parse(StatementParser parser, Token foreachToken) {
         if (!(foreachToken is ComplexToken foreachKeyword && foreachKeyword == "foreach"))

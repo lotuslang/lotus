@@ -7,12 +7,12 @@ public abstract class LotusParser : Parser
 
     public ExpressionParser ExpressionParser { get; }
 
-    public LotusParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar()) {
+    public LotusParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) {
         StatementParser = new StatementParser(tokenConsumer);
         ExpressionParser = new ExpressionParser(tokenConsumer);
     }
 
-    public LotusParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, new LotusGrammar()) {
+    public LotusParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
         StatementParser = new StatementParser(nodeConsumer);
         ExpressionParser = new ExpressionParser(nodeConsumer);
     }

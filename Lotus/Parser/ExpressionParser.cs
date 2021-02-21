@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class ExpressionParser : Parser
 {
-    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar()) { }
+    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
 
-    public ExpressionParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, new LotusGrammar()) { }
+    public ExpressionParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) { }
 
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 

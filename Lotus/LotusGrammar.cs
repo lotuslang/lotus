@@ -2,7 +2,11 @@ public sealed class LotusGrammar : ReadOnlyGrammar
 {
     private readonly Grammar internalGrammar = new Grammar();
 
-    public LotusGrammar() : base() {
+    private static readonly LotusGrammar _instance = new LotusGrammar();
+
+    public static LotusGrammar Instance => _instance;
+
+    private LotusGrammar() : base() {
         InitializeToklets();
         InitializeTriviaToklets();
         InitializeExpressionKinds();

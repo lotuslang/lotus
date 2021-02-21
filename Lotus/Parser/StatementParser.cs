@@ -10,11 +10,11 @@ public class StatementParser : Parser
     }
 
 #nullable disable
-    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, new LotusGrammar()) {
+    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) {
         Init();
     }
 
-    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, new LotusGrammar()) {
+    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
         Init();
     }
 

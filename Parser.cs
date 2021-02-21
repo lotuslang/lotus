@@ -32,7 +32,7 @@ public abstract class Parser : IConsumer<StatementNode>
     /// <value></value>
     public StatementNode Default {
         get {
-            var output = StatementNode.NULL;
+            var output = ConstantDefault;
 
             output.Location = Position;
 
@@ -46,7 +46,7 @@ public abstract class Parser : IConsumer<StatementNode>
     protected Parser() {
         reconsumeQueue = new Queue<StatementNode>();
 
-        Current = StatementNode.NULL;
+        Current = ConstantDefault;
 
         Grammar = new ReadOnlyGrammar();
     }

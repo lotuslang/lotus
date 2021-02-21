@@ -35,6 +35,9 @@ public sealed class ImportParslet : IStatementParslet<ImportNode>
         // thing could probably be written in weird F# since there's so much immutability. We only need OOP for the Tokens,
         // Nodes, Parslets and Toklets, because OOP is way easier to use to create a SyntaxTree and it's also the model
         // I'm the most comfortable with)
+        //
+        // Also, if this is an invalid statement, which one would wield the least errors/make recovery easier ?
+        // After a (very short) test, the tokenizer seems better, but we should probably do more testing
         var importToken = parser.Tokenizer.Consume();
 
         if (!(importToken is ComplexToken importKeyword && importKeyword == "import")) {

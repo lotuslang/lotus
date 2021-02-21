@@ -25,7 +25,7 @@ public static class ASTHelper
     public static readonly ConstantVisualizer ConstantVisualizer = new ConstantVisualizer();
 
 
-    public static bool IsName(StatementNode node) => NameChecker.IsName(node);
+    public static bool IsName(ValueNode node) => NameChecker.IsName(node);
 
     public static string PrintStatement(StatementNode node) => StatementPrinter.Print(node);
 

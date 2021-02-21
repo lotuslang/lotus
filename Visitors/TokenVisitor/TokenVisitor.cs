@@ -1,6 +1,3 @@
-#nullable disable
-#pragma warning disable IDE0034
-
 public abstract class TokenVisitor<T>
 {
     protected abstract T Default(Token token);

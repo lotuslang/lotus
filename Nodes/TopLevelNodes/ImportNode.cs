@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class ImportNode : StatementNode
+public class ImportNode : TopLevelNode
 {
     public new static readonly ImportNode NULL = new ImportNode(new ValueNode[0], FromNode.NULL, ComplexToken.NULL, false);
 
@@ -20,5 +20,5 @@ public class ImportNode : StatementNode
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(StatementVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(TopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

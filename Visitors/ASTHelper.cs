@@ -4,6 +4,8 @@ public static class ASTHelper
 {
     public static readonly NameChecker NameChecker = new NameChecker();
 
+    public static readonly TopLevelPrinter TopLevelPrinter = new TopLevelPrinter();
+
     public static readonly StatementPrinter StatementPrinter = new StatementPrinter();
 
     public static readonly ValuePrinter ValuePrinter = new ValuePrinter();
@@ -12,7 +14,9 @@ public static class ASTHelper
 
     public static readonly TokenGraphMaker TokenGraphMaker = new TokenGraphMaker();
 
-    public static readonly NodeGraphMaker NodeGraphMaker = new NodeGraphMaker();
+    public static readonly StatementGraphMaker StatementGraphMaker = new StatementGraphMaker();
+
+    public static readonly TopLevelGraphMaker TopLevelGraphMaker = new TopLevelGraphMaker();
 
     public static readonly ConstantChecker ConstantChecker = new ConstantChecker();
 
@@ -27,6 +31,8 @@ public static class ASTHelper
 
     public static bool IsName(ValueNode node) => NameChecker.IsName(node);
 
+    public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);
+
     public static string PrintStatement(StatementNode node) => StatementPrinter.Print(node);
 
     public static string PrintValue(ValueNode node) => ValuePrinter.Print(node);
@@ -35,7 +41,11 @@ public static class ASTHelper
 
     public static GraphNode ToGraphNode(Token token) => TokenGraphMaker.ToGraphNode(token);
 
-    public static GraphNode ToGraphNode(StatementNode node) => NodeGraphMaker.ToGraphNode(node);
+    public static GraphNode ToGraphNode(StatementNode node) => StatementGraphMaker.ToGraphNode(node);
+
+    public static GraphNode ToGraphNode(ValueNode node) => StatementGraphMaker.ToGraphNode(node);
+
+    public static GraphNode ToGraphNode(TopLevelNode node) => TopLevelGraphMaker.ToGraphNode(node);
 
     public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
 
@@ -46,7 +56,10 @@ public static class ASTHelper
     public static IEnumerable<StatementNode> Flatten(StatementNode node) => Flattener.Flatten(node);
 
     public static GraphNode ShowConstants(StatementNode node) => ConstantVisualizer.ShowConstants(node);
+    public static GraphNode ShowConstants(ValueNode node) => ConstantVisualizer.ShowConstants(node);
 
     public static GraphNode ShowConstants(StatementNode node, string constantColor, string nonConstantColor)
+        => new ConstantVisualizer(constantColor, nonConstantColor).ShowConstants(node);
+    public static GraphNode ShowConstants(ValueNode node, string constantColor, string nonConstantColor)
         => new ConstantVisualizer(constantColor, nonConstantColor).ShowConstants(node);
 }

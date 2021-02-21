@@ -7,20 +7,15 @@ public class ValueNode : Node
     /// </summary>
     public new static readonly ValueNode NULL = new ValueNode("", Token.NULL, LocationRange.NULL, false);
 
-    public new LocationRange Location { get; set; }
-
     public string Representation { get; protected set; }
-
-    public bool IsValid { get; set; }
 
     public ValueNode(Token token, LocationRange range, bool isValid = true) : this(token.Representation, token, range, isValid)
     { }
 
-    public ValueNode(string representation, Token token, LocationRange range, bool isValid = true) : base(token) {
+    public ValueNode(string representation, Token token, LocationRange range, bool isValid = true)
+        : base(token, range, isValid)
+    {
         Representation = representation;
-        Token = token;
-        Location = range;
-        IsValid = isValid;
     }
 
     [System.Diagnostics.DebuggerHidden()]

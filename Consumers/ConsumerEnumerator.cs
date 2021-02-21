@@ -19,6 +19,8 @@ public class ConsumerEnumerator<T> : IEnumerator<T>
 
     public bool MoveNext() {
         if (!consumer.Consume(out _current!)) {
+            _current = consumer.Default;
+
             return false;
         }
 
@@ -26,5 +28,5 @@ public class ConsumerEnumerator<T> : IEnumerator<T>
     }
 
     public void Reset() => throw new System.NotImplementedException();
-    public void Dispose() => throw new System.NotImplementedException();
+    public void Dispose() { }
 }

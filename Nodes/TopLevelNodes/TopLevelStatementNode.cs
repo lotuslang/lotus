@@ -1,7 +1,14 @@
 public class TopLevelStatementNode : TopLevelNode
 {
-    public StatementNode Node { get; }
+    public StatementNode Statement { get; }
+
     public TopLevelStatementNode(StatementNode node) : base(node.Token) {
-        Node = node;
+        Statement = node;
     }
+
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public override T Accept<T>(TopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

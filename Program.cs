@@ -31,12 +31,12 @@ class Program
 
         /*tokenizer = new LotusTokenizer(@"return (hello + world)");*/
 
-        var parser = new StatementParser(tokenizer);
+        var parser = new TopLevelParser(tokenizer);
 
-        var nodes = new List<StatementNode>();
+        var tlNodes = new List<TopLevelNode>();
 
-        while (parser.Consume(out Node node)) {
-            nodes.Add(node as StatementNode);
+        foreach (var node in parser) {
+            tlNodes.Add(node as TopLevelNode);
         }
 
         //Console.Error.WriteLine(Logger.GetTextAt(new LocationRange(14, 22, 1, 1, "test.txt")));
@@ -50,6 +50,16 @@ class Program
             return;
         }
 
+        var statementNodes =
+            tlNodes
+                .Where(n => n is TopLevelStatementNode)
+                .Select(n => (n as TopLevelStatementNode).Statement);
+
+        var valueNodes =
+            statementNodes
+                .Where(n => n is StatementExpressionNode)
+                .Select(n => (n as StatementExpressionNode).Value);
+
         if (args.Length == 0 || args[0] == "graph") {
             var g = new Graph("AST");
 
@@ -60,7 +70,7 @@ class Program
 
             if (args.Length == 2) {
                 if (args[1] == "constant") {
-                    foreach (var node in nodes) {
+                    foreach (var node in statementNodes) {
                         g.AddNode(ASTHelper.ShowConstants(node));
                     }
                 } else {
@@ -68,7 +78,7 @@ class Program
                     return;
                 }
             } else {
-                foreach (var node in nodes) {
+                foreach (var node in tlNodes) {
                     g.AddNode(ASTHelper.ToGraphNode(node));
                 }
             }
@@ -84,13 +94,13 @@ class Program
 
             if (args.Length == 2) {
                 if (args[1] == "all") {
-                    values = nodes.SelectMany(ASTHelper.ExtractValue);
+                    values = statementNodes.SelectMany(ASTHelper.ExtractValue);
                 } else {
                     Console.WriteLine("Could not understand option " + args[1]);
                     return;
                 }
             } else {
-                values = nodes.WhereType<ValueNode>();
+                values = statementNodes.WhereType<ValueNode>();
             }
 
             foreach (var node in values) {
@@ -106,7 +116,7 @@ class Program
         if (args[0] == "print") {
             if (args.Length == 2) {
                 if (args[1] == "all") {
-                    foreach (var node in nodes.WhereType<ValueNode>()) {
+                    foreach (var node in statementNodes.WhereType<ValueNode>()) {
                         Console.Write(ASTHelper.PrintValue(node));
                     }
                 } else {
@@ -114,13 +124,40 @@ class Program
                     return;
                 }
             } else {
-                foreach (var node in nodes) {
+                foreach (var node in statementNodes) {
                     Console.Write(ASTHelper.PrintStatement(node));
                 }
             }
 
             // print the last (EOF) token, which is not consumed by the parser
             Console.Write(ASTHelper.PrintToken(tokenizer.Current)[..^2]);
+            return;
+        }
+
+        if (args[0] == "hash") {
+            var g = new Graph("AST");
+
+            g.AddNodeProp("fontname", "Consolas, monospace");
+            g.AddGraphProp("fontname", "Consolas, monospace");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.Name}\\n\\n");
+            g.AddGraphProp("labelloc", "top");
+
+            if (args.Length == 2) {
+                if (args[1] == "constant") {
+                    foreach (var node in statementNodes) {
+                        g.AddNode(ASTHelper.ShowConstants(node));
+                    }
+                } else {
+                    Console.WriteLine("Could not understand option " + args[1]);
+                    return;
+                }
+            } else {
+                foreach (var node in tlNodes) {
+                    g.AddNode(ASTHelper.ToGraphNode(node));
+                }
+            }
+
+            Console.WriteLine(g.GetHashCode());
             return;
         }
 

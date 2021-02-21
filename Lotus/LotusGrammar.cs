@@ -12,6 +12,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
         InitializeExpressionKinds();
         InitializeExpressionParslets();
         InitializeStatementParslets();
+        InitializeTopLevelParslets();
 
         base.Initialize(internalGrammar);
     }
@@ -131,8 +132,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParslet("var", new DeclarationParslet())
             .RegisterStatementParslet("func", new FunctionDeclarationParslet())
             .RegisterStatementParslet("return", new ReturnParslet())
-            .RegisterStatementParslet("from", new ImportParslet())
-            //.RegisterStatementParslet("namespace", new NamespaceParslet())
             .RegisterStatementParslet("foreach", new ForeachParslet())
             .RegisterStatementParslet("for", new ForParslet())
             .RegisterStatementParslet("if", new IfParslet())
@@ -140,7 +139,14 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParslet("do", new DoWhileParslet())
             .RegisterStatementParslet("break", new BreakParslet())
             .RegisterStatementParslet("continue", new ContinueParslet())
-            .RegisterStatementParslet("using", new UsingParslet())
             .RegisterStatementParslet("print", new PrintParslet());
+    }
+
+    private void InitializeTopLevelParslets() {
+        internalGrammar
+            .RegisterTopLevelParslets("namespace", new NamespaceParslet())
+            .RegisterTopLevelParslets("from", new ImportParslet())
+            .RegisterTopLevelParslets("using", new UsingParslet())
+            ;
     }
 }

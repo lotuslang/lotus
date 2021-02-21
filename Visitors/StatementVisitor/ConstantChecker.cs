@@ -9,8 +9,6 @@ public sealed class ConstantChecker : StatementVisitor<bool>
     protected override bool Default(ValueNode node)
         => false;
 
-
-
     // is it really useful ? i mean, you shouldn't use statements with this anyway, so...
     public override bool Visit(StatementExpressionNode node) => IsContant(node.Value);
 

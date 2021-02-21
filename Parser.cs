@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public abstract class Parser : IConsumer<Node>
+public abstract class Parser<T> : IConsumer<T> where T : Node
 {
-    protected readonly Queue<Node> reconsumeQueue;
+    protected readonly Queue<T> reconsumeQueue;
 
     public IConsumer<Token> Tokenizer { get; }
 
@@ -16,12 +16,12 @@ public abstract class Parser : IConsumer<Node>
     /// Gets the last StatementNode object consumed by this instance.
     /// </summary>
     /// <value>The last StatementNode consumed.</value>
-    public virtual Node Current { get; protected set; }
+    public abstract T Current { get; protected set; }
 
     /// <summary>
     /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="StatementNode.NULL"/>
     /// </summary>
-    public static readonly StatementNode ConstantDefault = StatementNode.NULL;
+    public static readonly T ConstantDefault = (Node.NULL as T)!;
 
     /// <summary>
     /// Returns the value of <see cref="Parser.ConstantDefault"/> BUT adjusted for the current position. <br/>
@@ -29,9 +29,9 @@ public abstract class Parser : IConsumer<Node>
     /// and the parser will always return a node with relevant position, even if it is EOF and other things that
     /// prompt for the use of <see cref="StatementNode.NULL"/>
     /// </summary>
-    public virtual Node Default {
+    public virtual T Default {
         get {
-            var output = StatementNode.NULL;
+            var output = ConstantDefault;
 
             output.Location = Position;
 
@@ -43,9 +43,9 @@ public abstract class Parser : IConsumer<Node>
 
 #pragma warning disable CS8618
     protected Parser() {
-        reconsumeQueue = new Queue<Node>();
+        reconsumeQueue = new Queue<T>();
 
-        Current = StatementNode.NULL;
+        Current = ConstantDefault;
 
         Grammar = new ReadOnlyGrammar();
     }
@@ -69,13 +69,16 @@ public abstract class Parser : IConsumer<Node>
 
     public Parser(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(grammar) {
         Tokenizer = tokenConsumer;
-        reconsumeQueue = new Queue<Node>();
     }
 
-    public Parser(IConsumer<Node> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
-        while (nodeConsumer.Consume(out Node? node)) {
+    public Parser(IConsumer<T> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+        foreach (var node in nodeConsumer) {
             reconsumeQueue.Enqueue(node);
         }
+    }
+
+    public Parser(IEnumerable<Token> tokens, ReadOnlyGrammar grammar) : this(grammar) {
+        Tokenizer = new Consumer<Token>(tokens, Token.NULL);
     }
 
     public Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
@@ -84,15 +87,14 @@ public abstract class Parser : IConsumer<Node>
 
     public Parser(System.IO.FileInfo file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
 
-    public Parser(Parser parser) : this(parser.Grammar) {
+    public Parser(Parser<T> parser) : this(parser.Grammar) {
         reconsumeQueue = parser.reconsumeQueue;
         Tokenizer = parser.Tokenizer;
         Current = parser.Current;
     }
 
-    public Parser(Parser parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
-        reconsumeQueue = new Queue<Node>(parser.reconsumeQueue);
-
+    public Parser(Parser<T> parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
+        reconsumeQueue = parser.reconsumeQueue;
         Current = parser.Current;
     }
 
@@ -100,19 +102,19 @@ public abstract class Parser : IConsumer<Node>
     /// Reconsumes the last Node object.
     /// </summary>
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out Node? node) && Object.ReferenceEquals(node, Current)) return;
+        if (reconsumeQueue.TryPeek(out T? node) && Object.ReferenceEquals(node, Current)) return;
     }
 
-    public abstract Node Peek();
+    public abstract T Peek();
 
-    public abstract Node[] Peek(int n);
+    public abstract T[] Peek(int n);
 
     /// <summary>
     /// Consumes a StatementNode object and returns it.
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise.</param>
     /// <returns>The StatementNode object consumed.</returns>
-    public virtual bool Consume(out Node result) {
+    public virtual bool Consume(out T result) {
         result = Consume(); // consume a StatementNode
 
         return result != Default;
@@ -122,7 +124,7 @@ public abstract class Parser : IConsumer<Node>
     /// Consume a StatementNode object and returns it.
     /// </summary>
     /// <returns>The StatementNode object consumed.</returns>
-    public virtual Node Consume() {
+    public virtual T Consume() {
         // If we are instructed to reconsume the last node, then dequeue a node from the reconsumeQueue and return it
         if (reconsumeQueue.Count != 0) {
             return reconsumeQueue.Dequeue();

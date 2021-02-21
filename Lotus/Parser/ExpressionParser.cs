@@ -1,39 +1,48 @@
 using System.IO;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
-public class ExpressionParser : Parser, IConsumer<ValueNode>
+public class ExpressionParser : Parser<ValueNode>
 {
-    ValueNode IConsumer<ValueNode>.Current => (base.Current as StatementExpressionNode)!.Value;
+    public override ValueNode Current {
+        get;
+        protected set;
+    } = ConstantDefault;
 
-    public new ValueNode Default => ValueNode.NULL;
+    public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
 
-    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
+    public override ValueNode Default {
+        get {
+            var output = ConstantDefault;
 
-    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(LotusGrammar.Instance) {
-        while (nodeConsumer.Consume(out ValueNode? node)) {
-            reconsumeQueue.Enqueue(node);
+            output.Location = Position;
+
+            return output;
         }
     }
 
+    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
+
+    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) { }
+
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
+
+    public ExpressionParser(IEnumerable<Token> tokens) : base(tokens, LotusGrammar.Instance) { }
 
     public ExpressionParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
     public ExpressionParser(FileInfo file) : this(new LotusTokenizer(file)) { }
 
-    public ExpressionParser(Parser parser) : base(parser) { }
+    public ExpressionParser(Parser<ValueNode> parser) : base(parser) { }
 
 
-    public override StatementNode Peek()
-        => new ExpressionParser(this as Parser).Consume();
+    public override ValueNode Peek()
+        => new ExpressionParser(this).Consume();
 
-    public override StatementNode[] Peek(int n) {
-        var parser = new ExpressionParser(this as Parser);
+    public override ValueNode[] Peek(int n) {
+        var parser = new ExpressionParser(this);
 
-        var output = new List<StatementNode>();
+        var output = new List<ValueNode>();
 
         for (int i = 0; i < n; i++) {
             output.Add(parser.Consume());
@@ -42,10 +51,10 @@ public class ExpressionParser : Parser, IConsumer<ValueNode>
         return output.ToArray();
     }
 
-    public override StatementExpressionNode Consume() {
+    public override ValueNode Consume() {
         base.Consume();
 
-        return (StatementExpressionNode)ConsumeValue(Precedence.Comma);
+        return ConsumeValue(Precedence.Comma);
     }
 
     public ValueNode ConsumeValue(Precedence precedence = 0) {
@@ -210,20 +219,4 @@ public class ExpressionParser : Parser, IConsumer<ValueNode>
 
         return new TupleNode(items, startingDelimiter, endingToken, isValid);
     }
-
-    ValueNode IConsumer<ValueNode>.Consume()
-        => Consume();
-
-    public bool Consume(out ValueNode item) {
-        item = Consume();
-
-        return item != Default;
-    }
-
-    ValueNode IConsumer<ValueNode>.Peek()
-        => new ExpressionParser(this as Parser).Consume().Value;
-
-    IEnumerator<ValueNode> IEnumerable<ValueNode>.GetEnumerator() => new ConsumerEnumerator<ValueNode>(this);
-
-    IEnumerator IEnumerable.GetEnumerator() => new ConsumerEnumerator<ValueNode>(this);
 }

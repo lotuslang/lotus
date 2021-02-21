@@ -145,16 +145,20 @@ public class Graph
             edgeprops.Add(property, value);
     }
 
-    public override int GetHashCode() {
+    public override int GetHashCode() => GetHashCode(true);
+
+    public int GetHashCode(bool includeProps) {
         var code = new DeterministicHashCode();
 
         foreach (var node in rootNodes) {
             code.Add(node, new GraphNodeComparer());
         }
 
-        code.Add(GraphProps);
-        code.Add(NodeProps);
-        code.Add(EdgeProps);
+        if (includeProps) {
+            code.Add(GraphProps);
+            code.Add(NodeProps);
+            code.Add(EdgeProps);
+        }
 
         return code.ToHashCode();
     }
@@ -226,7 +230,7 @@ public class GraphNode : IEnumerable<GraphNode>
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.Append($"\n" + new string('\t', tabs-1) + ID + " [label=" + Name);
+        strBuilder.Append($"\n" + new string('\t', tabs - 1) + ID + " [label=" + Name);
 
         foreach (var property in Properties) {
             strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");
@@ -245,7 +249,7 @@ public class GraphNode : IEnumerable<GraphNode>
             registry.Add(child);
 
             // Then append the representation of the child
-            strBuilder.Append(new string('\t', tabs) + child.ToText(registry, tabs+1));
+            strBuilder.Append(new string('\t', tabs) + child.ToText(registry, tabs + 1));
         }
 
         // Return the string builder
@@ -283,20 +287,18 @@ public class StringComparer : IEqualityComparer<string>
     public bool Equals(string? s1, string? s2) => GetHashCode(s1!) == GetHashCode(s2!);
 
     public int GetHashCode(string str) {
-        unchecked
-        {
+        unchecked {
             int hash1 = 5381;
             int hash2 = hash1;
 
-            for(int i = 0; i < str.Length && str[i] != '\0'; i += 2)
-            {
+            for (int i = 0; i < str.Length && str[i] != '\0'; i += 2) {
                 hash1 = ((hash1 << 5) + hash1) ^ str[i];
-                if (i == str.Length - 1 || str[i+1] == '\0')
+                if (i == str.Length - 1 || str[i + 1] == '\0')
                     break;
-                hash2 = ((hash2 << 5) + hash2) ^ str[i+1];
+                hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
             }
 
-            return hash1 + (hash2*1566083941);
+            return hash1 + (hash2 * 1566083941);
         }
     }
 }

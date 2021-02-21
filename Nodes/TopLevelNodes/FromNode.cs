@@ -1,4 +1,4 @@
-public class FromNode : StatementNode
+public class FromNode : TopLevelNode
 {
     public new static readonly FromNode NULL = new FromNode(ValueNode.NULL, ComplexToken.NULL, false);
 
@@ -14,5 +14,5 @@ public class FromNode : StatementNode
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(StatementVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(TopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

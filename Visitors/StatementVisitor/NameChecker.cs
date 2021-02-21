@@ -26,5 +26,5 @@ public sealed class NameChecker : StatementVisitor<bool>
 
     public override bool Visit(SimpleBlock block) => false;
 
-    public bool IsName(StatementNode node) => node.Accept(new NameChecker());
+    public bool IsName(ValueNode node) => node.Accept(this);
 }

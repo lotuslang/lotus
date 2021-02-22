@@ -7,7 +7,9 @@ using System.Collections.Generic;
 public static class Logger
 {
 
-    public static Queue<(Exception, LocationRange)> exceptions = new Queue<(Exception, LocationRange)>();
+    public static Stack<(Exception, LocationRange)> exceptions = new();
+
+    public static int ErrorCount => exceptions.Count;
 
     public static bool HasErrors => exceptions.Count != 0;
 
@@ -21,19 +23,19 @@ public static class Logger
         => Console.Error.WriteLine(e.CallerString + " : @ " + e.Position + "\t" + e.Message);
 
     public static void Error(Exception e, LocationRange location)
-        => exceptions.Enqueue((e, location));
+        => exceptions.Push((e, location));
 
     public static void Error(LotusException e)
-        => exceptions.Enqueue((e, e.Position));
+        => exceptions.Push((e, e.Position));
 
     public static void Error(string message, LocationRange location)
-        => exceptions.Enqueue((new Exception(message), location));
+        => exceptions.Push((new Exception(message), location));
 
     public static Exception Fatal(Exception e)
         => e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
 
     public static void PrintAllErrors() {
-        foreach (var (exception, location) in exceptions) {
+        foreach (var (exception, location) in exceptions.Reverse()) {
 
             Console.Error.WriteLine(exception.Message); // TODO: colour stuff
 

@@ -1,30 +1,10 @@
-public readonly struct LocationRange
+public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename)
 {
     public static readonly LocationRange NULL = new LocationRange(Location.NULL, Location.NULL);
 
-    public readonly int firstLine;
+    public int LineLength => lastLine - firstLine + 1;
 
-    public readonly int lastLine;
-
-    public readonly int LineLength => lastLine - firstLine + 1;
-
-    public readonly int firstColumn;
-
-    public readonly int lastColumn;
-
-    public readonly int ColumnLength => lastColumn - firstColumn + 1;
-
-    public readonly string filename;
-
-    public LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") {
-        this.firstLine = firstLine;
-        this.lastLine = lastLine;
-
-        this.firstColumn = firstColumn;
-        this.lastColumn = lastColumn;
-
-        this.filename = filename;
-    }
+    public int ColumnLength => lastColumn - firstColumn + 1;
 
     public LocationRange(Location first, Location last) : this(first.line, last.line, first.column, last.column, first.filename) {
         if (first.filename != last.filename) {

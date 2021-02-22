@@ -60,7 +60,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             if (!Utilities.IsName(import)) {
 
                 if (!import.IsValid && import.Representation == "*") {
-                    Logger.exceptions.Dequeue();
+                    Logger.exceptions.Pop();
 
                     Logger.Error(new LotusException(
                         message: "Wildcards ('*') are not allowed in import statements. Use a `using` statement instead. "

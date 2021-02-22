@@ -46,7 +46,9 @@ class Program
         //Console.WriteLine(ASTHelper.IsName(nodes[0]));
 
         if (Logger.HasErrors) {
+            var count = Logger.ErrorCount;
             Logger.PrintAllErrors();
+            Console.Error.WriteLine("In total, there were " + count + " errors. Please fix them.");
             return;
         }
 

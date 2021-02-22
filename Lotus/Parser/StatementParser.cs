@@ -84,15 +84,12 @@ public class StatementParser : Parser<StatementNode>
         return Current;
     }
 
-    public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true)
-    {
+    public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
         var isValid = true;
 
         // to consume a one-liner, you just consume a statement and return
-        if (areOneLinersAllowed && Tokenizer.Peek() != "{")
-        {
-            if (!Consume(out StatementNode statement))
-            {
+        if (areOneLinersAllowed && Tokenizer.Peek() != "{") {
+            if (!Consume(out StatementNode statement)) {
                 Logger.Error(new UnexpectedEOFException(
                     context: "in simple block",
                     expected: "a statement",
@@ -108,8 +105,7 @@ public class StatementParser : Parser<StatementNode>
         var openingBracket = Tokenizer.Consume();
 
         // we don't have to check for EOF because that is (sorta) handled by "areOneLinersAllowed"
-        if (openingBracket != "{")
-        {
+        if (openingBracket != "{") {
             Logger.Error(new UnexpectedTokenException(
                 token: openingBracket,
                 context: "at the start of simple block (this probably means there was an internal error, please report this!)",
@@ -123,12 +119,10 @@ public class StatementParser : Parser<StatementNode>
 
         var statements = new List<StatementNode>();
 
-        while (Tokenizer.Peek() != "}")
-        {
+        while (Tokenizer.Peek() != "}") {
             statements.Add(Consume());
 
-            if (Tokenizer.Peek().Kind == TokenKind.EOF)
-            {
+            if (Tokenizer.Peek().Kind == TokenKind.EOF) {
                 Logger.Error(new UnexpectedEOFException(
                     context: "in simple block",
                     expected: "a statement",
@@ -145,27 +139,22 @@ public class StatementParser : Parser<StatementNode>
 
         var closingBracket = Tokenizer.Peek();
 
-        if (closingBracket.Kind == TokenKind.EOF)
-        {
-            Logger.Error(new UnexpectedEOFException(
-                context: "in simple block",
-                expected: "the character '}'",
-                range: Tokenizer.Position
-            ));
-
-            isValid = false;
-        }
-        else if (closingBracket != "}")
-        {
+        if (closingBracket != "}") {
             Logger.Error(new UnexpectedTokenException(
                 token: closingBracket,
                 context: "in simple block",
                 expected: "the character '}'"
             ));
 
-            isValid = false;
+            if (closingBracket.Kind == TokenKind.EOF) {
+                // if this node was already invalid, it probably means that we already encountered an EOF,
+                // so no need to tell the user twice
+                if (!isValid) Logger.exceptions.Pop();
+            } else {
+                Tokenizer.Reconsume();
+            }
 
-            Tokenizer.Reconsume();
+            isValid = false;
         }
 
         Tokenizer.Consume();

@@ -119,7 +119,7 @@ public class ExpressionParser : Parser<ValueNode>
         if (startingDelimiter.Representation != start) {
             Logger.Warning(new UnexpectedTokenException( // should we use InvalidCallException ?
                 token: startingDelimiter,
-                context: "in comma-separated list",
+                context: "in a tuple",
                 expected: start
             ));
         }
@@ -128,7 +128,7 @@ public class ExpressionParser : Parser<ValueNode>
 
         var itemCount = 0;
 
-        while (Tokenizer.Peek() != end) {
+        while (Tokenizer.Peek() != end && Tokenizer.Peek() != Tokenizer.Default) {
 
             items.Add(ConsumeValue());
 
@@ -144,7 +144,7 @@ public class ExpressionParser : Parser<ValueNode>
 
                 var lastItem = items.Last();
 
-                if (Tokenizer.Current.Kind == TokenKind.keyword) {
+                if (Tokenizer.Current.Kind == TokenKind.keyword || lastItem.Token.Kind == TokenKind.keyword) {
                     Tokenizer.Reconsume();
 
                     isValid = false;
@@ -156,14 +156,20 @@ public class ExpressionParser : Parser<ValueNode>
                     continue;
                 }
 
+                if (Tokenizer.Current == "}") {
+                    Tokenizer.Reconsume();
+
+                    break;
+                }
+
                 Logger.Error(new UnexpectedTokenException(
-                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected ')' or ','",
+                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected " + end + " or ','",
                     token: Tokenizer.Current
                 ));
 
                 isValid = false;
 
-                Tokenizer.Reconsume();
+                //Tokenizer.Reconsume();
 
                 continue;
             }
@@ -176,7 +182,7 @@ public class ExpressionParser : Parser<ValueNode>
             if (Tokenizer.Peek() == end) {
                 Logger.Error(new UnexpectedTokenException(
                     token: Tokenizer.Consume(),
-                    context: "in comma-separated list",
+                    context: "in a tuple",
                     expected: "value"
                 ));
 
@@ -189,10 +195,10 @@ public class ExpressionParser : Parser<ValueNode>
         var endingToken = Tokenizer.Consume();
 
         if (isValid && endingToken != end) { // we probably got an EOF
-            Logger.Error(new UnexpectedEOFException(
-                context: "in a comma-separated value list",
-                expected: "a closing parenthesis ')'",
-                range: Tokenizer.Position
+            Logger.Error(new UnexpectedTokenException(
+                token: endingToken,
+                context: "in a tuple",
+                expected: "an ending delimiter '" + end + "'"
             ));
 
             isValid = false;
@@ -202,13 +208,13 @@ public class ExpressionParser : Parser<ValueNode>
 
             if (itemCount > expectedItemCount) {
                 Logger.Error(new LotusException(
-                    message: "There was too many values in a comma-separated value list. Expected "
+                    message: "There was too many values in this tuple. Expected "
                            + expectedItemCount + ", but got " + itemCount,
                     range: items.Last()?.Token.Location ?? Tokenizer.Position
                 ));
             } else {
                 Logger.Error(new LotusException(
-                    message: "There wasn't enough values in a comma-separated value list. Expected "
+                    message: "There wasn't enough values in this tuple. Expected "
                            + expectedItemCount + ", but got " + itemCount,
                     range: items.Last()?.Token.Location ?? Tokenizer.Position
                 ));

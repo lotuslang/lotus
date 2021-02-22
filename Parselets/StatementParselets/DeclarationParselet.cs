@@ -23,7 +23,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
             name = new IdentToken(nameToken.Representation, nameToken.Location, false);
 
             if (nameToken == "=") {
-                Logger.exceptions.Dequeue(); // remove the last exception
+                Logger.exceptions.Pop(); // remove the last exception
 
                 Logger.Error(new UnexpectedTokenException(
                     message: "Did you forget to specify a variable name ?",

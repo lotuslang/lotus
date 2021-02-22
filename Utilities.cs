@@ -22,6 +22,8 @@ public static class Utilities
         "import",
         "using",
         "namespace",
+        "continue",
+        "break"
     };
 
     public static readonly HashSet<string> internalFunctions = new HashSet<string> {

@@ -38,6 +38,15 @@ public record Location(int line, int column, string filename = "<std>") {
         return $"{loc.filename}({loc.line}, {loc.column})";
     }
 
+    public static bool operator <(Location loc1, Location loc2)
+        => loc1.line == loc2.line
+                ? loc1.column < loc2.column
+                : loc1.line < loc2.line;
+    public static bool operator >(Location loc1, Location loc2)
+        => loc1.line == loc2.line
+                ? loc1.column > loc2.column
+                : loc1.line > loc2.line;
+
     public override string ToString()
         => this;
 }

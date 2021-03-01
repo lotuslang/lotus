@@ -32,7 +32,15 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
         last = GetLastLocation();
     }
 
-    public void Deconstruct(out int firstLine, out int lastLine, out int lineLength, out int firstColumn, out int lastColumn, out int columnLength, out string filename) {
+    public void Deconstruct(
+        out int firstLine,
+        out int lastLine,
+        out int lineLength,
+        out int firstColumn,
+        out int lastColumn,
+        out int columnLength,
+        out string filename
+    ) {
         firstLine = this.firstLine;
         lastLine = this.lastLine;
         lineLength = LineLength;
@@ -42,11 +50,26 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
         filename = this.filename;
     }
 
+    public bool Contains(LocationRange range)
+        => this != range && GetFirstLocation() > range.GetFirstLocation() && range.GetLastLocation() < GetLastLocation();
+
+    public bool IsLaterThan(LocationRange range)
+        => range.firstLine == this.firstLine
+                ? range.firstColumn < this.firstColumn
+                : range.firstLine < this.firstLine;
+
+    public bool IsEarlierThan(LocationRange range)
+        => range.firstLine == this.firstLine
+                ? range.firstColumn > this.firstColumn
+                : range.firstLine > this.firstLine;
+
+    public bool IsSingleLocation() => LineLength == 1 && ColumnLength == 1;
+
+
     public Location GetFirstLocation() => new Location(firstLine, firstColumn, filename);
 
     public Location GetLastLocation() => new Location(lastLine, lastColumn, filename);
 
-    public bool IsSingleLocation() => LineLength == 1 && ColumnLength == 1;
 
     public override string ToString() => this;
 

@@ -1,4 +1,4 @@
-public record ElseNode(Utilities.Union<SimpleBlock, IfNode> BlockOrIfNode, Token Token, bool IsValid = true)
+public record ElseNode(Union<SimpleBlock, IfNode> BlockOrIfNode, Token Token, bool IsValid = true)
 : StatementNode(Token, new LocationRange(Token.Location, BlockOrIfNode.Match(b => b.Location, n => n.Location)), IsValid)
 {
     public new static readonly ElseNode NULL = new(SimpleBlock.NULL, Token.NULL, false);

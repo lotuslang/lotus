@@ -7,8 +7,9 @@ using System.CommandLine;
 //#pragma warning disable
 partial class Program
 {
+    static RootCommand _cli;
     static int Main(string[] args)
-        => BuildRootCommand().Invoke(args);
+        => _cli.Invoke(args);
 
     static Program() {
         // Lil hack for our visual studio (win and mac) users, whose IDE thinks it's a rebel
@@ -26,6 +27,8 @@ partial class Program
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
         sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.txt"));
+
+        _cli = BuildRootCommand();
     }
 
     static void AddGraphPrelude(Graph g, FileInfo file)

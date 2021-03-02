@@ -69,7 +69,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
             .SetTooltip(Value.tooltip);
 
     // TODO: This is used by basically all nodes to be able to get the basic GraphNode
-    // If you change this, be very careful ! You could end up with a stack overflow of
+    // If you change this, be very careful ! You could end up with a stack overflow or
     // a completely different graph !
     public virtual GraphNode Default(StatementNode node)
         => BaseDefault(node);

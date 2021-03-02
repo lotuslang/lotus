@@ -60,8 +60,36 @@ public class TopLevelParser : Parser<TopLevelNode>
             return (Current = Default);
         }
 
+        var accessKeyword = Token.NULL;
+
+        switch (currToken) {
+            case "public":
+            case "protected":
+            case "private":
+                accessKeyword = (currToken as Token)!;
+                break;
+            case "internal":
+                if (Tokenizer.Peek() != "protected")
+                    accessKeyword = (currToken as Token)!;
+
+                accessKeyword = new Token(
+                    currToken + " " + Tokenizer.Consume(),
+                    TokenKind.keyword,
+                    new LocationRange(currToken.Location, Tokenizer.Current.Location)
+                ) {
+                    LeadingTrivia = currToken.LeadingTrivia,
+                    // FIXME: We don't preserve the trivia between the two tokens :(
+                    TrailingTrivia = Tokenizer.Current.TrailingTrivia
+                };
+
+                break;
+        }
+
         if (Grammar.TryGetTopLevelParslet(currToken, out var parslet)) {
             Current = parslet.Parse(this, currToken);
+
+            if (accessKeyword != Token.NULL && Current is IAccessible accessibleCurrent)
+                accessibleCurrent.AccessKeyword = accessKeyword;
         } else {
             Tokenizer.Reconsume();
             Current = new TopLevelStatementNode(StatementParser.Consume());

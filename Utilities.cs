@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-internal static class Utilities
+public static class Utilities
 {
     public static readonly HashSet<string> keywords = new() {
         "var",
@@ -20,7 +20,11 @@ internal static class Utilities
         "using",
         "namespace",
         "continue",
-        "break"
+        "break",
+        "public",
+        "internal",
+        "protected",
+        "private",
     };
 
     public static readonly HashSet<string> internalFunctions = new() {

@@ -19,7 +19,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     public abstract T Current { get; protected set; }
 
     /// <summary>
-    /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="StatementNode.NULL"/>
+    /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="Node.NULL"/>
     /// </summary>
     public static readonly T ConstantDefault = (Node.NULL as T)!;
 

@@ -44,8 +44,8 @@ public class Consumer<T> : IConsumer<T>
 
     public bool Consume([MaybeNullWhen(false)] out T item) {
         if (inputStack.Count == 0) {
-            Current = default(T)!;
-            item = default(T)!;
+            Current = Default;
+            item = Default;
             return false;
         }
 
@@ -63,7 +63,7 @@ public class Consumer<T> : IConsumer<T>
         }
 
         if (inputStack.Count == 0) {
-            Current = default(T)!;
+            Current = Default!;
             return Current;
         }
 

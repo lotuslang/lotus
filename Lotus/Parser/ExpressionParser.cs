@@ -86,7 +86,7 @@ public class ExpressionParser : Parser<ValueNode>
 
         var left = Grammar.GetPrefixParslet(token).Parse(this, token);
 
-        token = Tokenizer.Consume();
+        token = Tokenizer.Consume(); // FIXME: Update this to use bool Consume(out Token)
 
         if (token == Tokenizer.Default) {
             return left;

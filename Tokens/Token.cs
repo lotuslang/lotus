@@ -1,4 +1,4 @@
-[System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {rep.ToString()}")]
+[System.Diagnostics.DebuggerDisplay("<{Kind}> {rep.ToString()} @ {Location}")]
 public class Token
 {
     public static readonly Token NULL = new Token('\0', TokenKind.EOF, LocationRange.NULL, false);

@@ -15,7 +15,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         if (!(nameToken is IdentToken name)) {
             Logger.Error(new UnexpectedTokenException(
                 token: nameToken,
-                expected: TokenKind.ident
+                expected: TokenKind.identifier
             ));
 
             isValid = false;

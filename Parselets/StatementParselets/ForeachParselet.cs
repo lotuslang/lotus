@@ -45,7 +45,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
                 Logger.Error(new UnexpectedTokenException(
                     token: itemNameToken,
                     context: "in a foreach header",
-                    expected: TokenKind.ident
+                    expected: TokenKind.identifier
                 ));
             }
 

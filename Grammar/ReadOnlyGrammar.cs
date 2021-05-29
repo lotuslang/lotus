@@ -158,7 +158,7 @@ public class ReadOnlyGrammar
 
         // fundamental expression kinds
         switch (token.Kind) {
-            case TokenKind.ident:
+            case TokenKind.identifier:
                 return ExpressionKind.Identifier;
             case TokenKind.number:
                 return ExpressionKind.Number;

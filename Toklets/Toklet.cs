@@ -8,5 +8,5 @@ public class Toklet : IToklet<Token>
     public Predicate<IConsumer<char>> Condition => (_ => true);
 
     public virtual Token Consume(IConsumer<char> input, Tokenizer _)
-        => new Token(input.Consume(), TokenKind.delim, input.Position);
+        => new Token(input.Consume(), TokenKind.delimiter, input.Position);
 }

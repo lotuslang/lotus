@@ -90,6 +90,15 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // if we have a decimal separator...
         if (currChar == '.') {
+
+            var errorCount = Logger.ErrorCount;
+
+            Consume(input, _);
+
+            while (Logger.ErrorCount > errorCount) {
+                Logger.exceptions.Pop();
+            }
+
             var str = numberStr.ToString() + currChar;
             if (str.Contains('e') || str.Contains('E')) {
                 // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)

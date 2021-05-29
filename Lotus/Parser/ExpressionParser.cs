@@ -167,6 +167,10 @@ public class ExpressionParser : Parser<ValueNode>
                     token: Tokenizer.Current
                 ));
 
+                if (Tokenizer.Peek() == ",") {
+                    Tokenizer.Consume();
+                }
+
                 isValid = false;
 
                 //Tokenizer.Reconsume();

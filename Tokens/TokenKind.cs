@@ -1,9 +1,8 @@
 public enum TokenKind {
     EOF = 0,
-    delim,
-    ident,
+    delimiter,
+    identifier,
     number,
-    function,
     @bool,
     @string,
     complexString,

@@ -30,7 +30,7 @@ public class OperatorToken : Token
     public OperatorToken(Token token, Precedence precedence, string associativity, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : this(token, precedence, associativity == "left", location, isValid, leading, trailing)
     {
-        Kind = token.Kind == TokenKind.function ? TokenKind.function : TokenKind.@operator;
+        Kind = TokenKind.@operator;
     }
 
     [System.Diagnostics.DebuggerHidden()]

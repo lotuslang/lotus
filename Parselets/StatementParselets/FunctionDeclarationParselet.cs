@@ -19,7 +19,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             Logger.Error(new UnexpectedTokenException(
                 token: funcNameToken,
                 context: "in function declaration",
-                expected: TokenKind.ident
+                expected: TokenKind.identifier
             ));
 
             isValid = false;
@@ -164,7 +164,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 foreach (var paramNameNode in typeNameArray.Operands.Skip(1)) {
                     addParameter(paramType, paramNameNode);
                 }
-            } else if (parser.Tokenizer.Peek().Kind == TokenKind.ident) {
+            } else if (parser.Tokenizer.Peek().Kind == TokenKind.identifier) {
                 // if there's still an identifier after typeOrName,
                 // it's a typed parameter (and the name is the token we peeked at)
 

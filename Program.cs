@@ -61,12 +61,6 @@ Usage : dotnet run -- [option]
             tlNodes.Add(node as TopLevelNode);
         }
 
-        //Console.Error.WriteLine(Logger.GetTextAt(new LocationRange(14, 22, 1, 1, "test.txt")));
-
-        //Console.Write(g.ToText());
-
-        //Console.WriteLine(ASTHelper.IsName(nodes[0]));
-
         if (Logger.HasErrors) {
             var count = Logger.ErrorCount;
             Logger.PrintAllErrors();

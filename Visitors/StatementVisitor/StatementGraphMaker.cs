@@ -61,16 +61,25 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
     protected readonly (string tooltip, string color) SimpleBlock = ("body", "darkviolet");
 
 
-    // TODO: This is used by basically all nodes to be able to get the basic GraphNode
-    // If you change this, be very careful ! You could end up with a stack overflow of
-    // a completely different graph !
-    protected override GraphNode Default(StatementNode node) => Visit(node);
-    protected override GraphNode Default(ValueNode node) => Visit(node);
-
-    public override GraphNode Visit(StatementNode node)
+    protected GraphNode BaseDefault(StatementNode node)
         => new GraphNode(node.GetHashCode(), node.Representation)
             .SetColor(Statement.color)
             .SetTooltip(Statement.tooltip);
+    protected GraphNode BaseDefault(ValueNode node)
+        => new GraphNode(node.GetHashCode(), node.Representation)
+            .SetColor(Value.color)
+            .SetTooltip(Value.tooltip);
+
+    // TODO: This is used by basically all nodes to be able to get the basic GraphNode
+    // If you change this, be very careful ! You could end up with a stack overflow of
+    // a completely different graph !
+    protected override GraphNode Default(StatementNode node)
+        => BaseDefault(node);
+    protected override GraphNode Default(ValueNode node)
+        => BaseDefault(node);
+
+    public override GraphNode Visit(StatementNode node)
+        => Default(node);
 
 
     public override GraphNode Visit(BreakNode node)
@@ -368,8 +377,8 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public GraphNode ToGraphNode(StatementNode node) => node.Accept(this);
-    public GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
+    public virtual GraphNode ToGraphNode(StatementNode node) => node.Accept(this);
+    public virtual GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
     public GraphNode ToGraphNode(SimpleBlock block) => Visit(block);
 }

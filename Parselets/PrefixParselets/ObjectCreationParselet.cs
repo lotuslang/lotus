@@ -22,7 +22,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 
             isValid = false;
 
-            call = new FunctionCallNode(new TupleNode(new ValueNode[0], Token.NULL, Token.NULL), invoc, invoc.Token, isValid: false);
+            call = new FunctionCallNode(new TupleNode(new ValueNode[0], Token.NULL, Token.NULL), invoc, isValid: false);
 
             parser.Tokenizer.Reconsume();
         }

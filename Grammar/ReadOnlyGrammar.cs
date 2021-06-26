@@ -147,10 +147,12 @@ public class ReadOnlyGrammar
     }
 
     public IToklet<Token> MatchToklet(StringConsumer input)
-        => toklets.Find(toklet => toklet.Condition(new StringConsumer(input)))!;
+        // we can mark this as non-nullable as the basic `Toklet` will always match, therefore
+        // we will always find at least one
+        => toklets.Find(toklet => toklet.Condition(input.Clone()))!;
 
     public ITriviaToklet<TriviaToken>? MatchTriviaToklet(StringConsumer input)
-        => triviaToklets.Find(toklet => toklet.Condition(new StringConsumer(input)));
+        => triviaToklets.Find(toklet => toklet.Condition(input.Clone()));
 
     public ExpressionKind GetExpressionKind(Token token) {
 

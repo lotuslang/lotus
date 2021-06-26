@@ -138,4 +138,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
         return Default;
     }
+
+    public abstract Parser<T> Clone();
+    IConsumer<T> IConsumer<T>.Clone() => Clone();
 }

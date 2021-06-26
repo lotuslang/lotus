@@ -88,4 +88,8 @@ public class Consumer<T> : IConsumer<T>
 
         return result;
     }
+
+    public Consumer<T> Clone() => new Consumer<T>(this);
+
+    IConsumer<T> IConsumer<T>.Clone() => Clone();
 }

@@ -53,7 +53,7 @@ public class Tokenizer : IConsumer<Token>
     }
 
     public Tokenizer(StringConsumer stringConsumer, ReadOnlyGrammar grammar) : this(grammar) {
-        input = new StringConsumer(stringConsumer);
+        input = stringConsumer.Clone();
     }
 
     public Tokenizer(IConsumer<char> consumer, ReadOnlyGrammar grammar) : this(grammar) {
@@ -61,7 +61,8 @@ public class Tokenizer : IConsumer<Token>
     }
 
     public Tokenizer(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(new StringConsumer(""), grammar) {
-        while (tokenConsumer.Consume(out _)) {
+        var cloned = tokenConsumer.Clone();
+        while (cloned.Consume(out _)) {
             reconsumeQueue.Enqueue(tokenConsumer.Current);
         }
     }
@@ -199,4 +200,7 @@ public class Tokenizer : IConsumer<Token>
 
         return triviaToklet.Consume(input, this);
     }
+
+    public IConsumer<Token> Clone() => new Tokenizer(this);
+    IConsumer<Token> IConsumer<Token>.Clone() => Clone();
 }

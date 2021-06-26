@@ -34,9 +34,12 @@ public class StringConsumer : IConsumer<char>
     }
 
     public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") : this() {
-        while (consumer.Consume(out var item)) {
+        var cloned = consumer.Clone();
+        while (cloned.Consume(out var item)) {
             stack.Push(item);
         }
+
+        stack = new Stack<char>(consumer.Peek());
 
         stack = new Stack<char>(stack);
 
@@ -140,7 +143,7 @@ public class StringConsumer : IConsumer<char>
     public char[] Peek(int n) {
         var output = new char[n];
 
-        var consumer = new Consumer<char>(this);
+        var consumer = this.Clone();
 
         for (int i = 0; i < n; i++) {
             output[i] = consumer.Consume();
@@ -148,6 +151,10 @@ public class StringConsumer : IConsumer<char>
 
         return output;
     }
+
+    public StringConsumer Clone() => new StringConsumer(this);
+
+    IConsumer<char> IConsumer<char>.Clone() => Clone();
 
     private void UpdatePosForNewline() => pos = pos with { line = pos.line + 1, column = -1 };
 }

@@ -66,6 +66,55 @@ public class Token
             TrailingTrivia.AddTrailingTrivia(trivia);
     }
 
+    public bool HasTrivia(TriviaKind kind, out TriviaToken trivia) {
+
+        if (LeadingTrivia is not null) {
+            if (LeadingTrivia.Kind == kind) {
+                trivia = LeadingTrivia;
+                return true;
+            }
+
+            return LeadingTrivia.HasTrivia(kind, out trivia);
+        }
+
+        if (TrailingTrivia is not null) {
+            if (TrailingTrivia.Kind == kind) {
+                trivia = TrailingTrivia;
+                return true;
+            }
+
+            return TrailingTrivia.HasTrivia(kind, out trivia);
+        }
+
+        trivia = TriviaToken.NULL;
+
+        return false;
+    }
+
+    public bool HasTrivia(string rep, out TriviaToken trivia) {
+        if (LeadingTrivia is not null) {
+            if (LeadingTrivia == rep) {
+                trivia = LeadingTrivia;
+                return true;
+            }
+
+            return LeadingTrivia.HasTrivia(rep, out trivia);
+        }
+
+        if (TrailingTrivia is not null) {
+            if (TrailingTrivia == rep) {
+                trivia = TrailingTrivia;
+                return true;
+            }
+
+            return TrailingTrivia.HasTrivia(rep, out trivia);
+        }
+
+        trivia = TriviaToken.NULL;
+
+        return false;
+    }
+
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]

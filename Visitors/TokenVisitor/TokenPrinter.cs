@@ -1,15 +1,15 @@
 using System;
 using System.Text;
 
-public sealed class TokenPrinter : TokenVisitor<string>
+internal sealed class TokenPrinter : ITokenVisitor<string>
 {
-    public override string Visit(NumberToken token)
+    public string Visit(NumberToken token)
         => PrintLeadingTrivia(token) + token.Representation + PrintTrailingTrivia(token);
 
-    public override string Visit(StringToken token)
+    public string Visit(StringToken token)
         => PrintLeadingTrivia(token) + '"' + token.Representation + '"' + PrintTrailingTrivia(token);
 
-    public override string Visit(ComplexStringToken token) {
+    public string Visit(ComplexStringToken token) {
         var output = new StringBuilder("\"");
 
         var str = token.Representation;
@@ -76,7 +76,7 @@ public sealed class TokenPrinter : TokenVisitor<string>
         return output.ToString() + '"';
     }
 
-    public override string Visit(Token token) {
+    public string Visit(Token token) {
         var output = PrintLeadingTrivia(token);
 
         if (token.Kind != TokenKind.EOF) {
@@ -97,7 +97,7 @@ public sealed class TokenPrinter : TokenVisitor<string>
 
     public string Print(Token token) => token.Accept(this);
 
-    protected override string Default(Token token) => Visit(token);
+    public string Default(Token token) => Visit(token);
 
-    protected override string Default(TriviaToken token) => Default(token as Token);
+    public string Default(TriviaToken token) => Default(token as Token);
 }

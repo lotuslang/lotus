@@ -1,4 +1,4 @@
-public class TopLevelGraphMaker : TopLevelVisitor<GraphNode>
+internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 {
 
     protected readonly (string tooltip, string color) From = ("from statement", "navy");
@@ -16,22 +16,22 @@ public class TopLevelGraphMaker : TopLevelVisitor<GraphNode>
     protected readonly (string tooltip, string color) TopLevel = ("TopLevelNode", "black");
 
 
-    protected override GraphNode Default(TopLevelNode node)
+    public GraphNode Default(TopLevelNode node)
         =>  new GraphNode(node.GetHashCode(), node.Token.Representation)
                 .SetColor(TopLevel.color)
                 .SetTooltip(TopLevel.tooltip);
 
-    public override GraphNode Visit(TopLevelStatementNode node)
+    public GraphNode Visit(TopLevelStatementNode node)
         => ASTHelper.ToGraphNode(node.Statement);
 
-    public override GraphNode Visit(FromNode node)
+    public GraphNode Visit(FromNode node)
         => new GraphNode(node.GetHashCode(), "from") {
                ASTHelper.ToGraphNode(node.OriginName)
                    .SetTooltip("origin name")
            }.SetColor(From.color)
             .SetTooltip(From.tooltip);
 
-    public override GraphNode Visit(ImportNode node) {
+    public GraphNode Visit(ImportNode node) {
         var root = new GraphNode(node.GetHashCode(), "import") {
             ASTHelper.ToGraphNode(node.FromStatement)
         }.SetColor(Import.color)
@@ -50,13 +50,13 @@ public class TopLevelGraphMaker : TopLevelVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(NamespaceNode node)
+    public GraphNode Visit(NamespaceNode node)
         => new GraphNode(node.GetHashCode(), "namespace") {
                 ASTHelper.ToGraphNode(node.NamespaceName).SetTooltip("namespace name")
             }.SetColor(Namespace.color)
              .SetTooltip(Namespace.tooltip);
 
-    public override GraphNode Visit(UsingNode node)
+    public GraphNode Visit(UsingNode node)
         => new GraphNode(node.GetHashCode(), "using") {
                 ASTHelper.ToGraphNode(node.ImportName)
             }.SetColor(Using.color)

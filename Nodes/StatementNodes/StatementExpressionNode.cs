@@ -13,5 +13,5 @@ public class StatementExpressionNode : StatementNode
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(StatementVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

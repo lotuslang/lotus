@@ -1,6 +1,4 @@
-using System;
-
-public class StatementGraphMaker : StatementVisitor<GraphNode>
+internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor<GraphNode>
 {
 
     protected readonly (string tooltip, string color) Break = ("break keyword", "");
@@ -73,26 +71,26 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
     // TODO: This is used by basically all nodes to be able to get the basic GraphNode
     // If you change this, be very careful ! You could end up with a stack overflow of
     // a completely different graph !
-    protected override GraphNode Default(StatementNode node)
+    public virtual GraphNode Default(StatementNode node)
         => BaseDefault(node);
-    protected override GraphNode Default(ValueNode node)
+    public virtual GraphNode Default(ValueNode node)
         => BaseDefault(node);
 
-    public override GraphNode Visit(StatementNode node)
+    public GraphNode Visit(StatementNode node)
         => Default(node);
 
 
-    public override GraphNode Visit(BreakNode node)
+    public GraphNode Visit(BreakNode node)
         => Default(node)
             .SetColor(Break.color)
             .SetTooltip(Break.tooltip);
 
-    public override GraphNode Visit(ContinueNode node)
+    public GraphNode Visit(ContinueNode node)
         => Default(node)
             .SetColor(Continue.color)
             .SetTooltip(Continue.tooltip);
 
-    public override GraphNode Visit(DeclarationNode node)
+    public GraphNode Visit(DeclarationNode node)
         => new GraphNode(node.GetHashCode(), "var") {
                ASTHelper.ToGraphNode(node.Name)
                     .SetColor(DeclarationName.color)
@@ -101,13 +99,13 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
            }.SetColor(Declaration.color)
             .SetTooltip(Declaration.tooltip);
 
-    public override GraphNode Visit(ElseNode node)
+    public GraphNode Visit(ElseNode node)
         => new GraphNode(node.GetHashCode(), "else") {
                node.HasIf ? ToGraphNode(node.IfNode!) : ToGraphNode(node.Body)
            }.SetColor(Else.color)
             .SetTooltip(Else.tooltip);
 
-    public override GraphNode Visit(ForeachNode node)
+    public GraphNode Visit(ForeachNode node)
         => new GraphNode(node.GetHashCode(), "foreach") {
                new GraphNode(node.InToken.GetHashCode(), "in") {
                     ToGraphNode(node.ItemName),
@@ -117,7 +115,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
            }.SetColor(Foreach.color)
             .SetTooltip(Foreach.tooltip);
 
-    public override GraphNode Visit(ForNode node) {
+    public GraphNode Visit(ForNode node) {
         var root = new GraphNode(node.GetHashCode(), "for loop")
                         .SetColor(For.color)
                         .SetTooltip(For.tooltip);
@@ -140,7 +138,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(FunctionDeclarationNode node) {
+    public GraphNode Visit(FunctionDeclarationNode node) {
         var root = new GraphNode(node.GetHashCode(), "func " + node.Name.Representation)
                         .SetColor(FuncDec.color)
                         .SetTooltip(FuncDec.tooltip);
@@ -183,7 +181,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(IfNode node) {
+    public GraphNode Visit(IfNode node) {
         var root = new GraphNode(node.GetHashCode(), "if") {
             new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
                 ToGraphNode(node.Condition)
@@ -200,13 +198,13 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(PrintNode node)
+    public GraphNode Visit(PrintNode node)
         => new GraphNode(node.GetHashCode(), "print") {
                 ToGraphNode(node.Value)
             }.SetColor(Print.color)
              .SetTooltip(Print.tooltip); // FIXME: find color
 
-    public override GraphNode Visit(ReturnNode node) {
+    public GraphNode Visit(ReturnNode node) {
         var root = new GraphNode(node.GetHashCode(), "return")
             .SetColor(Return.color)
             .SetTooltip(Return.tooltip);
@@ -218,11 +216,11 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(StatementExpressionNode node)
+    public GraphNode Visit(StatementExpressionNode node)
         => ToGraphNode(node.Value);
 
 
-    public override GraphNode Visit(WhileNode node)
+    public GraphNode Visit(WhileNode node)
         => new GraphNode(node.GetHashCode(), node.IsDoLoop ? "do-while" : "while") {
                 new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
                     ToGraphNode(node.Condition)
@@ -234,17 +232,17 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
 
 
 
-    public override GraphNode Visit(ValueNode node)
+    public GraphNode Visit(ValueNode node)
         => new GraphNode(node.GetHashCode(), node.Representation)
             .SetColor(Value.color)
             .SetTooltip(Value.tooltip);
 
-    public override GraphNode Visit(BoolNode node)
+    public GraphNode Visit(BoolNode node)
         => Default(node)
             .SetColor(Bool.color)
             .SetTooltip(Bool.tooltip);
 
-    public override GraphNode Visit(ComplexStringNode node) {
+    public GraphNode Visit(ComplexStringNode node) {
         var root = new GraphNode(node.GetHashCode(), node.Representation)
                         .SetColor(ComplexString.color)
                         .SetTooltip(ComplexString.tooltip);
@@ -262,7 +260,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(FunctionCallNode node) {
+    public GraphNode Visit(FunctionCallNode node) {
         GraphNode root;
 
         if (node.FunctionName is IdentNode name) {
@@ -293,17 +291,17 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(IdentNode node)
+    public GraphNode Visit(IdentNode node)
         => Default(node)
             .SetColor(Ident.color)
             .SetTooltip(Ident.tooltip);
 
-    public override GraphNode Visit(NumberNode node)
+    public GraphNode Visit(NumberNode node)
         => Default(node)
             .SetColor(Number.color)
             .SetTooltip(Number.tooltip);
 
-    public override GraphNode Visit(ObjectCreationNode node) {
+    public GraphNode Visit(ObjectCreationNode node) {
         var root = new GraphNode(node.GetHashCode(), "obj creation") {
             ToGraphNode(node.TypeName)
                 .SetColor(ObjTypeName.color)
@@ -328,7 +326,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(OperationNode node) {
+    public GraphNode Visit(OperationNode node) {
         GraphNode root;
 
         if (node.Representation == "++" || node.Representation == "--") {
@@ -347,15 +345,15 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(ParenthesizedValueNode node)
+    public GraphNode Visit(ParenthesizedValueNode node)
         => ToGraphNode(node.Values);
 
-    public override GraphNode Visit(StringNode node)
+    public GraphNode Visit(StringNode node)
         => new GraphNode(node.GetHashCode(), "'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
             .SetColor(String.color)
             .SetTooltip(String.tooltip);
 
-    public override GraphNode Visit(TupleNode node) {
+    public GraphNode Visit(TupleNode node) {
         var root = new GraphNode(node.GetHashCode(), node.Count == 0 ? "Empty tuple" : "Tuple with\\n" + node.Count + " elements")
                         .SetColor(Tuple.color)
                         .SetTooltip(Tuple.tooltip);
@@ -367,7 +365,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
         return root;
     }
 
-    public override GraphNode Visit(SimpleBlock block) {
+    public GraphNode Visit(SimpleBlock block) {
         var root = new GraphNode(block.GetHashCode(), "block")
             .SetColor(SimpleBlock.color)
             .SetTooltip(SimpleBlock.tooltip);
@@ -378,6 +376,7 @@ public class StatementGraphMaker : StatementVisitor<GraphNode>
     }
 
     public virtual GraphNode ToGraphNode(StatementNode node) => node.Accept(this);
+
     public virtual GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
     public GraphNode ToGraphNode(SimpleBlock block) => Visit(block);

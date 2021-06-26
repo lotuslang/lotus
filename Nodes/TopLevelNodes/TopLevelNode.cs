@@ -10,5 +10,5 @@ public class TopLevelNode : Node
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual T Accept<T>(TopLevelVisitor<T> visitor) => visitor.Visit(this);
+    public virtual T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

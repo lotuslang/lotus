@@ -1,90 +1,88 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public sealed class Flattener : StatementVisitor<IEnumerable<StatementNode>>
+internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>, IValueVisitor<IEnumerable<StatementNode>>
 {
-
     private static readonly StatementNode[] emptyArray = new StatementNode[0];
 
-    protected override IEnumerable<StatementNode> Default(StatementNode node)
+    public IEnumerable<StatementNode> Default(StatementNode node)
         => new[] { node };
 
-    protected override IEnumerable<StatementNode> Default(ValueNode node)
+    public IEnumerable<StatementNode> Default(ValueNode node)
         => new[] { (StatementExpressionNode)node };
 
-    public override IEnumerable<StatementNode> Visit(DeclarationNode node)
+    public IEnumerable<StatementNode> Visit(DeclarationNode node)
         => new StatementNode[] { (StatementExpressionNode)node.Value, node };
 
-    public override IEnumerable<StatementNode> Visit(ElseNode node)
+    public IEnumerable<StatementNode> Visit(ElseNode node)
         => (node.HasIf ? Flatten(node.IfNode!) : emptyArray)
                 .Concat(Visit(node.Body))
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(ForeachNode node)
-        => Visit(node.Collection)
+    public IEnumerable<StatementNode> Visit(ForeachNode node)
+        => Flatten(node.Collection)
                 .Concat(Visit(node.Body))
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(ForNode node)
+    public IEnumerable<StatementNode> Visit(ForNode node)
         => Flatten(node.Header[0])
                 .Concat(Flatten(node.Header[1]))
                 .Concat(Flatten(node.Header[2]))
                 .Concat(Visit(node.Body))
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(FunctionDeclarationNode node) {
+    public IEnumerable<StatementNode> Visit(FunctionDeclarationNode node) {
         var output = new List<StatementNode>();
 
         foreach (var param in node.Parameters) {
-            if (param.HasDefaultValue) output.Concat(Visit(param.DefaultValue!));
+            if (param.HasDefaultValue) output.Concat(Flatten(param.DefaultValue!));
         }
 
         return output.Concat(Visit(node.Body)).Append(node);
     }
 
-    public override IEnumerable<StatementNode> Visit(IfNode node)
+    public IEnumerable<StatementNode> Visit(IfNode node)
         =>  Flatten(node.Condition)
                 .Concat(Visit(node.Body))
                 .Concat(node.HasElse ? Flatten(node.ElseNode!) : emptyArray)
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(PrintNode node)
-        => Visit(node.Value)
+    IEnumerable<StatementNode> Visit(PrintNode node)
+        => Flatten(node.Value)
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(ReturnNode node)
-        => (node.IsReturningValue ? Visit(node.Value) : emptyArray)
+    public IEnumerable<StatementNode> Visit(ReturnNode node)
+        => (node.IsReturningValue ? Flatten(node.Value) : emptyArray)
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(StatementExpressionNode node) => Flatten(node.Value);
+    public IEnumerable<StatementNode> Visit(StatementExpressionNode node) => Flatten(node.Value);
 
-    public override IEnumerable<StatementNode> Visit(WhileNode node)
-        => (node.IsDoLoop ? Visit(node.Body).Concat(Visit(node.Condition)) : Visit(node.Condition).Concat(Visit(node.Body)))
+    public IEnumerable<StatementNode> Visit(WhileNode node)
+        => (node.IsDoLoop ? Visit(node.Body).Concat(Flatten(node.Condition)) : Flatten(node.Condition).Concat(Visit(node.Body)))
                 .Append(node);
 
-    public override IEnumerable<StatementNode> Visit(OperationNode node)
+    public IEnumerable<StatementNode> Visit(OperationNode node)
         => node.Operands.SelectMany(Flatten)
                 .Append((StatementExpressionNode)node);
 
-    public override IEnumerable<StatementNode> Visit(FunctionCallNode node)
+    public IEnumerable<StatementNode> Visit(FunctionCallNode node)
         => node.ArgList.Values.SelectMany(Flatten)
                 .Append((StatementExpressionNode)node);
 
-    public override IEnumerable<StatementNode> Visit(ObjectCreationNode node)
+    public IEnumerable<StatementNode> Visit(ObjectCreationNode node)
         => Flatten(node.InvocationNode)
                 .Append((StatementExpressionNode)node);
 
-    public override IEnumerable<StatementNode> Visit(ParenthesizedValueNode node)
+    public IEnumerable<StatementNode> Visit(ParenthesizedValueNode node)
         => Flatten(node.Values)
                 .Append((StatementExpressionNode)node);
 
-    public override IEnumerable<StatementNode> Visit(TupleNode node)
+    public IEnumerable<StatementNode> Visit(TupleNode node)
         =>  node.Values.SelectMany(Flatten)
                 .Append((StatementExpressionNode)node);
 
     // TODO: Find an easier/clearer/faster way to do this
-    public override IEnumerable<StatementNode> Visit(SimpleBlock block)
+    public IEnumerable<StatementNode> Visit(SimpleBlock block)
         // To extract values from a block, we extract every value from each statement and then return them.
         // However, it's not as straightforward as it sounds, since we have an array of statements, and each
         // statement will return an array of ValueNodes. Means we end up with a IEnumerable<StatementNode>[], which we need to flatten

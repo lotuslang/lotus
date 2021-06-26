@@ -18,5 +18,5 @@ public class TriviaToken : Token
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
 }

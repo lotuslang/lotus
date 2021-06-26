@@ -22,7 +22,7 @@ public class ValueNode : Node
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual T Accept<T>(StatementVisitor<T> visitor) => visitor.Visit(this);
+    public virtual T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 
     public static explicit operator StatementExpressionNode(ValueNode node) => new StatementExpressionNode(node);
 

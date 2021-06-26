@@ -1,20 +1,20 @@
-public sealed class StatementPrinter : StatementVisitor<string>
+internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisitor<string>
 {
-    protected override string Default(StatementNode node) => ASTHelper.PrintToken(node.Token);
+    public string Default(StatementNode node) => ASTHelper.PrintToken(node.Token);
 
-    protected override string Default(ValueNode node) => ASTHelper.PrintValue(node);
+    public string Default(ValueNode node) => ASTHelper.PrintValue(node);
 
-    public override string Visit(DeclarationNode node)
+    public string Visit(DeclarationNode node)
         => ASTHelper.PrintToken(node.Token)
          + ASTHelper.PrintToken(node.Name)
          + ASTHelper.PrintToken(node.EqualToken)
          + ASTHelper.PrintValue(node.Value);
 
-    public override string Visit(ElseNode node)
+    public string Visit(ElseNode node)
         => ASTHelper.PrintToken(node.Token)
          + (node.HasIf ? Print(node.IfNode!) : Visit(node.Body));
 
-    public override string Visit(ForeachNode node)
+    public string Visit(ForeachNode node)
         => ASTHelper.PrintToken(node.Token)
          + ASTHelper.PrintToken(node.OpeningParenthesis)
          + ASTHelper.PrintValue(node.ItemName)
@@ -23,14 +23,14 @@ public sealed class StatementPrinter : StatementVisitor<string>
          + ASTHelper.PrintToken(node.ClosingParenthesis)
          + Visit(node.Body);
 
-    public override string Visit(ForNode node)
+    public string Visit(ForNode node)
         => ASTHelper.PrintToken(node.Token)
          + ASTHelper.PrintToken(node.OpeningParenthesis)
          + Utilities.Join(",", Print, node.Header)
          + ASTHelper.PrintToken(node.ClosingParenthesis)
          + Visit(node.Body);
 
-    public override string Visit(FunctionDeclarationNode node) {
+    public string Visit(FunctionDeclarationNode node) {
         var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.Name) + ASTHelper.PrintToken(node.OpeningParenthesis);
 
         static string printParameter(FunctionArgument param) {
@@ -54,22 +54,22 @@ public sealed class StatementPrinter : StatementVisitor<string>
         return output;
     }
 
-    public override string Visit(IfNode node)
+    public string Visit(IfNode node)
         => ASTHelper.PrintToken(node.Token)
          + ASTHelper.PrintValue(node.Condition)
          + Visit(node.Body)
          + (node.HasElse ? Print(node.ElseNode!) : "");
 
-    public override string Visit(PrintNode node)
+    public string Visit(PrintNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Value);
 
-    public override string Visit(ReturnNode node)
+    public string Visit(ReturnNode node)
         => ASTHelper.PrintToken(node.Token)
          + (node.IsReturningValue ? ASTHelper.PrintValue(node.Value) : "");
 
-    public override string Visit(StatementExpressionNode node) => ASTHelper.PrintValue(node.Value);
+    public string Visit(StatementExpressionNode node) => ASTHelper.PrintValue(node.Value);
 
-    public override string Visit(WhileNode node)
+    public string Visit(WhileNode node)
         => node.IsDoLoop ?
         // if it's a do loop
             ASTHelper.PrintToken(node.DoToken!)
@@ -82,7 +82,7 @@ public sealed class StatementPrinter : StatementVisitor<string>
               + Visit(node.Body);
 
 
-    public override string Visit(SimpleBlock block)
+    public string Visit(SimpleBlock block)
         => (!block.IsOneLiner ? ASTHelper.PrintToken(block.OpeningToken) : "")
          + Utilities.Join("", Print, block.Content)
          + (!block.IsOneLiner ? ASTHelper.PrintToken(block.ClosingToken) : "");

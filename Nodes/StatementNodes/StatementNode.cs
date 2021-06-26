@@ -18,7 +18,7 @@ public class StatementNode : Node
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual T Accept<T>(StatementVisitor<T> visitor) => visitor.Visit(this);
+    public virtual T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 
     public static explicit operator TopLevelStatementNode(StatementNode node) => new TopLevelStatementNode(node);
 

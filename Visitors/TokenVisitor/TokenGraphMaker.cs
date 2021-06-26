@@ -1,20 +1,10 @@
-public sealed class TokenGraphMaker : TokenVisitor<GraphNode>
+internal sealed class TokenGraphMaker : ITokenVisitor<GraphNode>
 {
-    protected override GraphNode Default(Token token) => Visit(token);
+    public GraphNode Default(Token token)
+        =>  new GraphNode(token.GetHashCode(), token.Representation)
+                .SetColor("lightgrey");
 
-    protected override GraphNode Default(TriviaToken token) => null!;
-
-
-    public override GraphNode Visit(Token token) {
-        var output = new GraphNode(token.GetHashCode(), token.Representation);
-
-        output.SetColor("lightgrey");
-
-        return output;
-    }
-
-    //TODO: this
-    //public override GraphNode Visit(ComplexStringToken token) { }
+    public GraphNode Default(TriviaToken token) => Default(token as Token);
 
     public GraphNode ToGraphNode(Token token) => token.Accept(this);
 }

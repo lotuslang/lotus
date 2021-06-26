@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public static class ASTHelper
+internal static class ASTHelper
 {
     public static readonly NameChecker NameChecker = new NameChecker();
 

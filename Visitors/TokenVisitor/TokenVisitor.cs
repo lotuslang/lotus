@@ -1,24 +1,24 @@
-public abstract class TokenVisitor<T>
+public interface ITokenVisitor<T>
 {
-    protected abstract T Default(Token token);
+    T Default(Token token);
 
-    protected abstract T Default(TriviaToken token);
-
-
-    public virtual T Visit(Token token) => Default(token);
-
-    public virtual T Visit(BoolToken token) => Visit(token as ComplexToken);
-    public virtual T Visit(ComplexStringToken token) => Visit(token as ComplexToken);
-    public virtual T Visit(ComplexToken token) => Default(token);
-    public virtual T Visit(IdentToken token) => Visit(token as ComplexToken);
-    public virtual T Visit(NumberToken token) => Visit(token as ComplexToken);
-    public virtual T Visit(OperatorToken token) => Default(token);
-    public virtual T Visit(StringToken token) => Visit(token as ComplexToken);
+    T Default(TriviaToken token);
 
 
-    public virtual T Visit(TriviaToken token) => Default(token);
+    T Visit(Token token) => Default(token);
 
-    public virtual T Visit(CommentTriviaToken token) => Default(token);
-    public virtual T Visit(NewlineTriviaToken token) => Visit(token as WhitespaceTriviaToken);
-    public virtual T Visit(WhitespaceTriviaToken token) => Default(token);
+    T Visit(BoolToken token) => Visit(token as ComplexToken);
+    T Visit(ComplexStringToken token) => Visit(token as ComplexToken);
+    T Visit(ComplexToken token) => Default(token);
+    T Visit(IdentToken token) => Visit(token as ComplexToken);
+    T Visit(NumberToken token) => Visit(token as ComplexToken);
+    T Visit(OperatorToken token) => Default(token);
+    T Visit(StringToken token) => Visit(token as ComplexToken);
+
+
+    T Visit(TriviaToken token) => Default(token);
+
+    T Visit(CommentTriviaToken token) => Default(token);
+    T Visit(NewlineTriviaToken token) => Visit(token as WhitespaceTriviaToken);
+    T Visit(WhitespaceTriviaToken token) => Default(token);
 }

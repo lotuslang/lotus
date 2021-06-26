@@ -1,4 +1,4 @@
-public sealed class ConstantVisualizer : StatementGraphMaker
+internal sealed class ConstantVisualizer : StatementGraphMaker
 {
 
     private string ConstantColor { get; }
@@ -10,7 +10,7 @@ public sealed class ConstantVisualizer : StatementGraphMaker
         NonConstantColor = nonConstantColor;
     }
 
-    protected override GraphNode Default(ValueNode node) {
+    public override GraphNode Default(ValueNode node) {
         return BaseDefault(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
     }
 

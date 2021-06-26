@@ -119,7 +119,7 @@ public class Token
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual T Accept<T>(TokenVisitor<T> visitor) => visitor.Visit(this);
+    public virtual T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
 
     public override string ToString() {
         return rep;

@@ -1,30 +1,23 @@
 using System;
 using System.Linq;
-using System.Text;
 
-public sealed class ValuePrinter : StatementVisitor<string>
+internal sealed class ValuePrinter : IValueVisitor<string>
 {
-
-    protected override string Default(StatementNode node)
-        => throw Logger.Fatal(new InvalidCallException("ValuePrinter cannot print statement like " + node.GetType().Name, node.Token.Location));
-
-    protected override string Default(ValueNode node)
+    public string Default(ValueNode node)
         => ASTHelper.PrintToken(node.Token);
 
 
-    public override string Visit(StatementExpressionNode node) => Print(node.Value);
-
-    public override string Visit(BoolNode node)
+    public string Visit(BoolNode node)
         => ASTHelper.PrintToken(node.Token);
 
-    public override string Visit(FunctionCallNode node)
+    public string Visit(FunctionCallNode node)
         => Print(node.FunctionName)
          + Utilities.Join(",", Print, node.ArgList);
 
-    public override string Visit(ObjectCreationNode node)
+    public string Visit(ObjectCreationNode node)
         => ASTHelper.PrintToken(node.Token) + Print(node.InvocationNode);
 
-    public override string Visit(OperationNode node) {
+    public string Visit(OperationNode node) {
         switch (node.OperationType) {
             // prefix stuff
             case OperationType.Positive:
@@ -76,13 +69,10 @@ public sealed class ValuePrinter : StatementVisitor<string>
         }
     }
 
-    public override string Visit(TupleNode node)
+    public string Visit(TupleNode node)
         => ASTHelper.PrintToken(node.OpeningToken)
          + Utilities.Join(",", Print, node.Values)
          + ASTHelper.PrintToken(node.ClosingToken);
-
-    public override string Visit(SimpleBlock block)
-        => throw Logger.Fatal(new InvalidCallException("ValuePrinter cannot print blocks", block.Location));
 
 
     public string Print(ValueNode node) => node.Accept(this);

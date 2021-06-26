@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Collections.Generic;
 
 public class TopLevelParser : Parser<TopLevelNode>
@@ -46,7 +44,7 @@ public class TopLevelParser : Parser<TopLevelNode>
 
     public TopLevelParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
-    public TopLevelParser(FileInfo file) : this(new LotusTokenizer(file)) { }
+    public TopLevelParser(Uri file) : this(new LotusTokenizer(file)) { }
 
     public TopLevelParser(Parser<TopLevelNode> parser) : base(parser, LotusGrammar.Instance) {
         Init();

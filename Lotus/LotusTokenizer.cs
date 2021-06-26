@@ -15,7 +15,7 @@ public sealed class LotusTokenizer : Tokenizer
     public LotusTokenizer(LotusTokenizer tokenizer) : base(tokenizer, tokenizer.Grammar)
     { }
 
-    public LotusTokenizer(System.IO.FileInfo fileInfo) : this(new StringConsumer(fileInfo))
+    public LotusTokenizer(System.Uri fileInfo) : this(new StringConsumer(fileInfo))
     { }
 
     public LotusTokenizer(IEnumerable<char> collection) : this(new StringConsumer(collection))

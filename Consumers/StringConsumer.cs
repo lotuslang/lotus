@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -62,7 +61,7 @@ public class StringConsumer : IConsumer<char>
         pos = new Location(1, -1, fileName);
     }
 
-    public StringConsumer(FileInfo fileInfo) : this(File.ReadAllLines(fileInfo.FullName), fileInfo.Name)
+    public StringConsumer(Uri fileInfo) : this(File.ReadAllLines(fileInfo.AbsolutePath), fileInfo.AbsolutePath)
     { }
 
     public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") : this() {

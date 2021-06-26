@@ -45,7 +45,7 @@ Usage : dotnet run -- [option]
             return;
         }
 
-        var file = new FileInfo(Directory.GetCurrentDirectory() + "/test.txt");
+        var file = new Uri(Directory.GetCurrentDirectory() + "/./test.txt");
 
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new LotusTokenizer(file);
@@ -88,7 +88,7 @@ Usage : dotnet run -- [option]
 
             g.AddNodeProp("fontname", "Consolas, monospace");
             g.AddGraphProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.Name}\\n\\n");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.LocalPath}\\n\\n");
             g.AddGraphProp("labelloc", "top");
 
             if (args.Length == 2) {
@@ -151,7 +151,7 @@ Usage : dotnet run -- [option]
 
             g.AddNodeProp("fontname", "Consolas, monospace");
             g.AddGraphProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.Name}\\n\\n");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.LocalPath}\\n\\n");
             g.AddGraphProp("labelloc", "top");
 
             if (args.Length == 2) {

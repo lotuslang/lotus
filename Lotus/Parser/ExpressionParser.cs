@@ -1,4 +1,4 @@
-using System.IO;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -31,7 +31,7 @@ public class ExpressionParser : Parser<ValueNode>
 
     public ExpressionParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
-    public ExpressionParser(FileInfo file) : this(new LotusTokenizer(file)) { }
+    public ExpressionParser(Uri file) : this(new LotusTokenizer(file)) { }
 
     public ExpressionParser(Parser<ValueNode> parser) : base(parser) { }
 

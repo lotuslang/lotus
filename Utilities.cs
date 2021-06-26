@@ -164,4 +164,59 @@ public static class Utilities
 		Array.Reverse(arr);
 		return new Stack<T>(arr);
 	}
+
+    public class Union<T, U>
+    {
+        readonly T? Item1;
+        readonly U? Item2;
+        int tag;
+
+        public Union(T item) { Item1 = item; tag = 0; }
+        public Union(U item) { Item2 = item; tag = 1; }
+
+        public TResult Match<TResult>(Func<T, TResult> f, Func<U, TResult> g) {
+            switch (tag) {
+                case 0: return f(Item1!);
+                case 1: return g(Item2!);
+                default: throw new Exception("Unrecognized tag value: " + tag);
+            }
+        }
+
+        public static implicit operator Union<T, U>(T t) => new Union<T, U>(t);
+        public static implicit operator Union<T, U>(U u) => new Union<T, U>(u);
+    }
+
+    public class Union<T, U, V>
+    {
+        readonly T? Item1;
+        readonly U? Item2;
+        readonly V? Item3;
+        int tag;
+
+        public Union(T item) { Item1 = item; tag = 0; }
+        public Union(U item) { Item2 = item; tag = 1; }
+        public Union(V item) { Item3 = item; tag = 2; }
+
+        public TResult Match<TResult>(Func<T, TResult> f, Func<U, TResult> g, Func<V, TResult> h) {
+            switch (tag) {
+                case 0: return f(Item1!);
+                case 1: return g(Item2!);
+                case 2: return h(Item3!);
+                default: throw new Exception("Unrecognized tag value: " + tag);
+            }
+        }
+
+        public static implicit operator Union<T, U, V>(T t) => new Union<T, U, V>(t);
+        public static implicit operator Union<T, U, V>(U u) => new Union<T, U, V>(u);
+        public static implicit operator Union<T, U, V>(V v) => new Union<T, U, V>(v);
+    }
+
+    public sealed class None {}
+
+    public sealed class Result<T> : Union<T, None>
+    {
+        public Result(T value) : base(value) { }
+
+        public static implicit operator Result<T>(T t) => new Result<T>(t);
+    }
 }

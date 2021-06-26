@@ -1,5 +1,4 @@
-using System.IO;
-using System.Linq;
+using System;
 using System.Collections.Generic;
 
 public class StatementParser : Parser<StatementNode>
@@ -41,7 +40,7 @@ public class StatementParser : Parser<StatementNode>
 
     public StatementParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
-    public StatementParser(FileInfo file) : this(new LotusTokenizer(file)) { }
+    public StatementParser(Uri file) : this(new LotusTokenizer(file)) { }
 
     public StatementParser(Parser<StatementNode> parser) : base(parser) {
         Init();

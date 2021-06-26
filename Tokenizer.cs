@@ -74,7 +74,7 @@ public class Tokenizer : IConsumer<Token>
         Current = tokenizer.Current;
     }
 
-    public Tokenizer(System.IO.FileInfo fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar) { }
+    public Tokenizer(Uri fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar) { }
 
     public Tokenizer(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 

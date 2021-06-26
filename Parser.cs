@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 public abstract class Parser<T> : IConsumer<T> where T : Node
@@ -85,7 +84,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     public Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection, grammar), grammar) { }
 
-    public Parser(System.IO.FileInfo file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
+    public Parser(Uri file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
 
     public Parser(Parser<T> parser) : this(parser.Grammar) {
         reconsumeQueue = parser.reconsumeQueue;

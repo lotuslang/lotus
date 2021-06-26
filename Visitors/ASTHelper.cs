@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 public static class ASTHelper
 {
@@ -30,6 +30,23 @@ public static class ASTHelper
 
 
     public static bool IsName(ValueNode node) => NameChecker.IsName(node);
+
+    public static string PrintNode(Node node) {
+
+        if (node is ValueNode value) {
+            return PrintValue(value);
+        }
+
+        if (node is StatementNode statement) {
+            return PrintStatement(statement);
+        }
+
+        if (node is TopLevelNode tl) {
+            return PrintTopLevel(tl);
+        }
+
+        throw Logger.Fatal(new System.InvalidOperationException(node.GetType().Name + " is not a supported node type"));
+    }
 
     public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);
 

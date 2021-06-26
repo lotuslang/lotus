@@ -85,4 +85,6 @@ public class TopLevelParser : Parser<TopLevelNode>
 
         return Current;
     }
+
+    public override TopLevelParser Clone() => new TopLevelParser(this);
 }

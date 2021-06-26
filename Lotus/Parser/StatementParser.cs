@@ -160,4 +160,6 @@ public class StatementParser : Parser<StatementNode>
 
         return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
+
+    public override StatementParser Clone() => new StatementParser(this);
 }

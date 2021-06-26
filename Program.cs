@@ -24,6 +24,27 @@ class Program
 
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
+        if (args.Length == 0 || args[0] == "help") {
+            Console.Error.WriteLine(@"
+Usage : dotnet run -- [option]
+        dotnet run
+        parsex [option]
+        parsex
+
+    - help              display this help message
+    - silent            don't print anything to stdout (still prints errors to stderr)
+    - print             reconstruct the source file from the AST and print it
+    - hash              print the hash of the AST
+        - constant          print the hash of the constant-colored AST
+    - constant          print each top-level expression and its ""constantness""
+        - all               print ALL expressions (nested and top-level)
+    - graph             print dot code of the AST
+        - constant          print dot code of the AST, coloring each value node depending on its ""constantness""
+            ");
+
+            return;
+        }
+
         var file = new FileInfo(Directory.GetCurrentDirectory() + "/test.txt");
 
         // Initializes the tokenizer with the content of the "sample.txt" file
@@ -62,7 +83,7 @@ class Program
                 .Where(n => n is StatementExpressionNode)
                 .Select(n => (n as StatementExpressionNode).Value);
 
-        if (args.Length == 0 || args[0] == "graph") {
+        if (args[0] == "graph") {
             var g = new Graph("AST");
 
             g.AddNodeProp("fontname", "Consolas, monospace");
@@ -85,7 +106,7 @@ class Program
                 }
             }
 
-            Console.Write(g.ToText());
+            Console.WriteLine(g.ToText());
             return;
         }
 
@@ -102,7 +123,7 @@ class Program
                     return;
                 }
             } else {
-                values = statementNodes.WhereType<ValueNode>();
+                values = valueNodes;
             }
 
             foreach (var node in values) {
@@ -116,23 +137,12 @@ class Program
         }
 
         if (args[0] == "print") {
-            if (args.Length == 2) {
-                if (args[1] == "all") {
-                    foreach (var node in statementNodes.WhereType<ValueNode>()) {
-                        Console.Write(ASTHelper.PrintValue(node));
-                    }
-                } else {
-                    Console.WriteLine("Could not understand option " + args[1]);
-                    return;
-                }
-            } else {
                 foreach (var node in statementNodes) {
                     Console.Write(ASTHelper.PrintStatement(node));
                 }
-            }
 
             // print the last (EOF) token, which is not consumed by the parser
-            Console.Write(ASTHelper.PrintToken(tokenizer.Current)[..^2]);
+            Console.WriteLine(ASTHelper.PrintToken(tokenizer.Current)[..^2]);
             return;
         }
 

@@ -28,7 +28,6 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
         return new FunctionCallNode(
             argsTuple,
             function,
-            function.Token,
             isValid && argsTuple.IsValid
         );
     }

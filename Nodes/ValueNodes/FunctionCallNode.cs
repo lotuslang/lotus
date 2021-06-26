@@ -1,13 +1,13 @@
 public class FunctionCallNode : ValueNode
 {
-    public new static readonly FunctionCallNode NULL = new FunctionCallNode(TupleNode.NULL, ValueNode.NULL, Token.NULL, false);
+    public new static readonly FunctionCallNode NULL = new FunctionCallNode(TupleNode.NULL, ValueNode.NULL, false);
 
     public TupleNode ArgList { get; }
 
     public ValueNode FunctionName { get; protected set; }
 
-    public FunctionCallNode(TupleNode args, ValueNode functionName, Token functionToken, bool isValid = true)
-        : base(functionName.Representation + "(...)", functionToken, args.Location, isValid)
+    public FunctionCallNode(TupleNode args, ValueNode functionName, bool isValid = true)
+        : base(functionName.Representation + "(...)", functionName.Token, args.Location, isValid)
     {
         FunctionName = functionName;
         ArgList = args;

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <LangVersion>latest</LangVersion>
     <TargetFramework>net5</TargetFramework>
     <RootNamespace>Parsex</RootNamespace>
     <TargetCulture>InvariantCulture</TargetCulture>

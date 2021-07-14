@@ -184,6 +184,8 @@ public static class Utilities
 
         public static implicit operator Union<T, U>(T t) => new Union<T, U>(t);
         public static implicit operator Union<T, U>(U u) => new Union<T, U>(u);
+
+        public override string ToString() => Match(t => t!.ToString(), u => u!.ToString())!;
     }
 
     public class Union<T, U, V>
@@ -209,6 +211,8 @@ public static class Utilities
         public static implicit operator Union<T, U, V>(T t) => new Union<T, U, V>(t);
         public static implicit operator Union<T, U, V>(U u) => new Union<T, U, V>(u);
         public static implicit operator Union<T, U, V>(V v) => new Union<T, U, V>(v);
+
+        public override string ToString() => Match(t => t!.ToString(), u => u!.ToString(), v => v!.ToString())!;
     }
 
     public sealed class None {}

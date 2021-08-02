@@ -86,9 +86,7 @@ public class ExpressionParser : Parser<ValueNode>
 
         var left = Grammar.GetPrefixParslet(token).Parse(this, token);
 
-        token = Tokenizer.Consume(); // FIXME: Update this to use bool Consume(out Token)
-
-        if (token == Tokenizer.Default) {
+        if (!Tokenizer.Consume(out token)) {
             return left;
         }
 
@@ -198,7 +196,11 @@ public class ExpressionParser : Parser<ValueNode>
 
         var endingToken = Tokenizer.Consume();
 
-        if (isValid && endingToken != end) { // we probably got an EOF
+        // we probably got out-of-scope (EOF or end of block)
+        //
+        // TODO: Handle EOF differently (like show where the start of the tuple
+        // was instead of the bottom of the file)
+        if (isValid && endingToken != end) {
             Logger.Error(new UnexpectedTokenException(
                 token: endingToken,
                 context: "in a tuple",

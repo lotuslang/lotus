@@ -12,7 +12,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         var nameToken = parser.Tokenizer.Consume();
 
         // if the token isn't an identifier, throw an exception
-        if (!(nameToken is IdentToken name)) {
+        if (nameToken is not IdentToken name) {
             Logger.Error(new UnexpectedTokenException(
                 token: nameToken,
                 expected: TokenKind.identifier
@@ -23,7 +23,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
             name = new IdentToken(nameToken.Representation, nameToken.Location, false);
 
             if (nameToken == "=") {
-                Logger.exceptions.Pop(); // remove the last exception
+                Logger.Exceptions.Pop(); // remove the last exception
 
                 Logger.Error(new UnexpectedTokenException(
                     message: "Did you forget to specify a variable name ?",

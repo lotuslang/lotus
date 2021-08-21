@@ -21,7 +21,5 @@ internal sealed class NameChecker : IValueVisitor<bool>
 
     public bool Visit(ParenthesizedValueNode node) => node.Values.Accept(this);
 
-    public bool Visit(SimpleBlock block) => false;
-
     public bool IsName(ValueNode node) => node.Accept(this);
 }

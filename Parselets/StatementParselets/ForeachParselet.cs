@@ -22,7 +22,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 
         var itemNameToken = parser.Tokenizer.Consume();
 
-        if (!(itemNameToken is IdentToken itemName)) { // because `in` is a reserved keyword
+        if (itemNameToken is not IdentToken itemName) { // because `in` is a reserved keyword
             if (itemNameToken == "in") {
                 if (parser.Tokenizer.Peek() == "in") { // if the next token is 'in' again, it probably in was meant as a variable name
                     Logger.Error(new UnexpectedTokenException(

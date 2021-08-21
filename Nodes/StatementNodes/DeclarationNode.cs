@@ -5,7 +5,7 @@ using System;
 /// </summary>
 public class DeclarationNode : StatementNode
 {
-    public new static readonly DeclarationNode NULL = new DeclarationNode(ValueNode.NULL, IdentToken.NULL, ComplexToken.NULL, Token.NULL, false);
+    public new static readonly DeclarationNode NULL = new(ValueNode.NULL, IdentToken.NULL, ComplexToken.NULL, Token.NULL, false);
 
     /// <summary>
     /// The value the variable is being initialized to

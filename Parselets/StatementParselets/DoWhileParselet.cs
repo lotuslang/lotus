@@ -19,7 +19,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             isValid = false;
 
             if (parser.Tokenizer.Current == "(") {
-                Logger.exceptions.Pop(); // remove the last exception
+                Logger.Exceptions.Pop(); // remove the last exception
 
                 Logger.Error(new UnexpectedTokenException(
                     message: "Did you forget the 'while' keyword before the condition ?",
@@ -39,7 +39,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 
         var conditionNode = parser.ExpressionParser.ConsumeValue();
 
-        if (!(conditionNode is ParenthesizedValueNode condition)) {
+        if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedValueTypeException(
                 node: conditionNode,
                 context: "as an do-while-loop condition",

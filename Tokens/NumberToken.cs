@@ -3,7 +3,7 @@ using System;
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
 public class NumberToken : ComplexToken
 {
-    public new static readonly NumberToken NULL = new NumberToken(0d, LocationRange.NULL, false);
+    public new static readonly NumberToken NULL = new(0d, LocationRange.NULL, false);
 
     protected double val;
 

@@ -1,9 +1,10 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
 internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IStatementVisitor<IEnumerable<ValueNode>>
 {
-    private static readonly ValueNode[] emptyArray = new ValueNode[0];
+    private static readonly ValueNode[] emptyArray = Array.Empty<ValueNode>();
 
     public IEnumerable<ValueNode> Default(StatementNode node)
         => emptyArray;

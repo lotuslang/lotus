@@ -1,6 +1,6 @@
 public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename)
 {
-    public static readonly LocationRange NULL = new LocationRange(Location.NULL, Location.NULL);
+    public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);
 
     public int LineLength => lastLine - firstLine + 1;
 
@@ -66,15 +66,15 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
     public bool IsSingleLocation() => LineLength == 1 && ColumnLength == 1;
 
 
-    public Location GetFirstLocation() => new Location(firstLine, firstColumn, filename);
+    public Location GetFirstLocation() => new(firstLine, firstColumn, filename);
 
-    public Location GetLastLocation() => new Location(lastLine, lastColumn, filename);
+    public Location GetLastLocation() => new(lastLine, lastColumn, filename);
 
 
     public override string ToString() => this;
 
-    public static implicit operator string(LocationRange range) {
-        if (range.IsSingleLocation()) return range.GetFirstLocation();
-        else return $"{range.filename}({range.firstLine}, {range.firstColumn} : {range.lastLine}, {range.lastColumn})";
-    }
+    public static implicit operator string(LocationRange range)
+        => range.IsSingleLocation()
+                ? range.GetFirstLocation()
+                : $"{range.filename}({range.firstLine}, {range.firstColumn} : {range.lastLine}, {range.lastColumn})";
 }

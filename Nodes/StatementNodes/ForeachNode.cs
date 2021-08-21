@@ -4,7 +4,7 @@
 public class ForeachNode : StatementNode
 {
     public new static readonly ForeachNode NULL
-        = new ForeachNode(
+        = new(
             ComplexToken.NULL,
             ComplexToken.NULL,
             IdentNode.NULL,

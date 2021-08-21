@@ -2,51 +2,41 @@ using System.Collections.Generic;
 
 internal static class ASTHelper
 {
-    public static readonly NameChecker NameChecker = new NameChecker();
+    public static readonly NameChecker NameChecker = new();
 
-    public static readonly TopLevelPrinter TopLevelPrinter = new TopLevelPrinter();
+    public static readonly TopLevelPrinter TopLevelPrinter = new();
 
-    public static readonly StatementPrinter StatementPrinter = new StatementPrinter();
+    public static readonly StatementPrinter StatementPrinter = new();
 
-    public static readonly ValuePrinter ValuePrinter = new ValuePrinter();
+    public static readonly ValuePrinter ValuePrinter = new();
 
-    public static readonly TokenPrinter TokenPrinter = new TokenPrinter();
+    public static readonly TokenPrinter TokenPrinter = new();
 
-    public static readonly TokenGraphMaker TokenGraphMaker = new TokenGraphMaker();
+    public static readonly TokenGraphMaker TokenGraphMaker = new();
 
-    public static readonly StatementGraphMaker StatementGraphMaker = new StatementGraphMaker();
+    public static readonly StatementGraphMaker StatementGraphMaker = new();
 
-    public static readonly TopLevelGraphMaker TopLevelGraphMaker = new TopLevelGraphMaker();
+    public static readonly TopLevelGraphMaker TopLevelGraphMaker = new();
 
-    public static readonly ConstantChecker ConstantChecker = new ConstantChecker();
+    public static readonly ConstantChecker ConstantChecker = new();
 
-    public static readonly ValueExtractor ValueExtractor = new ValueExtractor();
+    public static readonly ValueExtractor ValueExtractor = new();
 
-    public static readonly StatementExtractor StatementExtractor = new StatementExtractor();
+    public static readonly StatementExtractor StatementExtractor = new();
+    public static readonly Flattener Flattener = new();
 
-    public static readonly Flattener Flattener = new Flattener();
-
-    public static readonly ConstantVisualizer ConstantVisualizer = new ConstantVisualizer();
+    public static readonly ConstantVisualizer ConstantVisualizer = new();
 
 
     public static bool IsName(ValueNode node) => NameChecker.IsName(node);
 
-    public static string PrintNode(Node node) {
-
-        if (node is ValueNode value) {
-            return PrintValue(value);
-        }
-
-        if (node is StatementNode statement) {
-            return PrintStatement(statement);
-        }
-
-        if (node is TopLevelNode tl) {
-            return PrintTopLevel(tl);
-        }
-
-        throw Logger.Fatal(new System.InvalidOperationException(node.GetType().Name + " is not a supported node type"));
-    }
+    public static string PrintNode(Node node)
+        => node switch {
+            ValueNode value         => PrintValue(value),
+            StatementNode statement => PrintStatement(statement),
+            TopLevelNode tl         => PrintTopLevel(tl),
+            _                       => throw Logger.Fatal(new System.InvalidOperationException(node.GetType().Name + " is not a supported node type"))
+        };
 
     public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);
 

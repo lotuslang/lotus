@@ -3,15 +3,7 @@ using System;
 public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken>
 {
     public Predicate<IConsumer<char>> Condition
-        => (input =>  {
-
-                if (input.Consume() == '\n') return false;
-
-                if (Char.IsWhiteSpace(input.Current)) return true;
-
-                return false;
-            }
-        );
+        => (input => input.Consume() != '\n' && Char.IsWhiteSpace(input.Current));
 
     public WhitespaceTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;

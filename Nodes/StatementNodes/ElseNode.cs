@@ -1,6 +1,6 @@
 public class ElseNode : StatementNode
 {
-    public new static readonly ElseNode NULL = new ElseNode(SimpleBlock.NULL, ComplexToken.NULL, false);
+    public new static readonly ElseNode NULL = new(SimpleBlock.NULL, ComplexToken.NULL, false);
 
     public SimpleBlock Body { get; protected set; }
 

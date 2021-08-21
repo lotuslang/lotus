@@ -1,8 +1,8 @@
 public sealed class LotusGrammar : ReadOnlyGrammar
 {
-    private readonly Grammar internalGrammar = new Grammar();
+    private readonly Grammar internalGrammar = new();
 
-    private static readonly LotusGrammar _instance = new LotusGrammar();
+    private static readonly LotusGrammar _instance = new();
 
     public static LotusGrammar Instance => _instance;
 
@@ -17,24 +17,22 @@ public sealed class LotusGrammar : ReadOnlyGrammar
         base.Initialize(internalGrammar);
     }
 
-    private void InitializeTriviaToklets() {
-        internalGrammar
+    private void InitializeTriviaToklets()
+        => internalGrammar
             .RegisterToklet(new NumberToklet())
             .RegisterToklet(new ComplexStringToklet())
             .RegisterToklet(new StringToklet())
             .RegisterToklet(new IdentToklet())
             .RegisterToklet(new OperatorToklet())
             .RegisterToklet(new Toklet());
-    }
 
-    private void InitializeToklets() {
-        internalGrammar
+    private void InitializeToklets()
+        => internalGrammar
             .RegisterTriviaToklet(new CommentTriviaToklet())
             .RegisterTriviaToklet(new WhitespaceTriviaToklet())
             .RegisterTriviaToklet(new NewlineTriviaToklet())
             .RegisterTriviaToklet(new CharacterTriviaToklet(';'))
             .RegisterTriviaToklet(new TriviaToklet());
-    }
 
     private void InitializeExpressionParslets() {
 
@@ -127,8 +125,8 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterExpressionKind("?", ExpressionKind.Ternary);
     }
 
-    private void InitializeStatementParslets() {
-        internalGrammar
+    private void InitializeStatementParslets()
+        => internalGrammar
             .RegisterStatementParslet("var", new DeclarationParslet())
             .RegisterStatementParslet("func", new FunctionDeclarationParslet())
             .RegisterStatementParslet("return", new ReturnParslet())
@@ -139,14 +137,13 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterStatementParslet("do", new DoWhileParslet())
             .RegisterStatementParslet("break", new BreakParslet())
             .RegisterStatementParslet("continue", new ContinueParslet())
-            .RegisterStatementParslet("print", new PrintParslet());
-    }
+            .RegisterStatementParslet("print", new PrintParslet())
+            ;
 
-    private void InitializeTopLevelParslets() {
-        internalGrammar
+    private void InitializeTopLevelParslets()
+        => internalGrammar
             .RegisterTopLevelParslets("namespace", new NamespaceParslet())
             .RegisterTopLevelParslets("from", new ImportParslet())
             .RegisterTopLevelParslets("using", new UsingParslet())
             ;
-    }
 }

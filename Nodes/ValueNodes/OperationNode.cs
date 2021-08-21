@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 public class OperationNode : ValueNode
 {
-    public new static readonly OperationNode NULL = new OperationNode(OperatorToken.NULL, new ValueNode[0], OperationType.Unknown, false);
+    public new static readonly OperationNode NULL = new(OperatorToken.NULL, Array.Empty<ValueNode>(), OperationType.Unknown, false);
 
     public ReadOnlyCollection<Token> AdditionalTokens { get; }
 

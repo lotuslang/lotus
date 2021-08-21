@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 public class ImportNode : TopLevelNode
 {
-    public new static readonly ImportNode NULL = new ImportNode(new ValueNode[0], FromNode.NULL, ComplexToken.NULL, false);
+    public new static readonly ImportNode NULL = new(Array.Empty<ValueNode>(), FromNode.NULL, ComplexToken.NULL, false);
 
     public ReadOnlyCollection<ValueNode> ImportsName { get; protected set; }
 

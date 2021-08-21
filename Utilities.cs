@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class Utilities
 {
-    public static readonly HashSet<string> keywords = new HashSet<string> {
+    public static readonly HashSet<string> keywords = new() {
         "var",
         "new",
         "func",
@@ -26,7 +26,7 @@ public static class Utilities
         "break"
     };
 
-    public static readonly HashSet<string> internalFunctions = new HashSet<string> {
+    public static readonly HashSet<string> internalFunctions = new() {
         "print",
     };
 
@@ -42,10 +42,10 @@ public static class Utilities
 
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         where TKey : notnull
-        => new ReadOnlyDictionary<TKey, TValue>(dic);
+        => new(dic);
 
     public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
-        => new ReadOnlyCollection<T>(list);
+        => new(list);
 
     public static ReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> list)
         => list.ToList().AsReadOnly();
@@ -151,7 +151,7 @@ public static class Utilities
 	}
 
     public static GraphNode Apply(this GraphNode node, Func<GraphNode, GraphNode> transform) {
-        foreach (GraphNode child in node.Children) {
+        foreach (var child in node.Children) {
             child.Apply(transform);
         }
 
@@ -169,7 +169,7 @@ public static class Utilities
     {
         readonly T? Item1;
         readonly U? Item2;
-        int tag;
+        readonly int tag;
 
         public Union(T item) { Item1 = item; tag = 0; }
         public Union(U item) { Item2 = item; tag = 1; }
@@ -182,8 +182,8 @@ public static class Utilities
             }
         }
 
-        public static implicit operator Union<T, U>(T t) => new Union<T, U>(t);
-        public static implicit operator Union<T, U>(U u) => new Union<T, U>(u);
+        public static implicit operator Union<T, U>(T t) => new(t);
+        public static implicit operator Union<T, U>(U u) => new(u);
 
         public override string ToString() => Match(t => t!.ToString(), u => u!.ToString())!;
     }
@@ -193,7 +193,7 @@ public static class Utilities
         readonly T? Item1;
         readonly U? Item2;
         readonly V? Item3;
-        int tag;
+        readonly int tag;
 
         public Union(T item) { Item1 = item; tag = 0; }
         public Union(U item) { Item2 = item; tag = 1; }
@@ -208,9 +208,9 @@ public static class Utilities
             }
         }
 
-        public static implicit operator Union<T, U, V>(T t) => new Union<T, U, V>(t);
-        public static implicit operator Union<T, U, V>(U u) => new Union<T, U, V>(u);
-        public static implicit operator Union<T, U, V>(V v) => new Union<T, U, V>(v);
+        public static implicit operator Union<T, U, V>(T t) => new(t);
+        public static implicit operator Union<T, U, V>(U u) => new(u);
+        public static implicit operator Union<T, U, V>(V v) => new(v);
 
         public override string ToString() => Match(t => t!.ToString(), u => u!.ToString(), v => v!.ToString())!;
     }
@@ -221,6 +221,6 @@ public static class Utilities
     {
         public Result(T value) : base(value) { }
 
-        public static implicit operator Result<T>(T t) => new Result<T>(t);
+        public static implicit operator Result<T>(T t) => new(t);
     }
 }

@@ -101,7 +101,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// Reconsumes the last Node object.
     /// </summary>
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out T? node) && Object.ReferenceEquals(node, Current)) return;
+        if (reconsumeQueue.TryPeek(out var node) && Object.ReferenceEquals(node, Current)) return;
     }
 
     public abstract T Peek();
@@ -129,7 +129,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
             return reconsumeQueue.Dequeue();
         }
 
-        if (Tokenizer == null) {
+        if (Tokenizer is null) {
             throw Logger.Fatal(new InternalErrorException(
                 message: "The parser's tokenizer was null. Something went seriously wrong",
                 range: Position

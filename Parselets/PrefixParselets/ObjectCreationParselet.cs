@@ -1,3 +1,5 @@
+using System;
+
 public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 {
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
@@ -13,7 +15,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         // that is so similar and essential
         var invoc = parser.ConsumeValue();
 
-        if (!(invoc is FunctionCallNode call)) {
+        if (invoc is not FunctionCallNode call) {
             Logger.Error(new UnexpectedValueTypeException(
                 node: invoc,
                 context: "in object instantiation",
@@ -22,7 +24,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 
             isValid = false;
 
-            call = new FunctionCallNode(new TupleNode(new ValueNode[0], Token.NULL, Token.NULL), invoc, isValid: false);
+            call = new FunctionCallNode(new TupleNode(Array.Empty<ValueNode>(), Token.NULL, Token.NULL), invoc, isValid: false);
 
             parser.Tokenizer.Reconsume();
         }

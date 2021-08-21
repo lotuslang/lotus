@@ -8,12 +8,10 @@ public class TopLevelParser : Parser<TopLevelNode>
 
     public ExpressionParser ExpressionParser => StatementParser.ExpressionParser;
 
-    private TopLevelNode current = ConstantDefault;
-
     public override TopLevelNode Current {
         get;
         protected set;
-    }
+    } = ConstantDefault;
 
     public new static readonly TopLevelNode ConstantDefault = TopLevelNode.NULL;
 
@@ -33,13 +31,11 @@ public class TopLevelParser : Parser<TopLevelNode>
     }
 
 #nullable disable
-    public TopLevelParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) {
-        Init();
-    }
+    public TopLevelParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
+        => Init();
 
-    public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
-        Init();
-    }
+    public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
+        => Init();
 
     public TopLevelParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 
@@ -47,9 +43,8 @@ public class TopLevelParser : Parser<TopLevelNode>
 
     public TopLevelParser(Uri file) : this(new LotusTokenizer(file)) { }
 
-    public TopLevelParser(Parser<TopLevelNode> parser) : base(parser, LotusGrammar.Instance) {
-        Init();
-    }
+    public TopLevelParser(Parser<TopLevelNode> parser) : base(parser, LotusGrammar.Instance)
+        => Init();
 #nullable enable
 
     public override TopLevelNode Peek()
@@ -87,5 +82,5 @@ public class TopLevelParser : Parser<TopLevelNode>
         return Current;
     }
 
-    public override TopLevelParser Clone() => new TopLevelParser(this);
+    public override TopLevelParser Clone() => new(this);
 }

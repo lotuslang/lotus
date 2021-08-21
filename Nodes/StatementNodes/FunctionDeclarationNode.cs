@@ -5,9 +5,9 @@ using System.Collections.ObjectModel;
 public class FunctionDeclarationNode : StatementNode
 {
     public new static readonly FunctionDeclarationNode NULL
-        = new FunctionDeclarationNode(
+        = new(
             SimpleBlock.NULL,
-            new FunctionArgument[0],
+            Array.Empty<FunctionArgument>(),
             ValueNode.NULL,
             IdentToken.NULL,
             ComplexToken.NULL,

@@ -7,13 +7,8 @@ public sealed class NumberToklet : IToklet<NumberToken>
         => (input => {
                 var current = input.Consume();
 
-                if (Char.IsDigit(current)) return true;
-
-                if (current == '.') {
-                    return Char.IsDigit(input.Consume());
-                }
-
-                return false;
+                return  Char.IsDigit(current)
+                    || (current == '.' && Char.IsDigit(input.Consume()));
             }
         );
 
@@ -58,7 +53,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
         }
 
         // if the character is an 'e' or an 'E'
-        if (currChar == 'e' || currChar == 'E') {
+        if (currChar is 'e' or 'E') {
 
             // add the e/E to the output
             numberStr.Append(currChar);
@@ -68,7 +63,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
 
             // if the character is a '+' or a '-'
-            if (currChar == '+' || currChar == '-') {
+            if (currChar is '+' or '-') {
 
                 // add it to the value of output
                 numberStr.Append(currChar);
@@ -96,7 +91,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             Consume(input, _);
 
             while (Logger.ErrorCount > errorCount) {
-                Logger.exceptions.Pop();
+                Logger.Exceptions.Pop();
             }
 
             var str = numberStr.ToString() + currChar;
@@ -127,7 +122,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
         }
 
         // we already had a "power-of-ten separator", so this is not valid.
-        if (currChar == 'e' || currChar == 'E') {
+        if (currChar is 'e' or 'E') {
             Logger.Error(new InvalidInputException(
                 input: numberStr.ToString() + currChar,
                 context: "as a number",

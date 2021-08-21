@@ -1,6 +1,6 @@
 public class PrintNode : StatementNode
 {
-    public new static readonly PrintNode NULL = new PrintNode(ComplexToken.NULL, ValueNode.NULL, false);
+    public new static readonly PrintNode NULL = new(ComplexToken.NULL, ValueNode.NULL, false);
 
     public ValueNode Value { get; }
 

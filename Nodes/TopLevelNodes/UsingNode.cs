@@ -1,6 +1,6 @@
 public class UsingNode : TopLevelNode
 {
-    public new static readonly UsingNode NULL = new UsingNode(ComplexToken.NULL, ValueNode.NULL, false);
+    public new static readonly UsingNode NULL = new(ComplexToken.NULL, ValueNode.NULL, false);
 
     public ValueNode ImportName { get; }
 

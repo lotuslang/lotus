@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 public class CommentTriviaToken : TriviaToken
 {
-    public new static readonly CommentTriviaToken NULL = new CommentTriviaToken("", LocationRange.NULL, isValid: false);
+    public new static readonly CommentTriviaToken NULL = new("", LocationRange.NULL, isValid: false);
     protected IList<CommentTriviaToken> innerComments;
 
     public ReadOnlyCollection<CommentTriviaToken> InnerComments {
@@ -22,9 +22,8 @@ public class CommentTriviaToken : TriviaToken
         innerComments = inner ?? new List<CommentTriviaToken>();
     }
 
-    public void AddComment(CommentTriviaToken comment) {
-        innerComments.Add(comment);
-    }
+    public void AddComment(CommentTriviaToken comment)
+        => innerComments.Add(comment);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

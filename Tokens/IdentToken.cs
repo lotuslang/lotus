@@ -1,6 +1,6 @@
 public class IdentToken : ComplexToken
 {
-    public new static readonly IdentToken NULL = new IdentToken("", LocationRange.NULL, false);
+    public new static readonly IdentToken NULL = new("", LocationRange.NULL, false);
 
     public IdentToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(representation, TokenKind.identifier, location, isValid, leading, trailing) { }

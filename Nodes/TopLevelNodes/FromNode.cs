@@ -1,6 +1,6 @@
 public class FromNode : TopLevelNode
 {
-    public new static readonly FromNode NULL = new FromNode(ValueNode.NULL, ComplexToken.NULL, false);
+    public new static readonly FromNode NULL = new(ValueNode.NULL, ComplexToken.NULL, false);
 
     public ValueNode OriginName { get; protected set; }
 

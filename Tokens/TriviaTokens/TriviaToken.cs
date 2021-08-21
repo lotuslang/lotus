@@ -1,6 +1,6 @@
 public class TriviaToken : Token
 {
-    public static readonly new TriviaToken NULL = new TriviaToken("", TriviaKind.EOF, LocationRange.NULL);
+    public static readonly new TriviaToken NULL = new("", TriviaKind.EOF, LocationRange.NULL);
 
     public new TriviaKind Kind { get; protected set; }
 

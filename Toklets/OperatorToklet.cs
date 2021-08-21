@@ -4,28 +4,21 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 {
     public Predicate<IConsumer<char>> Condition
         => (input => {
-                var c = input.Consume();
-
-                if (c == '+'
-                ||  c == '-'
-                ||  c == '*'
-                ||  c == '/'
-                ||  c == '%'
-                ||  c == '^'
-                ||  c == '.'
-                ||  c == '='
-                ||  c == '>'
-                ||  c == '<'
-                ||  c == '!'
-                ||  c == '?') return true;
-
-                if (c == '&') {
+                switch (input.Consume()) {
+                    case   '+' or '-'
+                        or '*' or '/'
+                        or '%' or '^'
+                        or '.' or '='
+                        or '>' or '<'
+                        or '!' or '?':
+                        return true;
+                    case '&':
                     return input.Consume() == '&';
-                } else if (c == '|') {
+                    case '|':
                     return input.Consume() == '|';
-                }
-
+                    default:
                 return false;
+            }
             }
         );
 
@@ -62,7 +55,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
         // this part is for cases that aren't simple and/or wouldn't look good in a switch expression
 
-        if (currChar == '+' || currChar == '-') {
+        if (currChar is '+' or '-') {
 
             if (input.Peek() == currChar) {
                 return new OperatorToken(currChar +""+ input.Consume(), Precedence.Unary, "right", new LocationRange(currPos, input.Position));

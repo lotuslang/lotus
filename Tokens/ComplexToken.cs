@@ -1,6 +1,6 @@
 public class ComplexToken : Token
 {
-    public new static readonly ComplexToken NULL = new ComplexToken("", TokenKind.delimiter, LocationRange.NULL);
+    public new static readonly ComplexToken NULL = new("", TokenKind.delimiter, LocationRange.NULL);
 
     public ComplexToken(string representation, TokenKind kind, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
         : base(representation, kind, location, isValid, leading, trailing) { }

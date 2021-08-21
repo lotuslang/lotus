@@ -5,18 +5,9 @@ using System.Collections.Generic;
 public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 {
     public Predicate<IConsumer<char>> Condition
-        => (consumer => {
-                if (consumer.Consume() != '/') {
-                    return false;
-                }
-
-                if (consumer.Consume() != '/' && consumer.Current != '*') {
-                    return false;
-                }
-
-                return true;
-            }
-        );
+                        // WARNING: DO NOT REFACTOR
+                        // pattern matching doesn't work here
+        => (consumer => consumer.Consume() is '/' && (consumer.Consume() is '/' or '*'));
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {
 
@@ -66,7 +57,8 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
                 strBuilder.Append(currChar);
             }
 
-            if (input.Current == '\0' || input.Current == '\u0003') {
+            // if we stopped on an EOF, then something went wrong
+            if (input.Current == input.Default) {
                 Logger.Error(new UnexpectedEOFException(
                     context: "in a multi-line comment",
                     expected: "the comment delimiter '*/'",

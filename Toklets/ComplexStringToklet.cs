@@ -11,9 +11,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                 current = input.Consume();
 
-                if (current != '\'' && current != '"') return false;
-
-                return true;
+                return current is '\'' or '"';
             }
         );
 
@@ -39,9 +37,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                 while (tokenizer.Peek() != "}") {
 
-                    currToken = tokenizer.Consume();
-
-                    if (currToken.Kind == TokenKind.EOF) {
+                    if (!tokenizer.Consume(out currToken!)) {
                         Logger.Error(new UnexpectedEOFException(
                             context: "in an interpolated string",
                             expected: $"`}}` followed by the string delimiter `{endingDelimiter}`",

@@ -1,6 +1,6 @@
 public class NamespaceNode : TopLevelNode
 {
-    public new static readonly NamespaceNode NULL = new NamespaceNode(ValueNode.NULL, ComplexToken.NULL, false);
+    public new static readonly NamespaceNode NULL = new(ValueNode.NULL, ComplexToken.NULL, false);
 
     public ValueNode NamespaceName { get; protected set; }
 

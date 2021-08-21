@@ -31,7 +31,7 @@ public class Tokenizer : IConsumer<Token>
     protected Tokenizer() {
         reconsumeQueue = new Queue<Token>();
 
-        input = new StringConsumer(new char[0]);
+        input = new StringConsumer(Array.Empty<char>());
 
         Current = Token.NULL;
 
@@ -82,8 +82,8 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out Token? token) && Object.ReferenceEquals(token, Current)) {
-            Console.WriteLine("Calling reconsume multiple times in a row !");
+        if (reconsumeQueue.TryPeek(out var token) && Object.ReferenceEquals(token, Current)) {
+            Logger.Warning("Calling reconsume multiple times in a row !", Position);
             return;
         }
 
@@ -158,9 +158,6 @@ public class Tokenizer : IConsumer<Token>
         // Consume a character from the StringConsumer object
         var currChar = input.Consume();
 
-        // if you want to preserve whitespace, you could do an if before the while loop and then return a whitespace token
-        // although, you'll also need to modify the parser and parslets because they might not work correctly
-
         // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
         if (currChar == input.Default) {
             var lastPos = Position;
@@ -193,10 +190,10 @@ public class Tokenizer : IConsumer<Token>
         return Current;
     }
 
-    public TriviaToken ConsumeTrivia() {
+    public TriviaToken? ConsumeTrivia() {
         var triviaToklet = Grammar.MatchTriviaToklet(input);
 
-        if (triviaToklet is null) return TriviaToken.NULL;
+        if (triviaToklet is null) return TriviaToken.NULL; // FIXME: change this to pure null
 
         return triviaToklet.Consume(input, this);
     }

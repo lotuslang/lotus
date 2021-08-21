@@ -1,6 +1,6 @@
 public class CharacterTriviaToken : TriviaToken
 {
-    public new static readonly CharacterTriviaToken NULL = new CharacterTriviaToken('\0', LocationRange.NULL, false);
+    public new static readonly CharacterTriviaToken NULL = new('\0', LocationRange.NULL, false);
     public char Character { get; }
 
     public CharacterTriviaToken(char c, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)

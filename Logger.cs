@@ -6,12 +6,11 @@ using System.Collections.Generic;
 
 public static class Logger
 {
+    public static Stack<(Exception, LocationRange)> Exceptions { get; set; } = new();
 
-    public static Stack<(Exception, LocationRange)> exceptions = new();
+    public static int ErrorCount => Exceptions.Count;
 
-    public static int ErrorCount => exceptions.Count;
-
-    public static bool HasErrors => exceptions.Count != 0;
+    public static bool HasErrors => Exceptions.Count != 0;
 
     public static void Log(string message, LocationRange location)
         => Console.WriteLine($"{location}: {message}");
@@ -23,19 +22,19 @@ public static class Logger
         => Console.Error.WriteLine(e.CallerString + " : @ " + e.Position + "\t" + e.Message);
 
     public static void Error(Exception e, LocationRange location)
-        => exceptions.Push((e, location));
+        => Exceptions.Push((e, location));
 
     public static void Error(LotusException e)
-        => exceptions.Push((e, e.Position));
+        => Exceptions.Push((e, e.Position));
 
     public static void Error(string message, LocationRange location)
-        => exceptions.Push((new Exception(message), location));
+        => Exceptions.Push((new Exception(message), location));
 
     public static Exception Fatal(Exception e)
         => e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
 
     public static void PrintAllErrors() {
-        foreach (var (exception, location) in exceptions.Reverse()) {
+        foreach (var (exception, location) in Exceptions.Reverse()) {
 
             Console.Error.WriteLine(exception.Message); // TODO: colour stuff
 
@@ -62,8 +61,10 @@ public static class Logger
     // It takes way longer to figure out well enough than it may look at first, so please again : beware !
     public static string GetTextAt(LocationRange range) {
         if (range.LineLength < 2) {
-            if (range.ColumnLength < 2) return GetTextAtPoint(range.GetFirstLocation());
-            else return GetTextAtLine(range);
+            if (range.ColumnLength < 2)
+                return GetTextAtPoint(range.GetFirstLocation());
+            else
+                return GetTextAtLine(range);
         }
 
         return GetTextAtLines(range);

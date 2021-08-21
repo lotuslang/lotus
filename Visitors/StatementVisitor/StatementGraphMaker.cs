@@ -329,7 +329,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     public GraphNode Visit(OperationNode node) {
         GraphNode root;
 
-        if (node.Representation == "++" || node.Representation == "--") {
+        if (node.Representation is "++" or "--") {
             root = new GraphNode(node.GetHashCode(), (node.OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + node.Representation);
         } else {
             root = new GraphNode(node.GetHashCode(), node.Representation);

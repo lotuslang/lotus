@@ -1,6 +1,6 @@
 public class ParenthesizedValueNode : TupleNode
 {
-    public new static readonly ParenthesizedValueNode NULL = new ParenthesizedValueNode(ValueNode.NULL, Token.NULL, Token.NULL, false);
+    public new static readonly ParenthesizedValueNode NULL = new(ValueNode.NULL, Token.NULL, Token.NULL, false);
 
     public new ValueNode Values => Count == 0 ? ValueNode.NULL : base.Values[0];
 

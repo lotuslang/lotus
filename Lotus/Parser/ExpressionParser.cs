@@ -232,5 +232,5 @@ public class ExpressionParser : Parser<ValueNode>
         return new TupleNode(items, startingDelimiter, endingToken, isValid);
     }
 
-    public override ExpressionParser Clone() => new ExpressionParser(this);
+    public override ExpressionParser Clone() => new(this);
 }

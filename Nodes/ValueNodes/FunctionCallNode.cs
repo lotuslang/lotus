@@ -1,6 +1,6 @@
 public class FunctionCallNode : ValueNode
 {
-    public new static readonly FunctionCallNode NULL = new FunctionCallNode(TupleNode.NULL, ValueNode.NULL, false);
+    public new static readonly FunctionCallNode NULL = new(TupleNode.NULL, ValueNode.NULL, false);
 
     public TupleNode ArgList { get; }
 

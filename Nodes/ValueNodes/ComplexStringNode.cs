@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 public class ComplexStringNode : StringNode
 {
-    public new static readonly ComplexStringNode NULL = new ComplexStringNode(ComplexStringToken.NULL, new ValueNode[0], false);
+    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, Array.Empty<ValueNode>(), false);
 
     protected List<ValueNode> sections;
 
@@ -18,9 +18,8 @@ public class ComplexStringNode : StringNode
         sections = new List<ValueNode>(codeSections);
     }
 
-    public void AddSection(ValueNode section) {
-        sections.Add(section);
-    }
+    public void AddSection(ValueNode section)
+        => sections.Add(section);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

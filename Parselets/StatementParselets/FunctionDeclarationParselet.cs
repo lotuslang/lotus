@@ -15,7 +15,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         var funcNameToken = parser.Tokenizer.Consume();
 
         // if the token consumed was not an identifier, then throw an exception
-        if (!(funcNameToken is IdentToken funcName)) {
+        if (funcNameToken is not IdentToken funcName) {
             Logger.Error(new UnexpectedTokenException(
                 token: funcNameToken,
                 context: "in function declaration",
@@ -70,7 +70,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 defaultValue = opNode.Operands[1];
             }
 
-            if (!(paramNameNode is IdentNode paramName)) {
+            if (paramNameNode is not IdentNode paramName) {
                 Logger.Error(new UnexpectedValueTypeException(
                     node: paramNameNode,
                     context: "as a parameter name in a function's parameter list",

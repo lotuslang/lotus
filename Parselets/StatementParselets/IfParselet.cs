@@ -9,7 +9,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
         var conditionNode = parser.ExpressionParser.ConsumeValue();
 
-        if (!(conditionNode is ParenthesizedValueNode condition)) {
+        if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedValueTypeException(
                 node: conditionNode,
                 context: "as an if-statement condition",
@@ -19,7 +19,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
             isValid = false;
 
             if (conditionNode is TupleNode tuple) {
-                Logger.exceptions.Pop();
+                Logger.Exceptions.Pop();
 
                 Logger.Error(new UnexpectedValueTypeException(
                     node: conditionNode,

@@ -10,13 +10,14 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
         => PrintLeadingTrivia(token) + '"' + token.Representation + '"' + PrintTrailingTrivia(token);
 
     public string Visit(ComplexStringToken token) {
-        var output = new StringBuilder("\"");
+        // the capacity is just the minimum + a guess
+        var output = new StringBuilder("\"", capacity: token.Representation.Length + (token.CodeSections.Count * 10));
 
         var str = token.Representation;
 
         // please don't ask, i was "in the flow" (and really hungry too so goodbye)
         for (var i = 0; i < token.Representation.Length; i++) {
-            if (str[i] != '{' && str[i] != '\\') {
+            if (str[i] is not '{' and not '\\') {
                 output.Append(str[i]);
                 continue;
             }
@@ -63,12 +64,12 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
             // parse the digit string into the index of code section this refers to.
             var sectionIndex = Int32.Parse(sectionIndexStr);
 
-            output.Append("{");
+            output.Append('{');
 
             foreach (var sectionToken in token.CodeSections[sectionIndex])
                 output.Append(Print(sectionToken));
 
-            output.Append("}");
+            output.Append('}');
 
             i += digitCount + 1; // the `+ 1` is to account for the closing "}" at the end
         }

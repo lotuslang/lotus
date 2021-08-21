@@ -84,12 +84,12 @@ public class Consumer<T> : IConsumer<T>
     public T Peek() {
         if (reconsumeFlag) return Current;
 
-        if (!inputStack.TryPeek(out T? result)) result = Default;
+        if (!inputStack.TryPeek(out var result)) result = Default;
 
         return result;
     }
 
-    public Consumer<T> Clone() => new Consumer<T>(this);
+    public Consumer<T> Clone() => new(this);
 
     IConsumer<T> IConsumer<T>.Clone() => Clone();
 }

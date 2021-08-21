@@ -2,7 +2,7 @@ using System;
 
 public class WhileNode : StatementNode
 {
-    public new static readonly WhileNode NULL = new WhileNode(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ComplexToken.NULL, false);
+    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ComplexToken.NULL, false);
 
     public bool IsDoLoop { get; }
 

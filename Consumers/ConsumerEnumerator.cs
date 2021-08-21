@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class ConsumerEnumerator<T> : IEnumerator<T>
 {
-    private IConsumer<T> consumer;
+    private readonly IConsumer<T> consumer;
 
     private T _current;
 
@@ -28,5 +28,6 @@ public class ConsumerEnumerator<T> : IEnumerator<T>
     }
 
     public void Reset() => throw new System.NotImplementedException();
-    public void Dispose() { }
+    // suggested by roslyn, don't know either :shrug:
+    public void Dispose() => System.GC.SuppressFinalize(this);
 }

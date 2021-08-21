@@ -1,6 +1,6 @@
 public class IdentNode : ValueNode
 {
-    public new static readonly IdentNode NULL = new IdentNode("", IdentToken.NULL, false);
+    public new static readonly IdentNode NULL = new("", IdentToken.NULL, false);
 
     public new ComplexToken Token { get; }
 

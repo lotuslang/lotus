@@ -11,14 +11,14 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
     }
 
     public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
-        if (token is OperatorToken operatorToken) {
-            return new OperationNode(
-                operatorToken,
-                new[] { left },
-                opType
-            );
+        if (token is not OperatorToken operatorToken) {
+            throw Logger.Fatal(new InvalidCallException(token.Location));
         }
 
-        throw Logger.Fatal(new InvalidCallException(token.Location));
+        return new OperationNode(
+            operatorToken,
+            new[] { left },
+            opType
+        );
     }
 }

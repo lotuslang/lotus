@@ -5,7 +5,7 @@ public class ValueNode : Node
     /// This constant is the equivalent of "null". When a function doesn't return, it will actually set the `#return` variable to this constant.
     /// Variables that are assigned to a non-returning functions will actually be assigned this value.
     /// </summary>
-    public new static readonly ValueNode NULL = new ValueNode("", Token.NULL, LocationRange.NULL, false);
+    public new static readonly ValueNode NULL = new("", Token.NULL, LocationRange.NULL, false);
 
     public string Representation { get; protected set; }
 
@@ -24,7 +24,7 @@ public class ValueNode : Node
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 
-    public static explicit operator StatementExpressionNode(ValueNode node) => new StatementExpressionNode(node);
+    public static explicit operator StatementExpressionNode(ValueNode node) => new(node);
 
     public static explicit operator StatementNode(ValueNode node) => (StatementExpressionNode)node;
 }

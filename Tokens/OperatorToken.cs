@@ -1,7 +1,7 @@
 [System.Diagnostics.DebuggerDisplay("{Location} {Precedence}({(int)Precedence}) : {Representation}")]
 public class OperatorToken : Token
 {
-    public new static readonly OperatorToken NULL = new OperatorToken("", Precedence.Comma, false, LocationRange.NULL, false);
+    public new static readonly OperatorToken NULL = new("", Precedence.Comma, false, LocationRange.NULL, false);
     public Precedence Precedence { get; protected set; }
 
     public bool IsLeftAssociative { get; protected set; }

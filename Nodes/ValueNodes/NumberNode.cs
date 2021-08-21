@@ -1,6 +1,6 @@
 public class NumberNode : ValueNode
 {
-    public new static readonly NumberNode NULL = new NumberNode(0d, NumberToken.NULL, false);
+    public new static readonly NumberNode NULL = new(0d, NumberToken.NULL, false);
 
     /// <summary>
     /// The value of this NumberNode.

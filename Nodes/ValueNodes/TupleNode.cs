@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 public class TupleNode : ValueNode
 {
-    public new static readonly TupleNode NULL = new TupleNode(new ValueNode[0], Token.NULL, Token.NULL, false);
+    public new static readonly TupleNode NULL = new(Array.Empty<ValueNode>(), Token.NULL, Token.NULL, false);
     public Token ClosingToken { get; }
 
     public Token OpeningToken => Token;
@@ -19,6 +20,14 @@ public class TupleNode : ValueNode
         Values = values.AsReadOnly();
         Location = new LocationRange(openingToken.Location, closingToken.Location);
     }
+
+    public ParenthesizedValueNode AsParenthsized()
+        => new(
+            Values[0],
+            OpeningToken,
+            ClosingToken,
+            IsValid
+        );
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

@@ -152,7 +152,7 @@ public class StringConsumer : IConsumer<char>
         return output;
     }
 
-    public StringConsumer Clone() => new StringConsumer(this);
+    public StringConsumer Clone() => new(this);
 
     IConsumer<char> IConsumer<char>.Clone() => Clone();
 

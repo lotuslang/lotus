@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 public class ComplexStringToken : ComplexToken
 {
-    public new static readonly ComplexStringToken NULL = new ComplexStringToken("", new Token[0][], LocationRange.NULL, false);
+    public new static readonly ComplexStringToken NULL = new("", Array.Empty<Token[]>(), LocationRange.NULL, false);
 
     protected List<Token[]> sections;
 
     public ReadOnlyCollection<Token[]> CodeSections {
-        get => new ReadOnlyCollection<Token[]>(sections);
+        get => new(sections);
     }
 
     public ComplexStringToken(string representation,
@@ -23,9 +24,8 @@ public class ComplexStringToken : ComplexToken
         sections = new List<Token[]>(codeSections);
     }
 
-    public void AddSection(Token[] section) {
-        sections.Add(section);
-    }
+    public void AddSection(Token[] section)
+        => sections.Add(section);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

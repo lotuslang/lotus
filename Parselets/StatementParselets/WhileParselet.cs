@@ -9,7 +9,7 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
 
         var conditionNode = parser.ExpressionParser.ConsumeValue();
 
-        if (!(conditionNode is ParenthesizedValueNode condition)) {
+        if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedValueTypeException(
                 node: conditionNode,
                 context: "as a while-loop condition",

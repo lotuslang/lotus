@@ -3,12 +3,12 @@ using System;
 public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 {
     public Predicate<IConsumer<char>> Condition
-        => (input => input.Consume() == '\n' || input.Current == '\r');
+        => (input => input.Consume() is '\n');
 
     public NewlineTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;
 
-        if (input.Consume() != '\n' && input.Current != '\r')
+        if (input.Consume() is not '\n')
             throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));
 
         int charCounter = 1;

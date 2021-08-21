@@ -1,6 +1,6 @@
 public class ObjectCreationNode : ValueNode
 {
-    public new static readonly ObjectCreationNode NULL = new ObjectCreationNode(FunctionCallNode.NULL, ComplexToken.NULL, false);
+    public new static readonly ObjectCreationNode NULL = new(FunctionCallNode.NULL, ComplexToken.NULL, false);
 
     public FunctionCallNode InvocationNode { get; protected set; }
 

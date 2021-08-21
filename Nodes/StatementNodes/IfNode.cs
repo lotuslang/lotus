@@ -1,6 +1,6 @@
 public class IfNode : StatementNode
 {
-    public new static readonly IfNode NULL = new IfNode(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ComplexToken.NULL, false);
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ComplexToken.NULL, false);
 
     public ParenthesizedValueNode Condition { get; }
 

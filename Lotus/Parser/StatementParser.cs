@@ -28,13 +28,11 @@ public class StatementParser : Parser<StatementNode>
     }
 
 #nullable disable
-    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) {
-        Init();
-    }
+    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
+        => Init();
 
-    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) {
-        Init();
-    }
+    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
+        => Init();
 
     public StatementParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 
@@ -42,9 +40,8 @@ public class StatementParser : Parser<StatementNode>
 
     public StatementParser(Uri file) : this(new LotusTokenizer(file)) { }
 
-    public StatementParser(Parser<StatementNode> parser) : base(parser) {
-        Init();
-    }
+    public StatementParser(Parser<StatementNode> parser) : base(parser)
+        => Init();
 #nullable enable
 
     public override StatementNode Peek()
@@ -88,7 +85,7 @@ public class StatementParser : Parser<StatementNode>
 
         // to consume a one-liner, you just consume a statement and return
         if (areOneLinersAllowed && Tokenizer.Peek() != "{") {
-            if (!Consume(out StatementNode statement)) {
+            if (!Consume(out var statement)) {
                 Logger.Error(new UnexpectedEOFException(
                     context: "in simple block",
                     expected: "a statement",
@@ -148,7 +145,7 @@ public class StatementParser : Parser<StatementNode>
             if (closingBracket.Kind == TokenKind.EOF) {
                 // if this node was already invalid, it probably means that we already encountered an EOF,
                 // so no need to tell the user twice
-                if (!isValid) Logger.exceptions.Pop();
+                if (!isValid) Logger.Exceptions.Pop();
             } else {
                 Tokenizer.Reconsume();
             }
@@ -161,5 +158,5 @@ public class StatementParser : Parser<StatementNode>
         return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
 
-    public override StatementParser Clone() => new StatementParser(this);
+    public override StatementParser Clone() => new(this);
 }

@@ -1,7 +1,7 @@
 [System.Diagnostics.DebuggerDisplay("<{Kind}> {rep.ToString()} @ {Location}")]
 public class Token
 {
-    public static readonly Token NULL = new Token('\0', TokenKind.EOF, LocationRange.NULL, false);
+    public static readonly Token NULL = new('\0', TokenKind.EOF, LocationRange.NULL, false);
 
     public bool IsValid { get; set; } // yes, we want it to be public for error-recovery stuff
 
@@ -121,11 +121,9 @@ public class Token
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
 
-    public override string ToString() {
-        return rep;
-    }
+    public override string ToString()
+        => rep;
 
-    public static implicit operator string(Token token) {
-        return token.rep;
-    }
+    public static implicit operator string(Token token)
+        => token.rep;
 }

@@ -1,14 +1,12 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
 internal sealed class StatementExtractor : IStatementVisitor<IEnumerable<StatementNode>>
 {
-    private static readonly StatementNode[] emptyArray = new StatementNode[0];
+    private static readonly StatementNode[] emptyArray = Array.Empty<StatementNode>();
 
-    public IEnumerable<StatementNode> Default(StatementNode node)
-        => emptyArray;
-
-    public IEnumerable<StatementNode> Default(ValueNode node)
+    public IEnumerable<StatementNode> Default(StatementNode _)
         => emptyArray;
 
     public IEnumerable<StatementNode> Visit(ElseNode node)

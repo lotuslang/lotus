@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 public class SimpleBlock
 {
-    public static readonly SimpleBlock NULL = new SimpleBlock(new StatementNode[0], Token.NULL, Token.NULL, false);
+    public static readonly SimpleBlock NULL = new(Array.Empty<StatementNode>(), Token.NULL, Token.NULL, false);
 
     public ReadOnlyCollection<StatementNode> Content { get; }
 

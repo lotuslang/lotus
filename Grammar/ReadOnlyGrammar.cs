@@ -107,18 +107,17 @@ public class ReadOnlyGrammar
     /// Should only be called right after the (potentially derived) class' initialization
     /// </summary>
     /// <param name="grammar"></param>
-    protected void Initialize(ReadOnlyGrammar grammar) {
-        Initialize(
-            grammar.prefixParslets,
-            grammar.infixParslets,
-            grammar.postfixParslets,
-            grammar.statementParslets,
-            grammar.topLevelParslets,
-            grammar.expressionKinds,
-            grammar.toklets,
-            grammar.triviaToklets
+    protected void Initialize(ReadOnlyGrammar grammar)
+        => Initialize(
+                grammar.prefixParslets,
+                grammar.infixParslets,
+                grammar.postfixParslets,
+                grammar.statementParslets,
+                grammar.topLevelParslets,
+                grammar.expressionKinds,
+                grammar.toklets,
+                grammar.triviaToklets
         );
-    }
 
     /// <summary>
     /// Should only be called right after the (potentially derived) class initialization
@@ -171,7 +170,7 @@ public class ReadOnlyGrammar
                 return ExpressionKind.String;
         }
 
-        return expressionKinds.TryGetValue(token, out ExpressionKind kind) ? kind : ExpressionKind.NotAnExpr;
+        return expressionKinds.TryGetValue(token, out var kind) ? kind : ExpressionKind.NotAnExpr;
     }
 
     public IPrefixParslet<ValueNode> GetPrefixParslet(ExpressionKind kind)
@@ -204,9 +203,7 @@ public class ReadOnlyGrammar
             return false;
         }
 
-        if (!statementParslets.TryGetValue(token, out parselet)) return false;
-
-        return true;
+        return statementParslets.TryGetValue(token, out parselet);
     }
 
     public ITopLevelParslet<TopLevelNode> GetTopLevelParslet(Token token)
@@ -221,18 +218,11 @@ public class ReadOnlyGrammar
             return false;
         }
 
-        if (!topLevelParslets.TryGetValue(token, out parselet)) return false;
-
-        return true;
+        return topLevelParslets.TryGetValue(token, out parselet);
     }
 
-    public Precedence GetPrecedence(ExpressionKind kind) {
-        if (!IsOperatorParslet(kind)) {
-            return 0;
-        }
-
-        return GetOperatorParslet(kind).Precedence;
-    }
+    public Precedence GetPrecedence(ExpressionKind kind)
+        => IsOperatorParslet(kind) ? GetOperatorParslet(kind).Precedence : Precedence.Comma;
 
     public Precedence GetPrecedence(Token token)
         => token != null ? GetPrecedence(GetExpressionKind(token)) : 0;

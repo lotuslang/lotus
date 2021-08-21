@@ -1,9 +1,10 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
 internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>, IValueVisitor<IEnumerable<StatementNode>>
 {
-    private static readonly StatementNode[] emptyArray = new StatementNode[0];
+    private static readonly StatementNode[] emptyArray = Array.Empty<StatementNode>();
 
     public IEnumerable<StatementNode> Default(StatementNode node)
         => new[] { node };
@@ -32,10 +33,10 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
                 .Append(node);
 
     public IEnumerable<StatementNode> Visit(FunctionDeclarationNode node) {
-        var output = new List<StatementNode>();
+        IEnumerable<StatementNode> output = new List<StatementNode>();
 
         foreach (var param in node.Parameters) {
-            if (param.HasDefaultValue) output.Concat(Flatten(param.DefaultValue!));
+            if (param.HasDefaultValue) output = output.Concat(Flatten(param.DefaultValue!));
         }
 
         return output.Concat(Visit(node.Body)).Append(node);
@@ -47,7 +48,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
                 .Concat(node.HasElse ? Flatten(node.ElseNode!) : emptyArray)
                 .Append(node);
 
-    IEnumerable<StatementNode> Visit(PrintNode node)
+    public IEnumerable<StatementNode> Visit(PrintNode node)
         => Flatten(node.Value)
                 .Append(node);
 

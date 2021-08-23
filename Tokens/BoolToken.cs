@@ -1,7 +1,7 @@
 using System;
 
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
-public class BoolToken : ComplexToken
+public record BoolToken : ComplexToken
 {
     public new static readonly BoolToken NULL = new(false, LocationRange.NULL, false);
 
@@ -10,10 +10,11 @@ public class BoolToken : ComplexToken
 
     public bool Value {
         get => val;
+        init => val = value;
     }
 
-    public BoolToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, TokenKind.@bool, location, isValid, leading, trailing)
+    public BoolToken(string representation, LocationRange location, bool isValid = true)
+        : base(representation, TokenKind.@bool, location, isValid)
     {
         if (representation.Length != 0 && !Boolean.TryParse(representation, out val)) {
             throw Logger.Fatal(new InternalErrorException(
@@ -23,8 +24,8 @@ public class BoolToken : ComplexToken
         }
     }
 
-    public BoolToken(bool value, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(value.ToString().ToLower(), TokenKind.@bool, location, isValid, leading, trailing)
+    public BoolToken(bool value, LocationRange location, bool isValid = true)
+        : base(value.ToString().ToLower(), TokenKind.@bool, location, isValid)
     {
         val = value;
     }

@@ -13,13 +13,17 @@ public sealed class StringToklet : IToklet<StringToken>
         var currChar = input.Consume();
 
         // the output token
-        var output = new StringToken("", input.Position);
+        var outputStr = new System.Text.StringBuilder();
+
+        var isValid = true;
+
+        var startPos = input.Position;
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
 
             // add it to the value of output
-            output.Add(currChar);
+            outputStr.Append(currChar);
 
             if (!input.Consume(out currChar)) {
                 Logger.Error(new UnexpectedEOFException(
@@ -28,15 +32,13 @@ public sealed class StringToklet : IToklet<StringToken>
                     range: input.Position
                 ));
 
-                output.IsValid = false;
+                isValid = false;
 
                 break;
             }
         }
 
-        output.Location = new LocationRange(output.Location, input.Position);
-
         // return the output token
-        return output;
+        return new StringToken(outputStr.ToString(), new LocationRange(startPos, input.Position), isValid);
     }
 }

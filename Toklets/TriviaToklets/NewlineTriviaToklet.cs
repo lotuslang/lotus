@@ -18,6 +18,9 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 
         input.Reconsume();
 
-        return new NewlineTriviaToken(charCounter, new LocationRange(startingPosition, input.Position), trailing: tokenizer.ConsumeTrivia());
+        return new NewlineTriviaToken(
+            charCounter,
+            new LocationRange(startingPosition, input.Position)
+        ) { TrailingTrivia = tokenizer.ConsumeTrivia() };
     }
 }

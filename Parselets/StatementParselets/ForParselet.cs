@@ -35,8 +35,8 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 commaCount++;
 
                 // add an empty statement
-                // (can't use StatementNode.NULL because of position + this is a valid statement, whereas NULL is not)
-                header.Add(new StatementNode("", new Token('\0', TokenKind.EOF, parser.Position), parser.Position));
+                // FIXME: change this to use StatementNode.NULL
+                header.Add(new StatementNode("", Token.NULL with { Location = parser.Position, IsValid = true }, parser.Position));
 
                 continue;
             }
@@ -79,8 +79,9 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         // if there's not enough statements in the header (happens when the last statement in not specified),
         // add an empty statement
-        // (can't use StatementNode.NULL because of position + this is a valid statement, whereas NULL is not)
-        if (header.Count == 2) header.Add(new StatementNode("", new Token('\0', TokenKind.EOF, parser.Position), parser.Position));
+        // FIXME: change this to use StatementNode.NULL
+        if (header.Count == 2)
+            header.Add(new StatementNode("", Token.NULL with { Location = parser.Position, IsValid = true }, parser.Position));
 
         var body = parser.ConsumeSimpleBlock();
 

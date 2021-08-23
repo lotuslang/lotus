@@ -1,9 +1,7 @@
-public class IdentToken : ComplexToken
+public record IdentToken(string Representation, LocationRange Location, bool IsValid = true)
+: ComplexToken(Representation, TokenKind.identifier, Location, IsValid)
 {
     public new static readonly IdentToken NULL = new("", LocationRange.NULL, false);
-
-    public IdentToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, TokenKind.identifier, location, isValid, leading, trailing) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

@@ -1,12 +1,10 @@
-public class NewlineTriviaToken : WhitespaceTriviaToken
+public record NewlineTriviaToken : WhitespaceTriviaToken
 {
     public new static readonly NewlineTriviaToken NULL = new(0, LocationRange.NULL, false);
     public NewlineTriviaToken(int count,
                               LocationRange location,
-                              bool isValid = true,
-                              TriviaToken? leading = null,
-                              TriviaToken? trailing = null)
-        : base('\n', count, location, isValid, leading, trailing)
+                              bool isValid = true)
+        : base('\n', count, location, isValid)
     {
         Kind = TriviaKind.newline;
     }

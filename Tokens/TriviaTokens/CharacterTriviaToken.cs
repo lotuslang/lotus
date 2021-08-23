@@ -1,13 +1,7 @@
-public class CharacterTriviaToken : TriviaToken
+public record CharacterTriviaToken(char Character, LocationRange Location, bool IsValid = true)
+: TriviaToken(Character.ToString(), TriviaKind.character, Location, IsValid)
 {
     public new static readonly CharacterTriviaToken NULL = new('\0', LocationRange.NULL, false);
-    public char Character { get; }
-
-    public CharacterTriviaToken(char c, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(c, TriviaKind.character, location, isValid, leading, trailing)
-    {
-        Character = c;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

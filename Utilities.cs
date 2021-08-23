@@ -40,13 +40,16 @@ public static class Utilities
 
     public static bool IsName(ValueNode node) => ASTHelper.IsName((StatementExpressionNode)node);
 
+    [System.Diagnostics.DebuggerStepThrough]
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         where TKey : notnull
         => new(dic);
 
+    [System.Diagnostics.DebuggerStepThrough]
     public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
         => new(list);
 
+    [System.Diagnostics.DebuggerStepThrough]
     public static ReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> list)
         => list.ToList().AsReadOnly();
 
@@ -57,6 +60,7 @@ public static class Utilities
     /// <param name="match">The condition to search for</param>
     /// <returns>Either the first element that matches ; or default(T)</returns>
     [return: MaybeNull]
+    [System.Diagnostics.DebuggerStepThrough]
     public static T? Find<T>(this ICollection<T> collection, Predicate<T> match) {
         if (match is null) {
             throw new ArgumentNullException(nameof(match));
@@ -74,6 +78,7 @@ public static class Utilities
     /// </summary>
     /// <param name="collection">The collection to search in</param>
     /// <param name="match">The condition to check against for</param>
+    [System.Diagnostics.DebuggerStepThrough]
     public static bool Contains<T>(this ICollection<T> collection, Predicate<T> match) {
         if (match is null) {
             throw new ArgumentNullException(nameof(match));
@@ -86,8 +91,10 @@ public static class Utilities
         return false;
     }
 
+    [System.Diagnostics.DebuggerStepThrough]
     public static string Join<T>(string separator, Func<T, string> convert, params T[] value) => Join(separator, convert, coll: value);
 
+    [System.Diagnostics.DebuggerStepThrough]
     public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
         var count = coll.Count();
         if (count == 0) {
@@ -116,6 +123,7 @@ public static class Utilities
         }
     }
 
+    [System.Diagnostics.DebuggerStepThrough]
 	public static (List<T> valid, List<T> invalid) Split<T>(this IEnumerable<T> list, Predicate<T> match) {
 		var (valid, invalid) = (new List<T>(), new List<T>());
 
@@ -127,6 +135,7 @@ public static class Utilities
 		return (valid, invalid);
 	}
 
+    [System.Diagnostics.DebuggerStepThrough]
 	public static (List<TValid> valid, List<TInvalid> invalid) SplitByType<TList, TValid, TInvalid>(this IEnumerable<TList> list)
 		where TInvalid : class, TList
 	{
@@ -140,16 +149,19 @@ public static class Utilities
 		return (valid, invalid);
 	}
 
+    [System.Diagnostics.DebuggerStepThrough]
 	public static (List<TMatch> valid, List<TOther> invalid) SplitByType<TMatch, TOther>(this IEnumerable<TOther> list) where TOther : class
 		=> SplitByType<TOther, TMatch, TOther>(list);
 
 	// the loops you have to jump through sometimes...
+    [System.Diagnostics.DebuggerStepThrough]
 	public static IEnumerable<TMatch> WhereType<TMatch>(this IEnumerable list) {
 		foreach (var item in list) {
 			if (item is TMatch matched) yield return matched;
 		}
 	}
 
+    [System.Diagnostics.DebuggerStepThrough]
     public static GraphNode Apply(this GraphNode node, Func<GraphNode, GraphNode> transform) {
         foreach (var child in node.Children) {
             child.Apply(transform);
@@ -158,6 +170,7 @@ public static class Utilities
         return transform(node);
     }
 
+    [System.Diagnostics.DebuggerStepThrough]
 	public static Stack<T> Clone<T>(this Stack<T> original) {
 		var arr = new T[original.Count];
 		original.CopyTo(arr, 0);

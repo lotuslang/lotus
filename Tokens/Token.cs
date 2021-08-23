@@ -1,37 +1,24 @@
-[System.Diagnostics.DebuggerDisplay("<{Kind}> {rep.ToString()} @ {Location}")]
-public class Token
+[System.Diagnostics.DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
+public record Token(string Representation, TokenKind Kind, LocationRange Location, bool IsValid = true)
+//public class Token
 {
-    public static readonly Token NULL = new('\0', TokenKind.EOF, LocationRange.NULL, false);
+    public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);
 
-    public bool IsValid { get; set; } // yes, we want it to be public for error-recovery stuff
+    protected TriviaToken? leading, trailing;
 
-    public TriviaToken? LeadingTrivia { get; protected set; }
-
-    public TriviaToken? TrailingTrivia { get; protected set; }
-
-    public TokenKind Kind { get; protected set; }
-
-    protected string rep;
-
-    public string Representation {
-        get => rep;
+    public TriviaToken? LeadingTrivia {
+        get => leading;
+        init {
+            if (value is null) return;
+            AddLeadingTrivia(value);
+        }
     }
-
-    public LocationRange Location { get; set; }
-
-    public Token(char representation, TokenKind kind, Location location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : this(representation.ToString(), kind, location, isValid, leading, trailing) { }
-
-    public Token(char representation, TokenKind kind, LocationRange range, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : this(representation.ToString(), kind, range, isValid, leading, trailing) { }
-
-    public Token(string representation, TokenKind kind, LocationRange range, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null) {
-        rep = representation;
-        Kind = kind;
-        Location = range;
-        LeadingTrivia = leading;
-        TrailingTrivia = trailing;
-        IsValid = isValid;
+    public TriviaToken? TrailingTrivia {
+        get => trailing;
+        init {
+            if (value is null) return;
+            AddTrailingTrivia(value);
+        }
     }
 
     public void AddLeadingTrivia(TriviaToken trivia) {
@@ -44,10 +31,10 @@ public class Token
             return;
         }
 
-        if (LeadingTrivia is null)
-            LeadingTrivia = trivia;
+        if (leading is null)
+            leading = trivia;
         else
-            LeadingTrivia.AddLeadingTrivia(trivia);
+            leading.AddLeadingTrivia(trivia);
     }
 
     public void AddTrailingTrivia(TriviaToken trivia) {
@@ -60,10 +47,10 @@ public class Token
             return;
         }
 
-        if (TrailingTrivia is null)
-            TrailingTrivia = trivia;
+        if (trailing is null)
+            trailing = trivia;
         else
-            TrailingTrivia.AddTrailingTrivia(trivia);
+            trailing.AddTrailingTrivia(trivia);
     }
 
     public bool HasTrivia(TriviaKind kind, out TriviaToken trivia) {
@@ -92,22 +79,22 @@ public class Token
     }
 
     public bool HasTrivia(string rep, out TriviaToken trivia) {
-        if (LeadingTrivia is not null) {
-            if (LeadingTrivia == rep) {
-                trivia = LeadingTrivia;
+        if (leading is not null) {
+            if (leading == rep) {
+                trivia = leading;
                 return true;
             }
 
-            return LeadingTrivia.HasTrivia(rep, out trivia);
+            return leading.HasTrivia(rep, out trivia);
         }
 
-        if (TrailingTrivia is not null) {
-            if (TrailingTrivia == rep) {
-                trivia = TrailingTrivia;
+        if (trailing is not null) {
+            if (trailing == rep) {
+                trivia = trailing;
                 return true;
             }
 
-            return TrailingTrivia.HasTrivia(rep, out trivia);
+            return trailing.HasTrivia(rep, out trivia);
         }
 
         trivia = TriviaToken.NULL;
@@ -115,15 +102,15 @@ public class Token
         return false;
     }
 
+    public override string ToString()
+        => Representation;
+
+    public static implicit operator string(Token token)
+        => token.Representation;
+
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
-
-    public override string ToString()
-        => rep;
-
-    public static implicit operator string(Token token)
-        => token.rep;
 }

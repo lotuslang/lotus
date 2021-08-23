@@ -1,10 +1,10 @@
 public class NamespaceNode : TopLevelNode
 {
-    public new static readonly NamespaceNode NULL = new(ValueNode.NULL, ComplexToken.NULL, false);
+    public new static readonly NamespaceNode NULL = new(ValueNode.NULL, Token.NULL, false);
 
     public ValueNode NamespaceName { get; protected set; }
 
-    public NamespaceNode(ValueNode namespaceName, ComplexToken namespaceToken, bool isValid = true)
+    public NamespaceNode(ValueNode namespaceName, Token namespaceToken, bool isValid = true)
         : base(namespaceToken, new LocationRange(namespaceToken.Location, namespaceName.Location), isValid)
     {
         NamespaceName = namespaceName;

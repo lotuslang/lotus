@@ -1,7 +1,7 @@
 public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 {
     public ForeachNode Parse(StatementParser parser, Token foreachToken) {
-        if (!(foreachToken is ComplexToken foreachKeyword && foreachKeyword == "foreach"))
+        if (!(foreachToken is Token foreachKeyword && foreachKeyword == "foreach"))
             throw Logger.Fatal(new InvalidCallException(foreachToken.Location));
 
         var isValid = true;
@@ -56,7 +56,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 
         var inToken = parser.Tokenizer.Consume();
 
-        if (!(inToken is ComplexToken inKeyword && inKeyword == "in")) {
+        if (!(inToken is Token inKeyword && inKeyword == "in")) {
             Logger.Error(new UnexpectedTokenException(
                 token: inToken,
                 context: "in a foreach header",
@@ -67,7 +67,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 
             parser.Tokenizer.Reconsume();
 
-            inKeyword = new ComplexToken(inToken.Representation, inToken.Kind, inToken.Location, false);
+            inKeyword = new Token(inToken.Representation, inToken.Kind, inToken.Location, false);
         }
 
         var collectionName = parser.ExpressionParser.ConsumeValue();

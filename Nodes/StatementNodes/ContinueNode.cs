@@ -1,8 +1,8 @@
 public class ContinueNode : StatementNode
 {
-    public new static readonly ContinueNode NULL = new(ComplexToken.NULL, false);
+    public new static readonly ContinueNode NULL = new(Token.NULL, false);
 
-    public ContinueNode(ComplexToken continueToken, bool isValid = true) : base(continueToken, continueToken.Location, isValid) { }
+    public ContinueNode(Token continueToken, bool isValid = true) : base(continueToken, continueToken.Location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

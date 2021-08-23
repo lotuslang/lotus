@@ -3,7 +3,7 @@ using System.Collections.Generic;
 public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
     public ImportNode Parse(TopLevelParser parser, Token fromToken) {
-        if (!(fromToken is ComplexToken fromKeyword && fromToken == "from"))
+        if (!(fromToken is Token fromKeyword && fromToken == "from"))
             throw Logger.Fatal(new InvalidCallException(fromToken.Location));
 
         var fromOrigin = parser.ExpressionParser.ConsumeValue();
@@ -40,7 +40,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         // After a (very short) test, the tokenizer seems better, but we should probably do more testing
         var importToken = parser.Tokenizer.Consume();
 
-        if (!(importToken is ComplexToken importKeyword && importKeyword == "import")) {
+        if (!(importToken is Token importKeyword && importKeyword == "import")) {
             Logger.Error(new UnexpectedTokenException(
                 token: importToken,
                 context: "in import statement",
@@ -49,7 +49,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
             importIsValid = false;
 
-            importKeyword = new ComplexToken(importToken.Representation, TokenKind.keyword, importToken.Location, false);
+            importKeyword = new Token(importToken.Representation, TokenKind.keyword, importToken.Location, false);
         }
 
         var importList = new List<ValueNode>();

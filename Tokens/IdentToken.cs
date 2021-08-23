@@ -1,5 +1,5 @@
 public record IdentToken(string Representation, LocationRange Location, bool IsValid = true)
-: ComplexToken(Representation, TokenKind.identifier, Location, IsValid)
+: Token(Representation, TokenKind.identifier, Location, IsValid)
 {
     public new static readonly IdentToken NULL = new("", LocationRange.NULL, false);
 

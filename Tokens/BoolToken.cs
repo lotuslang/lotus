@@ -1,7 +1,7 @@
 using System;
 
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
-public record BoolToken : ComplexToken
+public record BoolToken : Token
 {
     public new static readonly BoolToken NULL = new(false, LocationRange.NULL, false);
 

@@ -1,7 +1,7 @@
 using System;
 
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
-public record NumberToken : ComplexToken
+public record NumberToken : Token
 {
     public new static readonly NumberToken NULL = new(0d, LocationRange.NULL, false);
 

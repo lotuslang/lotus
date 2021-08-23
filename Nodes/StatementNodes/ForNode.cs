@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 /// </summary>
 public class ForNode : StatementNode
 {
-    public new static readonly ForNode NULL = new(ComplexToken.NULL, Array.Empty<StatementNode>(), SimpleBlock.NULL, Token.NULL, Token.NULL, false);
+    public new static readonly ForNode NULL = new(Token.NULL, Array.Empty<StatementNode>(), SimpleBlock.NULL, Token.NULL, Token.NULL, false);
 
     public ReadOnlyCollection<StatementNode> Header { get; }
 
@@ -17,7 +17,7 @@ public class ForNode : StatementNode
 
     public SimpleBlock Body { get; }
 
-    public ForNode(ComplexToken forToken, IList<StatementNode> header, SimpleBlock body, Token openingParen, Token closingParen, bool isValid = true)
+    public ForNode(Token forToken, IList<StatementNode> header, SimpleBlock body, Token openingParen, Token closingParen, bool isValid = true)
         : base(forToken, new LocationRange(forToken.Location, body.Location), isValid)
     {
         OpeningParenthesis = openingParen;

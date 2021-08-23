@@ -1,6 +1,6 @@
 public class IfNode : StatementNode
 {
-    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ComplexToken.NULL, false);
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, false);
 
     public ParenthesizedValueNode Condition { get; }
 
@@ -10,7 +10,7 @@ public class IfNode : StatementNode
 
     public bool HasElse { get => ElseNode != null; }
 
-    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken ifToken, bool isValid = true)
+    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, Token ifToken, bool isValid = true)
         : base(ifToken, new LocationRange(ifToken.Location, body.Location), isValid)
     {
         Condition = condition;
@@ -18,7 +18,7 @@ public class IfNode : StatementNode
         ElseNode = null;
     }
 
-    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ElseNode elseNode, ComplexToken ifToken, bool isValid = true)
+    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ElseNode elseNode, Token ifToken, bool isValid = true)
         : this(condition, body, ifToken, isValid)
     {
         ElseNode = elseNode;

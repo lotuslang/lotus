@@ -1,6 +1,6 @@
 public class ElseNode : StatementNode
 {
-    public new static readonly ElseNode NULL = new(SimpleBlock.NULL, ComplexToken.NULL, false);
+    public new static readonly ElseNode NULL = new(SimpleBlock.NULL, Token.NULL, false);
 
     public SimpleBlock Body { get; protected set; }
 
@@ -8,14 +8,14 @@ public class ElseNode : StatementNode
 
     public bool HasIf { get => IfNode != null; }
 
-    public ElseNode(SimpleBlock body, ComplexToken elseToken, bool isValid = true)
+    public ElseNode(SimpleBlock body, Token elseToken, bool isValid = true)
         : base(elseToken, new LocationRange(elseToken.Location, body.Location), isValid)
     {
         Body = body;
         IfNode = null; // FIXME: we shouldn't have pure nulls here. another reason to write nulls for every node
     }
 
-    public ElseNode(IfNode ifNode, ComplexToken elseToken, bool isValid = true)
+    public ElseNode(IfNode ifNode, Token elseToken, bool isValid = true)
         : base(elseToken, new LocationRange(elseToken.Location, ifNode.Location), isValid)
     {
         IfNode = ifNode;

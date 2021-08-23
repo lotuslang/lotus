@@ -5,8 +5,8 @@ public class ForeachNode : StatementNode
 {
     public new static readonly ForeachNode NULL
         = new(
-            ComplexToken.NULL,
-            ComplexToken.NULL,
+            Token.NULL,
+            Token.NULL,
             IdentNode.NULL,
             ValueNode.NULL,
             SimpleBlock.NULL,
@@ -19,7 +19,7 @@ public class ForeachNode : StatementNode
     /// <summary>
     /// The token of the "in" keyword used
     /// </summary>
-    public ComplexToken InToken { get; }
+    public Token InToken { get; }
 
     public Token OpeningParenthesis { get; }
 
@@ -54,8 +54,8 @@ public class ForeachNode : StatementNode
     /// <param name="itemName">The name of the variable used in the loop</param>
     /// <param name="collectionName">The name of the collection being looped over</param>
     /// <param name="body">The body of the foreach loop</param>
-    public ForeachNode(ComplexToken foreachToken,
-                       ComplexToken inToken,
+    public ForeachNode(Token foreachToken,
+                       Token inToken,
                        IdentNode itemName,
                        ValueNode collectionName,
                        SimpleBlock body,

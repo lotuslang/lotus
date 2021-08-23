@@ -1,8 +1,8 @@
 public class BreakNode : StatementNode
 {
-    public new static readonly BreakNode NULL = new(ComplexToken.NULL, false);
+    public new static readonly BreakNode NULL = new(Token.NULL, false);
 
-    public BreakNode(ComplexToken breakToken, bool isValid = true) : base(breakToken, breakToken.Location, isValid) { }
+    public BreakNode(Token breakToken, bool isValid = true) : base(breakToken, breakToken.Location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

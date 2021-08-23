@@ -1,7 +1,7 @@
 public sealed class WhileParslet : IStatementParslet<WhileNode>
 {
     public WhileNode Parse(StatementParser parser, Token whileToken) {
-        if (!(whileToken is ComplexToken whileKeyword && whileKeyword == "while")) {
+        if (!(whileToken is Token whileKeyword && whileKeyword == "while")) {
             throw Logger.Fatal(new InvalidCallException(whileToken.Location));
         }
 

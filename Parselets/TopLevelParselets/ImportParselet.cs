@@ -59,7 +59,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
             if (!Utilities.IsName(import)) {
 
-                if (!import.IsValid && import.Representation == "*") {
+                if (!import.IsValid && import.Token.Representation == "*") {
                     Logger.Exceptions.Pop();
 
                     Logger.Error(new LotusException(

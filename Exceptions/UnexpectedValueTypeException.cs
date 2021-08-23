@@ -17,7 +17,7 @@ public class UnexpectedValueTypeException : LotusException
 
     public UnexpectedValueTypeException(string message, ValueNode node, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(
-            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Representation}). {message}",
+            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Token.Representation}). {message}",
             node.Location,
             caller,
             callerPath
@@ -25,7 +25,7 @@ public class UnexpectedValueTypeException : LotusException
 
     public UnexpectedValueTypeException(ValueNode node, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "", params Type[] expected)
         : base(
-            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Representation})."
+            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Token.Representation})."
                 + $"Expected `{String.Join("`, or `", expected.Select(type => type.Name))}`",
             node.Location,
             caller,
@@ -34,7 +34,7 @@ public class UnexpectedValueTypeException : LotusException
 
     public UnexpectedValueTypeException(ValueNode node, string expected, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(
-            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Representation}). Expected {expected}",
+            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Token.Representation}). Expected {expected}",
             node.Location,
             caller,
             callerPath
@@ -42,7 +42,7 @@ public class UnexpectedValueTypeException : LotusException
 
     public UnexpectedValueTypeException(ValueNode node, string context, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "", params Type[] expected)
         : base(
-            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Representation}) {context}."
+            $"{node.Location}: Unexpected {node.GetType().Name} ({node.Token.Representation}) {context}."
                 + $"Expected `{String.Join("`, or `", expected.Select(type => type.Name))}`",
             node.Location,
             caller,
@@ -51,7 +51,7 @@ public class UnexpectedValueTypeException : LotusException
 
     public UnexpectedValueTypeException(ValueNode node, string context, string expected, [CallerMemberName] string caller = "<unknown caller>", [CallerFilePath] string callerPath = "")
         : base(
-            $"{node.Location} : Unexpected {node.GetType().Name} ({node.Representation}) {context}. Expected {expected}",
+            $"{node.Location} : Unexpected {node.GetType().Name} ({node.Token.Representation}) {context}. Expected {expected}",
             node.Location,
             caller,
             callerPath

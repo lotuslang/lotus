@@ -7,7 +7,7 @@ public class FunctionCallNode : ValueNode
     public ValueNode FunctionName { get; protected set; }
 
     public FunctionCallNode(TupleNode args, ValueNode functionName, bool isValid = true)
-        : base(functionName.Representation + "(...)", functionName.Token, args.Location, isValid)
+        : base(functionName.Token, args.Location, isValid)
     {
         FunctionName = functionName;
         ArgList = args;

@@ -2,7 +2,7 @@ public class StatementExpressionNode : StatementNode
 {
     public ValueNode Value { get; }
 
-    public StatementExpressionNode(ValueNode value) : base(value.Representation, value.Token, value.Location) {
+    public StatementExpressionNode(ValueNode value) : base(value.Token, value.Location) {
         Value = value;
     }
 

@@ -80,8 +80,8 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 isValid = false;
 
                 paramName = new IdentNode(
-                    paramNameNode.Representation,
-                    new IdentToken(paramNameNode.Representation, paramNameNode.Token.Location, false),
+                    paramNameNode.Token.Representation,
+                    new IdentToken(paramNameNode.Token.Representation, paramNameNode.Token.Location, false),
                     false
                 );
             }

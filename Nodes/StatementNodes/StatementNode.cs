@@ -1,17 +1,8 @@
 public class StatementNode : Node
 {
-    public new static readonly StatementNode NULL = new("", Token.NULL, LocationRange.NULL, false);
+    public new static readonly StatementNode NULL = new(Token.NULL, LocationRange.NULL, false);
 
-    public string Representation { get; protected set; }
-
-
-    public StatementNode(string representation, Token token, LocationRange range, bool isValid = true)
-        : base(token, range, isValid)
-    {
-        Representation = representation;
-    }
-
-    public StatementNode(Token token, LocationRange range, bool isValid = true) : this(token.Representation, token, range, isValid)
+    public StatementNode(Token token, LocationRange range, bool isValid = true) : base(token, range, isValid)
     { }
 
     [System.Diagnostics.DebuggerHidden()]

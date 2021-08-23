@@ -13,7 +13,7 @@ public class BoolNode : ValueNode
     public new BoolToken Token { get; protected set; }
 
     public BoolNode(bool value, BoolToken boolToken, bool isValid = true)
-        : base(value.ToString(), boolToken, boolToken.Location, isValid)
+        : base(boolToken, boolToken.Location, isValid)
     {
         Value = value;
         Token = boolToken;

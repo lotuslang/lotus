@@ -36,7 +36,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
                 // add an empty statement
                 // FIXME: change this to use StatementNode.NULL
-                header.Add(new StatementNode("", Token.NULL with { Location = parser.Position, IsValid = true }, parser.Position));
+                header.Add(new StatementNode(Token.NULL with { Location = parser.Position, IsValid = true }, parser.Position));
 
                 continue;
             }
@@ -81,7 +81,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         // add an empty statement
         // FIXME: change this to use StatementNode.NULL
         if (header.Count == 2)
-            header.Add(new StatementNode("", Token.NULL with { Location = parser.Position, IsValid = true }, parser.Position));
+            header.Add(new StatementNode(Token.NULL with { Location = parser.Position, IsValid = true }, parser.Position));
 
         var body = parser.ConsumeSimpleBlock();
 

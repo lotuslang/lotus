@@ -1,3 +1,4 @@
+[System.Diagnostics.DebuggerDisplay("{Token.Representation}")] // TODO: Write debugger displays for every data class
 public abstract class Node {
     public Token Token { get; protected set; }
 

@@ -1,22 +1,13 @@
-[System.Diagnostics.DebuggerDisplay("{Representation}")]
 public class ValueNode : Node
 {
     /// <summary>
     /// This constant is the equivalent of "null". When a function doesn't return, it will actually set the `#return` variable to this constant.
     /// Variables that are assigned to a non-returning functions will actually be assigned this value.
     /// </summary>
-    public new static readonly ValueNode NULL = new("", Token.NULL, LocationRange.NULL, false);
+    public new static readonly ValueNode NULL = new(Token.NULL, LocationRange.NULL, false);
 
-    public string Representation { get; protected set; }
-
-    public ValueNode(Token token, LocationRange range, bool isValid = true) : this(token.Representation, token, range, isValid)
+    public ValueNode(Token token, LocationRange range, bool isValid = true) : base(token, range, isValid)
     { }
-
-    public ValueNode(string representation, Token token, LocationRange range, bool isValid = true)
-        : base(token, range, isValid)
-    {
-        Representation = representation;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

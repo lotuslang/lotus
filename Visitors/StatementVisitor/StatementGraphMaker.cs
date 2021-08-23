@@ -60,11 +60,11 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
 
     protected GraphNode BaseDefault(StatementNode node)
-        => new GraphNode(node.GetHashCode(), node.Representation)
+        => new GraphNode(node.GetHashCode(), node.Token.Representation)
             .SetColor(Statement.color)
             .SetTooltip(Statement.tooltip);
     protected GraphNode BaseDefault(ValueNode node)
-        => new GraphNode(node.GetHashCode(), node.Representation)
+        => new GraphNode(node.GetHashCode(), node.Token.Representation)
             .SetColor(Value.color)
             .SetTooltip(Value.tooltip);
 
@@ -233,7 +233,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
 
     public GraphNode Visit(ValueNode node)
-        => new GraphNode(node.GetHashCode(), node.Representation)
+        => new GraphNode(node.GetHashCode(), node.Token.Representation)
             .SetColor(Value.color)
             .SetTooltip(Value.tooltip);
 
@@ -243,7 +243,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
             .SetTooltip(Bool.tooltip);
 
     public GraphNode Visit(ComplexStringNode node) {
-        var root = new GraphNode(node.GetHashCode(), node.Representation)
+        var root = new GraphNode(node.GetHashCode(), node.Value)
                         .SetColor(ComplexString.color)
                         .SetTooltip(ComplexString.tooltip);
 
@@ -264,7 +264,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         GraphNode root;
 
         if (node.FunctionName is IdentNode name) {
-            root = new GraphNode(node.GetHashCode(), name.Representation + "(...)");
+            root = new GraphNode(node.GetHashCode(), name.Value + "(...)");
         } else {
             root = new GraphNode(node.GetHashCode(), "call") {
                 new GraphNode(DeterministicHashCode.Combine(node.FunctionName, "function"), "function") {
@@ -329,10 +329,10 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     public GraphNode Visit(OperationNode node) {
         GraphNode root;
 
-        if (node.Representation is "++" or "--") {
-            root = new GraphNode(node.GetHashCode(), (node.OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + node.Representation);
+        if (node.Token.Representation is "++" or "--") {
+            root = new GraphNode(node.GetHashCode(), (node.OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + node.Token.Representation);
         } else {
-            root = new GraphNode(node.GetHashCode(), node.Representation);
+            root = new GraphNode(node.GetHashCode(), node.Token.Representation);
         }
 
         root.SetColor(Operation.color)
@@ -349,7 +349,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         => ToGraphNode(node.Values);
 
     public GraphNode Visit(StringNode node)
-        => new GraphNode(node.GetHashCode(), "'" + node.Representation.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
+        => new GraphNode(node.GetHashCode(), "'" + node.Value.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
             .SetColor(String.color)
             .SetTooltip(String.tooltip);
 

@@ -6,7 +6,7 @@ public class IdentNode : ValueNode
 
     public string Value { get; protected set; }
 
-    public IdentNode(string value, IdentToken identToken, bool isValid = true) : base(value, identToken, identToken.Location, isValid) {
+    public IdentNode(string value, IdentToken identToken, bool isValid = true) : base(identToken, identToken.Location, isValid) {
         Token = identToken;
         Value = value;
     }

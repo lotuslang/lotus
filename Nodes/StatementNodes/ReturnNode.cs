@@ -1,18 +1,18 @@
 public class ReturnNode : StatementNode
 {
-    public new static readonly ReturnNode NULL = new(ValueNode.NULL, ComplexToken.NULL, false);
+    public new static readonly ReturnNode NULL = new(ValueNode.NULL, Token.NULL, false);
 
     public ValueNode Value { get; protected set; }
 
     public bool IsReturningValue => Value != ValueNode.NULL;
 
-    public ReturnNode(ValueNode value, ComplexToken returnToken, bool isValid = true)
+    public ReturnNode(ValueNode value, Token returnToken, bool isValid = true)
         : base(returnToken, new LocationRange(returnToken.Location, value.Location), isValid)
     {
         Value = value;
     }
 
-    public ReturnNode(ComplexToken returnToken, bool isValid = true)
+    public ReturnNode(Token returnToken, bool isValid = true)
         : base(returnToken, returnToken.Location, isValid)
     {
         Value = ValueNode.NULL;

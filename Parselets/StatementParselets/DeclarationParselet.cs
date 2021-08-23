@@ -5,7 +5,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         var isValid = true;
 
         // if the token isn't the keyword "var", throw an exception
-        if (!(varToken is ComplexToken varKeyword && varKeyword == "var"))
+        if (!(varToken is Token varKeyword && varKeyword == "var"))
             throw Logger.Fatal(new InvalidCallException(varToken.Location));
 
         // consume the name of the variable we're declaring

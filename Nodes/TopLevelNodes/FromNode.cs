@@ -1,10 +1,10 @@
 public class FromNode : TopLevelNode
 {
-    public new static readonly FromNode NULL = new(ValueNode.NULL, ComplexToken.NULL, false);
+    public new static readonly FromNode NULL = new(ValueNode.NULL, Token.NULL, false);
 
     public ValueNode OriginName { get; protected set; }
 
-    internal FromNode(ValueNode originName, ComplexToken fromToken, bool isValid = true)
+    internal FromNode(ValueNode originName, Token fromToken, bool isValid = true)
     : base(fromToken, new LocationRange(fromToken.Location, originName.Location), isValid)
     {
         OriginName = originName;

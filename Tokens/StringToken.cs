@@ -1,5 +1,5 @@
 public record StringToken(string Representation, LocationRange Location, bool IsValid = true)
-: ComplexToken(Representation, TokenKind.@string, Location, IsValid)
+: Token(Representation, TokenKind.@string, Location, IsValid)
 {
     public new static readonly StringToken NULL = new("", LocationRange.NULL, false);
 

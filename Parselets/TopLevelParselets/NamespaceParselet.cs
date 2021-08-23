@@ -3,7 +3,7 @@ public sealed class NamespaceParslet : ITopLevelParslet<NamespaceNode>
     public NamespaceNode Parse(TopLevelParser parser, Token namespaceToken) {
         var name = parser.ExpressionParser.ConsumeValue();
 
-        if (namespaceToken is ComplexToken namespaceKeyword && namespaceKeyword == "namespace") {
+        if (namespaceToken is Token namespaceKeyword && namespaceKeyword == "namespace") {
             if (Utilities.IsName(name)) {
                 return new NamespaceNode(name, namespaceKeyword);
             }

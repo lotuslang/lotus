@@ -1,10 +1,10 @@
 public class PrintNode : StatementNode
 {
-    public new static readonly PrintNode NULL = new(ComplexToken.NULL, ValueNode.NULL, false);
+    public new static readonly PrintNode NULL = new(Token.NULL, ValueNode.NULL, false);
 
     public ValueNode Value { get; }
 
-    public PrintNode(ComplexToken printToken, ValueNode node, bool isValid = true)
+    public PrintNode(Token printToken, ValueNode node, bool isValid = true)
         : base(printToken, new LocationRange(printToken.Location, node.Location), isValid)
     {
         Value = node;

@@ -1,7 +1,7 @@
 public sealed class IfParslet : IStatementParslet<IfNode>
 {
     public IfNode Parse(StatementParser parser, Token ifToken) {
-        if (!(ifToken is ComplexToken ifKeyword && ifKeyword == "if")) {
+        if (!(ifToken is Token ifKeyword && ifKeyword == "if")) {
             throw Logger.Fatal(new InvalidCallException(ifToken.Location));
         }
 

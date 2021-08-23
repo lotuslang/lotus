@@ -1,7 +1,7 @@
 public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 {
     public UsingNode Parse(TopLevelParser parser, Token usingToken) {
-        if (!(usingToken is ComplexToken usingKeyword && usingToken == "using"))
+        if (!(usingToken is Token usingKeyword && usingToken == "using"))
             throw Logger.Fatal(new InvalidCallException(usingToken.Location));
 
         var importName = parser.ExpressionParser.ConsumeValue();

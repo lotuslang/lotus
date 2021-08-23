@@ -1,7 +1,7 @@
 public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 {
     public WhileNode Parse(StatementParser parser, Token doToken) {
-        if (!(doToken is ComplexToken doKeyword && doKeyword == "do")) {
+        if (!(doToken is Token doKeyword && doKeyword == "do")) {
             throw Logger.Fatal(new InvalidCallException(doToken.Location));
         }
 
@@ -9,7 +9,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 
         var body = parser.ConsumeSimpleBlock();
 
-        if (!(parser.Tokenizer.Consume() is ComplexToken whileKeyword && whileKeyword == "while")) {
+        if (!(parser.Tokenizer.Consume() is Token whileKeyword && whileKeyword == "while")) {
             Logger.Error(new UnexpectedTokenException(
                 token: parser.Tokenizer.Current,
                 context: "while parsing a do-while loop",
@@ -29,7 +29,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
                 parser.Tokenizer.Reconsume();
             }
 
-            whileKeyword = new ComplexToken(
+            whileKeyword = new Token(
                 parser.Tokenizer.Current,
                 parser.Tokenizer.Current.Kind,
                 parser.Tokenizer.Current.Location,

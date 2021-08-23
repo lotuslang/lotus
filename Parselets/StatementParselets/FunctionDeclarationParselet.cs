@@ -6,7 +6,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
 
         // if the token consumed was not "func", then throw an exception
-        if (!(funcToken is ComplexToken funcKeyword && funcKeyword == "func"))
+        if (!(funcToken is Token funcKeyword && funcKeyword == "func"))
             throw Logger.Fatal(new InvalidCallException(funcToken.Location));
 
         var isValid = true;

@@ -2,17 +2,17 @@ using System;
 
 public class WhileNode : StatementNode
 {
-    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ComplexToken.NULL, false);
+    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, false);
 
     public bool IsDoLoop { get; }
 
-    public ComplexToken? DoToken { get; }
+    public Token? DoToken { get; }
 
     public ParenthesizedValueNode Condition { get; }
 
     public SimpleBlock Body { get; }
 
-    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken whileToken, bool isValid = true)
+    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, Token whileToken, bool isValid = true)
         : base(whileToken, new LocationRange(whileToken.Location, body.Location), isValid)
     {
         Condition = condition;
@@ -21,7 +21,7 @@ public class WhileNode : StatementNode
         Body = body;
     }
 
-    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, ComplexToken whileToken, ComplexToken doToken, bool isValid = true)
+    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, Token whileToken, Token doToken, bool isValid = true)
         : this(condition, body, whileToken, isValid)
     {
         IsDoLoop = true;

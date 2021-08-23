@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 
-public sealed class IdentToklet : IToklet<ComplexToken>
+public sealed class IdentToklet : IToklet<Token>
 {
     public Predicate<IConsumer<char>> Condition
         => (input => Char.IsLetter(input.Consume()) || input.Current == '_');
 
-    public ComplexToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
+    public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
 
         // consume a character
         var currChar = input.Consume();
@@ -42,7 +42,7 @@ public sealed class IdentToklet : IToklet<ComplexToken>
         }
 
         if (Utilities.keywords.Contains(outputStr)) {
-            return new ComplexToken(outputStr, TokenKind.keyword, new LocationRange(startPos, input.Position));
+            return new Token(outputStr, TokenKind.keyword, new LocationRange(startPos, input.Position));
         }
 
         // return the output token

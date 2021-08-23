@@ -1,7 +1,7 @@
 public sealed class ElseParslet : IStatementParslet<ElseNode>
 {
     public ElseNode Parse(StatementParser parser, Token elseToken) {
-        if (!(elseToken is ComplexToken elseKeyword && elseKeyword == "else")) {
+        if (!(elseToken is Token elseKeyword && elseKeyword == "else")) {
             throw Logger.Fatal(new InvalidCallException(elseToken.Location));
         }
 

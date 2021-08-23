@@ -1,14 +1,14 @@
 public class ObjectCreationNode : ValueNode
 {
-    public new static readonly ObjectCreationNode NULL = new(FunctionCallNode.NULL, ComplexToken.NULL, false);
+    public new static readonly ObjectCreationNode NULL = new(FunctionCallNode.NULL, Token.NULL, false);
 
     public FunctionCallNode InvocationNode { get; protected set; }
 
-    public new ComplexToken Token { get; protected set; }
+    public new Token Token { get; protected set; }
 
     public ValueNode TypeName => InvocationNode.FunctionName;
 
-    public ObjectCreationNode(FunctionCallNode invoke, ComplexToken newToken, bool isValid = true)
+    public ObjectCreationNode(FunctionCallNode invoke, Token newToken, bool isValid = true)
         : base(newToken, new LocationRange(newToken.Location, invoke.Location), isValid)
     {
         InvocationNode = invoke;

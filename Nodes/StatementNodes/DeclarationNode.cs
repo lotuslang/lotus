@@ -5,7 +5,7 @@ using System;
 /// </summary>
 public class DeclarationNode : StatementNode
 {
-    public new static readonly DeclarationNode NULL = new(ValueNode.NULL, IdentToken.NULL, ComplexToken.NULL, Token.NULL, false);
+    public new static readonly DeclarationNode NULL = new(ValueNode.NULL, IdentToken.NULL, Token.NULL, Token.NULL, false);
 
     /// <summary>
     /// The value the variable is being initialized to
@@ -27,7 +27,7 @@ public class DeclarationNode : StatementNode
     /// <param name="varName">The name of the variable</param>
     /// <param name="varKeywordToken">The token of the "var" keyword used</param>
     /// <returns></returns>
-    public DeclarationNode(ValueNode value, IdentToken varName, ComplexToken varKeywordToken, Token equalToken, bool isValid = true)
+    public DeclarationNode(ValueNode value, IdentToken varName, Token varKeywordToken, Token equalToken, bool isValid = true)
         : base(varKeywordToken, new LocationRange(varKeywordToken.Location, value.Location), isValid)
     {
         EqualToken = equalToken;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 public sealed class ForParslet : IStatementParslet<ForNode>
 {
     public ForNode Parse(StatementParser parser, Token forToken) {
-        if (!(forToken is ComplexToken forKeyword && forKeyword == "for"))
+        if (!(forToken is Token forKeyword && forKeyword == "for"))
             throw Logger.Fatal(new InvalidCallException(forToken.Location));
 
         var header = new List<StatementNode>();

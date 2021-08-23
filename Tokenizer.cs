@@ -9,13 +9,7 @@ public class Tokenizer : IConsumer<Token>
     public Token Current { get; protected set; }
 
     public Token Default {
-        get {
-            var output = Token.NULL;
-
-            output.Location = Position;
-
-            return output;
-        }
+        get => Token.NULL with { Location = Position };
     }
 
     protected Queue<Token> reconsumeQueue;
@@ -98,10 +92,8 @@ public class Tokenizer : IConsumer<Token>
             Current.Representation,
             Current.Kind,
             Current.Location,
-            Current.IsValid,
-            Current.LeadingTrivia,
-            Current.TrailingTrivia
-        );
+            Current.IsValid
+        ) {LeadingTrivia = Current.LeadingTrivia, TrailingTrivia = Current.TrailingTrivia} ;
 
         var output = Consume(preserveTrivia);
 
@@ -118,10 +110,8 @@ public class Tokenizer : IConsumer<Token>
             Current.Representation,
             Current.Kind,
             Current.Location,
-            Current.IsValid,
-            Current.LeadingTrivia,
-            Current.TrailingTrivia
-        );
+            Current.IsValid
+        ) { LeadingTrivia = Current.LeadingTrivia, TrailingTrivia = Current.TrailingTrivia };
 
         var output = new Token[n];
 
@@ -155,23 +145,20 @@ public class Tokenizer : IConsumer<Token>
             return (Current = reconsumeQueue.Dequeue());
         }
 
-        // Consume a character from the StringConsumer object
-        var currChar = input.Consume();
-
-        // If the character is U+0003 END OF TRANSMISSION, it means there is nothing left to consume. Return an EOF token
-        if (currChar == input.Default) {
+        // If there is nothing left to consume, return an EOF token
+        if (!input.Consume(out var currChar)) {
             var lastPos = Position;
 
             Current = Token.NULL;
 
-            Current.Location = lastPos;
+            Current = Current with { Location = lastPos };
 
             return Current;
         }
 
         input.Reconsume();
 
-        if (!preserveTrivia && input.Peek() != ',') {
+        if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
 
             Current = Grammar.MatchToklet(input).Consume(input, this);

@@ -89,12 +89,11 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
         return output;
     }
 
-
     public string PrintLeadingTrivia(Token token)
-        => token.LeadingTrivia != null ? Print(token.LeadingTrivia) : "";
+        => token.LeadingTrivia is not null && token.LeadingTrivia != TriviaToken.NULL ? Default(token.LeadingTrivia) : "";
 
     public string PrintTrailingTrivia(Token token)
-        => token.TrailingTrivia != null ? Print(token.TrailingTrivia) : "";
+        => token.TrailingTrivia is not null && token.TrailingTrivia != TriviaToken.NULL ? Default(token.TrailingTrivia) : "";
 
     public string Print(Token token) => token.Accept(this);
 

@@ -15,22 +15,20 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 
         parser.Tokenizer.Reconsume();
 
-        var indexes = parser.ConsumeTuple("[", "]");
+        var indexTuple = parser.ConsumeTuple("[", "]");
 
         return new OperationNode(
             new OperatorToken(
-                '[',
+                "[",
                 Precedence.ArrayAccess,
                 true,
                 openingBracket.Location,
-                openingBracket.IsValid,
-                leading: openingBracket.LeadingTrivia,
-                trailing: openingBracket.TrailingTrivia
-            ),
-            new[] { array }.Concat(indexes.Values).ToArray(), // FIXME: It hurts my eyes
+                openingBracket.IsValid
+            ) { LeadingTrivia = openingBracket.LeadingTrivia, TrailingTrivia = openingBracket.TrailingTrivia } ,
+            new[] { array }.Concat(indexTuple.Values).ToArray(), // FIXME: It hurts my eyes
             OperationType.ArrayAccess,
-            isValid && indexes.IsValid,
-            additionalTokens: indexes.ClosingToken
+            isValid && indexTuple.IsValid,
+            additionalTokens: indexTuple.ClosingToken
         );
     }
 }

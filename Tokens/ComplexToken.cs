@@ -1,15 +1,9 @@
-public class ComplexToken : Token
+public record ComplexToken : Token
 {
     public new static readonly ComplexToken NULL = new("", TokenKind.delimiter, LocationRange.NULL);
 
-    public ComplexToken(string representation, TokenKind kind, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, kind, location, isValid, leading, trailing) { }
-
-    public virtual void Add(char ch)
-        => rep += ch;
-
-    public virtual void Add(string str)
-        => rep += str;
+    public ComplexToken(string representation, TokenKind kind, LocationRange location, bool isValid = true)
+        : base(representation, kind, location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

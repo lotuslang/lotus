@@ -33,7 +33,10 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
             strBuilder.Append('\n');
 
-            return new CommentTriviaToken(strBuilder.ToString(), new LocationRange(startingPosition, input.Position), trailing: tokenizer.ConsumeTrivia());
+            return new CommentTriviaToken(
+                strBuilder.ToString(),
+                new LocationRange(startingPosition, input.Position)
+            ) { TrailingTrivia = tokenizer.ConsumeTrivia() };
         }
 
         if (currChar == '*') {
@@ -76,11 +79,9 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             return new CommentTriviaToken(
                 strBuilder.ToString(),
                 new LocationRange(startingPosition, input.Position),
-                isValid: isValid,
                 inner: inner,
-                // if this comment is a comment *inside* a comment, then don't consume anything afterwards
-                trailing: isInner ? TriviaToken.NULL : tokenizer.ConsumeTrivia()
-            );
+                isValid: isValid
+            ) { TrailingTrivia = isInner ? TriviaToken.NULL : tokenizer.ConsumeTrivia() };
         }
 
         throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));

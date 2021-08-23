@@ -1,29 +1,27 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
-public class CommentTriviaToken : TriviaToken
+public record CommentTriviaToken : TriviaToken
 {
     public new static readonly CommentTriviaToken NULL = new("", LocationRange.NULL, isValid: false);
-    protected IList<CommentTriviaToken> innerComments;
 
-    public ReadOnlyCollection<CommentTriviaToken> InnerComments {
-        get => innerComments.AsReadOnly();
+    public List<CommentTriviaToken> InnerComments {
+        get;
+        init;
     }
 
     public CommentTriviaToken(string rep,
                               LocationRange location,
                               IList<CommentTriviaToken>? inner = null,
-                              bool isValid = true,
-                              TriviaToken? leading = null,
-                              TriviaToken? trailing = null)
-        : base(rep, TriviaKind.comment, location, isValid, leading, trailing)
+                              bool isValid = true)
+        : base(rep, TriviaKind.comment, location, isValid)
     {
-        innerComments = inner ?? new List<CommentTriviaToken>();
+        InnerComments = inner?.ToList() ?? new List<CommentTriviaToken>();
     }
 
     public void AddComment(CommentTriviaToken comment)
-        => innerComments.Add(comment);
+        => InnerComments.Add(comment);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

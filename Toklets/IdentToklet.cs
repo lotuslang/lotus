@@ -12,38 +12,40 @@ public sealed class IdentToklet : IToklet<ComplexToken>
         var currChar = input.Consume();
 
         // the output token
-        var output = new IdentToken("", input.Position);
+        var output = new System.Text.StringBuilder();
+
+        var startPos = input.Position;
 
         // if the character is not a letter or a low line
         if (!(Char.IsLetter(currChar) || currChar == '_')) {
-            throw Logger.Fatal(new InvalidCallException(new LocationRange(output.Location, input.Position)));
+            throw Logger.Fatal(new InvalidCallException(new LocationRange(startPos, input.Position)));
         }
 
         // while the current character is a letter, a digit, or a low line
         while (Char.IsLetterOrDigit(currChar) || currChar == '_') {
 
             // add it to the value of output
-            output.Add(currChar);
+            output.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
         }
 
+        var outputStr = output.ToString();
+
         // reconsume the last token (which is not a letter, a digit, or a low line,
         // since our while loop has exited) to make sure it is processed by the tokenizer afterwards
         input.Reconsume();
 
-        if (output == "true" || output == "false") {
-            return new BoolToken(output, new LocationRange(output.Location, input.Position));
+        if (outputStr is "true" or "false") {
+            return new BoolToken(outputStr, new LocationRange(startPos, input.Position));
         }
 
-        if (Utilities.keywords.Contains(output)) {
-            return new ComplexToken(output, TokenKind.keyword, new LocationRange(output.Location, input.Position));
+        if (Utilities.keywords.Contains(outputStr)) {
+            return new ComplexToken(outputStr, TokenKind.keyword, new LocationRange(startPos, input.Position));
         }
-
-        output.Location = new LocationRange(output.Location, input.Position);
 
         // return the output token
-        return output;
+        return new IdentToken(outputStr, new LocationRange(startPos, input.Position));
     }
 }

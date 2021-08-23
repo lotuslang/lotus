@@ -2,30 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class ComplexStringToken : ComplexToken
+public record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location, bool IsValid = true)
+: ComplexToken(Representation, TokenKind.complexString, Location, IsValid)
 {
-    public new static readonly ComplexStringToken NULL = new("", Array.Empty<Token[]>(), LocationRange.NULL, false);
-
-    protected List<Token[]> sections;
-
-    public ReadOnlyCollection<Token[]> CodeSections {
-        get => new(sections);
-    }
-
-    public ComplexStringToken(string representation,
-                              IList<Token[]> codeSections,
-                              LocationRange location,
-                              bool isValid = true,
-                              TriviaToken? leading = null,
-                              TriviaToken? trailing = null
-    )
-        : base(representation, TokenKind.complexString, location, isValid, leading, trailing)
-    {
-        sections = new List<Token[]>(codeSections);
-    }
+    public new static readonly ComplexStringToken NULL = new("", new List<Token[]>(), LocationRange.NULL, false);
 
     public void AddSection(Token[] section)
-        => sections.Add(section);
+        => CodeSections.Add(section);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

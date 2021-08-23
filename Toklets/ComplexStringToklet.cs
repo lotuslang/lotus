@@ -26,7 +26,13 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
         var currChar = input.Consume();
 
         // the output token
-        var output = new ComplexStringToken("", new List<Token[]>(), input.Position);
+        var output = new System.Text.StringBuilder();
+
+        var isValid = true;
+
+        var startPos = input.Position;
+
+        var sections = new List<Token[]>();
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
@@ -41,10 +47,10 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                         Logger.Error(new UnexpectedEOFException(
                             context: "in an interpolated string",
                             expected: $"`}}` followed by the string delimiter `{endingDelimiter}`",
-                            range: new LocationRange(output.Location, tokenizer.Position)
+                            range: new LocationRange(startPos, tokenizer.Position)
                         ));
 
-                        output.IsValid = false;
+                        isValid = false;
 
                         break;
                     }
@@ -52,32 +58,30 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                     tokenList.Add(currToken);
                 }
 
-                output.AddSection(tokenList.ToArray());
+                sections.Add(tokenList.ToArray());
 
-                output.Add("{" + (output.CodeSections.Count - 1) + "}");
+                output.Append("{" + (sections.Count - 1) + "}");
 
                 if (tokenizer.Consume(preserveTrivia: true).TrailingTrivia != null) {
-                    output.Add(tokenizer.Current.TrailingTrivia!.Representation);
+                    output.Append(tokenizer.Current.TrailingTrivia!.Representation);
                 }
             } else {
-                output.Add(currChar);
+                output.Append(currChar);
             }
 
             if (!input.Consume(out currChar)) {
                 Logger.Error(new UnexpectedEOFException(
                     context: "in a string",
                     expected: $"the string delimitier `{endingDelimiter}`",
-                    range: new LocationRange(output.Location, tokenizer.Position)
+                    range: new LocationRange(startPos, tokenizer.Position)
                 ));
 
-                output.IsValid = false;
+                isValid = false;
 
                 break;
             }
         }
 
-        output.Location = new LocationRange(output.Location, tokenizer.Position);
-
-        return output;
+        return new ComplexStringToken(output.ToString(), sections, new LocationRange(startPos, input.Position), isValid);
     }
 }

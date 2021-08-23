@@ -1,16 +1,11 @@
-public class TriviaToken : Token
+public record TriviaToken : Token
 {
     public static readonly new TriviaToken NULL = new("", TriviaKind.EOF, LocationRange.NULL);
 
-    public new TriviaKind Kind { get; protected set; }
+    public new TriviaKind Kind { get; init; }
 
-    public TriviaToken(string rep, TriviaKind kind, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(rep, TokenKind.trivia, location, isValid, leading, trailing) {
-        Kind = kind;
-    }
-
-    public TriviaToken(char rep, TriviaKind kind, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(rep, TokenKind.trivia, location, isValid, leading, trailing) {
+    public TriviaToken(string rep, TriviaKind kind, LocationRange location, bool isValid = true)
+        : base(rep, TokenKind.trivia, location, isValid) {
         Kind = kind;
     }
 

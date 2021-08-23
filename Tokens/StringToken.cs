@@ -1,9 +1,7 @@
-public class StringToken : ComplexToken
+public record StringToken(string Representation, LocationRange Location, bool IsValid = true)
+: ComplexToken(Representation, TokenKind.@string, Location, IsValid)
 {
     public new static readonly StringToken NULL = new("", LocationRange.NULL, false);
-
-    public StringToken(string representation, LocationRange location, bool isValid = true, TriviaToken? leading = null, TriviaToken? trailing = null)
-        : base(representation, TokenKind.@string, location, isValid, leading, trailing) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

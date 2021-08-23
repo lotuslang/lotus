@@ -20,6 +20,12 @@ public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken
 
         input.Reconsume();
 
-        return new WhitespaceTriviaToken(whitespaceChar, charCounter, new LocationRange(startingPosition, input.Position), trailing: tokenizer.ConsumeTrivia());
+        return new WhitespaceTriviaToken(
+            whitespaceChar,
+            charCounter,
+            new LocationRange(startingPosition, input.Position)
+        ) { TrailingTrivia = tokenizer.ConsumeTrivia() };
+
+        // TODO: Shouldn't the tokenizer be responsible of consuming further trivia ?
     }
 }

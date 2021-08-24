@@ -5,7 +5,6 @@ public enum TokenKind {
     number,
     @bool,
     @string,
-    complexString,
     @operator,
     keyword,
     trivia,

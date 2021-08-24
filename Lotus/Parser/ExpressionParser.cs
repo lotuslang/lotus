@@ -74,7 +74,6 @@ public class ExpressionParser : Parser<ValueNode>
                         TokenKind.@bool,
                         TokenKind.@operator,
                         TokenKind.@string,
-                        TokenKind.complexString,
                         TokenKind.identifier,
                         TokenKind.number
                     }

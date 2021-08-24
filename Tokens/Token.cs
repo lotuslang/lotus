@@ -1,8 +1,22 @@
 [System.Diagnostics.DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
-public record Token(string Representation, TokenKind Kind, LocationRange Location, bool IsValid = true)
-//public class Token
+public record Token
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);
+
+    public TokenKind Kind { get; }
+
+    public string Representation { get; init; }
+
+    public LocationRange Location { get; init; }
+
+    public bool IsValid { get; init; }
+
+    public Token(string repr, TokenKind kind, LocationRange location, bool isValid = true) {
+        Representation = repr;
+        Kind = kind;
+        Location = location;
+        IsValid = isValid;
+    }
 
     protected TriviaToken? leading, trailing;
 

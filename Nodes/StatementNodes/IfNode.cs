@@ -1,28 +1,18 @@
-public class IfNode : StatementNode
+using System.Diagnostics.CodeAnalysis;
+
+
+public record IfNode(
+    ParenthesizedValueNode Condition,
+    SimpleBlock Body,
+    ElseNode? ElseNode,
+    Token Token,
+    bool IsValid = true
+) : StatementNode(Token, new LocationRange(Token.Location, ElseNode?.Location ?? Body.Location), IsValid)
 {
-    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, false);
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, null, Token.NULL, false);
 
-    public ParenthesizedValueNode Condition { get; }
-
-    public SimpleBlock Body { get; }
-
-    public ElseNode? ElseNode { get; }
-
-    public bool HasElse { get => ElseNode != null; }
-
-    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, Token ifToken, bool isValid = true)
-        : base(ifToken, new LocationRange(ifToken.Location, body.Location), isValid)
-    {
-        Condition = condition;
-        Body = body;
-        ElseNode = null;
-    }
-
-    public IfNode(ParenthesizedValueNode condition, SimpleBlock body, ElseNode elseNode, Token ifToken, bool isValid = true)
-        : this(condition, body, ifToken, isValid)
-    {
-        ElseNode = elseNode;
-    }
+    [MemberNotNullWhen(true, nameof(ElseNode))]
+    public bool HasElse => ElseNode != null;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

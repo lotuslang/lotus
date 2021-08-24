@@ -1,22 +1,18 @@
-public class ReturnNode : StatementNode
+using System.Diagnostics.CodeAnalysis;
+
+public record ReturnNode(ValueNode? Value, Token Token, bool IsValid = true)
+: StatementNode(
+    Token,
+    Value is not null
+        ? new LocationRange(Token.Location, Value.Location)
+        : Token.Location,
+    IsValid
+)
 {
     public new static readonly ReturnNode NULL = new(ValueNode.NULL, Token.NULL, false);
 
-    public ValueNode Value { get; protected set; }
-
-    public bool IsReturningValue => Value != ValueNode.NULL;
-
-    public ReturnNode(ValueNode value, Token returnToken, bool isValid = true)
-        : base(returnToken, new LocationRange(returnToken.Location, value.Location), isValid)
-    {
-        Value = value;
-    }
-
-    public ReturnNode(Token returnToken, bool isValid = true)
-        : base(returnToken, returnToken.Location, isValid)
-    {
-        Value = ValueNode.NULL;
-    }
+    [MemberNotNullWhen(true, nameof(Value))]
+    public bool IsReturningValue => Value != null;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

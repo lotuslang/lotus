@@ -17,6 +17,6 @@ public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
             return new ParenthesizedValueNode(ValueNode.NULL, leftParenToken, parser.Tokenizer.Current, isValid: false);
         }
 
-        return valueTuple.Count == 1 ? valueTuple.AsParenthsized() : valueTuple;
+        return valueTuple.Count == 1 ? valueTuple.AsParenthesized() : valueTuple;
     }
 }

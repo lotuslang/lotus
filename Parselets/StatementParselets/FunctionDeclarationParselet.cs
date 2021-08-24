@@ -44,7 +44,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         // { /* some code */ }
         //
 
-        var parameters = new List<FunctionArgument>();
+        var parameters = new List<FunctionParameter>();
 
         void addParameter(ValueNode type, ValueNode paramNameNode) {
 
@@ -60,9 +60,9 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 isValid = false;
             }
 
-            var defaultValue = ValueNode.NULL;
+            ValueNode? defaultValue = null;
 
-            var equalSign = Token.NULL;
+            Token? equalSign = null;
 
             if (paramNameNode is OperationNode opNode && opNode.OperationType == OperationType.Assign) {
                 paramNameNode = opNode.Operands[0];
@@ -80,13 +80,12 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 isValid = false;
 
                 paramName = new IdentNode(
-                    paramNameNode.Token.Representation,
                     new IdentToken(paramNameNode.Token.Representation, paramNameNode.Token.Location, false),
                     false
                 );
             }
 
-            parameters!.Add(new FunctionArgument(type, paramName, defaultValue, equalSign, isValid));
+            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, equalSign, isValid));
         }
 
         while (parser.Tokenizer.Peek() != ")") {

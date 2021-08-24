@@ -1,37 +1,12 @@
 using System;
 
-public class BoolNode : ValueNode
+public record BoolNode(BoolToken Token, bool IsValid = true) : ValueNode(Token, IsValid)
 {
-    public new static readonly BoolNode NULL = new(false, BoolToken.NULL, false);
+    public new static readonly BoolNode NULL = new(BoolToken.NULL, false);
 
-    /// <summary>
-    /// The value of this StringNode.
-    /// </summary>
-    /// <value>The number represented by this object.</value>
-    public bool Value { get; protected set; }
+    public bool Value => Token.Value;
 
-    public new BoolToken Token { get; protected set; }
-
-    public BoolNode(bool value, BoolToken boolToken, bool isValid = true)
-        : base(boolToken, boolToken.Location, isValid)
-    {
-        Value = value;
-        Token = boolToken;
-    }
-
-    public BoolNode(string repr, BoolToken boolToken, bool isValid = true) : this(default(bool), boolToken, isValid)
-    {
-        var value = Value; // workaround for CS0206
-
-        if (isValid && !Boolean.TryParse(repr, out value)) {
-            throw Logger.Fatal(new InternalErrorException(
-                message: $"Could not parse string {repr} as a boolean because a bool can only take the values 'true' and 'false'",
-                Token.Location
-            ));
-        }
-
-        Value = value;
-    }
+    public new BoolToken Token { get => (base.Token as BoolToken)!; init => base.Token = value; }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

@@ -91,7 +91,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
         return new ForeachNode(
             foreachKeyword,
             inKeyword,
-            new IdentNode(itemNameToken.Representation, itemName),
+            new IdentNode(itemName),
             collectionName,
             body,
             openingParen,

@@ -1,19 +1,9 @@
-public class ObjectCreationNode : ValueNode
+public record ObjectCreationNode(FunctionCallNode Invocation, Token Token, bool IsValid = true)
+: ValueNode(Token, new LocationRange(Token.Location, Invocation.Location), IsValid)
 {
     public new static readonly ObjectCreationNode NULL = new(FunctionCallNode.NULL, Token.NULL, false);
 
-    public FunctionCallNode InvocationNode { get; protected set; }
-
-    public new Token Token { get; protected set; }
-
-    public ValueNode TypeName => InvocationNode.FunctionName;
-
-    public ObjectCreationNode(FunctionCallNode invoke, Token newToken, bool isValid = true)
-        : base(newToken, new LocationRange(newToken.Location, invoke.Location), isValid)
-    {
-        InvocationNode = invoke;
-        Token = newToken;
-    }
+    public ValueNode TypeName => Invocation.Name;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

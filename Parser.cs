@@ -28,15 +28,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// and the parser will always return a node with relevant position, even if it is EOF and other things that
     /// prompt for the use of <see cref="StatementNode.NULL"/>
     /// </summary>
-    public virtual T Default {
-        get {
-            var output = ConstantDefault;
-
-            output.Location = Position;
-
-            return output;
-        }
-    }
+    public virtual T Default => ConstantDefault with { Location = Position };
 
     public ReadOnlyGrammar Grammar { get; protected set; }
 

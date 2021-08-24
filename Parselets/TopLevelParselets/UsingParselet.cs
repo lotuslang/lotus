@@ -18,6 +18,6 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
             isValid = false;
         }
 
-        return new UsingNode(usingKeyword, importName, isValid);
+        return new UsingNode(importName, usingKeyword, isValid);
     }
 }

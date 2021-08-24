@@ -1,13 +1,7 @@
-public class StatementExpressionNode : StatementNode
+public record StatementExpressionNode(ValueNode Value)
+: StatementNode(Value.Token, Value.Location, Value.IsValid)
 {
-    public ValueNode Value { get; }
-
-    public StatementExpressionNode(ValueNode value) : base(value.Token, value.Location) {
-        Value = value;
-    }
-
     public static implicit operator ValueNode(StatementExpressionNode node) => node.Value;
-
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

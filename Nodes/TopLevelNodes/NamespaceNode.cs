@@ -1,14 +1,7 @@
-public class NamespaceNode : TopLevelNode
+public record NamespaceNode(ValueNode Name, Token Token, bool IsValid = true)
+: TopLevelNode(Token, new LocationRange(Token.Location, Name.Location), IsValid)
 {
     public new static readonly NamespaceNode NULL = new(ValueNode.NULL, Token.NULL, false);
-
-    public ValueNode NamespaceName { get; protected set; }
-
-    public NamespaceNode(ValueNode namespaceName, Token namespaceToken, bool isValid = true)
-        : base(namespaceToken, new LocationRange(namespaceToken.Location, namespaceName.Location), isValid)
-    {
-        NamespaceName = namespaceName;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

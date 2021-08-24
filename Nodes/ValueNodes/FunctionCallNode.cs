@@ -1,17 +1,7 @@
-public class FunctionCallNode : ValueNode
+public record FunctionCallNode(TupleNode ArgList, ValueNode Name, bool IsValid = true)
+: ValueNode(Name.Token, new LocationRange(Name.Location, ArgList.Location), IsValid)
 {
     public new static readonly FunctionCallNode NULL = new(TupleNode.NULL, ValueNode.NULL, false);
-
-    public TupleNode ArgList { get; }
-
-    public ValueNode FunctionName { get; protected set; }
-
-    public FunctionCallNode(TupleNode args, ValueNode functionName, bool isValid = true)
-        : base(functionName.Token, args.Location, isValid)
-    {
-        FunctionName = functionName;
-        ArgList = args;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

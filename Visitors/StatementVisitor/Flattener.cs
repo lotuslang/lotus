@@ -16,12 +16,13 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
         => new StatementNode[] { (StatementExpressionNode)node.Value, node };
 
     public IEnumerable<StatementNode> Visit(ElseNode node)
-        => (node.HasIf ? Flatten(node.IfNode!) : emptyArray)
-                .Concat(Visit(node.Body))
-                .Append(node);
+        => (node.BlockOrIfNode.Match(
+                body => Visit(body),
+                node => Flatten(node)
+        )).Append(node);
 
     public IEnumerable<StatementNode> Visit(ForeachNode node)
-        => Flatten(node.Collection)
+        => Flatten(node.CollectionRef)
                 .Concat(Visit(node.Body))
                 .Append(node);
 
@@ -71,7 +72,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
                 .Append((StatementExpressionNode)node);
 
     public IEnumerable<StatementNode> Visit(ObjectCreationNode node)
-        => Flatten(node.InvocationNode)
+        => Flatten(node.Invocation)
                 .Append((StatementExpressionNode)node);
 
     public IEnumerable<StatementNode> Visit(ParenthesizedValueNode node)

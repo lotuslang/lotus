@@ -14,15 +14,7 @@ public class TopLevelParser : Parser<TopLevelNode>
 
     public new static readonly TopLevelNode ConstantDefault = TopLevelNode.NULL;
 
-    public override TopLevelNode Default {
-        get {
-            var output = ConstantDefault;
-
-            output.Location = Position;
-
-            return output;
-        }
-    }
+    public override TopLevelNode Default => ConstantDefault with { Location = Position };
 
     protected void Init() {
         StatementParser = new StatementParser(Tokenizer);

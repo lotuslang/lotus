@@ -11,11 +11,11 @@ internal sealed class ValuePrinter : IValueVisitor<string>
         => ASTHelper.PrintToken(node.Token);
 
     public string Visit(FunctionCallNode node)
-        => Print(node.FunctionName)
+        => Print(node.Name)
          + Utilities.Join(",", Print, node.ArgList);
 
     public string Visit(ObjectCreationNode node)
-        => ASTHelper.PrintToken(node.Token) + Print(node.InvocationNode);
+        => ASTHelper.PrintToken(node.Token) + Print(node.Invocation);
 
     public string Visit(OperationNode node) {
         switch (node.OperationType) {

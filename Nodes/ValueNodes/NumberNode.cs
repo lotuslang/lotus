@@ -1,20 +1,11 @@
-public class NumberNode : ValueNode
+public record NumberNode(NumberToken Token, bool IsValid = true)
+: ValueNode(Token, IsValid)
 {
-    public new static readonly NumberNode NULL = new(0d, NumberToken.NULL, false);
+    public new static readonly NumberNode NULL = new(NumberToken.NULL, false);
 
-    /// <summary>
-    /// The value of this NumberNode.
-    /// </summary>
-    /// <value>The number represented by this object.</value>
-    public double Value { get; protected set; }
+    public new NumberToken Token { get => (base.Token as NumberToken)!; init => base.Token = value; }
 
-    public NumberNode(double value, NumberToken token, bool isValid = true) : base(token, token.Location, isValid) {
-        Value = value;
-        Token = token;
-    }
-
-    public NumberNode(NumberToken token) : this(token.Value, token)
-    { }
+    public double Value => Token.Value;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

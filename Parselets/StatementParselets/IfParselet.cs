@@ -47,7 +47,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
             return new IfNode(condition, body, elseNode, ifKeyword);
         }
 
-        return new IfNode(condition, body, ifKeyword, isValid);
+        return new IfNode(condition, body, null, ifKeyword, isValid);
     }
 
     // TODO: Later

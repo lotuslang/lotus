@@ -37,11 +37,11 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
         }.SetColor(Import.color)
          .SetTooltip(Import.tooltip);
 
-        var importsNode = new GraphNode(node.ImportsName.GetHashCode(), "import\\nnames")
+        var importsNode = new GraphNode(node.Names.GetHashCode(), "import\\nnames")
             .SetColor(ImportNames.color)
             .SetTooltip(ImportNames.tooltip);
 
-        foreach (var import in node.ImportsName) {
+        foreach (var import in node.Names) {
             importsNode.Add(ASTHelper.ToGraphNode(import));
         }
 
@@ -52,13 +52,13 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     public GraphNode Visit(NamespaceNode node)
         => new GraphNode(node.GetHashCode(), "namespace") {
-                ASTHelper.ToGraphNode(node.NamespaceName).SetTooltip("namespace name")
+                ASTHelper.ToGraphNode(node.Name).SetTooltip("namespace name")
             }.SetColor(Namespace.color)
              .SetTooltip(Namespace.tooltip);
 
     public GraphNode Visit(UsingNode node)
         => new GraphNode(node.GetHashCode(), "using") {
-                ASTHelper.ToGraphNode(node.ImportName)
+                ASTHelper.ToGraphNode(node.Name)
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
 

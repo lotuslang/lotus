@@ -1,21 +1,19 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class ImportNode : TopLevelNode
+public record ImportNode(IList<ValueNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
+: TopLevelNode(
+    Token,
+    new LocationRange(
+        FromStatement.Location,
+        Names.LastOrDefault()?.Location ?? Token.Location // this shouldn't happen anyway
+    ),
+    IsValid
+)
 {
     public new static readonly ImportNode NULL = new(Array.Empty<ValueNode>(), FromNode.NULL, Token.NULL, false);
-
-    public ReadOnlyCollection<ValueNode> ImportsName { get; protected set; }
-
-    public FromNode FromStatement { get; protected set; }
-
-    public ImportNode(IList<ValueNode> imports, FromNode from, Token importToken, bool isValid = true)
-        : base(importToken, new LocationRange(from.Location, imports[0].Location), isValid)
-    {
-        ImportsName = imports.AsReadOnly();
-        FromStatement = from;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class ComplexStringNode : StringNode
+public record ComplexStringNode : StringNode
 {
     public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, Array.Empty<ValueNode>(), false);
 
@@ -13,7 +13,7 @@ public class ComplexStringNode : StringNode
     }
 
     public ComplexStringNode(ComplexStringToken token, IList<ValueNode> codeSections, bool isValid = true)
-        : base(token.Representation, token, isValid)
+        : base(token, isValid)
     {
         sections = new List<ValueNode>(codeSections);
     }

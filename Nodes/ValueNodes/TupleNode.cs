@@ -1,27 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
-public class TupleNode : ValueNode
+public record TupleNode(IList<ValueNode> Values, Token Token, Token ClosingToken, bool IsValid = true)
+: ValueNode(Token, new LocationRange(Token.Location, ClosingToken.Location), IsValid)
 {
     public new static readonly TupleNode NULL = new(Array.Empty<ValueNode>(), Token.NULL, Token.NULL, false);
-    public Token ClosingToken { get; }
 
-    public Token OpeningToken => Token;
-
-    public ReadOnlyCollection<ValueNode> Values { get; }
+    public Token OpeningToken { get => Token; init => Token = value; }
 
     public int Count => Values.Count;
 
-    public TupleNode(IList<ValueNode> values, Token openingToken, Token closingToken, bool isValid = true)
-        : base(openingToken, new LocationRange(openingToken.Location, closingToken.Location), isValid)
-    {
-        ClosingToken = closingToken;
-        Values = values.AsReadOnly();
-        Location = new LocationRange(openingToken.Location, closingToken.Location);
-    }
-
-    public ParenthesizedValueNode AsParenthsized()
+    /// <summary>
+    /// <strong>TRUNCATES</strong> the tuple to the first element and turns it into a paren expression.
+    /// </summary>
+    public ParenthesizedValueNode AsParenthesized()
         => new(
             Values[0],
             OpeningToken,

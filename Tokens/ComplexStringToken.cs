@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 public record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location, bool IsValid = true)
-: Token(Representation, TokenKind.complexString, Location, IsValid)
+: Token(Representation, TokenKind.@string, Location, IsValid)
 {
     public new static readonly ComplexStringToken NULL = new("", new List<Token[]>(), LocationRange.NULL, false);
 

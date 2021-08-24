@@ -166,7 +166,6 @@ public class ReadOnlyGrammar
             case TokenKind.@bool:
                 return ExpressionKind.Boolean;
             case TokenKind.@string:
-            case TokenKind.complexString:
                 return ExpressionKind.String;
         }
 

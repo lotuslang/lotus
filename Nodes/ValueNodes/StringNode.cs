@@ -1,15 +1,11 @@
-public class StringNode : ValueNode
+public record StringNode(StringToken Token, bool IsValid = true)
+: ValueNode(Token, IsValid)
 {
-    public new static readonly StringNode NULL = new("", Token.NULL, false);
-    /// <summary>
-    /// The value of this StringNode.
-    /// </summary>
-    /// <value>The number represented by this object.</value>
-    public string Value { get; protected set; }
+    public new StringToken Token { get => (base.Token as StringToken)!; init => base.Token = value; }
 
-    public StringNode(string value, Token token, bool isValid = true) : base(token, token.Location, isValid) {
-        Value = value;
-    }
+    public string Value => Token.Representation;
+
+    public new static readonly StringNode NULL = new(StringToken.NULL, false);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

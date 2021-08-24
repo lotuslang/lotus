@@ -73,6 +73,9 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
 
     public override string ToString() => this;
 
+    public static LocationRange operator +(LocationRange left, LocationRange right)
+        => new(left, right);
+
     public static implicit operator string(LocationRange range)
         => range.IsSingleLocation()
                 ? range.GetFirstLocation()

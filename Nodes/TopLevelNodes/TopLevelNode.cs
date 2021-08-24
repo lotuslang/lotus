@@ -1,10 +1,8 @@
-public class TopLevelNode : Node
+public record TopLevelNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
 {
     public new static readonly TopLevelNode NULL = new(Token.NULL, LocationRange.NULL, false);
 
-
-    public TopLevelNode(Token token, LocationRange location, bool isValid = true) : base(token, location, isValid) { }
-    public TopLevelNode(Token token, bool isValid = true) : base(token, isValid) { }
+    protected TopLevelNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

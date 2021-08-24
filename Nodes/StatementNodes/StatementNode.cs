@@ -1,9 +1,8 @@
-public class StatementNode : Node
+public record StatementNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
 {
     public new static readonly StatementNode NULL = new(Token.NULL, LocationRange.NULL, false);
 
-    public StatementNode(Token token, LocationRange range, bool isValid = true) : base(token, range, isValid)
-    { }
+    protected StatementNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

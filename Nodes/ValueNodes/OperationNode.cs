@@ -2,21 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class OperationNode : ValueNode
+public record OperationNode : ValueNode
 {
     public new static readonly OperationNode NULL = new(OperatorToken.NULL, Array.Empty<ValueNode>(), OperationType.Unknown, false);
 
     public ReadOnlyCollection<Token> AdditionalTokens { get; }
 
-    public new OperatorToken Token { get; protected set; }
+    public new OperatorToken Token { get => (base.Token as OperatorToken)!; init => base.Token = value; }
 
-    /// <summary>
-    /// The operands of this operation
-    /// </summary>
-    /// <value>An array of ValueNode</value>
-    public ReadOnlyCollection<ValueNode> Operands { get; }
+    private ReadOnlyCollection<ValueNode> operands = new(Array.Empty<ValueNode>());
+    public ReadOnlyCollection<ValueNode> Operands {
+        get => operands;
+        init {
+            operands = value;
 
-    public OperationType OperationType { get; }
+            Location = OperationKind switch {
+                OperationKind.Unary => new LocationRange(Token.Location, operands[0].Location),
+                OperationKind.Binary => new LocationRange(operands[0].Location, operands[1].Location),
+                OperationKind.Ternary => new LocationRange(operands[0].Location, operands[2].Location),
+                _ => Token.Location
+            };
+        }
+    }
+
+    public OperationType OperationType { get; init; }
 
     public OperationKind OperationKind {
         get => Operands.Count switch {
@@ -30,17 +39,10 @@ public class OperationNode : ValueNode
     public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType, bool isValid = true, params Token[] additionalTokens)
         : base(token, token.Location, isValid)
     {
-        Operands = operands.AsReadOnly();
         OperationType = opType;
         AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
         Token = token;
-
-        Location = OperationKind switch {
-            OperationKind.Unary => new LocationRange(token.Location, operands[0].Location),
-            OperationKind.Binary => new LocationRange(operands[0].Location, operands[1].Location),
-            OperationKind.Ternary => new LocationRange(operands[0].Location, operands[2].Location),
-            _ => Token.Location
-        };
+        Operands = operands.AsReadOnly();
     }
 
     [System.Diagnostics.DebuggerHidden()]

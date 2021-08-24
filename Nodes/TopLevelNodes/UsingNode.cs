@@ -1,14 +1,7 @@
-public class UsingNode : TopLevelNode
+public record UsingNode(ValueNode Name, Token Token, bool IsValid = true)
+: TopLevelNode(Token, new LocationRange(Token.Location, Name.Location), IsValid)
 {
-    public new static readonly UsingNode NULL = new(Token.NULL, ValueNode.NULL, false);
-
-    public ValueNode ImportName { get; }
-
-    public UsingNode(Token usingToken, ValueNode importName, bool isValid = true)
-        : base(usingToken, new LocationRange(usingToken.Location, importName.Location), isValid)
-    {
-        ImportName = importName;
-    }
+    public new static readonly UsingNode NULL = new(ValueNode.NULL, Token.NULL, false);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

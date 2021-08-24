@@ -5,6 +5,6 @@ public sealed class BoolLiteralParslet : IPrefixParslet<BoolNode>
             throw Logger.Fatal(new InvalidCallException(token.Location));
         }
 
-        return new BoolNode(boolToken.Value, boolToken);
+        return new BoolNode(boolToken);
     }
 }

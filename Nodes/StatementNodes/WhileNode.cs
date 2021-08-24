@@ -1,33 +1,22 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 
-public class WhileNode : StatementNode
-{
-    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, false);
+public record WhileNode(
+    ParenthesizedValueNode Condition,
+    SimpleBlock Body,
+    Token Token,
+    Token? DoToken,
+    bool IsValid = true
+) : StatementNode(
+    Token,
+    DoToken is not null
+        ? new LocationRange(DoToken.Location, Token.Location)
+        : new LocationRange(Token.Location, Body.Location),
+    IsValid
+) {
+    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, Token.NULL, false);
 
-    public bool IsDoLoop { get; }
-
-    public Token? DoToken { get; }
-
-    public ParenthesizedValueNode Condition { get; }
-
-    public SimpleBlock Body { get; }
-
-    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, Token whileToken, bool isValid = true)
-        : base(whileToken, new LocationRange(whileToken.Location, body.Location), isValid)
-    {
-        Condition = condition;
-        IsDoLoop = false;
-        DoToken = null;
-        Body = body;
-    }
-
-    public WhileNode(ParenthesizedValueNode condition, SimpleBlock body, Token whileToken, Token doToken, bool isValid = true)
-        : this(condition, body, whileToken, isValid)
-    {
-        IsDoLoop = true;
-        Location = new LocationRange(doToken.Location, condition.Location);
-        DoToken = doToken;
-    }
+    [MemberNotNullWhen(true, nameof(DoToken))]
+    public bool IsDoLoop => DoToken is not null;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

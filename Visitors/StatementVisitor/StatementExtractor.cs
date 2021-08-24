@@ -10,7 +10,7 @@ internal sealed class StatementExtractor : IStatementVisitor<IEnumerable<Stateme
         => emptyArray;
 
     public IEnumerable<StatementNode> Visit(ElseNode node)
-        => node.HasIf ? Visit(node.IfNode!.Body) : Visit(node.Body);
+        => Visit(node.Body);
 
     public IEnumerable<StatementNode> Visit(ForeachNode node)
         => Visit(node.Body);

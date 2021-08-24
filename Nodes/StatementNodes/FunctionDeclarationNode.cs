@@ -1,13 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
-public class FunctionDeclarationNode : StatementNode
+public record FunctionDeclarationNode(
+    SimpleBlock Body,
+    IList<FunctionParameter> Parameters,
+    ValueNode ReturnType,
+    IdentToken Name,
+    Token Token,
+    Token OpeningParenthesis,
+    Token ClosingParenthesis,
+    Token ColonToken,
+    bool IsValid = true
+) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
 {
     public new static readonly FunctionDeclarationNode NULL
         = new(
             SimpleBlock.NULL,
-            Array.Empty<FunctionArgument>(),
+            Array.Empty<FunctionParameter>(),
             ValueNode.NULL,
             IdentToken.NULL,
             Token.NULL,
@@ -21,40 +31,6 @@ public class FunctionDeclarationNode : StatementNode
 
     public bool HasReturnType => ReturnType != ValueNode.NULL;
 
-    public SimpleBlock Body { get; }
-
-    public ReadOnlyCollection<FunctionArgument> Parameters { get; }
-
-    public ValueNode ReturnType { get; }
-
-    public IdentToken Name { get; }
-
-    public Token OpeningParenthesis { get; }
-
-    public Token ClosingParenthesis { get; }
-
-    public Token ColonToken { get; }
-
-    public FunctionDeclarationNode(SimpleBlock body,
-                                   IList<FunctionArgument> parameters,
-                                   ValueNode returnType,
-                                   IdentToken functionName,
-                                   Token funcKeyword,
-                                   Token openingParen,
-                                   Token closingParen,
-                                   Token colonToken,
-                                   bool isValid = true)
-        : base(funcKeyword, new LocationRange(funcKeyword.Location, body.Location), isValid)
-    {
-        Name = functionName;
-        Body = body;
-        Parameters = parameters.AsReadOnly();
-        ReturnType = returnType;
-        OpeningParenthesis = openingParen;
-        ClosingParenthesis = closingParen;
-        ColonToken = colonToken;
-    }
-
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]
@@ -62,25 +38,15 @@ public class FunctionDeclarationNode : StatementNode
     public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 }
 
-public class FunctionArgument
-{
-    public ValueNode Type { get; }
-
-    public IdentNode Name { get; }
-
-    public Token EqualSign { get; }
-
-    public ValueNode DefaultValue { get; }
-
-    public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
-
-    public bool IsValid { get; set; }
-
-    public FunctionArgument(ValueNode type, IdentNode name, ValueNode defaultValue, Token equalSign, bool isValid = true) {
-        Type = type;
-        Name = name;
-        EqualSign = equalSign;
-        DefaultValue = defaultValue;
-        IsValid = isValid;
-    }
+/// <summary>You define parameters, you make arguments</summary>
+public record FunctionParameter(
+    ValueNode Type,
+    IdentNode Name,
+    ValueNode? DefaultValue,
+    Token? EqualSign,
+    bool IsValid = true
+) {
+    [MemberNotNullWhen(true, nameof(DefaultValue))]
+    [MemberNotNullWhen(true, nameof(EqualSign))]
+    public bool HasDefaultValue => DefaultValue != null;
 }

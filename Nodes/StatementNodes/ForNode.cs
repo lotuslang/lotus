@@ -5,26 +5,16 @@ using System.Collections.ObjectModel;
 /// <summary>
 /// Represents a for-loop statement
 /// </summary>
-public class ForNode : StatementNode
+public record ForNode(
+    Token Token,
+    IList<StatementNode> Header,
+    SimpleBlock Body,
+    Token OpeningParenthesis,
+    Token ClosingParenthesis,
+    bool IsValid = true
+) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
 {
     public new static readonly ForNode NULL = new(Token.NULL, Array.Empty<StatementNode>(), SimpleBlock.NULL, Token.NULL, Token.NULL, false);
-
-    public ReadOnlyCollection<StatementNode> Header { get; }
-
-    public Token OpeningParenthesis { get; }
-
-    public Token ClosingParenthesis { get; }
-
-    public SimpleBlock Body { get; }
-
-    public ForNode(Token forToken, IList<StatementNode> header, SimpleBlock body, Token openingParen, Token closingParen, bool isValid = true)
-        : base(forToken, new LocationRange(forToken.Location, body.Location), isValid)
-    {
-        OpeningParenthesis = openingParen;
-        ClosingParenthesis = closingParen;
-        Header = header.AsReadOnly();
-        Body = body;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

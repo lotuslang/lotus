@@ -3,7 +3,7 @@ using System;
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
 public record NumberToken : Token
 {
-    public new static readonly NumberToken NULL = new(0d, LocationRange.NULL, false);
+    public new static readonly NumberToken NULL = new(double.NaN, LocationRange.NULL, false);
 
     protected double val;
 

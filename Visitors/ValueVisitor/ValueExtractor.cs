@@ -17,10 +17,10 @@ internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IS
         => new[] { node.Value };
 
     public IEnumerable<ValueNode> Visit(ElseNode node)
-        => node.HasIf ? ExtractValue(node.IfNode!) : emptyArray;
+        => node.HasIf ? ExtractValue((IfNode)node.BlockOrIfNode) : emptyArray;
 
     public IEnumerable<ValueNode> Visit(ForeachNode node)
-        => new[] { node.ItemName, node.Collection };
+        => new[] { node.ItemName, node.CollectionRef };
 
     public IEnumerable<ValueNode> Visit(IfNode node)
         => node.HasElse ? ExtractValue(node.ElseNode!).Concat(new[] { node.Condition }) : new[] { node.Condition };
@@ -41,10 +41,10 @@ internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IS
         => node.CodeSections;
 
     public IEnumerable<ValueNode> Visit(FunctionCallNode node)
-        => ExtractValue(node.ArgList).Append(node.FunctionName);
+        => ExtractValue(node.ArgList).Append(node.Name);
 
     public IEnumerable<ValueNode> Visit(ObjectCreationNode node)
-        => ExtractValue(node.InvocationNode).Append(node.TypeName);
+        => ExtractValue(node.Invocation).Append(node.TypeName);
 
     public IEnumerable<ValueNode> Visit(OperationNode node)
         => node.Operands;

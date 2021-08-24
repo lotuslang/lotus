@@ -1,10 +1,7 @@
-public class TopLevelStatementNode : TopLevelNode
+public record TopLevelStatementNode(StatementNode Statement)
+: TopLevelNode(Statement.Token, Statement.Location, Statement.IsValid)
 {
-    public StatementNode Statement { get; }
-
-    public TopLevelStatementNode(StatementNode node) : base(node.Token) {
-        Statement = node;
-    }
+    public static implicit operator StatementNode(TopLevelStatementNode node) => node.Statement;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

@@ -1,13 +1,9 @@
-public class ValueNode : Node
-{
-    /// <summary>
-    /// This constant is the equivalent of "null". When a function doesn't return, it will actually set the `#return` variable to this constant.
-    /// Variables that are assigned to a non-returning functions will actually be assigned this value.
-    /// </summary>
-    public new static readonly ValueNode NULL = new(Token.NULL, LocationRange.NULL, false);
+[System.Diagnostics.DebuggerDisplay("{Token.Representation}")]
+public record ValueNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
+{ // FIXME: make base nodes abstract
+    public new static readonly ValueNode NULL = new Dummy();
 
-    public ValueNode(Token token, LocationRange range, bool isValid = true) : base(token, range, isValid)
-    { }
+    protected ValueNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -18,4 +14,6 @@ public class ValueNode : Node
     public static explicit operator StatementExpressionNode(ValueNode node) => new(node);
 
     public static explicit operator StatementNode(ValueNode node) => (StatementExpressionNode)node;
+
+    private record Dummy() : ValueNode(Token.NULL, false);
 }

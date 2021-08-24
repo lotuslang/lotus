@@ -11,15 +11,7 @@ public class ExpressionParser : Parser<ValueNode>
 
     public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
 
-    public override ValueNode Default {
-        get {
-            var output = ConstantDefault;
-
-            output.Location = Position;
-
-            return output;
-        }
-    }
+    public override ValueNode Default => ConstantDefault with { Location = Position };
 
     public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
 

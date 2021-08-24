@@ -101,7 +101,10 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public GraphNode Visit(ElseNode node)
         => new GraphNode(node.GetHashCode(), "else") {
-               node.HasIf ? ToGraphNode(node.IfNode!) : ToGraphNode(node.Body)
+                node.BlockOrIfNode.Match(
+                    b => Visit(b),
+                    n => ToGraphNode(n)
+                )
            }.SetColor(Else.color)
             .SetTooltip(Else.tooltip);
 
@@ -109,7 +112,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         => new GraphNode(node.GetHashCode(), "foreach") {
                new GraphNode(node.InToken.GetHashCode(), "in") {
                     ToGraphNode(node.ItemName),
-                    ToGraphNode(node.Collection)
+                    ToGraphNode(node.CollectionRef)
                }.SetTooltip("in iterator"),
                ToGraphNode(node.Body),
            }.SetColor(Foreach.color)
@@ -263,12 +266,12 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     public GraphNode Visit(FunctionCallNode node) {
         GraphNode root;
 
-        if (node.FunctionName is IdentNode name) {
+        if (node.Name is IdentNode name) {
             root = new GraphNode(node.GetHashCode(), name.Value + "(...)");
         } else {
             root = new GraphNode(node.GetHashCode(), "call") {
-                new GraphNode(DeterministicHashCode.Combine(node.FunctionName, "function"), "function") {
-                    ToGraphNode(node.FunctionName)
+                new GraphNode(DeterministicHashCode.Combine(node.Name, "function"), "function") {
+                    ToGraphNode(node.Name)
                 },
             };
         }
@@ -311,13 +314,13 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         root.SetColor(ObjCreation.color)
             .SetTooltip(ObjCreation.tooltip);
 
-        if (node.InvocationNode.ArgList.Count == 0) {
-            root.Add(new GraphNode(node.InvocationNode.ArgList.GetHashCode(), "(no args)"));
+        if (node.Invocation.ArgList.Count == 0) {
+            root.Add(new GraphNode(node.Invocation.ArgList.GetHashCode(), "(no args)"));
 
             return root;
         }
 
-        var argsNode = ToGraphNode(node.InvocationNode.ArgList).SetTooltip("argument");
+        var argsNode = ToGraphNode(node.Invocation.ArgList).SetTooltip("argument");
 
         argsNode.Name = "args";
 

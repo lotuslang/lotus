@@ -5,8 +5,10 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
         if (!(returnToken is Token returnKeyword && returnKeyword == "return"))
             throw Logger.Fatal(new InvalidCallException(returnToken.Location));
 
-        if (parser.Tokenizer.Peek() == "}") {
-            return new ReturnNode(returnKeyword);
+        var nextToken = parser.Tokenizer.Peek();
+
+        if (nextToken == "}" || nextToken.HasTrivia(";", out _)) {
+            return new ReturnNode(null, returnKeyword);
         }
 
         var value = parser.ExpressionParser.ConsumeValue();

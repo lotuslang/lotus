@@ -1,8 +1,6 @@
-public class ContinueNode : StatementNode
+public record ContinueNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
 {
     public new static readonly ContinueNode NULL = new(Token.NULL, false);
-
-    public ContinueNode(Token continueToken, bool isValid = true) : base(continueToken, continueToken.Location, isValid) { }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

@@ -1,15 +1,11 @@
-public class IdentNode : ValueNode
+public record IdentNode(IdentToken Token, bool IsValid = true)
+: ValueNode(Token, IsValid)
 {
-    public new static readonly IdentNode NULL = new("", IdentToken.NULL, false);
+    public new static readonly IdentNode NULL = new(IdentToken.NULL, false);
 
-    public new Token Token { get; }
+    public new IdentToken Token { get => (base.Token as IdentToken)!; init => base.Token = value; }
 
-    public string Value { get; protected set; }
-
-    public IdentNode(string value, IdentToken identToken, bool isValid = true) : base(identToken, identToken.Location, isValid) {
-        Token = identToken;
-        Value = value;
-    }
+    public string Value => Token.Representation;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

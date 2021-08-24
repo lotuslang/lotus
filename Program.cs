@@ -136,8 +136,13 @@ Usage : dotnet run -- [option]
                 Console.Write(ASTHelper.PrintStatement(node));
             }
 
-            // print the last (EOF) token, which is not consumed by the parser
-            Console.WriteLine(ASTHelper.PrintToken(tokenizer.Current)[..^2]);
+            string s;
+
+            if (tokenizer.Current == tokenizer.Default && (s = ASTHelper.PrintToken(tokenizer.Current)).Length >= 2) {
+                // print the last (EOF) token, which is not consumed by the parser
+                Console.WriteLine(s[..^2]);
+            }
+
             return;
         }
 

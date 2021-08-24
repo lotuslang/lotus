@@ -1,26 +1,11 @@
-public class ElseNode : StatementNode
+public record ElseNode(Utilities.Union<SimpleBlock, IfNode> BlockOrIfNode, Token Token, bool IsValid = true)
+: StatementNode(Token, new LocationRange(Token.Location, BlockOrIfNode.Match(b => b.Location, n => n.Location)), IsValid)
 {
     public new static readonly ElseNode NULL = new(SimpleBlock.NULL, Token.NULL, false);
 
-    public SimpleBlock Body { get; protected set; }
+    public SimpleBlock Body => BlockOrIfNode.Match(b => b, n => n.Body);
 
-    public IfNode? IfNode { get; protected set; }
-
-    public bool HasIf { get => IfNode != null; }
-
-    public ElseNode(SimpleBlock body, Token elseToken, bool isValid = true)
-        : base(elseToken, new LocationRange(elseToken.Location, body.Location), isValid)
-    {
-        Body = body;
-        IfNode = null; // FIXME: we shouldn't have pure nulls here. another reason to write nulls for every node
-    }
-
-    public ElseNode(IfNode ifNode, Token elseToken, bool isValid = true)
-        : base(elseToken, new LocationRange(elseToken.Location, ifNode.Location), isValid)
-    {
-        IfNode = ifNode;
-        Body = ifNode.Body; // works like a pointer so it's fine
-    }
+    public bool HasIf => BlockOrIfNode.Match(b => false, n => true);
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

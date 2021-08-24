@@ -13,13 +13,13 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(ImportNode node)
         => Visit(node.FromStatement)
          + ASTHelper.PrintToken(node.Token)
-         + Utilities.Join(",", ASTHelper.PrintValue, node.ImportsName);
+         + Utilities.Join(",", ASTHelper.PrintValue, node.Names);
 
     public string Visit(NamespaceNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.NamespaceName);
+        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Name);
 
     public string Visit(UsingNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.ImportName);
+        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Name);
 
 
     public string Print(TopLevelNode node) => node.Accept(this);

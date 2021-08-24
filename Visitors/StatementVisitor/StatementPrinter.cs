@@ -12,15 +12,15 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
 
     public string Visit(ElseNode node)
         => ASTHelper.PrintToken(node.Token)
-         + (node.HasIf ? Print(node.IfNode!) : Visit(node.Body));
+         + node.BlockOrIfNode.Match(b => Visit(b), n => Print(n));
 
     public string Visit(ForeachNode node)
         => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintToken(node.OpeningParenthesis)
+         + ASTHelper.PrintToken(node.OpenParenthesis)
          + ASTHelper.PrintValue(node.ItemName)
          + ASTHelper.PrintToken(node.InToken)
-         + ASTHelper.PrintValue(node.Collection)
-         + ASTHelper.PrintToken(node.ClosingParenthesis)
+         + ASTHelper.PrintValue(node.CollectionRef)
+         + ASTHelper.PrintToken(node.CloseParenthesis)
          + Visit(node.Body);
 
     public string Visit(ForNode node)
@@ -33,7 +33,7 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
     public string Visit(FunctionDeclarationNode node) {
         var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.Name) + ASTHelper.PrintToken(node.OpeningParenthesis);
 
-        static string printParameter(FunctionArgument param) {
+        static string printParameter(FunctionParameter param) {
             var output = "";
 
             if (param.Type != ValueNode.NULL) output += ASTHelper.PrintValue(param.Type);

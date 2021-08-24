@@ -3,7 +3,6 @@ using System.Collections.Generic;
 public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
 {
     public StringNode Parse(ExpressionParser parser, Token token) {
-
         if (token is ComplexStringToken complexString) {
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
@@ -29,8 +28,8 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             return node;
         }
 
-        if (token.Kind == TokenKind.@string) {
-            return new StringNode(token.Representation, token);
+        if (token is StringToken strToken) {
+            return new StringNode(strToken);
         }
 
         throw Logger.Fatal(new InvalidCallException(token.Location));

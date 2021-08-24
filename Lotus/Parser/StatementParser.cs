@@ -12,15 +12,7 @@ public class StatementParser : Parser<StatementNode>
 
     public new static readonly StatementNode ConstantDefault = StatementNode.NULL;
 
-    public StatementNode Default {
-        get {
-            var output = ConstantDefault;
-
-            output.Location = Position;
-
-            return output;
-        }
-    }
+    public override StatementNode Default => ConstantDefault with { Location = Position };
 
     protected void Init() {
         ExpressionParser = new ExpressionParser(Tokenizer);

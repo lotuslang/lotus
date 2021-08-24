@@ -1,14 +1,7 @@
-public class PrintNode : StatementNode
+public record PrintNode(Token Token, ValueNode Value, bool IsValid = true)
+: StatementNode(Token, Token.Location, IsValid)
 {
     public new static readonly PrintNode NULL = new(Token.NULL, ValueNode.NULL, false);
-
-    public ValueNode Value { get; }
-
-    public PrintNode(Token printToken, ValueNode node, bool isValid = true)
-        : base(printToken, new LocationRange(printToken.Location, node.Location), isValid)
-    {
-        Value = node;
-    }
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

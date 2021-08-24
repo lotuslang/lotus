@@ -1,4 +1,4 @@
-public class ParenthesizedValueNode : TupleNode
+public record ParenthesizedValueNode : TupleNode
 {
     public new static readonly ParenthesizedValueNode NULL = new(ValueNode.NULL, Token.NULL, Token.NULL, false);
 

@@ -5,6 +5,6 @@ public sealed class IdentifierParslet : IPrefixParslet<IdentNode>
             throw Logger.Fatal(new InvalidCallException(token.Location));
         }
 
-        return new IdentNode(token.Representation, identToken);
+        return new IdentNode(identToken);
     }
 }

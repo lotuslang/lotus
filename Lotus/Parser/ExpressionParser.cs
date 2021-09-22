@@ -72,7 +72,7 @@ public class ExpressionParser : Parser<ValueNode>
                 ));
             }
 
-            return new ValueNode(token, Position, false);
+            return ValueNode.NULL with { Token = token, Location = Position };
         }
 
         var left = Grammar.GetPrefixParslet(token).Parse(this, token);

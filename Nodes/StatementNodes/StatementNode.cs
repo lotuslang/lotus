@@ -1,6 +1,6 @@
-public record StatementNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
+public abstract record StatementNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
 {
-    public new static readonly StatementNode NULL = new(Token.NULL, LocationRange.NULL, false);
+    public new static readonly StatementNode NULL = new Dummy();
 
     protected StatementNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
 
@@ -13,4 +13,6 @@ public record StatementNode(Token Token, LocationRange Location, bool IsValid = 
     public static explicit operator TopLevelStatementNode(StatementNode node) => new(node);
 
     public static explicit operator TopLevelNode(StatementNode node) => (TopLevelStatementNode)node;
+
+    private record Dummy() : StatementNode(Token.NULL, false);
 }

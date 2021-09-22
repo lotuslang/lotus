@@ -106,34 +106,10 @@ Usage : dotnet run -- [option]
 
         if (args[0] == "silent") return;
 
-        if (args[0] == "constant") {
-            IEnumerable<ValueNode> values;
-
-            if (args.Length == 2) {
-                if (args[1] == "all") {
-                    values = statementNodes.SelectMany(ASTHelper.ExtractValue);
-                } else {
-                    Console.WriteLine("Could not understand option " + args[1]);
-                    return;
-                }
-            } else {
-                values = valueNodes;
-            }
-
-            foreach (var node in values) {
-                Console.WriteLine(
-                    ASTHelper.PrintValue(node as ValueNode)
-                  + (ASTHelper.IsContant(node as ValueNode) ? " => is a constant." : " => isn't a constant.")
-                );
-            }
-
-            return;
-        }
-
         if (args[0] == "print") {
-                foreach (var node in statementNodes) {
-                    Console.Write(ASTHelper.PrintStatement(node));
-                }
+            foreach (var node in statementNodes) {
+                Console.Write(ASTHelper.PrintStatement(node));
+            }
 
             string s;
 

@@ -82,7 +82,7 @@ Usage : dotnet run -- [option]
 
             g.AddNodeProp("fontname", "Consolas, monospace");
             g.AddGraphProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.LocalPath}\\n\\n");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {Path.GetFileName(file.LocalPath)}\\n\\n");
             g.AddGraphProp("labelloc", "top");
 
             if (args.Length == 2) {
@@ -150,7 +150,7 @@ Usage : dotnet run -- [option]
 
             g.AddNodeProp("fontname", "Consolas, monospace");
             g.AddGraphProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("label", $"Abstract Syntax Tree of {file.LocalPath}\\n\\n");
+            g.AddGraphProp("label", $"Abstract Syntax Tree of {Path.GetFileName(file.LocalPath)}\\n\\n");
             g.AddGraphProp("labelloc", "top");
 
             if (args.Length == 2) {

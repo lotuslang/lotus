@@ -5,8 +5,6 @@ using System.Collections.Generic;
 public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 {
     public Predicate<IConsumer<char>> Condition
-                        // WARNING: DO NOT REFACTOR
-                        // pattern matching doesn't work here
         => (consumer => consumer.Consume() is '/' && (consumer.Consume() is '/' or '*'));
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {

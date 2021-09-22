@@ -68,47 +68,15 @@ Usage : dotnet run -- [option]
             return;
         }
 
-        var statementNodes =
-            tlNodes
-                .Where(n => n is TopLevelStatementNode)
-                .Select(n => (n as TopLevelStatementNode).Statement);
-
-        var valueNodes =
-            statementNodes
-                .Where(n => n is StatementExpressionNode)
-                .Select(n => (n as StatementExpressionNode).Value);
-
         if (args[0] == "graph") {
-            var g = new Graph("AST");
-
-            g.AddNodeProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("label", $"Abstract Syntax Tree of {Path.GetFileName(file.LocalPath)}\\n\\n");
-            g.AddGraphProp("labelloc", "top");
-
-            if (args.Length == 2) {
-                if (args[1] == "constant") {
-                    foreach (var node in statementNodes) {
-                        g.AddNode(ASTHelper.ShowConstants(node));
-                    }
-                } else {
-                    Console.WriteLine("Could not understand option " + args[1]);
-                    return;
-                }
-            } else {
-                foreach (var node in tlNodes) {
-                    g.AddNode(ASTHelper.ToGraphNode(node));
-                }
-            }
-
-            Console.WriteLine(g.ToText());
+            Console.WriteLine(MakeGraph(tlNodes, args, file).ToText());
             return;
         }
 
         if (args[0] == "silent") return;
 
         if (args[0] == "print") {
-            foreach (var node in statementNodes) {
+            foreach (var node in tlNodes.Select(n => (n is TopLevelStatementNode stmt) ? stmt : null).Where(n => n is not null)) {
                 Console.Write(ASTHelper.PrintStatement(node));
             }
 
@@ -123,33 +91,51 @@ Usage : dotnet run -- [option]
         }
 
         if (args[0] == "hash") {
-            var g = new Graph("AST");
-
-            g.AddNodeProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("fontname", "Consolas, monospace");
-            g.AddGraphProp("label", $"Abstract Syntax Tree of {Path.GetFileName(file.LocalPath)}\\n\\n");
-            g.AddGraphProp("labelloc", "top");
-
-            if (args.Length == 2) {
-                if (args[1] == "constant") {
-                    foreach (var node in statementNodes) {
-                        g.AddNode(ASTHelper.ShowConstants(node));
-                    }
-                } else {
-                    Console.WriteLine("Could not understand option " + args[1]);
-                    return;
-                }
-            } else {
-                foreach (var node in tlNodes) {
-                    g.AddNode(ASTHelper.ToGraphNode(node));
-                }
-            }
-
-            Console.WriteLine(g.GetHashCode());
+            Console.WriteLine(MakeGraph(tlNodes, args, file).GetHashCode());
             return;
         }
 
         Console.WriteLine("Could not understand option " + args[0]);
+    }
+
+    static void AddGraphPrelude(Graph g, Uri file) {
+        g.AddNodeProp("fontname", "Consolas, monospace");
+        g.AddGraphProp("fontname", "Consolas, monospace");
+        g.AddGraphProp("label", $"Abstract Syntax Tree of {Path.GetFileName(file.LocalPath)}\\n\\n");
+        g.AddGraphProp("labelloc", "top");
+    }
+
+    static Graph MakeGraph(IEnumerable<TopLevelNode> nodes, string[] args, Uri file) {
+        var statementNodes =
+            nodes
+                .Where(n => n is TopLevelStatementNode)
+                .Select(n => (n as TopLevelStatementNode).Statement);
+
+        var valueNodes =
+            statementNodes
+                .Where(n => n is StatementExpressionNode)
+                .Select(n => (n as StatementExpressionNode).Value);
+
+        var g = new Graph("AST");
+
+        AddGraphPrelude(g, file);
+
+        if (args.Length == 2) {
+            if (args[1] == "constant") {
+                foreach (var node in statementNodes) {
+                    g.AddNode(ASTHelper.ShowConstants(node));
+                }
+            } else {
+                Console.Error.WriteLine("Could not understand option " + args[1]);
+                return new Graph("ERROR");
+            }
+        } else {
+            foreach (var node in nodes) {
+                g.AddNode(ASTHelper.ToGraphNode(node));
+            }
+        }
+
+        return g;
     }
 }
 #pragma warning restore

@@ -163,12 +163,12 @@ public class Tokenizer : IConsumer<Token>
 
             Current = Grammar.MatchToklet(input).Consume(input, this);
 
-            if (!(leadingTrivia is null)) Current.AddLeadingTrivia(leadingTrivia);
+            if (leadingTrivia is not null) Current.AddLeadingTrivia(leadingTrivia);
 
             if (input.Peek() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
-                if (!(trailingTrivia is null)) Current.AddTrailingTrivia(trailingTrivia);
+                if (trailingTrivia is not null) Current.AddTrailingTrivia(trailingTrivia);
             }
         } else {
             Current = Grammar.MatchToklet(input).Consume(input, this);

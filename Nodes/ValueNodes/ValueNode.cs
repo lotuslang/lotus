@@ -1,6 +1,6 @@
 [System.Diagnostics.DebuggerDisplay("{Token.Representation}")]
-public record ValueNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
-{ // FIXME: make base nodes abstract
+public abstract record ValueNode(Token Token, LocationRange Location, bool IsValid = true) : Node(Token, Location, IsValid)
+{
     public new static readonly ValueNode NULL = new Dummy();
 
     protected ValueNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }

@@ -55,11 +55,7 @@ Usage : dotnet run -- [option]
 
         var parser = new TopLevelParser(tokenizer);
 
-        var tlNodes = new List<TopLevelNode>();
-
-        foreach (var node in parser) {
-            tlNodes.Add(node as TopLevelNode);
-        }
+        var tlNodes = (parser.Select(node => node as TopLevelNode)).ToList();
 
         if (Logger.HasErrors) {
             var count = Logger.ErrorCount;

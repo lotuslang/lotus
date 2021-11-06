@@ -32,7 +32,7 @@ public interface IConsumer<T> : IEnumerable<T>
     /// </summary>
     /// <param name="success">True if the operation succeeded, false otherwise</param>
     /// <returns></returns>
-    bool Consume([MaybeNullWhen(false)] out T item);
+    bool Consume(out T item);
 
     T Peek();
 

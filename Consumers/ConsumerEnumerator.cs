@@ -18,8 +18,8 @@ public class ConsumerEnumerator<T> : IEnumerator<T>
 
 
     public bool MoveNext() {
-        if (!consumer.Consume(out _current!)) {
-            _current = consumer.Default;
+        if (!consumer.Consume(out _current)) {
+            //_current = consumer.Default;
 
             return false;
         }

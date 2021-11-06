@@ -30,8 +30,10 @@ public static class Logger
     public static void Error(string message, LocationRange location)
         => Exceptions.Push((new Exception(message), location));
 
-    public static Exception Fatal(Exception e)
-        => e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
+    public static Exception Fatal(Exception e) {
+        PrintAllErrors();
+        return e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
+    }
 
     public static void PrintAllErrors() {
         foreach (var (exception, location) in Exceptions.Reverse()) {

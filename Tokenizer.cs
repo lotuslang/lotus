@@ -129,7 +129,7 @@ public class Tokenizer : IConsumer<Token>
         return output;
     }
 
-    public bool Consume([MaybeNullWhen(false)] out Token result) {
+    public bool Consume(out Token result) {
         result = Consume();
 
         return result.Kind != TokenKind.EOF;

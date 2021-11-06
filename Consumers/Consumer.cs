@@ -42,7 +42,7 @@ public class Consumer<T> : IConsumer<T>
         inputStack = new Stack<T>(inputStack);
     }
 
-    public bool Consume([MaybeNullWhen(false)] out T item) {
+    public bool Consume(out T item) {
         if (inputStack.Count == 0) {
             Current = Default;
             item = Default;

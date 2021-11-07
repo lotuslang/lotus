@@ -31,7 +31,9 @@ public static class Logger
         => Exceptions.Push((new Exception(message), location));
 
     public static Exception Fatal(Exception e) {
-        PrintAllErrors();
+        if (ErrorCount > 0)
+            PrintAllErrors();
+
         return e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
     }
 

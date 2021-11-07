@@ -117,7 +117,9 @@ public class ExpressionParser : Parser<ValueNode>
 
         var itemCount = 0;
 
-        while (Tokenizer.Peek() != end && Tokenizer.Peek() != Tokenizer.Default) {
+        while (Tokenizer.Consume(out var token) && token != end) {
+
+            Tokenizer.Reconsume();
 
             items.Add(ConsumeValue());
 
@@ -126,8 +128,6 @@ public class ExpressionParser : Parser<ValueNode>
             if (Tokenizer.Consume() != ",") {
 
                 if (Tokenizer.Current == end) {
-                    Tokenizer.Reconsume();
-
                     break;
                 }
 
@@ -136,7 +136,10 @@ public class ExpressionParser : Parser<ValueNode>
                 if (Tokenizer.Current.Kind == TokenKind.keyword || lastItem.Token.Kind == TokenKind.keyword) {
                     Tokenizer.Reconsume();
 
-                    isValid = false;
+                    // If we set isValid here without emitting an error, execution will just continue normally
+                    // since the errors at the end require that isValid is set to true
+                    // FIXME: Although, it might be better to emit a custom error here :shrug:
+                    //isValid = false;
 
                     break;
                 }
@@ -185,17 +188,21 @@ public class ExpressionParser : Parser<ValueNode>
             }
         }
 
-        var endingToken = Tokenizer.Consume();
+        var endingToken = Tokenizer.Current;
 
         // we probably got out-of-scope (EOF or end of block)
         //
         // TODO: Handle EOF differently (like show where the start of the tuple
         // was instead of the bottom of the file)
+        //
+        // Or maybe we should just do that all the time ? Like if we got an unexpected
+        // token we could show the first line/element of the tuple, and then show the end
+        // or even where the error occurred (this also goes for earlier errors)
         if (isValid && endingToken != end) {
             Logger.Error(new UnexpectedTokenException(
                 token: endingToken,
                 context: "in a tuple",
-                expected: "an ending delimiter '" + end + "'"
+                expected: "an ending delimiter (here, it would be '" + end + "')"
             ));
 
             isValid = false;

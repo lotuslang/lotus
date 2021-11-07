@@ -163,12 +163,12 @@ public class Tokenizer : IConsumer<Token>
 
             Current = Grammar.MatchToklet(input).Consume(input, this);
 
-            if (leadingTrivia is not null) Current.AddLeadingTrivia(leadingTrivia);
+            if (leadingTrivia != TriviaToken.NULL) Current.AddLeadingTrivia(leadingTrivia);
 
             if (input.Peek() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
-                if (trailingTrivia is not null) Current.AddTrailingTrivia(trailingTrivia);
+                if (trailingTrivia != TriviaToken.NULL) Current.AddTrailingTrivia(trailingTrivia);
             }
         } else {
             Current = Grammar.MatchToklet(input).Consume(input, this);
@@ -177,10 +177,10 @@ public class Tokenizer : IConsumer<Token>
         return Current;
     }
 
-    public TriviaToken? ConsumeTrivia() {
+    public TriviaToken ConsumeTrivia() {
         var triviaToklet = Grammar.MatchTriviaToklet(input);
 
-        if (triviaToklet is null) return TriviaToken.NULL; // FIXME: change this to pure null
+        if (triviaToklet is null) return TriviaToken.NULL;
 
         return triviaToklet.Consume(input, this);
     }

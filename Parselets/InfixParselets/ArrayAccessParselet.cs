@@ -17,6 +17,8 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 
         var indexTuple = parser.ConsumeTuple("[", "]");
 
+        indexTuple.Values.Insert(0, array);
+
         return new OperationNode(
             new OperatorToken(
                 "[",
@@ -25,7 +27,7 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
                 openingBracket.Location,
                 openingBracket.IsValid
             ) { LeadingTrivia = openingBracket.LeadingTrivia, TrailingTrivia = openingBracket.TrailingTrivia } ,
-            new[] { array }.Concat(indexTuple.Values).ToArray(), // FIXME: It hurts my eyes
+            indexTuple.Values,
             OperationType.ArrayAccess,
             isValid && indexTuple.IsValid,
             additionalTokens: indexTuple.ClosingToken

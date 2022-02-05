@@ -29,7 +29,11 @@ public static class Logger
     }
 
     public static void PrintAllErrors() {
-        Console.Error.WriteLine("In total, there were " + ErrorCount + " error(s). Please fix them before proceeding.\n");
+        if (ErrorCount == 1) {
+            Console.Error.WriteLine("There was an error, please fix it before proceeding.\n");
+        } else if (ErrorCount > 1) {
+            Console.Error.WriteLine("In total, there were " + ErrorCount + " errors. Please fix them before proceeding.\n");
+        }
 
         var orderedErrorStack = errorStack.Reverse()/*.OrderBy(e => {
             if (e is ILocalized el) return el.Location;
@@ -119,7 +123,13 @@ public static class Logger
         switch (error) {
             case IValued<Token> unxToken:
                 var token = unxToken.Value;
-                sb.Append(token.Kind + " '" + ASTHelper.PrintToken(token).Trim() + "'");
+
+                sb.Append(token.Kind);
+
+                if (token.Kind is not TokenKind.EOF) {
+                    sb.Append(" '" + ASTHelper.PrintToken(token).Trim() + "'");
+                }
+
                 break;
             case IValued<Node> unxNode:
                 var node = unxNode.Value;
@@ -150,9 +160,11 @@ public static class Logger
                 break;
         }
 
-        if (error.In != null) sb.Append(" in " + error.In);
+        if (error.In is not null)
+            sb.Append(" in " + error.In);
 
-        if (error.As != null) sb.Append(" as " + error.As);
+        if (error.As is not null)
+            sb.Append(" as " + error.As);
 
         error.Expected.Match(
             s => sb.Append("\nExpected " + s + "."),

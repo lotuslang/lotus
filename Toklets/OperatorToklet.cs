@@ -1,4 +1,3 @@
-using System;
 
 public sealed class OperatorToklet : IToklet<OperatorToken>
 {

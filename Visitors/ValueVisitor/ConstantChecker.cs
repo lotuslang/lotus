@@ -1,4 +1,3 @@
-using System.Linq;
 
 internal sealed class ConstantChecker : IValueVisitor<bool>
 {

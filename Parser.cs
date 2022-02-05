@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 public abstract class Parser<T> : IConsumer<T> where T : Node
 {
     protected readonly Queue<T> reconsumeQueue;

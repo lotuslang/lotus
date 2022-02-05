@@ -1,4 +1,3 @@
-using System;
 
 public record BoolNode(BoolToken Token, bool IsValid = true) : ValueNode(Token, IsValid)
 {

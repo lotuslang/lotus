@@ -1,4 +1,3 @@
-using System;
 
 public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken>
 {

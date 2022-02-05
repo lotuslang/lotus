@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 
 public record TupleNode(IList<ValueNode> Values, Token Token, Token ClosingToken, bool IsValid = true)
 : ValueNode(Token, new LocationRange(Token.Location, ClosingToken.Location), IsValid)

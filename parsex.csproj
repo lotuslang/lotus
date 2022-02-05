@@ -3,11 +3,23 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <LangVersion>latest</LangVersion>
-    <TargetFramework>net5</TargetFramework>
+    <TargetFramework>net6</TargetFramework>
     <RootNamespace>Parsex</RootNamespace>
     <TargetCulture>InvariantCulture</TargetCulture>
     <Nullable>enable</Nullable>
     <NoWarn>IDE0034,IDE0046,IDE0047,IDE0049,IDE0025,IDE0021,IDE1006,IDE0045,CA1050</NoWarn>
+
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Collections.Generic" />
+
+    <Using Remove="System.IO" />
+    <Using Remove="System.Net.Http" />
+    <Using Remove="System.Threading.Tasks" />
+  </ItemGroup>
 
 </Project>

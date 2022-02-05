@@ -46,26 +46,27 @@ public static class Logger
         foreach (var error in orderedErrorStack) {
             Console.WriteLine();
 
-            var areaString =
-                  error.Area.ToName().ToUpper()
+            var errorTypeString =
+                  error.GetType().GetDisplayName()
 #if DEBUG
                 + " @ "
                 + GetCallerString(error)
 #endif
                 ;
 
-            var frontCharCount = Console.WindowWidth - areaString.Length;
+            // TODO: WHy not try to center the names when there's multiple exceptions ?
+            var frontCharCount = Console.WindowWidth - errorTypeString.Length;
 
             if (frontCharCount > 2) {
                 var backCharCount = Console.WindowWidth / 5;
 
                 if (frontCharCount > backCharCount) {
-                    areaString += " " + new string('-', backCharCount);
+                    errorTypeString += " " + new string('-', backCharCount);
 
-                    Console.Write(new string('-', frontCharCount - 2 - backCharCount));
+                    Console.Error.Write(new string('-', frontCharCount - 2 - backCharCount));
                 }
 
-                Console.Error.Write(" " + areaString + " " + '\n');
+                Console.Error.Write(" " + errorTypeString + " \n");
             }
 
             Console.Error.Write(Format(error));
@@ -75,13 +76,6 @@ public static class Logger
     public static string Format(LotusError error) {
         var sb = new StringBuilder();
 
-        //* IDK if we should add this, but it can be useful in case the error doesn't have many properties
-        var eType = error.GetType();
-
-        if (eType.IsGenericType)
-            sb.AppendLine(eType.Name.Remove(eType.Name.Length - 2) + '<' + String.Join(", ", eType.GenericTypeArguments.Select(t => t.Name)) + '>');
-        else
-            sb.AppendLine(eType.Name);//*/
         // Interfaces to implement :
         //      - ILocalized
         //      - IContextualized
@@ -186,7 +180,11 @@ public static class Logger
 
         var relPath = uri.RelativeToPWD();
 
-        sb.AppendLine($"\t--> {relPath}({location.firstLine}, {location.firstColumn})");
+        // TODO: Ideas for formatting the filename :
+        //      - Underline the path and put a '@' prefix
+        //      - Use the '-->' prefix
+        //      - Put in bold
+        sb.AppendLine($"\t @{relPath}({location.firstLine}, {location.firstColumn})\n");
 
         if (!File.Exists(location.filename)) {
             string sourceCode;

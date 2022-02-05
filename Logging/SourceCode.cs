@@ -76,9 +76,6 @@ public class SourceCode
 
     public string FormatTextAtLines(LocationRange range) {
         var (firstLine, lastLine, lineLength, firstColumn, _, _, _) = range;
-
-        var numWidthDiff = Utilities.GetNumberOfDigits(lastLine + 100) - Utilities.GetNumberOfDigits(firstLine);
-
         var output = FormatTextPreludeAt(firstLine);
 
         var padding = new string(' ',

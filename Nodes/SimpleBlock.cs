@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-public class SimpleBlock
+public record SimpleBlock
 {
     public static readonly SimpleBlock NULL = new(Array.Empty<StatementNode>(), Token.NULL, Token.NULL, false);
 
     public ReadOnlyCollection<StatementNode> Content { get; }
 
-    public LocationRange Location { get; }
+    public LocationRange Location { get; init; }
 
     public bool IsValid { get; set; }
 
     public bool IsOneLiner { get; }
 
-    public Token OpeningToken { get; }
+    public Token OpeningToken { get; init; }
 
-    public Token ClosingToken { get; }
+    public Token ClosingToken { get; init; }
 
     public int Count => Content.Count;
 

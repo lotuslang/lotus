@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 
 public sealed class ForParslet : IStatementParslet<ForNode>
@@ -9,6 +10,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         var header = new List<StatementNode>();
 
         var isValid = true;
+        var hasEOF = false;
 
         var openingParen = parser.Tokenizer.Consume();
 
@@ -24,34 +26,51 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             parser.Tokenizer.Reconsume();
         }
 
-        var commaCount = 0; // FIXME: I feel dirty
+        if (parser.Tokenizer.Consume() == ",") {
+            // add an empty statement
+            header.Add(GetDefaultStatement(parser.Tokenizer.Position));
+        }
+
+        parser.Tokenizer.Reconsume();
 
         // no we can't use Parser.ConsumeCommaSeparatedList because here we can have empty "values"
-        while (parser.Tokenizer.Peek() != ")") {
+        while (parser.Tokenizer.Consume(out var token) && token != ")") {
 
-            if (parser.Tokenizer.Peek() == ",") {
-                parser.Tokenizer.Consume();
+            if (token == ",") {
+                token = parser.Tokenizer.Consume();
 
-                commaCount++;
+                // If the next token isn't one of these, then it's a statement, so we shouldn't insert anything
+                if (token.Representation is ("," or ")")) {
+                    // add an empty statement
+                    header.Add(GetDefaultStatement(token.Location));
 
-                // add an empty statement
-                // FIXME: change this to use StatementNode.NULL
-                header.Add(StatementNode.NULL with { Token = Token.NULL with { Location = parser.Position, IsValid = true }, Location = parser.Position });
-
-                continue;
+                    parser.Tokenizer.Reconsume();
+                    continue;
+                }
             }
+
+            parser.Tokenizer.Reconsume();
 
             header.Add(parser.Consume());
 
-            if (parser.Tokenizer.Consume() != ",") {
+            hasEOF = !parser.Tokenizer.Consume(out token);
 
-                if (parser.Tokenizer.Current == ")") {
-                    parser.Tokenizer.Reconsume();
-                    break;
-                }
+            if (hasEOF) {
+                Logger.Error(new UnexpectedEOFException(
+                    context: "in a for-loop header",
+                    expected: (header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','"),
+                    range: token.Location
+                ));
 
-                // FIXME: handle EOF
+                isValid = false;
 
+                while (header.Count < 3)
+                    header.Add(parser.Default);
+
+                break;
+            }
+
+            if (token.Representation is not ("," or ")")) {
                 Logger.Error(new UnexpectedTokenException(
                     token: parser.Tokenizer.Current,
                     context: "in comma-separated list",
@@ -59,32 +78,37 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 ));
 
                 isValid = false;
-
-                parser.Tokenizer.Reconsume();
             }
 
-            commaCount++;
+            parser.Tokenizer.Reconsume();
         }
 
-        var closingParen = parser.Tokenizer.Consume(); // consume the ')'
+        var closingParen = parser.Tokenizer.Current; // consume the ')'
 
-        if (header.Count > 3) {// FIXME: Choose an appropriate exception
+        if (!hasEOF && header.Count > 3) {// FIXME: Choose an appropriate exception
             Logger.Error(new LotusException(
                 message: "Too many statements in for-loop header (expected 3 statements (max), got " + header.Count + " statements).",
                 range: header[^1].Token.Location
             ));
 
             isValid = false;
+        } else if (!hasEOF && header.Count <= 2) {
+            Logger.Error(new LotusException(
+                message: "Not enough statements in for-loop header (expected 3 statements (max), got " + header.Count + " statements)."
+                        +" Did you forget some commas ?",
+                range: new LocationRange(openingParen.Location, closingParen.Location)
+            ));
         }
 
-        // if there's not enough statements in the header (happens when the last statement in not specified),
-        // add an empty statement
-        // FIXME: change this to use StatementNode.NULL
-        if (header.Count == 2)
-            header.Add(StatementNode.NULL with { Token = Token.NULL with { Location = parser.Position, IsValid = true }, Location = parser.Position});
+        // We have to change position cause default filename doesn't match current otherwise
+        var body = SimpleBlock.NULL with { Location = parser.Position };
 
-        var body = parser.ConsumeSimpleBlock();
+        if (!hasEOF)
+            body = parser.ConsumeSimpleBlock();
 
         return new ForNode(forKeyword, header.ToArray(), body, openingParen, closingParen, isValid);
     }
+
+    private static StatementNode GetDefaultStatement(LocationRange pos)
+        => StatementNode.NULL with { Token = Token.NULL with { Location = pos, IsValid = true }, Location = pos };
 }

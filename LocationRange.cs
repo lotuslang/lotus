@@ -8,7 +8,7 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
 
     public LocationRange(Location first, Location last) : this(first.line, last.line, first.column, last.column, first.filename) {
         if (first.filename != last.filename) {
-            Logger.Error(new LotusException(
+            Logger.Warning(new LotusException(
                 message: "Tried to created a LocationRange using Locations that do not have the same origin/filename. "
                         + "Setting filename to the first Location's filename ('" + first.filename + "')",
                 range: first
@@ -18,11 +18,11 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
 
     public LocationRange(LocationRange first, LocationRange last) : this(first.firstLine, last.lastLine, first.firstColumn, last.lastColumn, first.filename) {
         if (first.filename != last.filename) {
-            Logger.Warning(
-                  "Tried to created a LocationRange using LocationRanges that do not have the same origin/filename. "
-                + "Setting filename to the first Location's filename ('" + first.filename + "')",
-                location: first
-            );
+            Logger.Warning(new LotusException(
+                message: "Tried to created a LocationRange using LocationRanges that do not have the same origin/filename. "
+                        + "Setting filename to the first Location's filename ('" + first.filename + "')",
+                range: first
+            ));
         }
     }
 

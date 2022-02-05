@@ -7,7 +7,6 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
             foreach (var section in complexString.CodeSections) {
-                // FIXME: See Parser.ConsumeValue comment (tldr Consumer can return null sometimes)
                 var sectionConsumer = new Consumer<Token>(section, Token.NULL);
                 var sectionParser = new ExpressionParser(sectionConsumer);
                 node.AddSection(sectionParser.ConsumeValue());

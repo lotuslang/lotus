@@ -188,4 +188,15 @@ internal static class Utilities
     }
 
     public static Uri RelativeToPWD(this Uri uri) => new Uri(System.IO.Directory.GetCurrentDirectory()).MakeRelativeUri(uri);
+
+    public static string GetDisplayName(this Type type) {
+        var output = "";
+
+        if (type.IsGenericType)
+            output += type.Name.Remove(type.Name.Length - 2) + '<' + String.Join(", ", type.GenericTypeArguments.Select(t => t.Name)) + '>';
+        else
+            output += type.Name;
+
+        return output;
+    }
 }

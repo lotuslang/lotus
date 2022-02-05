@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 
 public class ConsumerEnumerator<T> : IEnumerator<T>
 {

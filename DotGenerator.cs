@@ -1,7 +1,5 @@
-using System;
 using System.Text;
 using System.Collections;
-using System.Collections.Generic;
 
 [System.Diagnostics.DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
 public class Graph

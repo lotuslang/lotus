@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 
 internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IStatementVisitor<IEnumerable<ValueNode>>
 {

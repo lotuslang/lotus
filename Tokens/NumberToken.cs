@@ -1,4 +1,3 @@
-using System;
 
 [System.Diagnostics.DebuggerDisplay("{Location} {Kind} : {val}")]
 public record NumberToken : Token

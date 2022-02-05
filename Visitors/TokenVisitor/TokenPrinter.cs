@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 internal sealed class TokenPrinter : ITokenVisitor<string>

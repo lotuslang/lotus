@@ -1,4 +1,3 @@
-using System.Linq;
 
 public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 {

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 
 public sealed class LotusTokenizer : Tokenizer
 {

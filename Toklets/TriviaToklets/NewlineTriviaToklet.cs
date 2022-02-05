@@ -1,4 +1,3 @@
-using System;
 
 public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 {

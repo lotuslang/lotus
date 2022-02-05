@@ -147,13 +147,7 @@ public class Tokenizer : IConsumer<Token>
 
         // If there is nothing left to consume, return an EOF token
         if (!input.Consume(out var currChar)) {
-            var lastPos = Position;
-
-            Current = Token.NULL;
-
-            Current = Current with { Location = lastPos };
-
-            return Current;
+            return (Current = Default);
         }
 
         input.Reconsume();

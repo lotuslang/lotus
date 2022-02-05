@@ -127,20 +127,14 @@ public class StatementParser : Parser<StatementNode>
 
         var closingBracket = Tokenizer.Peek();
 
-        if (closingBracket != "}") {
+        if (!(!isValid && closingBracket.Kind == TokenKind.EOF) && closingBracket != "}") {
             Logger.Error(new UnexpectedTokenException(
                 token: closingBracket,
                 context: "in simple block",
                 expected: "the character '}'"
             ));
 
-            if (closingBracket.Kind == TokenKind.EOF) {
-                // if this node was already invalid, it probably means that we already encountered an EOF,
-                // so no need to tell the user twice
-                if (!isValid) Logger.Exceptions.Pop();
-            } else {
-                Tokenizer.Reconsume();
-            }
+            Tokenizer.Reconsume();
 
             isValid = false;
         }

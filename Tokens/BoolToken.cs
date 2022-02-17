@@ -16,10 +16,11 @@ public record BoolToken : Token
         : base(representation, TokenKind.@bool, location, isValid)
     {
         if (representation.Length != 0 && !Boolean.TryParse(representation, out val)) {
-            throw Logger.Fatal(new InternalErrorException(
-                message: $"Could not parse string {representation} as a boolean because a bool can only take the values 'true' and 'false'",
-                location
-            ));
+            throw Logger.Fatal(new InternalError(ErrorArea.Tokenizer) {
+                Message = $"Could not parse string {representation} as a boolean",
+                ExtraNotes = "A boolean can only take the values 'true' and 'false'",
+                Location = location
+            });
         }
     }
 

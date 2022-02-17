@@ -32,11 +32,14 @@ public sealed class StringToklet : IToklet<StringToken>
             outputStr.Append(currChar);
 
             if (!input.Consume(out currChar)) {
-                Logger.Error(new UnexpectedEOFException(
-                    context: "in string",
-                    expected: "a character or a delimiter (' or \")",
-                    range: input.Position
-                ));
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                    In = "a string",
+                    Expected = new[] {
+                        "a character",
+                        "a string delimiter ' or \"",
+                    },
+                    Location = input.Position
+                });
 
                 isValid = false;
 

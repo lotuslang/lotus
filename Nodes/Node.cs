@@ -1,4 +1,4 @@
-public abstract record Node {
+public abstract record Node : ILocalized {
     public static readonly Node NULL = ValueNode.NULL;
 
     public Token Token { get; init; }

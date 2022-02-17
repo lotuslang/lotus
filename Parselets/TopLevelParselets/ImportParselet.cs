@@ -8,8 +8,8 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 	private ImportParslet() : base() { }
 
     public ImportNode Parse(TopLevelParser parser, Token fromToken) {
-        if (!(fromToken is Token fromKeyword && fromToken == "from"))
-            throw Logger.Fatal(new InvalidCallException(fromToken.Location));
+        if (fromToken is not Token fromKeyword || fromToken != "from")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, fromToken.Location));
 
         var fromOrigin = parser.ExpressionParser.Consume();
 
@@ -17,12 +17,12 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         var importIsValid = true;
 
-        if (!(Utilities.IsName(fromOrigin) || fromOrigin is StringNode)) {
-            Logger.Error(new UnexpectedValueTypeException(
-                node: fromOrigin,
-                context: "in from statement",
-                expected: "string or name"
-            ));
+        if (fromOrigin is not StringNode && !Utilities.IsName(fromOrigin)) {
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = fromOrigin,
+                In = "a from statement",
+                Expected = "string or name"
+            });
 
             fromIsValid = false;
         }
@@ -45,12 +45,12 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         // After a (very short) test, the tokenizer seems better, but we should probably do more testing
         var importToken = parser.Tokenizer.Consume();
 
-        if (!(importToken is Token importKeyword && importKeyword == "import")) {
-            Logger.Error(new UnexpectedTokenException(
-                token: importToken,
-                context: "in import statement",
-                expected: "import"
-            ));
+        if (importToken is not Token importKeyword || importKeyword != "import") {
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = importToken,
+                In = "a import statement",
+                Expected = "import"
+            });
 
             importIsValid = false;
 
@@ -65,20 +65,20 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             if (!Utilities.IsName(import)) {
 
                 if (!import.IsValid && import.Token.Representation == "*") {
-                    Logger.Exceptions.Pop();
+                    Logger.errorStack.Pop();
 
-                    Logger.Error(new LotusException(
-                        message: "Wildcards ('*') are not allowed in import statements. Use a `using` statement instead. "
+                    Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                        Value = import.Token,
+                        ExtraNotes = "Wildcards ('*') are not allowed in import statements. Consider writing a `using` statement instead. "
                                 + "For example, you could write : 'using " + ASTHelper.PrintValue(from.OriginName) + "' "
                                 + "at the top of your file.",
-                        range: import.Token.Location
-                    ));
+                    });
                 } else {
-                    Logger.Error(new UnexpectedValueTypeException(
-                        node: import,
-                        context: "in import statement",
-                        expected: "a type name"
-                    ));
+                    Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                        Value = import,
+                        In = "a import statement",
+                        Expected = "a type name"
+                    });
                 }
 
                 importIsValid = false;

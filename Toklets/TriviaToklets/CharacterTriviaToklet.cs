@@ -14,7 +14,7 @@ public sealed class CharacterTriviaToklet : ITriviaToklet<CharacterTriviaToken>
         var currChar = input.Consume();
 
         if (currChar != Character) {
-            throw Logger.Fatal(new InvalidCallException(input.Position));
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, input.Position));
         }
 
         return new CharacterTriviaToken(currChar, input.Position);

@@ -11,6 +11,6 @@ public sealed class NumberLiteralParslet : IPrefixParslet<NumberNode>
             return new NumberNode(numberToken);
         }
 
-        throw Logger.Fatal(new InvalidCallException(token.Location));
+        throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
     }
 }

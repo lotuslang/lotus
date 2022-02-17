@@ -11,30 +11,30 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         var isValid = true;
 
         // if the token isn't the keyword "var", throw an exception
-        if (!(varToken is Token varKeyword && varKeyword == "var"))
-            throw Logger.Fatal(new InvalidCallException(varToken.Location));
+        if (varToken is not Token varKeyword || varKeyword != "var")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, varToken.Location));
 
         // consume the name of the variable we're declaring
         var nameToken = parser.Tokenizer.Consume();
 
         // if the token isn't an identifier, throw an exception
         if (nameToken is not IdentToken name) {
-            Logger.Error(new UnexpectedTokenException(
-                token: nameToken,
-                expected: TokenKind.identifier
-            ));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = nameToken,
+                Expected = "an identifier"
+            });
 
             isValid = false;
 
             name = new IdentToken(nameToken.Representation, nameToken.Location, false);
 
             if (nameToken == "=") {
-                Logger.Exceptions.Pop(); // remove the last exception
+                Logger.errorStack.Pop(); // remove the last exception
 
-                Logger.Error(new UnexpectedTokenException(
-                    message: "Did you forget to specify a variable name ?",
-                    token: nameToken
-                ));
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Message = "Did you forget to specify a variable name ?",
+                    Value = nameToken
+                });
 
                 parser.Tokenizer.Reconsume();
             }
@@ -45,7 +45,10 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
 
         // if this token wasn't an equal sign, throw an exception
         if (equalSign != "=") {
-            Logger.Error(new UnexpectedTokenException(equalSign, "="));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = equalSign,
+                Expected = "="
+            });
 
             isValid = false;
 

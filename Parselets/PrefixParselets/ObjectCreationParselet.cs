@@ -10,8 +10,8 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
 
         // if the token isn't the keyword "new", throw an exception
-        if (!(newToken is Token newKeyword && newKeyword == "new"))
-            throw Logger.Fatal(new InvalidCallException(newToken.Location));
+        if (newToken is not Token newKeyword || newKeyword != "new")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, newToken.Location));
 
         var isValid = true;
 
@@ -42,11 +42,11 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         var typeName = parser.Consume(Precedence.FuncCall);
 
         if (!Utilities.IsName(typeName)) {
-            Logger.Error(new UnexpectedValueTypeException(
-                node: typeName,
-                context: "in object instantiation",
-                expected: "a type name, qualified or simple."
-            ));
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = typeName,
+                In = "an object instantiation",
+                Expected = "a type name."
+            });
 
             isValid = false;
 

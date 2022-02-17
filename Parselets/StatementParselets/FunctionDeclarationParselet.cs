@@ -5,13 +5,13 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
     private static FunctionDeclarationParslet _instance = new();
     public static FunctionDeclarationParslet Instance => _instance;
 
-	private FunctionDeclarationParslet() : base() { }
+    private FunctionDeclarationParslet() : base() { }
 
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
 
         // if the token consumed was not "func", then throw an exception
-        if (!(funcToken is Token funcKeyword && funcKeyword == "func"))
-            throw Logger.Fatal(new InvalidCallException(funcToken.Location));
+        if (funcToken is not Token funcKeyword || funcKeyword != "func")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, funcToken.Location));
 
         var isValid = true;
 
@@ -20,11 +20,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
         // if the token consumed was not an identifier, then throw an exception
         if (funcNameToken is not IdentToken funcName) {
-            Logger.Error(new UnexpectedTokenException(
-                token: funcNameToken,
-                context: "in function declaration",
-                expected: TokenKind.identifier
-            ));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = funcNameToken,
+                In = "a function declaration",
+                Expected = "an identifier"
+            });
 
             isValid = false;
 
@@ -36,11 +36,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         var openingParen = parser.Tokenizer.Consume();
 
         if (openingParen != "(") {
-            Logger.Error(new UnexpectedTokenException(
-                token: openingParen,
-                context: "in function parameter list",
-                expected: "("
-            ));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = openingParen,
+                In = "a function parameter list",
+                Expected = "("
+            });
         }
 
         // function parameter list format :
@@ -55,11 +55,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             bool isValid = true;
 
             if (type != ValueNode.NULL && !Utilities.IsName(type)) {
-                Logger.Error(new UnexpectedValueTypeException(
-                    node: type,
-                    context: "as a parameter type in a function's parameter list",
-                    expected: "a type name (a qualified name)"
-                ));
+                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                    Value = type,
+                    As = "a parameter type in a function's parameter list",
+                    Expected = "a type name (a qualified name)"
+                });
 
                 isValid = false;
             }
@@ -76,14 +76,14 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
             if (paramNameNode is not IdentNode paramName) {
                 if (!paramNameNode.IsValid) { // && Logger.Exceptions.Peek().Item1 is UnexpectedTokenException) {
-                    Logger.Exceptions.Pop();
+                    Logger.errorStack.Pop();
                 }
 
-                Logger.Error(new UnexpectedValueTypeException(
-                    node: paramNameNode,
-                    context: "as a parameter name in a function's parameter list",
-                    expected: "a simple name (an identifier)"
-                ));
+                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                    Value = paramNameNode,
+                    As = "a parameter name in a function's parameter list",
+                    Expected = "a simple name (an identifier)"
+                });
 
                 isValid = false;
 
@@ -138,11 +138,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
                 // if this isn't an array-access-like thing
                 if (typeNameArray.OperationType != OperationType.ArrayAccess) {
-                    Logger.Error(new UnexpectedValueTypeException(
-                        node: typeNameArray,
-                        context: "as a typed parameter-group in a function's parameter list",
-                        expected: "a type name followed by an array-like syntax (e.g. int [param1, param2])"
-                    ));
+                    Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                        Value = typeNameArray,
+                        As = "a typed parameter-group in a function's parameter list",
+                        Expected = "a type name followed by an array-like syntax (e.g. int [param1, param2])"
+                    });
 
                     isValid = false;
 
@@ -152,14 +152,26 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                     goto LOOP_END_CHECK;
                 }
 
-                var paramType = typeNameArray.Operands.FirstOrDefault();
+                var paramType = typeNameArray.Operands.FirstOrDefault(ValueNode.NULL);
 
-                // if there's only one argument (illegal)
-                if (typeNameArray.Operands.Count < 2) {
-                    Logger.Error(new LotusException(
-                        message: "A typed parameter-group should declare at least two parameters, which is not the case here.",
-                        range: (paramType is not null && paramType != ValueNode.NULL ? paramType : typeOrName).Token.Location
-                    ));
+                // if there's less than 2 names (illegal)
+                if (typeNameArray.Operands.Count < 2) { // FIXME: We should really make an error type for wrong-numbered things
+
+                    var errorLoc = paramType.Location;
+
+                    if (typeNameArray.Operands.Count == 0) {
+                        errorLoc =
+                            new LocationRange(
+                                typeNameArray.AdditionalTokens[0].Location,
+                                typeNameArray.AdditionalTokens[1].Location
+                            );
+                    }
+
+                    Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                        Value = typeNameArray.Operands[0],
+                        Location = errorLoc,
+                        Message = "A typed parameter-group should declare at least two parameters, which is not the case here.",
+                    });
 
                     isValid = false;
                 }
@@ -187,11 +199,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                     break;
                 }
 
-                Logger.Error(new UnexpectedTokenException(
-                    token: parser.Tokenizer.Current,
-                    context: "after a parameter in a function's parameter list",
-                    expected: "a comma or a parenthesis"
-                ));
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = parser.Tokenizer.Current,
+                    In = "after a parameter in a function's parameter list",
+                    Expected = "a comma or a parenthesis"
+                });
 
                 isValid = false;
 
@@ -201,11 +213,12 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             }
 
             if (parser.Tokenizer.Peek() == ")") { // cause that would mean it is a comma followed directly by a parenthesis
-                Logger.Error(new UnexpectedTokenException(
-                    token: parser.Tokenizer.Peek(),
-                    context: "after a comma in a function's parameter list",
-                    expected: "a parameter name or type. Did you forget a parameter ?"
-                ) { Position = new LocationRange(parser.Tokenizer.Current.Location, parser.Tokenizer.Peek().Location) });
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = parser.Tokenizer.Peek(),
+                    In = "after a comma in a function's parameter list",
+                    Expected = "a parameter name or type. Did you forget a parameter ?",
+                    Location = new LocationRange(parser.Tokenizer.Current.Location, parser.Tokenizer.Peek().Location)
+                });
 
                 isValid = false;
             }
@@ -215,11 +228,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
         // this means we probably broke because of an EOF
         if (closingParen != ")") {
-            Logger.Error(new UnexpectedEOFException(
-                context: "in a function's parameter list",
-                expected: "a closing parenthesis ')'",
-                range: parser.Tokenizer.Position
-            ));
+            Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
+                In = "a function's parameter list",
+                Expected = "a closing parenthesis ')'",
+                Location = parser.Tokenizer.Position
+            });
 
             isValid = false;
         }
@@ -234,11 +247,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             returnType = parser.ExpressionParser.Consume();
 
             if (!Utilities.IsName(returnType)) {
-                Logger.Error(new UnexpectedValueTypeException(
-                    node: returnType,
-                    context: "as a return type in a function declaration",
-                    expected: "a type name"
-                ));
+                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                    Value = returnType,
+                    As = "a return type in a function declaration",
+                    Expected = "a type name"
+                });
 
                 isValid = false;
             }

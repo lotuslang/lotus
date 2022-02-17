@@ -7,8 +7,8 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
 	private WhileParslet() : base() { }
 
     public WhileNode Parse(StatementParser parser, Token whileToken) {
-        if (!(whileToken is Token whileKeyword && whileKeyword == "while")) {
-            throw Logger.Fatal(new InvalidCallException(whileToken.Location));
+        if (whileToken is not Token whileKeyword || whileKeyword != "while") {
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, whileToken.Location));
         }
 
         var isValid = true;
@@ -16,11 +16,11 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
         var conditionNode = parser.ExpressionParser.Consume();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
-            Logger.Error(new UnexpectedValueTypeException(
-                node: conditionNode,
-                context: "as a while-loop condition",
-                expected: "a condition between parenthesis (e.g. `(a == b)`)"
-            ));
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = conditionNode,
+                As = "a while-loop condition",
+                Expected = "a condition between parenthesis (e.g. `(a == b)`)"
+            });
 
             isValid = false;
 

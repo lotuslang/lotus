@@ -15,6 +15,6 @@ public sealed class NamespaceParslet : ITopLevelParslet<NamespaceNode>
             }
         }
 
-        throw Logger.Fatal(new InvalidCallException(namespaceToken.Location));
+        throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, namespaceToken.Location));
     }
 }

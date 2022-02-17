@@ -21,6 +21,6 @@ public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
             );
         }
 
-        throw Logger.Fatal(new InvalidCallException(token.Location));
+        throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
     }
 }

@@ -8,7 +8,7 @@ public sealed class ArrayLiteralParslet : IPrefixParslet<TupleNode>
 
     public TupleNode Parse(ExpressionParser parser, Token leftBracket) {
         if (leftBracket != "[")
-            throw Logger.Fatal(new InvalidCallException(leftBracket.Location));
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, leftBracket.Location));
 
         parser.Tokenizer.Reconsume();
 

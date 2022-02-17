@@ -8,8 +8,8 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 
     public ReturnNode Parse(StatementParser parser, Token returnToken) {
 
-        if (!(returnToken is Token returnKeyword && returnKeyword == "return"))
-            throw Logger.Fatal(new InvalidCallException(returnToken.Location));
+        if (returnToken is not Token returnKeyword || returnKeyword != "return")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, returnToken.Location));
 
         var nextToken = parser.Tokenizer.Peek();
 

@@ -7,19 +7,19 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 	private UsingParslet() : base() { }
 
     public UsingNode Parse(TopLevelParser parser, Token usingToken) {
-        if (!(usingToken is Token usingKeyword && usingToken == "using"))
-            throw Logger.Fatal(new InvalidCallException(usingToken.Location));
+        if (usingToken is not Token usingKeyword || usingToken != "using")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, usingToken.Location));
 
         var importName = parser.ExpressionParser.Consume();
 
         var isValid = true;
 
-        if (!(importName is StringNode || Utilities.IsName(importName))) {
-            Logger.Error(new UnexpectedValueTypeException(
-                node: importName,
-                context: "as a namespace in a using statement",
-                expected: "string or name"
-            ));
+        if (importName is not StringNode && !Utilities.IsName(importName)) {
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = importName,
+                As = "a namespace in a using statement",
+                Expected = "string or name"
+            });
 
             isValid = false;
         }

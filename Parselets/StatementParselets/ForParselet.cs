@@ -8,8 +8,8 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 	private ForParslet() : base() { }
 
     public ForNode Parse(StatementParser parser, Token forToken) {
-        if (!(forToken is Token forKeyword && forKeyword == "for"))
-            throw Logger.Fatal(new InvalidCallException(forToken.Location));
+        if (forToken is not Token forKeyword || forKeyword != "for")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, forToken.Location));
 
         var header = new List<StatementNode>();
 
@@ -19,11 +19,11 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         var openingParen = parser.Tokenizer.Consume();
 
         if (openingParen != "(") {
-            Logger.Error(new UnexpectedTokenException(
-                token: openingParen,
-                context: "in for loop header",
-                expected: "an opening parenthesis '('"
-            ));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = openingParen,
+                In = "a for loop header",
+                Expected = "an opening parenthesis '('"
+            });
 
             isValid = false;
 
@@ -60,11 +60,11 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             hasEOF = !parser.Tokenizer.Consume(out token);
 
             if (hasEOF) {
-                Logger.Error(new UnexpectedEOFException(
-                    context: "in a for-loop header",
-                    expected: (header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','"),
-                    range: token.Location
-                ));
+                Logger.Error(new UnexpectedEOFError() {
+                    In = "a for-loop header",
+                    Expected = (header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','"),
+                    Location = token.Location
+                });
 
                 isValid = false;
 
@@ -75,11 +75,11 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             }
 
             if (token.Representation is not ("," or ")")) {
-                Logger.Error(new UnexpectedTokenException(
-                    token: parser.Tokenizer.Current,
-                    context: "in comma-separated list",
-                    expected: "a comma ','"
-                ));
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = parser.Tokenizer.Current,
+                    In = "a comma-separated list",
+                    Expected = "a comma ','"
+                });
 
                 isValid = false;
             }
@@ -89,19 +89,22 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         var closingParen = parser.Tokenizer.Current; // consume the ')'
 
-        if (!hasEOF && header.Count > 3) {// FIXME: Choose an appropriate exception
-            Logger.Error(new LotusException(
-                message: "Too many statements in for-loop header (expected 3 statements (max), got " + header.Count + " statements).",
-                range: header[^1].Token.Location
-            ));
+        if (!hasEOF && header.Count > 3) { // FIXME: This is kind of a reoccurring error, should we make a specific class for it ?
+            Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
+                Message = "Too many statements (expected up to 3 statements, got "
+                        + header.Count + " statements).",
+                In = "a for-loop header",
+                Location = header[^1].Token.Location
+            });
 
             isValid = false;
         } else if (!hasEOF && header.Count <= 2) {
-            Logger.Error(new LotusException(
-                message: "Not enough statements in for-loop header (expected 3 statements (max), got " + header.Count + " statements)."
-                        +" Did you forget some commas ?",
-                range: new LocationRange(openingParen.Location, closingParen.Location)
-            ));
+            Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
+                Message = "Not enough statements (expected up to 3 statements, got "
+                        + header.Count + " statements).",
+                In = "a for-loop header",
+                Location = header[^1].Token.Location
+            });
         }
 
         // We have to change position cause default filename doesn't match current otherwise

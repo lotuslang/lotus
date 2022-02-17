@@ -12,7 +12,7 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
 
     public FunctionCallNode Parse(ExpressionParser parser, Token leftParen, ValueNode function) {
         if (leftParen != "(")
-            throw Logger.Fatal(new InvalidCallException(leftParen.Location));
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, leftParen.Location));
 
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();

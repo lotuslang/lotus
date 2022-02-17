@@ -7,8 +7,8 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 	private IfParslet() : base() { }
 
     public IfNode Parse(StatementParser parser, Token ifToken) {
-        if (!(ifToken is Token ifKeyword && ifKeyword == "if")) {
-            throw Logger.Fatal(new InvalidCallException(ifToken.Location));
+        if (ifToken is not Token ifKeyword || ifKeyword != "if") {
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, ifToken.Location));
         }
 
         var isValid = true;
@@ -16,23 +16,23 @@ public sealed class IfParslet : IStatementParslet<IfNode>
         var conditionNode = parser.ExpressionParser.Consume();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
-            Logger.Error(new UnexpectedValueTypeException(
-                node: conditionNode,
-                context: "as an if-statement condition",
-                expected: "a condition between parenthesis (e.g. `(a == b)`)"
-            ));
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = conditionNode,
+                As = "an if-statement condition",
+                Expected = "a condition between parenthesis (e.g. `(a == b)`)"
+            });
 
             isValid = false;
 
             if (conditionNode is TupleNode tuple) {
-                Logger.Exceptions.Pop();
+                Logger.errorStack.Pop();
 
-                Logger.Error(new UnexpectedValueTypeException(
-                    node: conditionNode,
-                    message: "You can't use a tuple as a condition. "
-                            +"If you wish to combine multiple conditions, "
-                            +"use the logical operators (OR ||, AND &&, XOR ^^, etc...)"
-                ));
+                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                    Value = conditionNode,
+                    Message = "You can't use a tuple as a condition. ",
+                    ExtraNotes = "If you want to combine multiple conditions, "
+                            +"you can use the logical operators (OR ||, AND &&, XOR ^^, etc...)"
+                });
 
                 condition = new ParenthesizedValueNode(
                     tuple.Count == 0 ? ValueNode.NULL : tuple.Values[0],

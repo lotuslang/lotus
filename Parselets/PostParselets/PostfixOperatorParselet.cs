@@ -12,7 +12,7 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
 
     public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
         if (token is not OperatorToken operatorToken) {
-            throw Logger.Fatal(new InvalidCallException(token.Location));
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
         }
 
         return new OperationNode(

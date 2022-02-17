@@ -6,5 +6,5 @@ public class TriviaToklet : ITriviaToklet<TriviaToken>
 
     [System.Diagnostics.CodeAnalysis.DoesNotReturn]
     public TriviaToken Consume(IConsumer<char> input, Tokenizer _)
-        => throw Logger.Fatal(new InvalidCallException(input.Position));
+        => throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, input.Position));
 }

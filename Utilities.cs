@@ -174,4 +174,6 @@ internal static class Utilities
 		Array.Reverse(arr);
 		return new Stack<T>(arr);
 	}
+
+    public static Uri RelativeToPWD(this Uri uri) => new Uri(System.IO.Directory.GetCurrentDirectory()).MakeRelativeUri(uri);
 }

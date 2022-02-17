@@ -127,6 +127,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             return new OperatorToken(currCharStr, Precedence.Unary, false, input.Position);
         }
 
-        throw Logger.Fatal(new InvalidCallException(new LocationRange(currPos, input.Position)));
+        throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, new LocationRange(currPos, input.Position)));
     }
 }

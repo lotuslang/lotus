@@ -29,11 +29,10 @@ public class Tokenizer : IConsumer<Token>
 
     protected Tokenizer(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
-            Logger.Warning(new InvalidCallException(
-                message: "Something tried to create a new Tokenizer with a null grammar."
+            Logger.Warning(new InvalidCallError(ErrorArea.Tokenizer, Position) {
+                Message = "Something tried to create a new Tokenizer with a null grammar."
                         + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
-                range: Position
-            ));
+            });
 
             grammar = new ReadOnlyGrammar();
         }

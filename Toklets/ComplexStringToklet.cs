@@ -48,12 +48,16 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                 while (tokenizer.Peek() != "}") {
 
-                    if (!tokenizer.Consume(out currToken!)) {
-                        Logger.Error(new UnexpectedEOFException(
-                            context: "in an interpolated string",
-                            expected: $"`}}` followed by the string delimiter `{endingDelimiter}`",
-                            range: new LocationRange(startPos, tokenizer.Position)
-                        ));
+
+                    if (!tokenizer.Consume(out currToken)) {
+                        Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                            In = "an interpolated string",
+                            Expected = "} followed by a string delimiter like this :\n\t"
+                                     + endingDelimiter
+                                     + output.ToString()
+                                     + endingDelimiter,
+                            Location = new LocationRange(startPos, tokenizer.Position)
+                        });
 
                         isValid = false;
 
@@ -75,11 +79,11 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             }
 
             if (!input.Consume(out currChar)) {
-                Logger.Error(new UnexpectedEOFException(
-                    context: "in a string",
-                    expected: $"the string delimitier `{endingDelimiter}`",
-                    range: new LocationRange(startPos, tokenizer.Position)
-                ));
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                    In = "an interpolated string",
+                    Expected = "a string delimiter like this : " + endingDelimiter + output.ToString() + endingDelimiter,
+                    Location = new LocationRange(startPos, tokenizer.Position)
+                });
 
                 isValid = false;
 

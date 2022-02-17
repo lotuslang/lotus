@@ -1,5 +1,5 @@
-[System.Diagnostics.DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
-public record Token
+[System.Diagnostics.DebuggerDisplay("<{Kind}> {rep.ToString()} @ {Location}")]
+public record Token : ILocalized
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);
 
@@ -37,10 +37,9 @@ public record Token
 
     public void AddLeadingTrivia(TriviaToken? trivia) {
         if (trivia is null) {
-            Logger.Warning(new InvalidCallException(
-                message : "Something tried to add a null (leading) TriviaToken to this token, but that's not allowed",
-                range: Location
-            ));
+            Logger.Warning(new InvalidCallError(ErrorArea.Tokenizer, Location) {
+                Message = "Something tried to add a null (leading) TriviaToken to this token, but that's not allowed"
+            });
 
             return;
         }
@@ -53,10 +52,9 @@ public record Token
 
     public void AddTrailingTrivia(TriviaToken? trivia) {
         if (trivia is null) {
-            Logger.Warning(new InvalidCallException(
-                message : "Something tried to add a null (trailing) TriviaToken to this token, but that's not allowed",
-                range: Location
-            ));
+            Logger.Warning(new InvalidCallError(ErrorArea.Tokenizer, Location) {
+                Message = "Something tried to add a null (trailing) TriviaToken to this token, but that's not allowed"
+            });
 
             return;
         }

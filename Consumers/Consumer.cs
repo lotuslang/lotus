@@ -11,22 +11,28 @@ public class Consumer<T> : IConsumer<T>
 
     public T Default { get; protected set; }
 
-    // we keep it because it's cleaner and faster performance-wise than copying and storing
-    // at each modification
-    protected Location pos;
+    protected Location internalPos;
 
-    public LocationRange Position => pos;
+    public LocationRange Position => (Current is ILocalized tLoc ? tLoc.Location : internalPos);
 
     protected Consumer() {
         inputStack = new Stack<T>();
-        pos = new Location(1, -1);
+        internalPos = new Location(1, -1);
         Default = default(T)!;
         Current = Default;
     }
 
-    public Consumer(IEnumerable<T> enumerable, T defaultValue) : this() {
+    public Consumer(IEnumerable<T> enumerable, T defaultValue, string filename) : this() {
         Default = defaultValue;
         inputStack = new Stack<T>(enumerable.Reverse());
+        internalPos = internalPos with { filename = filename };
+    }
+
+    public Consumer(Consumer<T> consumer) : this() {
+        Default = consumer.Default;
+
+        inputStack = consumer.inputStack.Clone();
+        internalPos = internalPos with { filename = consumer.Position.filename };
     }
 
     public Consumer(IConsumer<T> consumer) : this() {
@@ -37,6 +43,7 @@ public class Consumer<T> : IConsumer<T>
         }
 
         inputStack = new Stack<T>(inputStack);
+        internalPos = internalPos with { filename = consumer.Position.filename };
     }
 
     public bool Consume(out T item) {
@@ -55,7 +62,7 @@ public class Consumer<T> : IConsumer<T>
 
         if (reconsumeFlag) {
             reconsumeFlag = false;
-            pos = pos with { column = pos.column + 1 };
+            internalPos = internalPos with { column = internalPos.column + 1 };
             return Current;
         }
 
@@ -64,7 +71,7 @@ public class Consumer<T> : IConsumer<T>
             return Current;
         }
 
-        pos = pos with { column = pos.column + 1 };
+        internalPos = internalPos with { column = internalPos.column + 1 };
 
         Current = inputStack.Pop();
 
@@ -74,7 +81,7 @@ public class Consumer<T> : IConsumer<T>
     public void Reconsume() {
         reconsumeFlag = true;
 
-        pos = pos with { column = pos.column - 1 };
+        internalPos = internalPos with { column = internalPos.column - 1 };
     }
 
 

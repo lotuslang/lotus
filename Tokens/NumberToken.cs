@@ -15,10 +15,10 @@ public record NumberToken : Token
         : base(representation, TokenKind.number, location, isValid)
     {
         if (isValid && representation.Length != 0 && !Double.TryParse(representation, out val))
-            throw Logger.Fatal(new InternalErrorException(
-                message: "This NumberToken has been marked valid, but could not parse string '" + representation + "' as a number",
-                range: Location
-            ));
+            throw Logger.Fatal(new InternalError(ErrorArea.Tokenizer) {
+                Message = "This NumberToken has been marked valid, but could not parse string '" + representation + "' as a number",
+                Location = Location
+            });
     }
 
     public NumberToken(double d, LocationRange location, bool isValid = true)

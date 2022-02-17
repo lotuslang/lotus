@@ -7,8 +7,9 @@ public sealed class PrefixOperatorParslet : IPrefixParslet<OperationNode>
     }
 
     public OperationNode Parse(ExpressionParser parser, Token token) {
+
         if (token is not OperatorToken opToken)
-            throw Logger.Fatal(new InvalidCallException(token.Location));
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
 
         return new OperationNode(opToken, new[] { parser.Consume(Precedence.Unary) }, opType);
     }

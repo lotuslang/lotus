@@ -20,7 +20,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
         var currChar = input.Consume();
 
         if (currChar != '/') {
-            throw Logger.Fatal(new InvalidCallException(input.Position));
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, input.Position));
         }
 
         currChar = input.Consume();
@@ -62,13 +62,12 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
                 strBuilder.Append(currChar);
             }
 
-            // if we stopped on an EOF, then something went wrong
             if (input.Current == input.Default) {
-                Logger.Error(new UnexpectedEOFException(
-                    context: "in a multi-line comment",
-                    expected: "the comment delimiter '*/'",
-                    new LocationRange(startingPosition, input.Position)
-                ));
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                    In = "a multi-line comment",
+                    Expected = "the comment delimiter '*/'",
+                    Location = new LocationRange(startingPosition, input.Position)
+                });
 
                 isValid = false;
             }
@@ -86,7 +85,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             ) { TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
         }
 
-        throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));
+        throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, new LocationRange(startingPosition, input.Position)));
     }
 
     public CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer)

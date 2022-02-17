@@ -2,11 +2,11 @@ using System.IO;
 
 public static class Logger
 {
-    public static Stack<(Exception, LocationRange)> Exceptions { get; set; } = new();
+    public static Stack<LotusError> errorStack = new();
 
-    public static int ErrorCount => Exceptions.Count;
+    public static int ErrorCount => errorStack.Count;
 
-    public static bool HasErrors => Exceptions.Count != 0;
+    public static bool HasErrors => errorStack.Count != 0;
 
     public static void Log(string message, LocationRange location)
         => Console.WriteLine($"{location}: {message}");
@@ -14,17 +14,11 @@ public static class Logger
     public static void Warning(string message, LocationRange location)
         => Console.Error.WriteLine(location + " : " + message);
 
-    public static void Warning(LotusException e)
-        => Console.Error.WriteLine(e.CallerString + " : @ " + e.Position + "\t" + e.Message);
+    public static void Warning(LotusError e)
+        => Console.Error.WriteLine(e.Caller + " : \t" + e.Message);
 
-    public static void Error(Exception e, LocationRange location)
-        => Exceptions.Push((e, location));
-
-    public static void Error(LotusException e)
-        => Exceptions.Push((e, e.Position));
-
-    public static void Error(string message, LocationRange location)
-        => Exceptions.Push((new Exception(message), location));
+    public static void Error(LotusError e)
+        => errorStack.Push(e);
 
     public static Exception Fatal(Exception e) {
         if (ErrorCount > 0)
@@ -34,16 +28,16 @@ public static class Logger
     }
 
     public static void PrintAllErrors() {
-        foreach (var (exception, location) in Exceptions.Reverse()) {
+        foreach (var error in errorStack.Reverse()) {
 
-            Console.Error.WriteLine(exception.Message); // TODO: colour stuff
+            Console.Error.WriteLine(error.Message); // TODO: colour stuff
 
             Console.Error.WriteLine();
 
             Console.ForegroundColor = ConsoleColor.Cyan;
 
-            if (location.filename != "<std>") {
-                Console.Error.WriteLine(GetTextAt(location));
+            if (error is ILocalized eLoc && eLoc.Location.filename != "<std>") {
+                Console.Error.WriteLine(GetTextAt(eLoc.Location));
             } else {
                 Console.Error.WriteLine("<Cannot print source code>");
             }

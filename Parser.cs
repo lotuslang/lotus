@@ -41,11 +41,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     protected Parser(ReadOnlyGrammar grammar) : this() {
         if (grammar is null) {
-            Logger.Warning(new InvalidCallException(
-                message: "Something tried to create a new Parser with a null grammar."
+            Logger.Warning(new InvalidCallError(ErrorArea.Parser, Position) {
+                Message = "Something tried to create a new Parser with a null grammar."
                         + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
-                range: Position
-            ));
+            });
 
             grammar = new ReadOnlyGrammar();
         }
@@ -66,7 +65,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     }
 
     public Parser(IEnumerable<Token> tokens, ReadOnlyGrammar grammar) : this(grammar) {
-        Tokenizer = new Consumer<Token>(tokens, Token.NULL);
+        Tokenizer = new Consumer<Token>(tokens, Token.NULL, Position.filename);
     }
 
     public Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
@@ -119,10 +118,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
         }
 
         if (Tokenizer is null) {
-            throw Logger.Fatal(new InternalErrorException(
-                message: "The parser's tokenizer was null. Something went seriously wrong",
-                range: Position
-            ));
+            throw Logger.Fatal(new InternalError(ErrorArea.Parser) {
+                Message = "The parser's tokenizer was null. Something went seriously wrong",
+                Location = Position
+            });
         }
 
         return Default;

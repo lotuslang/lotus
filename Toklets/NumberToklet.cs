@@ -91,56 +91,65 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // if we have a decimal separator...
         if (currChar == '.') {
+            if (Condition(input.Clone())) {
+                var errorCount = Logger.ErrorCount;
 
-            var errorCount = Logger.ErrorCount;
+                numberStr.Append(currChar).Append(Consume(input, _).Representation);
 
-            Consume(input, _);
+                // The above .Consume(...) could generate extra errors, except we don't really
+                // want to show them to the user since they don't really matter ; we just wanna
+                // be sure we consumed what we had to
+                while (Logger.ErrorCount > errorCount) {
+                    Logger.errorStack.Pop();
+                }
 
-            while (Logger.ErrorCount > errorCount) {
-                Logger.Exceptions.Pop();
-            }
+                var str = numberStr.ToString();
 
-            var str = numberStr.ToString() + currChar;
-            if (str.Contains('e') || str.Contains('E')) {
-                // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)
-                Logger.Error(new InvalidInputException(
-                    input: numberStr.ToString() + currChar,
-                    context: "as a number",
-                    reason: "because you cannot use a decimal separator after a power-of-ten separator",
-                    range: new LocationRange(originPos, input.Position)
-                ));
-            } else {
-                // ...or there is a second decimal separator, which isn't valid either
-                Logger.Error(new InvalidInputException(
-                    input: numberStr.ToString() + currChar,
-                    context: "as a number",
-                    reason: "because there already was a decimal separator earier",
-                    range: new LocationRange(originPos, input.Position)
-                ));
-            }
+                if (str.Contains('e') || str.Contains('E')) {
+                    // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)
+                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                        Value = str,
+                        As = "a number. You cannot use a decimal separator after a power-of-ten separator",
+                        Location = new LocationRange(originPos, input.Position),
+                        //ExtraNotes = notes
+                    });
+                } else {
+                    // ...or there is a second decimal separator, which isn't valid either
+                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                        Value = str,
+                        As = "a number. There already was a decimal separator earlier",
+                        Location = new LocationRange(originPos, input.Position),
+                        //ExtraNotes = notes
+                    });
+                }
 
-            isValid = false;
+                isValid = false;
 
-            // in both cases, if the next character is a digit, we consume it for error-recovery's sake
-            if (Char.IsDigit(input.Consume())) {
-                while (Char.IsDigit(input.Consume())); // consume until it's not a digit anymore (yes this is an empty loop, I know)
+                input.Consume(); // hack to prevent the reconsume from fucking up the input
             }
         }
 
         // we already had a "power-of-ten separator", so this is not valid.
         if (currChar is 'e' or 'E') {
-            Logger.Error(new InvalidInputException(
-                input: numberStr.ToString() + currChar,
-                context: "as a number",
-                reason: "because there already was a power-of-ten separator earlier",
-                range: new LocationRange(originPos, input.Position)
-            ));
+            if (Condition(input.Clone())) {
+                var errorCount = Logger.ErrorCount;
+
+                numberStr.Append(currChar).Append(Consume(input, _).Representation);
+
+                while (Logger.ErrorCount > errorCount) {
+                    Logger.errorStack.Pop();
+                }
+            }
+
+            Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                Value = numberStr.ToString(),
+                As = "a number. There already was a power-of-ten separator earlier",
+                Location = new LocationRange(originPos, input.Position),
+            });
 
             isValid = false;
 
-            if (Condition(input)) { // FIXME: this is lazy
-                while (Char.IsDigit(input.Consume())); // consume until it's not a digit anymore (yes this is an empty loop, I know)
-            }
+            input.Consume(); // hack to prevent the reconsume from fucking up the input
         }
 
         input.Reconsume();

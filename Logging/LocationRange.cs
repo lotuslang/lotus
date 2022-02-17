@@ -1,4 +1,7 @@
-public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename)
+using System;
+using System.IO;
+
+public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>
 {
     public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);
 
@@ -8,21 +11,27 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
 
     public LocationRange(Location first, Location last) : this(first.line, last.line, first.column, last.column, first.filename) {
         if (first.filename != last.filename) {
-            Logger.Warning(new LotusException(
-                message: "Tried to created a LocationRange using Locations that do not have the same origin/filename. "
-                        + "Setting filename to the first Location's filename ('" + first.filename + "')",
-                range: first
-            ));
+            Logger.Warning(new InternalError() {
+                Message = "Tried to created a LocationRange using locations that do not have the same origin/filename ("
+                + Path.GetFileName(first.filename)
+                + " vs "
+                + Path.GetFileName(last.filename)
+                + "). Setting filename to the first location's filename ('" + first.filename + "')",
+                Location = first
+            });
         }
     }
 
     public LocationRange(LocationRange first, LocationRange last) : this(first.firstLine, last.lastLine, first.firstColumn, last.lastColumn, first.filename) {
         if (first.filename != last.filename) {
-            Logger.Warning(new LotusException(
-                message: "Tried to created a LocationRange using LocationRanges that do not have the same origin/filename. "
-                        + "Setting filename to the first Location's filename ('" + first.filename + "')",
-                range: first
-            ));
+            Logger.Warning(
+                  "Tried to created a LocationRange using ranges that do not have the same origin/filename ("
+                + Path.GetFileName(first.filename)
+                + " vs "
+                + Path.GetFileName(last.filename)
+                + "). Setting filename to the first range's filename ('" + first.filename + "')",
+                location: first
+            );
         }
     }
 
@@ -73,11 +82,35 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
 
     public override string ToString() => this;
 
-    public static LocationRange operator +(LocationRange left, LocationRange right)
-        => new(left, right);
+    public int CompareTo(LocationRange? other) {
+        if (other is null) return -1;
+        if (other == NULL) return this == NULL ? 0 : -1;
+        if (this.filename != other.filename) return 0;
 
-    public static implicit operator string(LocationRange range)
-        => range.IsSingleLocation()
-                ? range.GetFirstLocation()
-                : $"{range.filename}({range.firstLine}:{range.firstColumn} ~ {range.lastLine}:{range.lastColumn})";
+        // line
+        var output = this.firstLine.CompareTo(other.firstLine);
+
+        // column
+        if (output == 0)
+            output = this.firstColumn.CompareTo(other.firstColumn);
+        else
+            return output;
+
+        // line length
+        if (output == 0)
+            output = this.LineLength.CompareTo(other.LineLength);
+        else
+            return output;
+
+        // column length
+        if (output == 0)
+            output = this.ColumnLength.CompareTo(other.ColumnLength);
+
+        return output;
+    }
+
+    public static implicit operator string(LocationRange range) {
+        if (range.IsSingleLocation()) return range.GetFirstLocation();
+        else return $"{range.filename}({range.firstLine}:{range.firstColumn} - {range.lastLine}:{range.lastColumn})";
+    }
 }

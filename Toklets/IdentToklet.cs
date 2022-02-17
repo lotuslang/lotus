@@ -22,8 +22,8 @@ public sealed class IdentToklet : IToklet<Token>
         var startPos = input.Position;
 
         // if the character is not a letter or a low line
-        if (!(Char.IsLetter(currChar) || currChar == '_')) {
-            throw Logger.Fatal(new InvalidCallException(new LocationRange(startPos, input.Position)));
+        if (currChar != '_' && !Char.IsLetter(currChar)) {
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, new LocationRange(startPos, input.Position)));
         }
 
         // while the current character is a letter, a digit, or a low line

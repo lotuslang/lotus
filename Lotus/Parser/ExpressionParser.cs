@@ -64,22 +64,30 @@ public class ExpressionParser : Parser<ValueNode>
 
         if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
 
+            string? notes = null;
+
             if (token.Kind == TokenKind.EOF) {
-                Logger.Error(new UnexpectedEOFException(
-                    message: "Encountered an EOF where a value was expected",
-                    range: Position
-                ));
-            } else if (token != ";") {
-                Logger.Error(new UnexpectedTokenException(
-                    token: token,
-                    expected: new[] {
-                        TokenKind.@bool,
-                        TokenKind.@operator,
-                        TokenKind.@string,
-                        TokenKind.identifier,
-                        TokenKind.number
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
+                        Message = "Encountered an EOF where a value was expected",
+                        Location = Position
                     }
-                ));
+                );
+            } else {
+                if (token.Kind == TokenKind.keyword)
+                    notes = "You can't use " + token.Representation + " as an identifier/name, because it's a reserved keyword";
+                else if (token.Kind == TokenKind.@operator)
+                    notes = "The '" + token.Representation + "' operator cannot be used as a prefix (i.e. in front of an expression)";
+
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = token,
+                    In = "an expression",
+                    As = "a prefix or value literal",
+                    Expected =
+                          "a bool, "
+                        + (token.Kind != TokenKind.@operator ? "prefix operator, " : "")
+                        + "string, variable name, or number",
+                        ExtraNotes = notes
+                });
             }
 
             return ValueNode.NULL with { Token = token, Location = Position };
@@ -110,32 +118,28 @@ public class ExpressionParser : Parser<ValueNode>
         return left;
     }
 
-    public TupleNode ConsumeTuple(string start, string end, int expectedItemCount = -1) {
-        var startingDelimiter = Tokenizer.Consume();
+    public TupleNode ConsumeTuple(string start, string end, uint expectedItemCount = 0) {
+        var startingToken = Tokenizer.Consume();
 
         var isValid = true;
 
-        if (startingDelimiter.Representation != start) {
-            Logger.Error(new UnexpectedTokenException( // should we use InvalidCallException ?
-                token: startingDelimiter,
-                context: "in a tuple",
-                expected: start
-            ));
+        if (startingToken.Representation != start) {
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) { // should we use InvalidCall instead ?
+                Value = startingToken,
+                In = "a tuple",
+                Expected = start
+            });
 
             isValid = false;
         }
 
         var items = new List<ValueNode>();
 
-        var itemCount = 0;
-
         while (Tokenizer.Consume(out var token) && token != end) {
 
             Tokenizer.Reconsume();
 
             items.Add(Consume());
-
-            ++itemCount;
 
             if (Tokenizer.Consume() != ",") {
 
@@ -166,10 +170,12 @@ public class ExpressionParser : Parser<ValueNode>
                     break;
                 }
 
-                Logger.Error(new UnexpectedTokenException(
-                    message: "Did you forget a parenthesis or a comma in this tuple ? Expected " + end + " or ','",
-                    token: Tokenizer.Current
-                ));
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = Tokenizer.Current,
+                    In = "a tuple",
+                    Expected = "a ',' or '" + end + "'",
+                    Message = "Did you forget '" + end + "' or a comma in this tuple ?"
+                });
 
                 // if it's an identifier, we should reconsume it so the error doesn't run over
                 if (Tokenizer.Current.Kind == TokenKind.identifier) {
@@ -191,11 +197,11 @@ public class ExpressionParser : Parser<ValueNode>
             //           ----------------------^--------------
             //                      litterally right there
             if (Tokenizer.Peek() == end) {
-                Logger.Error(new UnexpectedTokenException(
-                    token: Tokenizer.Consume(),
-                    context: "in a tuple",
-                    expected: "value"
-                ));
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = Tokenizer.Consume(),
+                    In = "a tuple",
+                    Expected = "value"
+                });
 
                 isValid = false;
 
@@ -213,36 +219,42 @@ public class ExpressionParser : Parser<ValueNode>
         // Or maybe we should just do that all the time ? Like if we got an unexpected
         // token we could show the first line/element of the tuple, and then show the end
         // or even where the error occurred (this also goes for earlier errors)
-        if (isValid && endingToken != end) {
-            Logger.Error(new UnexpectedTokenException(
-                token: endingToken,
-                context: "in a tuple",
-                expected: "an ending delimiter (here, it would be '" + end + "')"
-            ));
+        if (isValid && endingToken != end) { // we probably either got an EOF or a bracket
+            if (endingToken.Kind != TokenKind.EOF) {
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = endingToken,
+                    In = "a tuple",
+                    Expected = "an ending delimiter '" + end + "'"
+                });
 
-            isValid = false;
-        }
-
-        if (isValid && expectedItemCount != -1 && itemCount != expectedItemCount) {
-
-            if (itemCount > expectedItemCount) {
-                Logger.Error(new LotusException(
-                    message: "There was too many values in this tuple. Expected "
-                           + expectedItemCount + ", but got " + itemCount,
-                    range: items.Last()?.Token.Location ?? Tokenizer.Position
-                ));
+                if (endingToken == "}") {
+                    Tokenizer.Reconsume();
+                }
             } else {
-                Logger.Error(new LotusException(
-                    message: "There wasn't enough values in this tuple. Expected "
-                           + expectedItemCount + ", but got " + itemCount,
-                    range: items.Last()?.Token.Location ?? Tokenizer.Position
-                ));
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
+                    In = "a tuple",
+                    Expected = "an ending delimeter '" + end + "'"
+                });
             }
 
             isValid = false;
         }
 
-        return new TupleNode(items, startingDelimiter, endingToken, isValid);
+        // if expectedItemCount is 0, then it means there's no limit
+        if (isValid && expectedItemCount != 0 && expectedItemCount != items.Count) {
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = items.LastOrDefault() ?? ValueNode.NULL,
+                In = "a tuple",
+                Location = items.LastOrDefault()?.Location ?? Position,
+                Message =  (items.Count > expectedItemCount ? "There was too many" : "There wasn't enough")
+                         + "values in this tuple.",
+                Expected = expectedItemCount + $" values, but got " + items.Count
+            });
+
+            isValid = false;
+        }
+
+        return new TupleNode(items, startingToken, endingToken, isValid);
     }
 
     public override ExpressionParser Clone() => new(this);

@@ -7,8 +7,8 @@ public sealed class ContinueParslet : IStatementParslet<ContinueNode>
 	private ContinueParslet() : base() { }
 
     public ContinueNode Parse(StatementParser parser, Token continueToken) {
-        if (!(continueToken is Token continueKeyword && continueKeyword == "continue")) {
-            throw Logger.Fatal(new InvalidCallException(continueToken.Location));
+        if (continueToken is not Token continueKeyword || continueKeyword != "continue") {
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, continueToken.Location));
         }
 
         return new ContinueNode(continueKeyword);

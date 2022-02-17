@@ -28,10 +28,13 @@ partial class Program
         sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.txt"));
     }
 
-    static void AddGraphPrelude(Graph g, Uri file) {
+    static void AddGraphPrelude(Graph g, Uri file)
+        => AddGraphPrelude(g, Path.GetFileName(file.LocalPath));
+
+    private static void AddGraphPrelude(Graph g, string path) {
         g.AddNodeProp("fontname", "Consolas, monospace");
         g.AddGraphProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("label", $"Abstract Syntax Tree of {Path.GetFileName(file.LocalPath)}\\n\\n");
+        g.AddGraphProp("label", $"Abstract Syntax Tree of {path}\\n\\n");
         g.AddGraphProp("labelloc", "top");
     }
 

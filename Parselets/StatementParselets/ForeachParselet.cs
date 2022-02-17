@@ -7,19 +7,19 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 	private ForeachParslet() : base() { }
 
     public ForeachNode Parse(StatementParser parser, Token foreachToken) {
-        if (!(foreachToken is Token foreachKeyword && foreachKeyword == "foreach"))
-            throw Logger.Fatal(new InvalidCallException(foreachToken.Location));
+        if (foreachToken is not Token foreachKeyword || foreachKeyword != "foreach")
+            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, foreachToken.Location));
 
         var isValid = true;
 
         var openingParen = parser.Tokenizer.Consume();
 
         if (openingParen != "(") {
-            Logger.Error(new UnexpectedTokenException(
-                token: openingParen,
-                context: "in foreach header",
-                expected: "an open parenthesis '('"
-            ));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = openingParen,
+                In = "a foreach header",
+                Expected = "an open parenthesis '('"
+            });
 
             isValid = false;
 
@@ -31,28 +31,28 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
         if (itemNameToken is not IdentToken itemName) { // because `in` is a reserved keyword
             if (itemNameToken == "in") {
                 if (parser.Tokenizer.Peek() == "in") { // if the next token is 'in' again, it probably in was meant as a variable name
-                    Logger.Error(new UnexpectedTokenException(
-                        message: "You cannot use 'in' as a variable name because it is a reserved keyword",
-                        token: itemNameToken
-                    ));
+                    Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                        Message = "You cannot use 'in' as a variable name because it is a reserved keyword",
+                        Value = itemNameToken
+                    });
                 } else { // otherwise, it probably means that the user forgot the item name
-                    Logger.Error(new UnexpectedTokenException(
-                        message: "Did you forget to specify a name for each item in the collection ? Or did you mean to ignore the item ? "
-                                + "If you just want to iterate over a collection without using an item each time, you can either discard the variable with "
+                    Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                        Message = "Did you forget to specify a name for each item in the collection ? Or did you mean to ignore the item ?",
+                        ExtraNotes = "If you just want to iterate over a collection without using an item each time, you can either discard the variable with "
                                 + "the special name '_', or use a for loop instead",
-                        token: itemNameToken
-                    ));
+                        Value = itemNameToken
+                    });
 
                     // no we DON'T reconsume because the tokenizer already has the result of Peek() in its reconsumeQueue and reconsuming the 'in' token would
                     // put it at the back of the queue, so the result of Peek() would come BEFORE the 'in' token
                     // also it doesn't really have any negative side-effect, contrary to trying to reconsume the 'in' token
                 }
             } else {
-                Logger.Error(new UnexpectedTokenException(
-                    token: itemNameToken,
-                    context: "in a foreach header",
-                    expected: TokenKind.identifier
-                ));
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = itemNameToken,
+                    In = "a foreach header",
+                    Expected = "an identifier"
+                });
             }
 
             isValid = false;
@@ -62,12 +62,12 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 
         var inToken = parser.Tokenizer.Consume();
 
-        if (!(inToken is Token inKeyword && inKeyword == "in")) {
-            Logger.Error(new UnexpectedTokenException(
-                token: inToken,
-                context: "in a foreach header",
-                expected: "the 'in' keyword"
-            ));
+        if (inToken is not Token inKeyword || inKeyword != "in") {
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = inToken,
+                In = "a foreach header",
+                Expected = "the 'in' keyword"
+            });
 
             isValid = false;
 
@@ -81,11 +81,11 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
         var closingParen = parser.Tokenizer.Consume();
 
         if (closingParen != ")") {
-            Logger.Error(new UnexpectedTokenException(
-                token: closingParen,
-                context: "in a foreach header",
-                expected: "a closing parenthesis ')'"
-            ));
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = closingParen,
+                In = "a foreach header",
+                Expected = "a closing parenthesis ')'"
+            });
 
             isValid = false;
 

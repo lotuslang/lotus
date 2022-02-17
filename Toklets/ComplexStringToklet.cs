@@ -42,14 +42,26 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
 
+            if (currChar == '\n') {
+                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                    In = "an interpolated string",
+                    Value = currChar,
+                    Location = input.Position,
+                    Expected = "a string delimiter like this : " + endingDelimiter + output.ToString() + endingDelimiter
+                });
+
+                isValid = false;
+
+                break;
+            }
+
             if (currChar == '{') {
                 var tokenList = new List<Token>();
-                Token currToken;
 
                 while (tokenizer.Peek() != "}") {
 
 
-                    if (!tokenizer.Consume(out currToken)) {
+                    if (!tokenizer.Consume(out var currToken)) {
                         Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                             In = "an interpolated string",
                             Expected = "} followed by a string delimiter like this :\n\t"

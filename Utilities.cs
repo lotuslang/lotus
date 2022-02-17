@@ -175,5 +175,17 @@ internal static class Utilities
 		return new Stack<T>(arr);
 	}
 
+    public static string ToExpectedString(IEnumerable<TokenKind> expected) {
+        return '`' + String.Join("`, or `", expected) + '`';
+    }
+
+    public static string ToExpectedString(IEnumerable<Type> expected) {
+        return '`' + String.Join("`, or `", expected.Select(type => type.Name)) + '`';
+    }
+
+    public static string ToExpectedString(IEnumerable expected) {
+        return '\''+ String.Join("', or '", expected) + '\'';
+    }
+
     public static Uri RelativeToPWD(this Uri uri) => new Uri(System.IO.Directory.GetCurrentDirectory()).MakeRelativeUri(uri);
 }

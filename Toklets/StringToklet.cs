@@ -19,7 +19,7 @@ public sealed class StringToklet : IToklet<StringToken>
         var currChar = input.Consume();
 
         // the output token
-        var outputStr = new System.Text.StringBuilder();
+        var output = new System.Text.StringBuilder();
 
         var isValid = true;
 
@@ -28,8 +28,21 @@ public sealed class StringToklet : IToklet<StringToken>
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
 
+            if (currChar == '\n') {
+                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                    In = "a string",
+                    Value = currChar,
+                    Location = input.Position,
+                    Expected = "a string delimiter like this : " + endingDelimiter + output.ToString() + endingDelimiter
+                });
+
+                isValid = false;
+
+                break;
+            }
+
             // add it to the value of output
-            outputStr.Append(currChar);
+            output.Append(currChar);
 
             if (!input.Consume(out currChar)) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
@@ -48,6 +61,6 @@ public sealed class StringToklet : IToklet<StringToken>
         }
 
         // return the output token
-        return new StringToken(outputStr.ToString(), new LocationRange(startPos, input.Position), isValid);
+        return new StringToken(output.ToString(), new LocationRange(startPos, input.Position), isValid);
     }
 }

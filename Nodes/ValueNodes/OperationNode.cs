@@ -40,6 +40,12 @@ public record OperationNode : ValueNode
         OperationType = opType;
         AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
         Token = token;
+
+        Location = OperationKind switch {
+            OperationKind.Unary => new LocationRange(token.Location, operands.First().Location),
+            OperationKind.Binary or OperationKind.Ternary => new LocationRange(operands.First().Location, operands.Last().Location),
+            _ => Token.Location
+        };
         Operands = operands.AsReadOnly();
     }
 

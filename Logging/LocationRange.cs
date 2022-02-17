@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 
 public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>
 {
@@ -13,9 +12,9 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
         if (first.filename != last.filename) {
             Logger.Warning(new InternalError() {
                 Message = "Tried to created a LocationRange using locations that do not have the same origin/filename ("
-                + Path.GetFileName(first.filename)
+                + System.IO.Path.GetFileName(first.filename)
                 + " vs "
-                + Path.GetFileName(last.filename)
+                + System.IO.Path.GetFileName(last.filename)
                 + "). Setting filename to the first location's filename ('" + first.filename + "')",
                 Location = first
             });
@@ -26,9 +25,9 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
         if (first.filename != last.filename) {
             Logger.Warning(
                   "Tried to created a LocationRange using ranges that do not have the same origin/filename ("
-                + Path.GetFileName(first.filename)
+                + System.IO.Path.GetFileName(first.filename)
                 + " vs "
-                + Path.GetFileName(last.filename)
+                + System.IO.Path.GetFileName(last.filename)
                 + "). Setting filename to the first range's filename ('" + first.filename + "')",
                 location: first
             );

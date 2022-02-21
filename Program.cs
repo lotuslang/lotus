@@ -34,8 +34,6 @@ Usage : dotnet run -- [option]
     - print             reconstruct the source file from the AST and print it
     - hash              print the hash of the AST
         - constant          print the hash of the constant-colored AST
-    - constant          print each top-level expression and its ""constantness""
-        - all               print ALL expressions (nested and top-level)
     - graph             print dot code of the AST
         - constant          print dot code of the AST, coloring each value node depending on its ""constantness""
             ");

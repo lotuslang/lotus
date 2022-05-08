@@ -29,13 +29,13 @@ Usage : dotnet run -- [option]
         parsex [option]
         parsex
 
-    - help              display this help message
-    - silent            don't print anything to stdout (still prints errors to stderr)
-    - print             reconstruct the source file from the AST and print it
-    - hash              print the hash of the AST
-        - constant          print the hash of the constant-colored AST
-    - graph             print dot code of the AST
-        - constant          print dot code of the AST, coloring each value node depending on its ""constantness""
+    help              display this help message
+    silent            don't print anything to stdout (errors go to stderr)
+    print             reconstruct the source file from the AST and print it
+    hash              print the hash of the AST
+        constant          print the hash of the constant-colored AST
+    graph             print dot code of the AST
+        constant          print dot code of the AST with constant-coloring
             ");
 
             return;

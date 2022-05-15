@@ -79,5 +79,5 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
     public static implicit operator string(LocationRange range)
         => range.IsSingleLocation()
                 ? range.GetFirstLocation()
-                : $"{range.filename}({range.firstLine}, {range.firstColumn} : {range.lastLine}, {range.lastColumn})";
+                : $"{range.filename}({range.firstLine}:{range.firstColumn} ~ {range.lastLine}:{range.lastColumn})";
 }

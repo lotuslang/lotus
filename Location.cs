@@ -35,7 +35,7 @@ public record Location(int line, int column, string filename = "<std>") {
     public static implicit operator LocationRange(Location loc) => new(loc, loc);
 
     public static implicit operator string(Location loc)
-        => $"{loc.filename}({loc.line}, {loc.column})";
+        => $"{loc.filename}({loc.line}:{loc.column})";
 
     public static bool operator <(Location loc1, Location loc2)
         => loc1.line == loc2.line

@@ -176,15 +176,19 @@ public static class Logger
     public static string FormatLocalized(ILocalized error) {
         var location = error.Location;
         var sb = new StringBuilder();
-        var uri = new Uri(error.Location.filename);
+        var fileInfo = new FileInfo(location.filename);
 
-        var relPath = uri.RelativeToPWD();
+        var relPath = "";
+
+        if (fileInfo.Exists) {
+            relPath = Path.GetRelativePath(Directory.GetCurrentDirectory(), fileInfo.FullName);
+        }
 
         // TODO: Ideas for formatting the filename :
         //      - Underline the path and put a '@' prefix
         //      - Use the '-->' prefix
         //      - Put in bold
-        sb.AppendLine($"\t @{relPath}({location.firstLine}, {location.firstColumn})\n");
+        sb.AppendLine($"\t @{relPath}({location.firstLine}:{location.firstColumn})\n");
 
         if (!File.Exists(location.filename)) {
             string sourceCode;
@@ -212,7 +216,7 @@ public static class Logger
             );
             sb.Append("WARNING : This source code is approximated, because file " + location.filename + " could not be found");
         } else {
-            sb.Append(FormatTextAt(location, new SourceCode(uri)));
+            sb.Append(FormatTextAt(location, new SourceCode(new Uri(fileInfo.FullName))));
         }
 
         return sb.ToString();

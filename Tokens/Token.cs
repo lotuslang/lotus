@@ -9,7 +9,7 @@ public record Token
 
     public LocationRange Location { get; init; }
 
-    public bool IsValid { get; init; }
+    public bool IsValid { get; set; }
 
     public Token(string repr, TokenKind kind, LocationRange location, bool isValid = true) {
         Representation = repr;

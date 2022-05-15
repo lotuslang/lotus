@@ -32,7 +32,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterTriviaToklet(CommentTriviaToklet.Instance)
             .RegisterTriviaToklet(WhitespaceTriviaToklet.Instance)
             .RegisterTriviaToklet(NewlineTriviaToklet.Instance)
-            .RegisterTriviaToklet(new CharacterTriviaToklet(';'))
             .RegisterTriviaToklet(new TriviaToklet())
             ;
 

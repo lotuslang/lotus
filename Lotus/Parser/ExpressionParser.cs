@@ -88,6 +88,9 @@ public class ExpressionParser : Parser<ValueNode>
                         + "string, variable name, or number",
                         ExtraNotes = notes
                 });
+
+                if (token.Kind == TokenKind.semicolon)
+                    Tokenizer.Reconsume();
             }
 
             return ValueNode.NULL with { Token = token, Location = Position };
@@ -177,14 +180,20 @@ public class ExpressionParser : Parser<ValueNode>
                     Message = "Did you forget '" + end + "' or a comma in this tuple ?"
                 });
 
+
                 // if it's an identifier, we should reconsume it so the error doesn't run over
                 if (Tokenizer.Current.Kind == TokenKind.identifier) {
                     Tokenizer.Reconsume();
+                } else if (Tokenizer.Current.Kind == TokenKind.semicolon) {
+                    isValid = false;
+                    Tokenizer.Reconsume();
+
+                    break;
                 } else if (Tokenizer.Peek() == ",") {
+                    isValid = false;
                     Tokenizer.Consume();
                 }
 
-                isValid = false;
 
                 //Tokenizer.Reconsume();
 

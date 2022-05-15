@@ -7,5 +7,6 @@ public enum TokenKind {
     @string,
     @operator,
     keyword,
+    semicolon,
     trivia,
 }

@@ -49,11 +49,18 @@ public class StatementParser : Parser<StatementNode>
         return output.ToArray();
     }
 
-    public override StatementNode Consume() {
+    public override StatementNode Consume()
+        => Consume(true);
+
+    public StatementNode Consume(bool checkSemicolon = true) {
         base.Consume();
 
         // Consume a token
         var currToken = Tokenizer.Consume();
+
+        // consume leading semicolons
+        while (currToken.Kind == TokenKind.semicolon && Tokenizer.Consume(out currToken))
+        { }
 
         // if the token is EOF, return StatementNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
@@ -67,7 +74,40 @@ public class StatementParser : Parser<StatementNode>
             Current = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
+        if (checkSemicolon && NeedsSemicolon(Current)) {
+            CheckSemicolon();
+
+            // consume trailing semicolons
+            while (Tokenizer.Peek().Kind == TokenKind.semicolon) {
+                Tokenizer.Consume();
+            }
+        }
+
         return Current;
+    }
+
+
+
+    private void CheckSemicolon() {
+        if (!Tokenizer.Consume(out var currToken) || currToken.Kind != TokenKind.semicolon) {
+            var eMsg = Current.GetType() + "s must be terminated with semicolons ';'";
+            var eLoc = Current.Location.GetLastLocation();
+            if (currToken.Kind == TokenKind.EOF) {
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
+                    Message = eMsg,
+                    Location = eLoc
+                });
+            } else {
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Message = eMsg,
+                    Value = currToken,
+                    Location = eLoc
+                });
+            }
+
+            Current = Current with { IsValid = false };
+            Tokenizer.Reconsume();
+        }
     }
 
     public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
@@ -148,6 +188,18 @@ public class StatementParser : Parser<StatementNode>
 
         return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
+
+    // IMPORTANT: Update me if you add a new statement
+    private bool NeedsSemicolon(StatementNode node)
+        => node is not (
+                   ElseNode
+                or ForeachNode
+                or ForNode
+                or FunctionDeclarationNode
+                or IfNode
+                or WhileNode
+            )
+;
 
     public override StatementParser Clone() => new(this);
 }

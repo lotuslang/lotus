@@ -12,5 +12,5 @@ public class Toklet : IToklet<Token>
 	private static readonly Predicate<IConsumer<char>> _condition = (_ => true);
 
     public virtual Token Consume(IConsumer<char> input, Tokenizer _)
-        => new(input.Consume().ToString(), TokenKind.delimiter, input.Position);
+        => new(input.Consume().ToString(), input.Current == ';' ? TokenKind.semicolon : TokenKind.delimiter, input.Position);
 }

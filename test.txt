@@ -7,11 +7,11 @@
  *
  */
 
-arr = [ 36, 845, 215, "he", true, [ .5465, 486513], aur, /* wtf */ new String() ]
+arr = [ 36, 845, 215, "he", true, [ .5465, 486513], aur, /* wtf */ new String() ];
 
-arr.add([], arr)
+arr.add([], arr);
 
-print $"hello {"benjamin"} ! Today will be {GetWeather(pressure * 10.644^(temperature-2048))}"
+print $"hello {"benjamin"} ! Today will be {GetWeather(pressure * 10.644^(temperature-2048))}";
 
 n   =  5
     *  ("hello " + "world")
@@ -22,10 +22,11 @@ n   =  5
     +  (45 >= 44)
     %  (48946 == 498431 - 46413 ? 2^7 : 2^6)
     && !true
+    ;
 
-var a = 0
+var a = 0;
 
-var b = arr != [] ? arr : [ 0 ]
+var b = arr != [] ? arr : [ 0 ];
 
 // NOTE: Function that have parameters with the `type [a, b]` syntax will not be printed
 // exactly as they appear in the file. Instead, their parameters will be printed as `type a,type  b`
@@ -35,13 +36,13 @@ func someFunc1(a, string [b, c], int d): int {
 }
 
 func someFunc2(int [seed, min = 0, max]) {
-    return new Random(seed).next(min, max)
+    return new Random(seed).next(min, max);
 }
 
 func someFunc() {
-    print("called!")
+    print("called!");
 
-    return
+    return;
 }
 
 from origin import someType
@@ -53,34 +54,35 @@ namespace my_space
 foreach (item in collection) { }
 
 foreach (otherItem in otherCollection) {
-    if (collection.contains(otherItem)) break;
+    if (collection.contains(otherItem))
+        break;
 
-    otherItem.markAsBad()
+    otherItem.markAsBad();
 }
 
 for (var i = 0, i < 10, i++) {
-    print(i)
+    print(i);
 }
 
 for (var j = i, i > 10, --i) { }
 
 if (condition)
-    print("it's true")
+    print("it's true");
 
 if (a || b && c != d + e)
-    print("tf")
+    print("tf");
 else if (this.otherCondition()) {
-    print("maybe ?")
+    print("maybe ?");
 } else { } // fuck it
 
 while (str.length < 20) {
     if (str[-1] == "z") continue;
 
-    str.concat(alphabet[rnd.next(26)], rnd.next(26))
+    str.concat(alphabet[rnd.next(26)], rnd.next(26));
 }
 
 do
-    print("still looping")
+    print("still looping");
 while (_global++ < 13)
 
 /* some /* nested */ comments */

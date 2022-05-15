@@ -55,7 +55,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
             parser.Tokenizer.Reconsume();
 
-            header.Add(parser.Consume());
+            header.Add(parser.Consume(false));
 
             hasEOF = !parser.Tokenizer.Consume(out token);
 

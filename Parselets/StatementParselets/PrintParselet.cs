@@ -7,6 +7,6 @@ public sealed class PrintParslet : IStatementParslet<PrintNode>
             ));
         }
 
-        return new PrintNode(printKeyword, parser.ExpressionParser.ConsumeValue());
+        return new PrintNode(printKeyword, parser.ExpressionParser.Consume());
     }
 }

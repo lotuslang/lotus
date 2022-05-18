@@ -4,7 +4,7 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
         if (!(usingToken is Token usingKeyword && usingToken == "using"))
             throw Logger.Fatal(new InvalidCallException(usingToken.Location));
 
-        var importName = parser.ExpressionParser.ConsumeValue();
+        var importName = parser.ExpressionParser.Consume();
 
         var isValid = true;
 

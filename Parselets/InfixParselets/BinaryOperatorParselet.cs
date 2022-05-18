@@ -15,7 +15,7 @@ public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
                 operatorToken,
                 new[] {
                     left,
-                    parser.ConsumeValue(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
+                    parser.Consume(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
                 },
                 opType
             );

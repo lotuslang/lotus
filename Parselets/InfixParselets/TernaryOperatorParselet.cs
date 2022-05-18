@@ -9,7 +9,7 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
 
         var isValid = true;
 
-        var firstValue = parser.ConsumeValue();
+        var firstValue = parser.Consume();
 
         var colon = parser.Tokenizer.Consume();
 
@@ -25,7 +25,7 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
             parser.Tokenizer.Reconsume();
         }
 
-        var secondValue = parser.ConsumeValue();
+        var secondValue = parser.Consume();
 
         return new OperationNode(questionMarkOperator, new[] { condition, firstValue, secondValue }, OperationType.Conditional, isValid, colon);
     }

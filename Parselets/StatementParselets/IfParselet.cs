@@ -7,7 +7,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
         var isValid = true;
 
-        var conditionNode = parser.ExpressionParser.ConsumeValue();
+        var conditionNode = parser.ExpressionParser.Consume();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedValueTypeException(

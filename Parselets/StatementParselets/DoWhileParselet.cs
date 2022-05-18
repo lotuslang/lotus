@@ -37,7 +37,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             );
         }
 
-        var conditionNode = parser.ExpressionParser.ConsumeValue();
+        var conditionNode = parser.ExpressionParser.Consume();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedValueTypeException(

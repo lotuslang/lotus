@@ -7,11 +7,11 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 
         var nextToken = parser.Tokenizer.Peek();
 
-        if (nextToken == "}" || nextToken.HasTrivia(";", out _)) {
-            return new ReturnNode(null, returnKeyword);
-        }
+        var value = ValueNode.NULL;
 
-        var value = parser.ExpressionParser.Consume();
+        if (nextToken != "}" && !nextToken.HasTrivia(";", out _)) {
+            value = parser.ExpressionParser.Consume();
+        }
 
         return new ReturnNode(value, returnKeyword);
     }

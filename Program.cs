@@ -72,7 +72,7 @@ Usage : dotnet run -- [option]
 
             string s;
 
-            if (tokenizer.Current == tokenizer.Default && (s = ASTHelper.PrintToken(tokenizer.Current)).Length >= 2) {
+            if ((s = ASTHelper.PrintToken(tokenizer.Current)).Length >= 2) {
                 // print the last (EOF) token, which is not consumed by the parser
                 Console.WriteLine(s[..^2]);
             }

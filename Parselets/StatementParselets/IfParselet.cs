@@ -41,13 +41,13 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
         var body = parser.ConsumeSimpleBlock();
 
-        if (parser.Tokenizer.Peek() == "else") {
-            var elseNode = new ElseParslet().Parse(parser, parser.Tokenizer.Consume());
+        var elseNode = ElseNode.NULL;
 
-            return new IfNode(condition, body, elseNode, ifKeyword);
+        if (parser.Tokenizer.Peek() == "else") {
+            elseNode = new ElseParslet().Parse(parser, parser.Tokenizer.Consume());
         }
 
-        return new IfNode(condition, body, null, ifKeyword, isValid);
+        return new IfNode(condition, body, elseNode, ifKeyword, isValid);
     }
 
     // TODO: Later

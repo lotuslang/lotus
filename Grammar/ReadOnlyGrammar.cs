@@ -154,7 +154,7 @@ public class ReadOnlyGrammar
 
     public ExpressionKind GetExpressionKind(Token token) {
 
-        if (token == null) return ExpressionKind.NotAnExpr;
+        if (token == Token.NULL) return ExpressionKind.NotAnExpr;
 
         // fundamental expression kinds
         switch (token.Kind) {
@@ -196,7 +196,7 @@ public class ReadOnlyGrammar
         => statementParslets[s];
 
     public bool TryGetStatementParslet(Token token, [MaybeNullWhen(false)] out IStatementParslet<StatementNode> parselet) {
-        if (token is null) {
+        if (token == Token.NULL) {
             parselet = null!;
             return false;
         }
@@ -211,7 +211,7 @@ public class ReadOnlyGrammar
         => topLevelParslets[s];
 
     public bool TryGetTopLevelParslet(Token token, [MaybeNullWhen(false)] out ITopLevelParslet<TopLevelNode> parselet) {
-        if (token is null) {
+        if (token == Token.NULL) {
             parselet = null!;
             return false;
         }
@@ -223,7 +223,7 @@ public class ReadOnlyGrammar
         => IsOperatorParslet(kind) ? GetOperatorParslet(kind).Precedence : Precedence.Comma;
 
     public Precedence GetPrecedence(Token token)
-        => token != null ? GetPrecedence(GetExpressionKind(token)) : 0;
+        => token != Token.NULL ? GetPrecedence(GetExpressionKind(token)) : 0;
 
     public bool IsPrefix(ExpressionKind kind)
         => prefixParslets.ContainsKey(kind);

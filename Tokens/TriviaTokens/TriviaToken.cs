@@ -1,7 +1,5 @@
 public record TriviaToken : Token
 {
-    public static readonly new TriviaToken NULL = new("", TriviaKind.EOF, LocationRange.NULL);
-
     public new TriviaKind Kind { get; init; }
 
     public TriviaToken(string rep, TriviaKind kind, LocationRange location, bool isValid = true)

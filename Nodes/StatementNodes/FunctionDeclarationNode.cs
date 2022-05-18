@@ -40,11 +40,9 @@ public record FunctionDeclarationNode(
 public record FunctionParameter(
     ValueNode Type,
     IdentNode Name,
-    ValueNode? DefaultValue,
-    Token? EqualSign,
+    ValueNode DefaultValue,
+    Token EqualSign,
     bool IsValid = true
 ) {
-    [MemberNotNullWhen(true, nameof(DefaultValue))]
-    [MemberNotNullWhen(true, nameof(EqualSign))]
-    public bool HasDefaultValue => DefaultValue != null;
+    public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
 }

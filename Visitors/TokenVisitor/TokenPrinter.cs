@@ -10,7 +10,7 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
 
     public string Visit(ComplexStringToken token) {
         // the capacity is just the minimum + a guess
-        var output = new StringBuilder("\"", capacity: token.Representation.Length + (token.CodeSections.Count * 10));
+        var output = new StringBuilder("$\"", capacity: token.Representation.Length + (token.CodeSections.Count * 10));
 
         var str = token.Representation;
 
@@ -89,14 +89,14 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
     }
 
     public string PrintLeadingTrivia(Token token)
-        => token.LeadingTrivia is not null && token.LeadingTrivia != TriviaToken.NULL ? Default(token.LeadingTrivia) : "";
+        => token.LeadingTrivia is not null ? Default(token.LeadingTrivia) : "";
 
     public string PrintTrailingTrivia(Token token)
-        => token.TrailingTrivia is not null && token.TrailingTrivia != TriviaToken.NULL ? Default(token.TrailingTrivia) : "";
+        => token.TrailingTrivia is not null ? Default(token.TrailingTrivia) : "";
 
     public string Print(Token token) => token.Accept(this);
 
     public string Default(Token token) => Visit(token);
 
-    public string Default(TriviaToken token) => Default(token as Token);
+    public string Default(TriviaToken? token) => Default(token is null ? Token.NULL : token as Token);
 }

@@ -77,7 +77,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
                 new LocationRange(startingPosition, input.Position),
                 inner: inner,
                 isValid: isValid
-            ) { TrailingTrivia = isInner ? TriviaToken.NULL : tokenizer.ConsumeTrivia() };
+            ) { TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
         }
 
         throw Logger.Fatal(new InvalidCallException(new LocationRange(startingPosition, input.Position)));

@@ -4,15 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 public record IfNode(
     ParenthesizedValueNode Condition,
     SimpleBlock Body,
-    ElseNode? ElseNode,
+    ElseNode ElseNode,
     Token Token,
     bool IsValid = true
-) : StatementNode(Token, new LocationRange(Token.Location, ElseNode?.Location ?? Body.Location), IsValid)
+) : StatementNode(Token, new LocationRange(Token.Location, ElseNode != ElseNode.NULL ? ElseNode.Location : Body.Location), IsValid)
 {
-    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, null, Token.NULL, false);
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ElseNode.NULL, Token.NULL, false);
 
-    [MemberNotNullWhen(true, nameof(ElseNode))]
-    public bool HasElse => ElseNode != null;
+    public bool HasElse => ElseNode != ElseNode.NULL;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

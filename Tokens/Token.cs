@@ -35,7 +35,7 @@ public record Token
         }
     }
 
-    public void AddLeadingTrivia(TriviaToken trivia) {
+    public void AddLeadingTrivia(TriviaToken? trivia) {
         if (trivia is null) {
             Logger.Warning(new InvalidCallException(
                 message : "Something tried to add a null (leading) TriviaToken to this token, but that's not allowed",
@@ -51,7 +51,7 @@ public record Token
             leading.AddLeadingTrivia(trivia);
     }
 
-    public void AddTrailingTrivia(TriviaToken trivia) {
+    public void AddTrailingTrivia(TriviaToken? trivia) {
         if (trivia is null) {
             Logger.Warning(new InvalidCallException(
                 message : "Something tried to add a null (trailing) TriviaToken to this token, but that's not allowed",
@@ -67,7 +67,7 @@ public record Token
             trailing.AddTrailingTrivia(trivia);
     }
 
-    public bool HasTrivia(TriviaKind kind, out TriviaToken trivia) {
+    public bool HasTrivia(TriviaKind kind, out TriviaToken? trivia) {
 
         if (LeadingTrivia is not null) {
             if (LeadingTrivia.Kind == kind) {
@@ -87,12 +87,12 @@ public record Token
             return TrailingTrivia.HasTrivia(kind, out trivia);
         }
 
-        trivia = TriviaToken.NULL;
+        trivia = null;
 
         return false;
     }
 
-    public bool HasTrivia(string rep, out TriviaToken trivia) {
+    public bool HasTrivia(string rep, out TriviaToken? trivia) {
         if (leading is not null) {
             if (leading == rep) {
                 trivia = leading;
@@ -111,7 +111,7 @@ public record Token
             return trailing.HasTrivia(rep, out trivia);
         }
 
-        trivia = TriviaToken.NULL;
+        trivia = null;
 
         return false;
     }

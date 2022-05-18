@@ -4,19 +4,18 @@ public record WhileNode(
     ParenthesizedValueNode Condition,
     SimpleBlock Body,
     Token Token,
-    Token? DoToken,
+    Token DoToken,
     bool IsValid = true
 ) : StatementNode(
     Token,
-    DoToken is not null
+    DoToken != Token.NULL
         ? new LocationRange(DoToken.Location, Token.Location)
         : new LocationRange(Token.Location, Body.Location),
     IsValid
 ) {
     public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, Token.NULL, false);
 
-    [MemberNotNullWhen(true, nameof(DoToken))]
-    public bool IsDoLoop => DoToken is not null;
+    public bool IsDoLoop => DoToken != Token.NULL;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

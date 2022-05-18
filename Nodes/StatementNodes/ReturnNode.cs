@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 
-public record ReturnNode(ValueNode? Value, Token Token, bool IsValid = true)
+public record ReturnNode(ValueNode Value, Token Token, bool IsValid = true)
 : StatementNode(
     Token,
-    Value is not null
+    Value != ValueNode.NULL
         ? new LocationRange(Token.Location, Value.Location)
         : Token.Location,
     IsValid
@@ -11,8 +11,7 @@ public record ReturnNode(ValueNode? Value, Token Token, bool IsValid = true)
 {
     public new static readonly ReturnNode NULL = new(ValueNode.NULL, Token.NULL, false);
 
-    [MemberNotNullWhen(true, nameof(Value))]
-    public bool IsReturningValue => Value != null;
+    public bool IsReturningValue => Value != ValueNode.NULL;
 
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]

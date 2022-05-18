@@ -58,9 +58,9 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 isValid = false;
             }
 
-            ValueNode? defaultValue = null;
+            var defaultValue = ValueNode.NULL;
 
-            Token? equalSign = null;
+            var equalSign = Token.NULL;
 
             if (paramNameNode is OperationNode opNode && opNode.OperationType == OperationType.Assign) {
                 paramNameNode = opNode.Operands[0];
@@ -142,24 +142,22 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                     goto LOOP_END_CHECK;
                 }
 
+                var paramType = typeNameArray.Operands.FirstOrDefault();
+
                 // if there's only one argument (illegal)
                 if (typeNameArray.Operands.Count < 2) {
                     Logger.Error(new LotusException(
                         message: "A typed parameter-group should declare at least two parameters, which is not the case here.",
-                        range: typeNameArray.Operands.First()?.Token?.Location ?? typeOrName.Token.Location
+                        range: (paramType is not null && paramType != ValueNode.NULL ? paramType : typeOrName).Token.Location
                     ));
 
                     isValid = false;
-
-                    if (typeNameArray.Operands.Count == 0) goto LOOP_END_CHECK;
                 }
-
-                var paramType = typeNameArray.Operands[0];
 
                 // iterate over every parameter name and add them to the list
                 // we skip one cause the first operand of an array access is the type name
                 foreach (var paramNameNode in typeNameArray.Operands.Skip(1)) {
-                    addParameter(paramType, paramNameNode);
+                    addParameter(paramType ?? ValueNode.NULL, paramNameNode);
                 }
             } else if (parser.Tokenizer.Peek().Kind == TokenKind.identifier) {
                 // if there's still an identifier after typeOrName,

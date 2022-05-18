@@ -119,7 +119,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             * disgusting to look at. Fuck all of you.
             */
 
-            var typeOrName = parser.ExpressionParser.ConsumeValue();
+            var typeOrName = parser.ExpressionParser.Consume();
 
             // i don't wanna talk about it any more than i already did
 
@@ -165,7 +165,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 // if there's still an identifier after typeOrName,
                 // it's a typed parameter (and the name is the token we peeked at)
 
-                addParameter(typeOrName, parser.ExpressionParser.ConsumeValue());
+                addParameter(typeOrName, parser.ExpressionParser.Consume());
             } else {
                 // otherwise, that means we have a parameter without type info
                 addParameter(ValueNode.NULL, typeOrName);
@@ -223,7 +223,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         if (parser.Tokenizer.Peek() == ":") {
             colonToken = parser.Tokenizer.Consume(); // consume the colon
 
-            returnType = parser.ExpressionParser.ConsumeValue();
+            returnType = parser.ExpressionParser.Consume();
 
             if (!Utilities.IsName(returnType)) {
                 Logger.Error(new UnexpectedValueTypeException(

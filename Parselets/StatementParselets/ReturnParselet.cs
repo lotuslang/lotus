@@ -11,7 +11,7 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
             return new ReturnNode(null, returnKeyword);
         }
 
-        var value = parser.ExpressionParser.ConsumeValue();
+        var value = parser.ExpressionParser.Consume();
 
         return new ReturnNode(value, returnKeyword);
     }

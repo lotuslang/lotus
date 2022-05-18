@@ -70,7 +70,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
             inKeyword = new Token(inToken.Representation, inToken.Kind, inToken.Location, false);
         }
 
-        var collectionName = parser.ExpressionParser.ConsumeValue();
+        var collectionName = parser.ExpressionParser.Consume();
 
         var closingParen = parser.Tokenizer.Consume();
 

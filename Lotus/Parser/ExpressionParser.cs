@@ -10,19 +10,27 @@ public class ExpressionParser : Parser<ValueNode>
 
     public override ValueNode Default => ConstantDefault with { Location = Position };
 
-    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance) { }
+    public void Init() {
+        Current = ConstantDefault with { Location = Tokenizer.Position };
+    }
 
-    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance) { }
+    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
+        => Init();
+
+    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
+        => Init();
 
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 
-    public ExpressionParser(IEnumerable<Token> tokens) : base(tokens, LotusGrammar.Instance) { }
+    public ExpressionParser(IEnumerable<Token> tokens) : base(tokens, LotusGrammar.Instance)
+        => Init();
 
     public ExpressionParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
     public ExpressionParser(Uri file) : this(new LotusTokenizer(file)) { }
 
-    public ExpressionParser(Parser<ValueNode> parser) : base(parser) { }
+    public ExpressionParser(Parser<ValueNode> parser) : base(parser)
+        => Init();
 
 
     public override ValueNode Peek()
@@ -40,13 +48,18 @@ public class ExpressionParser : Parser<ValueNode>
         return output.ToArray();
     }
 
-    public override ValueNode Consume() {
+    public override ValueNode Consume()
+        => Consume(Precedence.Comma);
+
+    public ValueNode Consume(Precedence precedence = 0) {
         base.Consume();
 
-        return ConsumeValue(Precedence.Comma);
+        Current = ConsumeValue(precedence);
+
+        return Current;
     }
 
-    public ValueNode ConsumeValue(Precedence precedence = 0) {
+    private ValueNode ConsumeValue(Precedence precedence) {
         var token = Tokenizer.Consume();
 
         if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
@@ -118,7 +131,7 @@ public class ExpressionParser : Parser<ValueNode>
 
             Tokenizer.Reconsume();
 
-            items.Add(ConsumeValue());
+            items.Add(Consume());
 
             ++itemCount;
 
@@ -130,6 +143,10 @@ public class ExpressionParser : Parser<ValueNode>
 
                 var lastItem = items.Last();
 
+                if (!isValid || !lastItem.IsValid) {
+                    continue;
+                }
+
                 if (Tokenizer.Current.Kind == TokenKind.keyword || lastItem.Token.Kind == TokenKind.keyword) {
                     Tokenizer.Reconsume();
 
@@ -139,10 +156,6 @@ public class ExpressionParser : Parser<ValueNode>
                     //isValid = false;
 
                     break;
-                }
-
-                if (!isValid || !lastItem.IsValid) {
-                    continue;
                 }
 
                 if (Tokenizer.Current == "}") {

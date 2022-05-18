@@ -1,7 +1,7 @@
 public sealed class NamespaceParslet : ITopLevelParslet<NamespaceNode>
 {
     public NamespaceNode Parse(TopLevelParser parser, Token namespaceToken) {
-        var name = parser.ExpressionParser.ConsumeValue();
+        var name = parser.ExpressionParser.Consume();
 
         if (namespaceToken is Token namespaceKeyword && namespaceKeyword == "namespace") {
             if (Utilities.IsName(name)) {

@@ -5,7 +5,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         if (!(fromToken is Token fromKeyword && fromToken == "from"))
             throw Logger.Fatal(new InvalidCallException(fromToken.Location));
 
-        var fromOrigin = parser.ExpressionParser.ConsumeValue();
+        var fromOrigin = parser.ExpressionParser.Consume();
 
         var fromIsValid = true;
 
@@ -54,7 +54,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         var importList = new List<ValueNode>();
 
         do {
-            var import = parser.ExpressionParser.ConsumeValue(); // consume the import's name
+            var import = parser.ExpressionParser.Consume(); // consume the import's name
 
             if (!Utilities.IsName(import)) {
 

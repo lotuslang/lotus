@@ -47,7 +47,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         }
 
         // consume a ValueNode (which is the value of the variable we're declaring)
-        var value = parser.ExpressionParser.ConsumeValue();
+        var value = parser.ExpressionParser.Consume();
 
         // return that value
         return new DeclarationNode(value, name, varKeyword, equalSign, isValid);

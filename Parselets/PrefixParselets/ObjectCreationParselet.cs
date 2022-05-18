@@ -12,7 +12,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         // basically, since a constructor invocation is basically just a function call preceded by the 'new' keyword
         // we can just eat the keyword and parse the rest as a function call, no need to write twice a code
         // that is so similar and essential
-        var invoc = parser.ConsumeValue();
+        var invoc = parser.Consume();
 
         if (invoc is not FunctionCallNode call) {
             Logger.Error(new UnexpectedValueTypeException(

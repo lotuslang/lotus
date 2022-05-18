@@ -14,7 +14,7 @@ public class StatementParser : Parser<StatementNode>
 
     protected void Init() {
         ExpressionParser = new ExpressionParser(Tokenizer);
-        Current = ConstantDefault;
+        Current = ConstantDefault with { Location = Tokenizer.Position };
     }
 
 #nullable disable

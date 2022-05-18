@@ -8,7 +8,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             foreach (var section in complexString.CodeSections) {
                 var sectionConsumer = new Consumer<Token>(section, Token.NULL);
                 var sectionParser = new ExpressionParser(sectionConsumer);
-                node.AddSection(sectionParser.ConsumeValue());
+                node.AddSection(sectionParser.Consume());
                 if (sectionConsumer.Peek() != sectionConsumer.Default) {
                     Logger.Error(new UnexpectedTokenException(
                         token: sectionConsumer.Consume(),

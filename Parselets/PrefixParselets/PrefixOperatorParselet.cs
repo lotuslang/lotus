@@ -10,6 +10,6 @@ public sealed class PrefixOperatorParslet : IPrefixParslet<OperationNode>
         if (token is not OperatorToken opToken)
             throw Logger.Fatal(new InvalidCallException(token.Location));
 
-        return new OperationNode(opToken, new[] { parser.ConsumeValue(Precedence.Unary) }, opType);
+        return new OperationNode(opToken, new[] { parser.Consume(Precedence.Unary) }, opType);
     }
 }

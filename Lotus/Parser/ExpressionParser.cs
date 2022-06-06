@@ -169,7 +169,10 @@ public class ExpressionParser : Parser<ValueNode>
                     token: Tokenizer.Current
                 ));
 
-                if (Tokenizer.Peek() == ",") {
+                // if it's an identifier, we should reconsume it so the error doesn't run over
+                if (Tokenizer.Current.Kind == TokenKind.identifier) {
+                    Tokenizer.Reconsume();
+                } else if (Tokenizer.Peek() == ",") {
                     Tokenizer.Consume();
                 }
 

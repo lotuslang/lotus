@@ -69,6 +69,10 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             }
 
             if (paramNameNode is not IdentNode paramName) {
+                if (!paramNameNode.IsValid) { // && Logger.Exceptions.Peek().Item1 is UnexpectedTokenException) {
+                    Logger.Exceptions.Pop();
+                }
+
                 Logger.Error(new UnexpectedValueTypeException(
                     node: paramNameNode,
                     context: "as a parameter name in a function's parameter list",

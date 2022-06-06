@@ -5,7 +5,7 @@ using System.Globalization;
 #pragma warning disable
 class Program
 {
-    static void Main(string[] args) {
+    static int Main(string[] args) {
 
         // Lil hack for our visual studio (win and mac) users, whose IDE thinks it's a rebel
         // because it doesn't use the same working directory as literally every other
@@ -21,9 +21,15 @@ class Program
 
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
+        var argList = args.ToList();
+
+        var forced = argList.RemoveAll(arg => arg is "--force" or "-f") > 0;
+
+        args = argList.ToArray();
+
         if (args.Length == 0 || args[0] == "help") {
             Console.Error.WriteLine(@"
-Usage : dotnet run -- [option]
+Usage:  dotnet run -- [option]
         dotnet run
         parsex [option]
         parsex
@@ -35,9 +41,11 @@ Usage : dotnet run -- [option]
         constant          print the hash of the constant-colored AST
     graph             print dot code of the AST
         constant          print dot code of the AST with constant-coloring
+
+Note: '--force' or '-f' ignores compilation errors before executing above commands
             ");
 
-            return;
+            return 1;
         }
 
         var file = new Uri(Directory.GetCurrentDirectory() + "/./test.txt");
@@ -55,15 +63,17 @@ Usage : dotnet run -- [option]
             var count = Logger.ErrorCount;
             Logger.PrintAllErrors();
             Console.Error.WriteLine("In total, there were " + count + " errors. Please fix them.");
-            return;
+
+            if (!forced)
+                return 1;
         }
 
         if (args[0] == "graph") {
             Console.WriteLine(MakeGraph(tlNodes, args, file).ToText());
-            return;
+            return 0;
         }
 
-        if (args[0] == "silent") return;
+        if (args[0] == "silent") return 0;
 
         if (args[0] == "print") {
             foreach (var node in tlNodes.Select(n => (n is TopLevelStatementNode stmt) ? stmt : null).Where(n => n is not null)) {
@@ -77,15 +87,16 @@ Usage : dotnet run -- [option]
                 Console.WriteLine(s[..^2]);
             }
 
-            return;
+            return 0;
         }
 
         if (args[0] == "hash") {
             Console.WriteLine(MakeGraph(tlNodes, args, file).GetHashCode());
-            return;
+            return 0;
         }
 
         Console.WriteLine("Could not understand option " + args[0]);
+        return 1;
     }
 
     static void AddGraphPrelude(Graph g, Uri file) {

@@ -2,6 +2,11 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence => Precedence.Ternary;
 
+    private static TernaryOperatorParslet _instance = new();
+    public static TernaryOperatorParslet Instance => _instance;
+
+	private TernaryOperatorParslet() : base() { }
+
     public OperationNode Parse(ExpressionParser parser, Token questionMarkToken, ValueNode condition) {
         if (!(questionMarkToken is OperatorToken questionMarkOperator && questionMarkOperator == "?")) {
             throw Logger.Fatal(new InvalidCallException(questionMarkToken.Location));

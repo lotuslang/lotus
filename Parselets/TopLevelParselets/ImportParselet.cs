@@ -1,6 +1,12 @@
 
 public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
+
+    private static ImportParslet _instance = new();
+    public static ImportParslet Instance => _instance;
+
+	private ImportParslet() : base() { }
+
     public ImportNode Parse(TopLevelParser parser, Token fromToken) {
         if (!(fromToken is Token fromKeyword && fromToken == "from"))
             throw Logger.Fatal(new InvalidCallException(fromToken.Location));

@@ -2,6 +2,12 @@ using System.Text;
 
 public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 {
+
+    private static CommentTriviaToklet _instance = new();
+    public static CommentTriviaToklet Instance => _instance;
+
+	private CommentTriviaToklet() : base() { }
+
     public Predicate<IConsumer<char>> Condition
         => (consumer => consumer.Consume() is '/' && (consumer.Consume() is '/' or '*'));
 

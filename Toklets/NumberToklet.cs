@@ -2,6 +2,13 @@ using System.Text;
 
 public sealed class NumberToklet : IToklet<NumberToken>
 {
+
+    private static NumberToklet _instance = new();
+    public static NumberToklet Instance => _instance;
+
+	private NumberToklet() : base() { }
+
+
     public Predicate<IConsumer<char>> Condition
         => (input => {
                 var current = input.Consume();

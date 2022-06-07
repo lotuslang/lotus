@@ -19,30 +19,33 @@ public sealed class LotusGrammar : ReadOnlyGrammar
 
     private void InitializeTriviaToklets()
         => internalGrammar
-            .RegisterToklet(new NumberToklet())
-            .RegisterToklet(new ComplexStringToklet())
-            .RegisterToklet(new StringToklet())
-            .RegisterToklet(new IdentToklet())
-            .RegisterToklet(new OperatorToklet())
-            .RegisterToklet(new Toklet());
+            .RegisterToklet(NumberToklet.Instance)
+            .RegisterToklet(ComplexStringToklet.Instance)
+            .RegisterToklet(StringToklet.Instance)
+            .RegisterToklet(IdentToklet.Instance)
+            .RegisterToklet(OperatorToklet.Instance)
+            .RegisterToklet(Toklet.Instance)
+            ;
 
     private void InitializeToklets()
         => internalGrammar
-            .RegisterTriviaToklet(new CommentTriviaToklet())
-            .RegisterTriviaToklet(new WhitespaceTriviaToklet())
-            .RegisterTriviaToklet(new NewlineTriviaToklet())
+            .RegisterTriviaToklet(CommentTriviaToklet.Instance)
+            .RegisterTriviaToklet(WhitespaceTriviaToklet.Instance)
+            .RegisterTriviaToklet(NewlineTriviaToklet.Instance)
             .RegisterTriviaToklet(new CharacterTriviaToklet(';'))
-            .RegisterTriviaToklet(new TriviaToklet());
+            .RegisterTriviaToklet(new TriviaToklet())
+            ;
 
     private void InitializeExpressionParslets() {
 
         // values
         internalGrammar
-            .RegisterPrefix(ExpressionKind.Number, new NumberLiteralParslet())
-            .RegisterPrefix(ExpressionKind.String, new StringLiteralParslet())
-            .RegisterPrefix(ExpressionKind.Identifier, new IdentifierParslet())
-            .RegisterPrefix(ExpressionKind.Boolean, new BoolLiteralParslet())
-            .RegisterPrefix(ExpressionKind.LeftParen, new LeftParenParslet());
+            .RegisterPrefix(ExpressionKind.Number, NumberLiteralParslet.Instance)
+            .RegisterPrefix(ExpressionKind.String, StringLiteralParslet.Instance)
+            .RegisterPrefix(ExpressionKind.Identifier, IdentifierParslet.Instance)
+            .RegisterPrefix(ExpressionKind.Boolean, BoolLiteralParslet.Instance)
+            .RegisterPrefix(ExpressionKind.LeftParen, LeftParenParslet.Instance)
+            ;
 
         // prefix operators
         internalGrammar
@@ -50,12 +53,14 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterPrefixOperator(ExpressionKind.Minus, OperationType.Negative)
             .RegisterPrefixOperator(ExpressionKind.Not, OperationType.Not)
             .RegisterPrefixOperator(ExpressionKind.Increment, OperationType.PrefixIncrement)
-            .RegisterPrefixOperator(ExpressionKind.Decrement, OperationType.PrefixDecrement);
+            .RegisterPrefixOperator(ExpressionKind.Decrement, OperationType.PrefixDecrement)
+            ;
 
         // misc prefix parslets
         internalGrammar
-            .RegisterPrefix(ExpressionKind.Array, new ArrayLiteralParslet())
-            .RegisterPrefix(ExpressionKind.New, new ObjectCreationParslet());
+            .RegisterPrefix(ExpressionKind.Array, ArrayLiteralParslet.Instance)
+            .RegisterPrefix(ExpressionKind.New, ObjectCreationParslet.Instance)
+            ;
 
         // infix binary operators
         internalGrammar
@@ -75,18 +80,21 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterInfixBinaryOperator(ExpressionKind.Greater, Precedence.GreaterThan, OperationType.Greater)
             .RegisterInfixBinaryOperator(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, OperationType.GreaterOrEqual)
             .RegisterInfixBinaryOperator(ExpressionKind.Access, Precedence.Access, OperationType.Access)
-            .RegisterInfixBinaryOperator(ExpressionKind.Assignment, Precedence.Assignment, OperationType.Assign);
+            .RegisterInfixBinaryOperator(ExpressionKind.Assignment, Precedence.Assignment, OperationType.Assign)
+            ;
 
         // misc infix parslets
         internalGrammar
-            .RegisterInfix(ExpressionKind.Array, new ArrayAccessParslet())
-            .RegisterInfix(ExpressionKind.LeftParen, new FuncCallParslet())
-            .RegisterInfix(ExpressionKind.Ternary, new TernaryOperatorParslet());
+            .RegisterInfix(ExpressionKind.Array, ArrayAccessParslet.Instance)
+            .RegisterInfix(ExpressionKind.LeftParen, FuncCallParslet.Instance)
+            .RegisterInfix(ExpressionKind.Ternary, TernaryOperatorParslet.Instance)
+            ;
 
         // postfix operators
         internalGrammar
             .RegisterPostfixOperation(ExpressionKind.Increment, OperationType.PostfixIncrement)
-            .RegisterPostfixOperation(ExpressionKind.Decrement, OperationType.PostfixDecrement);
+            .RegisterPostfixOperation(ExpressionKind.Decrement, OperationType.PostfixDecrement)
+            ;
     }
 
     private void InitializeExpressionKinds() {
@@ -98,7 +106,8 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterExpressionKind("*", ExpressionKind.Multiply)
             .RegisterExpressionKind("/", ExpressionKind.Divide)
             .RegisterExpressionKind("%", ExpressionKind.Modulo)
-            .RegisterExpressionKind("^", ExpressionKind.Power);
+            .RegisterExpressionKind("^", ExpressionKind.Power)
+            ;
 
         // Logical/comparison operators
         internalGrammar
@@ -115,35 +124,37 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterExpressionKind(".", ExpressionKind.Access)
             .RegisterExpressionKind("=", ExpressionKind.Assignment)
             .RegisterExpressionKind("==", ExpressionKind.Eq)
-            .RegisterExpressionKind("!=", ExpressionKind.NotEq);
+            .RegisterExpressionKind("!=", ExpressionKind.NotEq)
+            ;
 
         // Misc
         internalGrammar
             .RegisterExpressionKind("++", ExpressionKind.Increment)
             .RegisterExpressionKind("--", ExpressionKind.Decrement)
             .RegisterExpressionKind("new", ExpressionKind.New)
-            .RegisterExpressionKind("?", ExpressionKind.Ternary);
+            .RegisterExpressionKind("?", ExpressionKind.Ternary)
+            ;
     }
 
     private void InitializeStatementParslets()
         => internalGrammar
-            .RegisterStatementParslet("var", new DeclarationParslet())
-            .RegisterStatementParslet("func", new FunctionDeclarationParslet())
-            .RegisterStatementParslet("return", new ReturnParslet())
-            .RegisterStatementParslet("foreach", new ForeachParslet())
-            .RegisterStatementParslet("for", new ForParslet())
-            .RegisterStatementParslet("if", new IfParslet())
-            .RegisterStatementParslet("while", new WhileParslet())
-            .RegisterStatementParslet("do", new DoWhileParslet())
-            .RegisterStatementParslet("break", new BreakParslet())
-            .RegisterStatementParslet("continue", new ContinueParslet())
-            .RegisterStatementParslet("print", new PrintParslet())
+            .RegisterStatementParslet("var", DeclarationParslet.Instance)
+            .RegisterStatementParslet("func", FunctionDeclarationParslet.Instance)
+            .RegisterStatementParslet("return", ReturnParslet.Instance)
+            .RegisterStatementParslet("foreach", ForeachParslet.Instance)
+            .RegisterStatementParslet("for", ForParslet.Instance)
+            .RegisterStatementParslet("if", IfParslet.Instance)
+            .RegisterStatementParslet("while", WhileParslet.Instance)
+            .RegisterStatementParslet("do", DoWhileParslet.Instance)
+            .RegisterStatementParslet("break", BreakParslet.Instance)
+            .RegisterStatementParslet("continue", ContinueParslet.Instance)
+            .RegisterStatementParslet("print", PrintParslet.Instance)
             ;
 
     private void InitializeTopLevelParslets()
         => internalGrammar
-            .RegisterTopLevelParslets("namespace", new NamespaceParslet())
-            .RegisterTopLevelParslets("from", new ImportParslet())
-            .RegisterTopLevelParslets("using", new UsingParslet())
+            .RegisterTopLevelParslets("namespace", NamespaceParslet.Instance)
+            .RegisterTopLevelParslets("from", ImportParslet.Instance)
+            .RegisterTopLevelParslets("using", UsingParslet.Instance)
             ;
 }

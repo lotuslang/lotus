@@ -1,5 +1,11 @@
 public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
 {
+
+    private static LeftParenParslet _instance = new();
+    public static LeftParenParslet Instance => _instance;
+
+	private LeftParenParslet() : base() { }
+
     public ValueNode Parse(ExpressionParser parser, Token leftParenToken) {
         if (leftParenToken != "(")
             throw Logger.Fatal(new InvalidCallException(leftParenToken.Location));

@@ -1,5 +1,11 @@
 public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 {
+
+    private static ReturnParslet _instance = new();
+    public static ReturnParslet Instance => _instance;
+
+	private ReturnParslet() : base() { }
+
     public ReturnNode Parse(StatementParser parser, Token returnToken) {
 
         if (!(returnToken is Token returnKeyword && returnKeyword == "return"))

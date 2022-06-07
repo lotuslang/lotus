@@ -1,6 +1,13 @@
 
 public sealed class OperatorToklet : IToklet<OperatorToken>
 {
+
+    private static OperatorToklet _instance = new();
+    public static OperatorToklet Instance => _instance;
+
+	private OperatorToklet() : base() { }
+
+
     public Predicate<IConsumer<char>> Condition
         => (input => {
                 switch (input.Consume()) {

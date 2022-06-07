@@ -1,5 +1,11 @@
 public sealed class NamespaceParslet : ITopLevelParslet<NamespaceNode>
 {
+
+    private static NamespaceParslet _instance = new();
+    public static NamespaceParslet Instance => _instance;
+
+	private NamespaceParslet() : base() { }
+
     public NamespaceNode Parse(TopLevelParser parser, Token namespaceToken) {
         var name = parser.ExpressionParser.Consume();
 

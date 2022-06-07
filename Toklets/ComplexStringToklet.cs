@@ -1,6 +1,13 @@
 
 public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 {
+
+    private static ComplexStringToklet _instance = new();
+    public static ComplexStringToklet Instance => _instance;
+
+	private ComplexStringToklet() : base() { }
+
+
     public Predicate<IConsumer<char>> Condition
         => (input => {
                 var current = input.Consume();

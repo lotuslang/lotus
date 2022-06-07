@@ -1,5 +1,11 @@
 public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 {
+
+    private static ForeachParslet _instance = new();
+    public static ForeachParslet Instance => _instance;
+
+	private ForeachParslet() : base() { }
+
     public ForeachNode Parse(StatementParser parser, Token foreachToken) {
         if (!(foreachToken is Token foreachKeyword && foreachKeyword == "foreach"))
             throw Logger.Fatal(new InvalidCallException(foreachToken.Location));

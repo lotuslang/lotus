@@ -1,6 +1,13 @@
 
 public sealed class IdentToklet : IToklet<Token>
 {
+
+    private static IdentToklet _instance = new();
+    public static IdentToklet Instance => _instance;
+
+	private IdentToklet() : base() { }
+
+
     public Predicate<IConsumer<char>> Condition
         => (input => Char.IsLetter(input.Consume()) || input.Current == '_');
 

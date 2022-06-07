@@ -1,6 +1,12 @@
 
 public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 {
+
+    private static ObjectCreationParslet _instance = new();
+    public static ObjectCreationParslet Instance => _instance;
+
+	private ObjectCreationParslet() : base() { }
+
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
 
         // if the token isn't the keyword "new", throw an exception

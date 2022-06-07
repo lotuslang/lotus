@@ -1,5 +1,11 @@
 public sealed class WhileParslet : IStatementParslet<WhileNode>
 {
+
+    private static WhileParslet _instance = new();
+    public static WhileParslet Instance => _instance;
+
+	private WhileParslet() : base() { }
+
     public WhileNode Parse(StatementParser parser, Token whileToken) {
         if (!(whileToken is Token whileKeyword && whileKeyword == "while")) {
             throw Logger.Fatal(new InvalidCallException(whileToken.Location));

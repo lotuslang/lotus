@@ -1,6 +1,13 @@
 
 public sealed class StringToklet : IToklet<StringToken>
 {
+
+    private static StringToklet _instance = new();
+    public static StringToklet Instance => _instance;
+
+	private StringToklet() : base() { }
+
+
     public Predicate<IConsumer<char>> Condition
         => (input => input.Consume() == '\'' || input.Current == '"');
 

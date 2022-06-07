@@ -1,6 +1,12 @@
 
 public sealed class ForParslet : IStatementParslet<ForNode>
 {
+
+    private static ForParslet _instance = new();
+    public static ForParslet Instance => _instance;
+
+	private ForParslet() : base() { }
+
     public ForNode Parse(StatementParser parser, Token forToken) {
         if (!(forToken is Token forKeyword && forKeyword == "for"))
             throw Logger.Fatal(new InvalidCallException(forToken.Location));

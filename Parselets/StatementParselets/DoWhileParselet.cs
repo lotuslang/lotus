@@ -1,5 +1,11 @@
 public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 {
+
+    private static DoWhileParslet _instance = new();
+    public static DoWhileParslet Instance => _instance;
+
+	private DoWhileParslet() : base() { }
+
     public WhileNode Parse(StatementParser parser, Token doToken) {
         if (!(doToken is Token doKeyword && doKeyword == "do")) {
             throw Logger.Fatal(new InvalidCallException(doToken.Location));

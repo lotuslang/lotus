@@ -1,5 +1,11 @@
 public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 {
+
+    private static UsingParslet _instance = new();
+    public static UsingParslet Instance => _instance;
+
+	private UsingParslet() : base() { }
+
     public UsingNode Parse(TopLevelParser parser, Token usingToken) {
         if (!(usingToken is Token usingKeyword && usingToken == "using"))
             throw Logger.Fatal(new InvalidCallException(usingToken.Location));

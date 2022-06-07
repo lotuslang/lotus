@@ -1,6 +1,12 @@
 
 public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDeclarationNode>
 {
+
+    private static FunctionDeclarationParslet _instance = new();
+    public static FunctionDeclarationParslet Instance => _instance;
+
+	private FunctionDeclarationParslet() : base() { }
+
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
 
         // if the token consumed was not "func", then throw an exception

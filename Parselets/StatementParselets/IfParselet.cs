@@ -1,5 +1,11 @@
 public sealed class IfParslet : IStatementParslet<IfNode>
 {
+
+    private static IfParslet _instance = new();
+    public static IfParslet Instance => _instance;
+
+	private IfParslet() : base() { }
+
     public IfNode Parse(StatementParser parser, Token ifToken) {
         if (!(ifToken is Token ifKeyword && ifKeyword == "if")) {
             throw Logger.Fatal(new InvalidCallException(ifToken.Location));
@@ -44,7 +50,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
         var elseNode = ElseNode.NULL;
 
         if (parser.Tokenizer.Peek() == "else") {
-            elseNode = new ElseParslet().Parse(parser, parser.Tokenizer.Consume());
+            elseNode = ElseParslet.Instance.Parse(parser, parser.Tokenizer.Consume());
         }
 
         return new IfNode(condition, body, elseNode, ifKeyword, isValid);

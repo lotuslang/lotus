@@ -1,5 +1,11 @@
 public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
 {
+
+    private static DeclarationParslet _instance = new();
+    public static DeclarationParslet Instance => _instance;
+
+	private DeclarationParslet() : base() { }
+
     public DeclarationNode Parse(StatementParser parser, Token varToken) {
 
         var isValid = true;

@@ -5,9 +5,10 @@ Here's a beautiful ASCII table for operator precedence
 +------------+--------------+-------------------------------------------+
 | Precedence | Operator(s)  | Description                               |
 +------------+--------------+-------------------------------------------+
-|            | a()          | Function call                             |
-| 12         | a[]          | Array access                              |
-|            | .            | Member access                             |
+| 13         | a[]          | Array access                              |
+|            | a.b          | Member access                             |
++------------+--------------+-------------------------------------------+
+| 12         | a()          | Function call                             |
 +------------+--------------+-------------------------------------------+
 |            | ++a --a      | Prefix increment and decrement            |
 | 11         | a++ a--      | Postfix increment and decrement           |
@@ -113,7 +114,8 @@ public enum Precedence {
     Unary = Power + 1,
     TypeCast = Unary,
 
-    Access = Unary + 1,
-    FuncCall = Access,
+    FuncCall = Unary + 1,
+
+    Access = FuncCall + 1,
     ArrayAccess = Access,
 }

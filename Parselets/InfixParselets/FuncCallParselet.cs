@@ -14,17 +14,18 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
         if (leftParen != "(")
             throw Logger.Fatal(new InvalidCallException(leftParen.Location));
 
-        var isValid = true;
-
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();
 
-        var argsTuple = parser.ConsumeTuple("(", ")");
+        var argsTuple = ConsumeFunctionArguments(parser);
 
         return new FunctionCallNode(
             argsTuple,
             function,
-            isValid && argsTuple.IsValid
+            argsTuple.IsValid
         );
     }
+
+    public static TupleNode ConsumeFunctionArguments(ExpressionParser parser)
+        => parser.ConsumeTuple("(", ")");
 }

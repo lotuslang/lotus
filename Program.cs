@@ -53,7 +53,9 @@ Note: '--force' or '-f' ignores compilation errors before executing above comman
         // Initializes the tokenizer with the content of the "sample.txt" file
         var tokenizer = new LotusTokenizer(file);
 
-        /*tokenizer = new LotusTokenizer(@"return (hello + world)");*/
+        /*
+        tokenizer = new LotusTokenizer(@"return (new (string.hello)()[1] + hello)");
+        //*/
 
         var parser = new TopLevelParser(tokenizer);
 

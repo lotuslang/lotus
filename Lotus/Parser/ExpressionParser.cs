@@ -116,11 +116,13 @@ public class ExpressionParser : Parser<ValueNode>
         var isValid = true;
 
         if (startingDelimiter.Representation != start) {
-            Logger.Warning(new UnexpectedTokenException( // should we use InvalidCallException ?
+            Logger.Error(new UnexpectedTokenException( // should we use InvalidCallException ?
                 token: startingDelimiter,
                 context: "in a tuple",
                 expected: start
             ));
+
+            isValid = false;
         }
 
         var items = new List<ValueNode>();

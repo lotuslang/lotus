@@ -12,9 +12,17 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
             foreach (var section in complexString.CodeSections) {
-                var sectionConsumer = new Consumer<Token>(section, Token.NULL);
+                var endPos = section.LastOrDefault()?.Location ?? parser.Position;
+
+                var sectionConsumer = new Consumer<Token>(
+                    section,
+                    Token.NULL with { Location = endPos.GetLastLocation() }
+                );
+
                 var sectionParser = new ExpressionParser(sectionConsumer);
+
                 node.AddSection(sectionParser.Consume());
+
                 if (sectionConsumer.Peek() != sectionConsumer.Default) {
                     Logger.Error(new UnexpectedTokenException(
                         token: sectionConsumer.Consume(),

@@ -149,7 +149,7 @@ public class Graph
         var code = new DeterministicHashCode();
 
         foreach (var node in rootNodes) {
-            code.Add(node, new GraphNodeComparer());
+            code.Add(node, GraphNodeComparer.Instance);
         }
 
         if (includeProps) {
@@ -257,10 +257,10 @@ public class GraphNode : IEnumerable<GraphNode>
     public override int GetHashCode() {
         var code = new DeterministicHashCode();
 
-        code.Add(Name, new StringComparer());
+        code.Add(Name, StringComparer.Instance);
 
         foreach (var node in Children) {
-            code.Add(node, new GraphNodeComparer());
+            code.Add(node, GraphNodeComparer.Instance);
         }
 
         return code.ToHashCode();
@@ -275,6 +275,11 @@ public class GraphNode : IEnumerable<GraphNode>
 
 public class GraphNodeComparer : IEqualityComparer<GraphNode>
 {
+    private static GraphNodeComparer _instance = new();
+    public static GraphNodeComparer Instance => _instance;
+
+    private GraphNodeComparer() { }
+
     public bool Equals(GraphNode? n1, GraphNode? n2) => n1?.GetHashCode() == n2?.GetHashCode();
 
     public int GetHashCode(GraphNode n) => n.GetHashCode();
@@ -282,6 +287,11 @@ public class GraphNodeComparer : IEqualityComparer<GraphNode>
 
 public class StringComparer : IEqualityComparer<string>
 {
+    private static StringComparer _instance = new();
+    public static StringComparer Instance => _instance;
+
+    private StringComparer() {}
+
     public bool Equals(string? s1, string? s2) => GetHashCode(s1!) == GetHashCode(s2!);
 
     public int GetHashCode(string str) {
@@ -305,7 +315,7 @@ public struct DeterministicHashCode
 {
     private int current;
 
-    private static readonly StringComparer stringComparer = new();
+    private static readonly StringComparer stringComparer = StringComparer.Instance;
 
     public void Add<T1>(T1 value) => current = (current * 21) + value!.GetHashCode();
 

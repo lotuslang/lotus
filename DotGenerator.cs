@@ -153,9 +153,12 @@ public class Graph
         }
 
         if (includeProps) {
-            code.Add(GraphProps);
-            code.Add(NodeProps);
-            code.Add(EdgeProps);
+            foreach (var props in new[] { GraphProps, NodeProps, EdgeProps }) {
+                foreach (var prop in props) {
+                    code.Add(StringComparer.Instance.GetHashCode(prop.Key));
+                    code.Add(StringComparer.Instance.GetHashCode(prop.Value));
+                }
+            }
         }
 
         return code.ToHashCode();

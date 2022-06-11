@@ -72,8 +72,6 @@ partial class Program
         var fileStr = file.ToString();
 
         if (fileStr == "-") {
-            Console.WriteLine("Reading from stdin");
-
             using var stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
 
             tokenizer = new LotusTokenizer(stdin.ReadToEnd());
@@ -87,7 +85,7 @@ partial class Program
     static int HandleParsing(LotusTokenizer tokenizer, out List<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);
 
-        nodes = (parser.Select(node => node as TopLevelNode)).ToList();
+        nodes = parser.ToList();
 
         if (Logger.HasErrors) {
             var count = Logger.ErrorCount;

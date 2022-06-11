@@ -1,5 +1,6 @@
 # VS Code
 .vscode/
+.idea/
 
 # Visual studio
 .vs/

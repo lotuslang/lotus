@@ -111,7 +111,7 @@ public static class Logger
         return sb.ToString();
     }
 
-    public static string FormatUnexpected(UnexpectedError error) {
+    internal static MarkupBuilder FormatUnexpected(UnexpectedError error) {
         var sb = new MarkupBuilder("Unexpected ");
 
         switch (error) {
@@ -166,14 +166,14 @@ public static class Logger
             _ => sb
         );
 
-        return sb.ToString();
+        return sb;
     }
 
-    public static string FormatContextualized(IContextualized error) {
-        return "Error happened in " + error.In;
+    internal static MarkupBuilder FormatContextualized(IContextualized error) {
+        return new MarkupBuilder("Error happened in " + error.In);
     }
 
-    public static string FormatLocalized(ILocalized error) {
+    internal static MarkupBuilder FormatLocalized(ILocalized error) {
         var sb = new MarkupBuilder();
         var location = error.Location;
         var fileInfo = new FileInfo(location.filename);
@@ -220,7 +220,7 @@ public static class Logger
             sb.Append(FormatTextAt(location, new SourceCode(new Uri(fileInfo.FullName))));
         }
 
-        return sb.ToString();
+        return sb;
     }
 
     private static string FormatTextAt(LocationRange range) {

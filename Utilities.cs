@@ -157,7 +157,8 @@ internal static class Utilities
     [System.Diagnostics.DebuggerStepThrough]
 	public static IEnumerable<TMatch> WhereType<TMatch>(this IEnumerable list) {
 		foreach (var item in list) {
-			if (item is TMatch matched) yield return matched;
+			if (item is TMatch matched)
+                yield return matched;
 		}
 	}
 

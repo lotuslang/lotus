@@ -74,7 +74,7 @@ public static class Logger
     }
 
     public static string Format(LotusError error) {
-        var sb = new StringBuilder();
+        var sb = new MarkupBuilder();
 
         // Interfaces to implement :
         //      - ILocalized
@@ -112,7 +112,7 @@ public static class Logger
     }
 
     public static string FormatUnexpected(UnexpectedError error) {
-        var sb = new StringBuilder("Unexpected ");
+        var sb = new MarkupBuilder("Unexpected ");
 
         switch (error) {
             case IValued<Token> unxToken:
@@ -174,8 +174,8 @@ public static class Logger
     }
 
     public static string FormatLocalized(ILocalized error) {
+        var sb = new MarkupBuilder();
         var location = error.Location;
-        var sb = new StringBuilder();
         var fileInfo = new FileInfo(location.filename);
 
         var relPath = "";

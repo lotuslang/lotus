@@ -35,7 +35,8 @@ internal static class Utilities
         return count;
     }
 
-    public static bool IsName(ValueNode node) => ASTHelper.IsName((StatementExpressionNode)node);
+    public static bool IsName(ValueNode node)
+        => ASTHelper.IsName((StatementExpressionNode)node);
 
     [System.Diagnostics.DebuggerStepThrough]
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
@@ -89,11 +90,13 @@ internal static class Utilities
     }
 
     [System.Diagnostics.DebuggerStepThrough]
-    public static string Join<T>(string separator, Func<T, string> convert, params T[] value) => Join(separator, convert, coll: value);
+    public static string Join<T>(string separator, Func<T, string> convert, params T[] value)
+        => Join(separator, convert, coll: value);
 
     [System.Diagnostics.DebuggerStepThrough]
     public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
         var count = coll.Count();
+
         if (count == 0) {
             return "";
         } else if (count == 1) {
@@ -175,28 +178,25 @@ internal static class Utilities
 		return new Stack<T>(arr);
 	}
 
-    public static string ToExpectedString(IEnumerable<TokenKind> expected) {
-        return '`' + String.Join("`, or `", expected) + '`';
-    }
+    public static string ToExpectedString(IEnumerable<TokenKind> expected)
+        => '`' + String.Join("`, or `", expected) + '`';
 
-    public static string ToExpectedString(IEnumerable<Type> expected) {
-        return '`' + String.Join("`, or `", expected.Select(type => type.Name)) + '`';
-    }
+    public static string ToExpectedString(IEnumerable<Type> expected)
+        => '`' + String.Join("`, or `", expected.Select(type => type.Name)) + '`';
 
-    public static string ToExpectedString(IEnumerable expected) {
-        return '\''+ String.Join("', or '", expected) + '\'';
-    }
+    public static string ToExpectedString(IEnumerable expected)
+        => '\'' + String.Join("', or '", expected) + '\'';
 
-    public static Uri RelativeToPWD(this Uri uri) => new Uri(System.IO.Directory.GetCurrentDirectory()).MakeRelativeUri(uri);
+    public static Uri RelativeToPWD(this Uri uri)
+        => new Uri(System.IO.Directory.GetCurrentDirectory()).MakeRelativeUri(uri);
 
     public static string GetDisplayName(this Type type) {
-        var output = "";
+        if (!type.IsGenericType)
+            return type.Name;
 
-        if (type.IsGenericType)
-            output += type.Name.Remove(type.Name.Length - 2) + '<' + String.Join(", ", type.GenericTypeArguments.Select(t => t.Name)) + '>';
-        else
-            output += type.Name;
-
-        return output;
+        return type.Name.Remove(type.Name.Length - 2)
+             + '<'
+             + String.Join(", ", type.GenericTypeArguments.Select(t => t.Name))
+             + '>';
     }
 }

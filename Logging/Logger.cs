@@ -30,9 +30,9 @@ public static class Logger
 
     public static void PrintAllErrors() {
         if (ErrorCount == 1) {
-            Console.Error.WriteLine("There was an error, please fix it before proceeding.\n");
+            Console.Error.WriteLine("There was an error, please fix it before proceeding.");
         } else if (ErrorCount > 1) {
-            Console.Error.WriteLine("In total, there were " + ErrorCount + " errors. Please fix them before proceeding.\n");
+            Console.Error.WriteLine("There were " + ErrorCount + " build errors. Fix them before proceeding.");
         }
 
         var orderedErrorStack = errorStack.Reverse()/*.OrderBy(e => {
@@ -44,7 +44,7 @@ public static class Logger
         // Problems :
         //      - They won't be in order anymore (because we'll have to use a ConcurrentBag)
         foreach (var error in orderedErrorStack) {
-            Console.WriteLine();
+            Console.Error.WriteLine();
 
             var errorTypeString =
                   error.GetType().GetDisplayName()
@@ -54,7 +54,7 @@ public static class Logger
 #endif
                 ;
 
-            // TODO: WHy not try to center the names when there's multiple exceptions ?
+            // TODO: Why not try to center the names when there's multiple exceptions ?
             var frontCharCount = Console.WindowWidth - errorTypeString.Length;
 
             if (frontCharCount > 2) {
@@ -139,7 +139,7 @@ public static class Logger
                 break;
             case IValued<char> unxChar:
                 var chr = unxChar.Value;
-                if (chr == '\n' || chr == '\r') {
+                if (chr is '\n' or '\r') {
                     sb.Append("newline character.");
                 } else if (chr == '\t') {
                     sb.Append("tabulation character.");
@@ -188,7 +188,7 @@ public static class Logger
         //      - Underline the path and put a '@' prefix
         //      - Use the '-->' prefix
         //      - Put in bold
-        sb.AppendLine($"\t @{relPath}({location.firstLine}:{location.firstColumn})\n");
+        sb.AppendLine($"\t --> @{relPath}({location.firstLine}:{location.firstColumn})");
 
         if (!File.Exists(location.filename)) {
             string sourceCode;
@@ -214,6 +214,7 @@ public static class Logger
                     new SourceCode(sourceCode)
                 )
             );
+
             sb.Append("WARNING : This source code is approximated, because file " + location.filename + " could not be found");
         } else {
             sb.Append(FormatTextAt(location, new SourceCode(new Uri(fileInfo.FullName))));

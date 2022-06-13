@@ -8,7 +8,7 @@ public class ConsumerEnumerator<T> : IEnumerator<T>
 
     public T Current => _current;
 
-    object IEnumerator.Current => throw new System.NotImplementedException();
+    object IEnumerator.Current => _current!; // i dont care tbh
 
     public ConsumerEnumerator(IConsumer<T> consumer) {
         this.consumer = consumer;
@@ -26,7 +26,7 @@ public class ConsumerEnumerator<T> : IEnumerator<T>
         return true;
     }
 
-    public void Reset() => throw new System.NotImplementedException();
+    public void Reset() => throw new NotImplementedException();
     // suggested by roslyn, don't know either :shrug:
-    public void Dispose() => System.GC.SuppressFinalize(this);
+    public void Dispose() => GC.SuppressFinalize(this);
 }

@@ -1,8 +1,13 @@
 using System.Text;
 
-internal class MarkupBuilder
+internal sealed class MarkupBuilder
 {
     private MarkupChain _list;
+
+    private static readonly Markup.StyleMarker STYLE_POP = Markup.StyleMarker.Reset;
+    private static readonly Markup.ColorMarker FGCOLOR_POP = Markup.ColorMarker.ResetForeground;
+    private static readonly Markup.ColorMarker BGCOLOR_POP = Markup.ColorMarker.ResetBackground;
+    private static readonly Markup.TextFormatMarker FMT_POP = Markup.TextFormatMarker.None;
 
     internal MarkupBuilder() {
         _list = new MarkupChain();
@@ -18,7 +23,7 @@ internal class MarkupBuilder
     }
 
     public MarkupBuilder PopStyle() {
-        _list.AddLast(Markup.StyleMarker.Default);
+        _list.AddLast(STYLE_POP);
         return this;
     }
 
@@ -28,7 +33,7 @@ internal class MarkupBuilder
     }
 
     public MarkupBuilder PopTextFormat() {
-        _list.AddLast(Markup.TextFormatMarker.Default);
+        _list.AddLast(FMT_POP);
         return this;
     }
 
@@ -38,7 +43,7 @@ internal class MarkupBuilder
     }
 
     public MarkupBuilder PopColor(bool asBackground) {
-        _list.AddLast(asBackground ? Markup.ColorMarker.DefaultBackground : Markup.ColorMarker.DefaultForeground);
+        _list.AddLast(asBackground ? BGCOLOR_POP : FGCOLOR_POP);
         return this;
     }
 
@@ -159,6 +164,27 @@ internal class MarkupBuilder
         var bgColorStack = new Stack<Markup.ColorMarker>();
         var fmtStack = new Stack<Markup.TextFormatMarker>();
 
+        void ReapplyStacks() {
+            // reset all styles
+            sb.Append(Markup.StyleMarker.Reset);
+
+            if (styleStack.TryPeek(out var s)) {
+                sb.Append(s);
+            }
+
+            if (fgColorStack.TryPeek(out var fc)) {
+                sb.Append(fc);
+            }
+
+            if (bgColorStack.TryPeek(out var bc)) {
+                sb.Append(bc);
+            }
+
+            if (fmtStack.TryPeek(out var f)) {
+                sb.Append(f);
+            }
+        }
+
         foreach (var node in _list) {
             if (node is Markup.Text) {
                 sb.Append(node);
@@ -167,62 +193,43 @@ internal class MarkupBuilder
 
             if (node is Markup.ColorMarker cm) {
                 if (cm.IsBackground) {
-                    if (cm != Markup.ColorMarker.DefaultBackground) {
+                    if (cm != BGCOLOR_POP) {
                         bgColorStack.Push(cm);
                         sb.Append(cm);
                         continue;
                     }
 
-                    if (!bgColorStack.TryPop(out _))
-                        continue;
-
-                    if (bgColorStack.TryPeek(out cm!))
-                        sb.Append(cm);
-                    else
-                        sb.Append(Markup.ColorMarker.DefaultBackground);
+                    bgColorStack.TryPop(out _);
+                    ReapplyStacks();
                 } else {
-                    if (cm != Markup.ColorMarker.DefaultForeground) {
+                    if (cm != FGCOLOR_POP) {
                         fgColorStack.Push(cm);
                         sb.Append(cm);
                         continue;
                     }
 
-                    if (!fgColorStack.TryPop(out _))
-                        continue;
-
-                    if (fgColorStack.TryPeek(out cm!))
-                        sb.Append(cm);
-                    else
-                        sb.Append(Markup.ColorMarker.DefaultForeground);
+                    fgColorStack.TryPop(out _);
+                        ReapplyStacks();
                 }
             } else if (node is Markup.StyleMarker sm) {
-                if (sm != Markup.StyleMarker.Default) {
+                if (sm != STYLE_POP) {
                     styleStack.Push(sm);
                     sb.Append(sm);
                     continue;
                 }
 
-                if (!styleStack.TryPop(out _))
-                    continue;
-
-                if (styleStack.TryPeek(out sm!))
-                    sb.Append(sm);
-                else
-                    sb.Append(Markup.StyleMarker.Default);
+                styleStack.TryPop(out _);
+                ReapplyStacks();
+                ReapplyStacks();
             } else if (node is Markup.TextFormatMarker tfm) {
-                if (tfm != Markup.TextFormatMarker.Default) {
+                if (tfm != FMT_POP) {
                     fmtStack.Push(tfm);
                     sb.Append(tfm);
                     continue;
                 }
 
-                if (!fmtStack.TryPop(out _))
-                    continue;
-
-                if (fmtStack.TryPeek(out tfm!))
-                    sb.Append(tfm);
-                else
-                    sb.Append(Markup.TextFormatMarker.Reset);
+                fmtStack.TryPop(out _);
+                ReapplyStacks();
             }
         }
 

@@ -9,14 +9,19 @@ internal record Style(
 )
 {
     public override string ToString() {
-        var output = "";
+        var output = "\x1b[";
 
-        if (Foreground is not null)
-            output += Foreground.GetFGString();
-        if (Background is not null)
-            output += Background.GetBGString();
+        if (Foreground is not null) {
+            output += ';' + Foreground.GetFGString();
+        }
 
-        return output + MarkupUtils.ToString(Format);
+        if (Background is not null) {
+            output += ';' + Background.GetBGString();
+        }
+
+        output += ';' + MarkupUtils.GetCode(Format);
+
+        return output + 'm';
     }
 
     internal string DbgString() {

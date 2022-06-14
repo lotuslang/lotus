@@ -130,6 +130,9 @@ internal sealed class MarkupBuilder
     public MarkupBuilder Append(char text, TextColor color) => Append(text.ToString(), color);
     public MarkupBuilder Append(object obj, TextColor color) => Append(obj.ToString()!, color);
 
+    public MarkupBuilder Append(char text, TextFormat format) => Append(text.ToString(), format);
+    public MarkupBuilder Append(object obj, TextFormat format) => Append(obj.ToString()!, format);
+
     public MarkupBuilder AppendLine() => Append("\n");
     public MarkupBuilder AppendLine(string text) => Append(text + '\n');
     public MarkupBuilder AppendLine(char text) => Append(text + '\n');
@@ -145,6 +148,11 @@ internal sealed class MarkupBuilder
     public MarkupBuilder AppendLine(char text, TextColor color) => Append(text + '\n', color);
     public MarkupBuilder AppendLine(object obj, TextColor color) => Append(obj.ToString() + '\n', color);
     public MarkupBuilder AppendLine(MarkupBuilder markups, TextColor color) => Append(markups.AppendLine(), color);
+
+    public MarkupBuilder AppendLine(string text, TextFormat format) => Append(text + '\n', format);
+    public MarkupBuilder AppendLine(char text, TextFormat format) => Append(text + '\n', format);
+    public MarkupBuilder AppendLine(object obj, TextFormat format) => Append(obj.ToString() + '\n', format);
+    public MarkupBuilder AppendLine(MarkupBuilder markups, TextFormat format) => Append(markups.AppendLine(), format);
 
     public override string ToString() {
         var sb = new StringBuilder();

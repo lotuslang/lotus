@@ -2,10 +2,10 @@ using System.Text;
 
 internal class MarkupBuilder
 {
-    private LinkedList<Markup> _list;
+    private MarkupChain _list;
 
     internal MarkupBuilder() {
-        _list = new LinkedList<Markup>();
+        _list = new MarkupChain();
     }
 
     internal MarkupBuilder(string text) : this() {

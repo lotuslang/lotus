@@ -38,7 +38,7 @@ internal static class MarkupUtils
                   "22;" // bold + faint
                 + "23;" // italic
                 + "24;" // underline
-                + "29;" // strikethrough
+                + "29" // strikethrough
             ;
         }
 

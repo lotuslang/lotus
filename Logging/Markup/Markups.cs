@@ -8,7 +8,7 @@ internal abstract record Markup
     [DebuggerDisplay("{DbgString()}")]
     public record TextFormatMarker(TextFormat Format) : Markup
     {
-        public static readonly TextFormatMarker Default =
+        public static readonly TextFormatMarker None =
             new TextFormatMarker(TextFormat.None);
 
         public static readonly TextFormatMarker Reset =
@@ -25,13 +25,14 @@ internal abstract record Markup
     [DebuggerDisplay("{DbgString()}")]
     public record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
-        public static readonly ColorMarker DefaultBackground =
-            new ColorMarker(TextColor.DefaultColor, true);
-        public static readonly ColorMarker DefaultForeground =
-            new ColorMarker(TextColor.DefaultColor, false);
+        public static readonly ColorMarker ResetBackground =
+            new ColorMarker(TextColor.ResetColor, true);
+        public static readonly ColorMarker ResetForeground =
+            new ColorMarker(TextColor.ResetColor, false);
 
         public override string ToString()
-            => IsBackground ? Color.GetBGString() : Color.GetFGString();
+            => "\x1b[" + (IsBackground ? Color.GetBGString() : Color.GetFGString()) + 'm';
+
         internal override string DbgString()
             => $"{(IsBackground ? "BG" : "FG")}({Color.GetType().Name})";
     }
@@ -40,12 +41,12 @@ internal abstract record Markup
     [DebuggerDisplay("{DbgString()}")]
     public record StyleMarker(Style Style) : Markup
     {
-        public static readonly StyleMarker Default =
+        public static readonly StyleMarker Reset =
             new StyleMarker(
                 new Style(
-                    TextColor.DefaultColor,
-                    TextColor.DefaultColor,
-                    TextFormat.None));
+                    TextColor.ResetColor,
+                    TextColor.ResetColor,
+                    TextFormat.Reset));
 
         public override string ToString()
             => Style.ToString();

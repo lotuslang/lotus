@@ -1,4 +1,7 @@
-[System.Diagnostics.DebuggerStepThrough]
+using System.Diagnostics;
+
+[DebuggerStepThrough]
+[DebuggerDisplay("{DbgString()}")]
 internal record Style(
     TextColor? Foreground = null,
     TextColor? Background = null,
@@ -14,5 +17,27 @@ internal record Style(
             output += Background.GetBGString();
 
         return output + MarkupUtils.ToString(Format);
+    }
+
+    internal string DbgString() {
+        var output = "";
+
+        if (Foreground is not null) {
+            output += Foreground.GetType().Name;
+        }
+
+        output += " / ";
+
+        if (Background is not null) {
+            output += Background.GetType().Name;
+        }
+
+        output += " / ";
+
+        if (Format is not TextFormat.None) {
+            output += Format.ToString() + "/";
+        }
+
+        return output[..^1];
     }
 }

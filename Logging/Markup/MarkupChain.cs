@@ -2,7 +2,7 @@ using System.Collections;
 
 internal sealed class MarkupChain : IEnumerable<Markup>
 {
-    [System.Diagnostics.DebuggerDisplay("{Prev?.Value.ToString() ?? \"\"} < {Value.ToString()} > {Next?.Value.ToString() ?? \"\"}")]
+    [System.Diagnostics.DebuggerDisplay("{Prev?.Value.DbgString() ?? \"\"} < {Value.DbgString()} > {Next?.Value.DbgString() ?? \"\"}")]
     internal sealed class MarkupNode {
         public Markup Value { get; init; }
         public MarkupNode? Next { get; set; }
@@ -109,7 +109,7 @@ internal sealed class MarkupChain : IEnumerable<Markup>
             return true;
         }
 
-        public void Reset() => throw new NotImplementedException();
+        public void Reset() => _nextNode = chain.head;
         // suggested by roslyn, don't know either :shrug:
         public void Dispose() => GC.SuppressFinalize(this);
     }

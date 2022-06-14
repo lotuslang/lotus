@@ -1,6 +1,11 @@
+using System.Diagnostics;
+
 internal abstract record Markup
 {
-    [System.Diagnostics.DebuggerStepThrough]
+    internal abstract string DbgString();
+
+    [DebuggerStepThrough]
+    [DebuggerDisplay("{DbgString()}")]
     public record TextFormatMarker(TextFormat Format) : Markup
     {
         public static readonly TextFormatMarker Default =
@@ -11,9 +16,13 @@ internal abstract record Markup
 
         public override string ToString()
             => MarkupUtils.ToString(Format);
+
+        internal override string DbgString()
+            => $"FMT({Format})";
     }
 
-    [System.Diagnostics.DebuggerStepThrough]
+    [DebuggerStepThrough]
+    [DebuggerDisplay("{DbgString()}")]
     public record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker DefaultBackground =
@@ -23,9 +32,12 @@ internal abstract record Markup
 
         public override string ToString()
             => IsBackground ? Color.GetBGString() : Color.GetFGString();
+        internal override string DbgString()
+            => $"{(IsBackground ? "BG" : "FG")}({Color.GetType().Name})";
     }
 
-    [System.Diagnostics.DebuggerStepThrough]
+    [DebuggerStepThrough]
+    [DebuggerDisplay("{DbgString()}")]
     public record StyleMarker(Style Style) : Markup
     {
         public static readonly StyleMarker Default =
@@ -37,11 +49,16 @@ internal abstract record Markup
 
         public override string ToString()
             => Style.ToString();
+
+        internal override string DbgString()
+            => "STY(" + Style.DbgString() + ")";
     }
 
-    [System.Diagnostics.DebuggerStepThrough]
+    [DebuggerStepThrough]
     public record Text(string Content) : Markup
     {
         public override string ToString() => Content;
+
+        internal override string DbgString() => Content;
     }
 }

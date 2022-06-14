@@ -88,9 +88,7 @@ partial class Program
         nodes = parser.ToList();
 
         if (Logger.HasErrors) {
-            var count = Logger.ErrorCount;
             Logger.PrintAllErrors();
-            Console.Error.WriteLine("In total, there were " + count + " errors. Please fix them.");
 
             return 1;
         }

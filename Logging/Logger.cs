@@ -29,11 +29,7 @@ public static class Logger
     }
 
     public static void PrintAllErrors() {
-        if (ErrorCount == 1) {
-            Console.Error.WriteLine("There was an error, please fix it before proceeding.");
-        } else if (ErrorCount > 1) {
-            Console.Error.WriteLine("There were " + ErrorCount + " build errors. Fix them before proceeding.");
-        }
+        var sb = new MarkupBuilder();
 
         var orderedErrorStack = errorStack.Reverse()/*.OrderBy(e => {
             if (e is ILocalized el) return el.Location;
@@ -44,7 +40,7 @@ public static class Logger
         // Problems :
         //      - They won't be in order anymore (because we'll have to use a ConcurrentBag)
         foreach (var error in orderedErrorStack) {
-            Console.Error.WriteLine();
+            sb.AppendLine();
 
             var errorTypeString =
                   error.GetType().GetDisplayName()
@@ -58,22 +54,59 @@ public static class Logger
             var frontCharCount = Console.WindowWidth - errorTypeString.Length;
 
             if (frontCharCount > 2) {
+                sb.PushTextFormat(TextFormat.Faint);
                 var backCharCount = Console.WindowWidth / 5;
 
-                if (frontCharCount > backCharCount) {
-                    errorTypeString += " " + new string('-', backCharCount);
+                var backChars = "";
 
-                    Console.Error.Write(new string('-', frontCharCount - 2 - backCharCount));
+                if (frontCharCount > backCharCount) {
+                    backChars = " " + new string('-', backCharCount);
+
+                    sb.Append(new string('-', frontCharCount - 2 - backCharCount));
                 }
 
-                Console.Error.Write(" " + errorTypeString + " \n");
+                sb.Append(" " + errorTypeString,
+                    new Style(
+                        Foreground: TextColor.RedColor,
+                        Format: TextFormat.Reset
+                    )
+                );
+
+                sb.AppendLine(backChars + "\n");
+
+                sb.PopTextFormat();
             }
 
-            Console.Error.Write(Format(error));
+            sb.Append(Format(error));
         }
+
+        sb.PushTextFormat(TextFormat.Bold | TextFormat.Italic | TextFormat.Underline);
+
+        if (ErrorCount == 1) {
+            sb.AppendLine("There was an error, please fix it before proceeding.");
+        } else if (ErrorCount > 1) {
+            sb.Append("There were ");
+            sb.Append(ErrorCount, TextColor.BlueColor);
+            sb.AppendLine(" build errors. Fix them before proceeding.");
+        }
+
+        sb.PopTextFormat();
+
+        Console.Error.Write(TerminalCompliantStringOf(sb));
     }
 
-    public static string Format(LotusError error) {
+    private static string TerminalCompliantStringOf(MarkupBuilder sb) {
+        if (Environment.GetEnvironmentVariable("NO_COLOR") is not null and not ""
+        ||  Console.IsOutputRedirected)
+            return sb.ToString();
+
+        return sb.Render();
+    }
+
+    public static string FormatError(LotusError error)
+        => TerminalCompliantStringOf(Format(error));
+
+    internal static MarkupBuilder Format(LotusError error) {
         var sb = new MarkupBuilder();
 
         // Interfaces to implement :
@@ -81,13 +114,11 @@ public static class Logger
         //      - IContextualized
         //      - UnexpectedError (abstract class)
 
-        sb.AppendLine();
-
         if (error is UnexpectedError eUnx) {
             sb.AppendLine(FormatUnexpected(eUnx)).AppendLine();
         } else if (error is IContextualized eCtx) {
-            // FormatUnexpected already takes care of context for us, so we only do it
-            // if the error is not UnexpectedError
+            //* FormatUnexpected already takes care of context for us, so we only do it
+            //* if the error is not UnexpectedError
             sb.AppendLine(FormatContextualized(eCtx)).AppendLine();
         }
 
@@ -95,8 +126,6 @@ public static class Logger
             // TODO: Allow passing a short message to be displayed in the sample
             sb.AppendLine(FormatLocalized(eLoc));
         }
-
-        sb.AppendLine();
 
         if (error.Message != null) {
             sb.AppendLine("\n" + error.Message);
@@ -108,7 +137,7 @@ public static class Logger
 
         sb.AppendLine();
 
-        return sb.ToString();
+        return sb;
     }
 
     internal static MarkupBuilder FormatUnexpected(UnexpectedError error) {
@@ -188,7 +217,9 @@ public static class Logger
         //      - Underline the path and put a '@' prefix
         //      - Use the '-->' prefix
         //      - Put in bold
-        sb.AppendLine($"\t --> @{relPath}({location.firstLine}:{location.firstColumn})");
+        sb.AppendLine($"\t --> @{relPath}({location.firstLine}:{location.firstColumn})", TextFormat.Bold);
+
+        sb.PushForeground(TextColor.BlueColor);
 
         if (!File.Exists(location.filename)) {
             string sourceCode;
@@ -219,6 +250,8 @@ public static class Logger
         } else {
             sb.Append(FormatTextAt(location, new SourceCode(new Uri(fileInfo.FullName))));
         }
+
+        sb.PopForeground();
 
         return sb;
     }

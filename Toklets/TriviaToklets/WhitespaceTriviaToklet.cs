@@ -8,8 +8,8 @@ public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken
 	private WhitespaceTriviaToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => input.Consume() != '\n' && Char.IsWhiteSpace(input.Current));
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() != '\n' && Char.IsWhiteSpace(input.Current));
 
     public WhitespaceTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;

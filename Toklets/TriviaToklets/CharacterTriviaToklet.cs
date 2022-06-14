@@ -5,10 +5,11 @@ public sealed class CharacterTriviaToklet : ITriviaToklet<CharacterTriviaToken>
 
     public CharacterTriviaToklet(char c) {
         Character = c;
+        _condition = (input => input.Consume() == Character);
     }
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => input.Consume() == Character);
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private Predicate<IConsumer<char>> _condition;
 
     public CharacterTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var currChar = input.Consume();

@@ -9,8 +9,8 @@ public sealed class NumberToklet : IToklet<NumberToken>
 	private NumberToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => {
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => {
                 var current = input.Consume();
 
                 return  Char.IsDigit(current)

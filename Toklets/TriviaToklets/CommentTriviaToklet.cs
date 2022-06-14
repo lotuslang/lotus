@@ -8,8 +8,8 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
 	private CommentTriviaToklet() : base() { }
 
-    public Predicate<IConsumer<char>> Condition
-        => (consumer => consumer.Consume() is '/' && (consumer.Consume() is '/' or '*'));
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (consumer => consumer.Consume() is '/' && (consumer.Consume() is '/' or '*'));
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {
 

@@ -8,8 +8,8 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 	private NewlineTriviaToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => input.Consume() is '\n');
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() is '\n');
 
     public NewlineTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;

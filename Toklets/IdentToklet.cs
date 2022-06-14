@@ -8,8 +8,8 @@ public sealed class IdentToklet : IToklet<Token>
 	private IdentToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => Char.IsLetter(input.Consume()) || input.Current == '_');
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => Char.IsLetter(input.Consume()) || input.Current == '_');
 
     public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
 

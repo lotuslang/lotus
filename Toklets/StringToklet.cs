@@ -8,8 +8,8 @@ public sealed class StringToklet : IToklet<StringToken>
 	private StringToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => input.Consume() == '\'' || input.Current == '"');
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() == '\'' || input.Current == '"');
 
     public StringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
 

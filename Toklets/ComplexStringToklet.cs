@@ -8,8 +8,8 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 	private ComplexStringToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => {
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => {
                 var current = input.Consume();
 
                 if (current != '$') return false;

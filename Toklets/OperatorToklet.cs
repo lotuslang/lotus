@@ -8,8 +8,8 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 	private OperatorToklet() : base() { }
 
 
-    public Predicate<IConsumer<char>> Condition
-        => (input => {
+    public Predicate<IConsumer<char>> Condition => _condition;
+	private static readonly Predicate<IConsumer<char>> _condition = (input => {
                 switch (input.Consume()) {
                     case   '+' or '-'
                         or '*' or '/'

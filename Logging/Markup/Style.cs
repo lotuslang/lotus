@@ -21,7 +21,7 @@ internal record Style(
 
         output += ';' + MarkupUtils.GetCode(Format);
 
-        return output + 'm';
+        return output + ";10m";
     }
 
     internal string DbgString() {

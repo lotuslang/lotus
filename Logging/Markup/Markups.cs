@@ -1,6 +1,7 @@
 internal abstract record Markup
 {
-    internal record TextFormatMarker(TextFormat Format) : Markup
+    [System.Diagnostics.DebuggerStepThrough]
+    public record TextFormatMarker(TextFormat Format) : Markup
     {
         public static readonly TextFormatMarker Default =
             new TextFormatMarker(TextFormat.None);
@@ -12,7 +13,8 @@ internal abstract record Markup
             => MarkupUtils.ToString(Format);
     }
 
-    internal record ColorMarker(TextColor Color, bool IsBackground) : Markup
+    [System.Diagnostics.DebuggerStepThrough]
+    public record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker DefaultBackground =
             new ColorMarker(TextColor.DefaultColor, true);
@@ -23,7 +25,8 @@ internal abstract record Markup
             => IsBackground ? Color.GetBGString() : Color.GetFGString();
     }
 
-    internal record StyleMarker(Style Style) : Markup
+    [System.Diagnostics.DebuggerStepThrough]
+    public record StyleMarker(Style Style) : Markup
     {
         public static readonly StyleMarker Default =
             new StyleMarker(
@@ -36,7 +39,8 @@ internal abstract record Markup
             => Style.ToString();
     }
 
-    internal record Text(string Content) : Markup
+    [System.Diagnostics.DebuggerStepThrough]
+    public record Text(string Content) : Markup
     {
         public override string ToString() => Content;
     }

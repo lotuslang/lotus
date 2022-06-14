@@ -29,8 +29,12 @@ internal static class MarkupUtils
     public static string ToString(this TextFormat format) {
         var output = "";
 
-        if (format == 0)
+        if (format == TextFormat.None)
             return output;
+
+        if ((format & TextFormat.Reset) != 0) {
+            output += "\x1b[1m";
+        }
 
         if ((format & TextFormat.Bold) != 0) {
             output += "\x1b[1m";

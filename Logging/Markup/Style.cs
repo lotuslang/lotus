@@ -1,19 +1,18 @@
-[Flags]
-internal enum TextFormat {
-    None = 0,
-    Reset = 1,
-    Bold = 2 * Reset,
-    Faint = 2 * Bold,
-    Underline = 2 * Faint,
-    Italic = 2 * Underline,
-    Strikethrough = 2 * Italic,
-}
+[System.Diagnostics.DebuggerStepThrough]
 internal record Style(
-    TextColor Foreground,
-    TextColor Background,
-    TextFormat TextFormat
+    TextColor? Foreground = null,
+    TextColor? Background = null,
+    TextFormat Format = TextFormat.None
 )
 {
-    public override string ToString()
-        => Foreground.GetFGString() + Background.GetBGString() + MarkupUtils.ToString(TextFormat);
+    public override string ToString() {
+        var output = "";
+
+        if (Foreground is not null)
+            output += Foreground.GetFGString();
+        if (Background is not null)
+            output += Background.GetBGString();
+
+        return output + MarkupUtils.ToString(Format);
+    }
 }

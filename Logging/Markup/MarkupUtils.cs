@@ -33,7 +33,7 @@ internal static class MarkupUtils
             return output;
 
         if ((format & TextFormat.Reset) != 0) {
-            output += "\x1b[1m";
+            output += "\x1b[0m";
         }
 
         if ((format & TextFormat.Bold) != 0) {

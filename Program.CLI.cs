@@ -12,19 +12,12 @@ partial class Program
     static FileInfo sourceCodeFile;
 
     static RootCommand BuildRootCommand() {
-        var rootCommand = new RootCommand("A lotus parser/typechecker") {
-            TreatUnmatchedTokensAsErrors = true
-        };
-
         var forceOption = new Option<bool>("--force", "Ignore compilation errors before executing commands");
         forceOption.AddAlias("-f");
 
-        var constantOption = new Option<bool>("--const", "Apply constant-coloring on the AST graph");
-        constantOption.AddAlias("-c");
-
         var fileArgument = new Argument<FileInfo>("input", "The file to read code from");
         fileArgument.SetDefaultValue(sourceCodeFile);
-        fileArgument.LegalFileNamesOnly();
+        fileArgument.LegalFilePathsOnly();
         fileArgument.Arity = ArgumentArity.ZeroOrOne;
         fileArgument.AddValidator((result) => {
             if (result.Tokens.Count == 0)
@@ -37,64 +30,120 @@ partial class Program
             }
         });
 
+        Command makeConstSubCmd(Action<Graph> act) {
+            var cmd = new Command("const", "Apply constant-coloring to the AST graph");
+            cmd.AddArgument(fileArgument);
+            cmd.SetHandler(ConstHandlerFactory(act), fileArgument, forceOption);
+            return cmd;
+        }
+
+        /*
+        *   parsex silent [file.txt]
+        */
+
         var silentVerb = new Command("silent", "Don't print anything to stdout (errors go to stderr)");
         silentVerb.AddArgument(fileArgument);
-        silentVerb.SetHandler(SilentHandler, fileArgument, forceOption);
+        silentVerb.SetHandler(
+            (file, force) => Task.FromResult(force ? 0 : HandleParsing(file, out _)),
+            fileArgument,
+            forceOption
+        );
+
+
+        /*
+        *   parsex print [file.txt]
+        */
 
         var printVerb = new Command("print", "Reconstruct the source file from the AST and print it");
         printVerb.AddArgument(fileArgument);
         printVerb.SetHandler(PrintHandler, fileArgument, forceOption);
 
-        var hashVerb = new Command("hash", "Print the hash of the AST graph");
-        hashVerb.AddArgument(fileArgument);
-        hashVerb.AddOption(constantOption);
-        hashVerb.SetHandler(HashHandler, fileArgument, constantOption, forceOption);
 
-        var graphVerb = new Command("graph", "Print graphviz code for the AST graph");
-        graphVerb.AddArgument(fileArgument);
-        graphVerb.AddOption(constantOption);
-        graphVerb.SetHandler(GraphHandler, fileArgument, constantOption, forceOption);
+        /*
+        *   parsex hash [file.txt]
+        *   parsex hash const [file.txt]
+        */
 
-        rootCommand.Add(forceOption);
+        var hashVerb = new Command("hash", "Print the hash of the AST graph") {
+            fileArgument
+        };
 
-        rootCommand.Add(silentVerb);
-        rootCommand.Add(printVerb);
-        rootCommand.Add(hashVerb);
-        rootCommand.Add(graphVerb);
+        hashVerb.SetHandler(
+            GraphHandlerFactory(
+                g => Console.WriteLine(g.GetHashCode())
+            ),
+            fileArgument,
+            forceOption
+        );
 
-        //rootCommand.AddArgument(fileArgument);
+        hashVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.GetHashCode())));
+
+
+        /*
+        *   parsex graph [file.txt]
+        *   parsex graph const [file.txt]
+        */
+
+        var graphVerb = new Command("graph", "Print graphviz code for the AST graph") {
+            fileArgument
+        };
+
+        graphVerb.SetHandler(
+            GraphHandlerFactory(
+                g => Console.WriteLine(g.ToText())
+            ),
+            fileArgument,
+            forceOption
+        );
+
+        graphVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.ToText())));
+
+        /*
+        *   parsex [--force] {silent, print, hash, graph}
+        */
+
+        var rootCommand = new RootCommand("A lotus parser/typechecker") {
+            forceOption, // global option
+            silentVerb,
+            printVerb,
+            hashVerb,
+            graphVerb,
+        };
+
+        rootCommand.TreatUnmatchedTokensAsErrors = true;
 
         return rootCommand;
     }
 
-    static Task<int> GraphHandler(FileInfo file, bool useConstants, bool force) {
-        var tokenizer = GetTokenizerForFile(file);
-        var exitCode = HandleParsing(tokenizer, out var tlNodes);
+    static Func<FileInfo, bool, Task<int>> GraphHandlerFactory(Action<Graph> act)
+        => (file, force) => {
+            var g = MakeGraph(file, force, out int exitCode);
 
-        if (exitCode != 0 && !force) {
-            return Task.FromResult(exitCode);
-        }
+            if (exitCode != 0 && !force) {
+                return Task.FromResult(exitCode);
+            }
 
-        Console.WriteLine(MakeGraph(tlNodes, useConstants, new Uri(file.FullName)).ToText());
+            act(g);
+            return Task.FromResult(0);
+        };
 
-        return Task.FromResult(0);
-    }
+    static Func<FileInfo, bool, Task<int>> ConstHandlerFactory(Action<Graph> act)
+        => (file, force) => {
+            var g = MakeGraph(
+                file,
+                Enumerable.OfType<TopLevelStatementNode>, // filter
+                (n => ASTHelper.ShowConstants(n)), // transform
+                force,
+                out int exitCode
+            );
 
-    static Task<int> HashHandler(FileInfo file, bool useConstants, bool force) {
-        var tokenizer = GetTokenizerForFile(file);
-        var exitCode = HandleParsing(tokenizer, out var tlNodes);
+            if (exitCode != 0 && !force) {
+                return Task.FromResult(exitCode);
+            }
 
-        if (exitCode != 0 && !force) {
-            return Task.FromResult(exitCode);
-        }
-
-        Console.WriteLine(MakeGraph(tlNodes, useConstants, new Uri(file.FullName)).GetHashCode());
-
-        return Task.FromResult(0);
-    }
-
-    static Task<int> SilentHandler(FileInfo file, bool force)
-        => Task.FromResult(force ? 0 : HandleParsing(file, out _));
+            act(g);
+            return Task.FromResult(0);
+        };
 
     static Task<int> PrintHandler(FileInfo file, bool force) {
         var tokenizer = GetTokenizerForFile(file);

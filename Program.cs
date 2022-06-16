@@ -28,38 +28,58 @@ partial class Program
         sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.txt"));
     }
 
-    static void AddGraphPrelude(Graph g, Uri file)
-        => AddGraphPrelude(g, Path.GetFileName(file.LocalPath));
+    static void AddGraphPrelude(Graph g, FileInfo file)
+        => AddGraphPrelude(g, Path.GetFileName(file.Name));
 
-    private static void AddGraphPrelude(Graph g, string path) {
+    private static void AddGraphPrelude(Graph g, Union<string, FileInfo, Uri> file) {
+        var path = file.Match(
+            str => str,
+            info => info.Name,
+            uri => uri.LocalPath
+        );
+
         g.AddNodeProp("fontname", "Consolas, monospace");
         g.AddGraphProp("fontname", "Consolas, monospace");
         g.AddGraphProp("label", $"Abstract Syntax Tree of {path}\\n\\n");
         g.AddGraphProp("labelloc", "top");
     }
 
-    static Graph MakeGraph(IEnumerable<TopLevelNode> nodes, bool useConstants, Uri file) {
-        var statementNodes =
-            nodes
-                .WhereType<TopLevelStatementNode>()
-                .Select(n => n.Statement);
-
-        var valueNodes =
-            statementNodes
-                .WhereType<StatementExpressionNode>()
-                .Select(n => n.Value);
+    static Graph MakeGraph(FileInfo file, bool force, out int exitCode) {
+        var tokenizer = GetTokenizerForFile(file);
+        exitCode = HandleParsing(tokenizer, out var tlNodes);
 
         var g = new Graph("AST");
 
-        AddGraphPrelude(g, file);
+        if (exitCode == 0 || force) {
+            AddGraphPrelude(g, file);
 
-        if (useConstants) {
-            foreach (var node in statementNodes) {
-                g.AddNode(ASTHelper.ShowConstants(node));
-            }
-        } else {
-            foreach (var node in nodes) {
+            foreach (var node in tlNodes) {
                 g.AddNode(ASTHelper.ToGraphNode(node));
+            }
+        }
+
+        return g;
+    }
+
+    static Graph MakeGraph<T>(
+        FileInfo file,
+        Func<IEnumerable<TopLevelNode>, IEnumerable<T>> filter,
+        Func<T, GraphNode> transform,
+        bool force,
+        out int exitCode
+    ) {
+        var tokenizer = GetTokenizerForFile(file);
+        exitCode = HandleParsing(tokenizer, out var tlNodes);
+
+        var g = new Graph("AST");
+
+        if (exitCode == 0 || force) {
+            var nodes = filter(tlNodes);
+
+            AddGraphPrelude(g, file);
+
+            foreach (var node in nodes) {
+                g.AddNode(transform(node));
             }
         }
 

@@ -83,11 +83,20 @@ public class TopLevelParser : Parser<TopLevelNode>
                 };
 
                 break;
+            default:
+                Tokenizer.Reconsume();
+                break;
         }
+
+        // get the token after the accessor; if we didn't get an accessor, then
+        // we'll just consume the same token again
+        currToken = Tokenizer.Consume();
 
         if (Grammar.TryGetTopLevelParslet(currToken, out var parslet)) {
             Current = parslet.Parse(this, currToken);
 
+            // TODO: Throw an error when there's a modifier but the node isn't
+            //       supposed to be moded
             if (accessKeyword != Token.NULL && Current is IAccessible accessibleCurrent)
                 accessibleCurrent.AccessKeyword = accessKeyword;
         } else {

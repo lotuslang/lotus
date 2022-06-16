@@ -93,7 +93,7 @@ public class ExpressionParser : Parser<ValueNode>
                     Tokenizer.Reconsume();
             }
 
-            return ValueNode.NULL with { Token = token, Location = Position };
+            return Default with { Token = token };
         }
 
         var left = Grammar.GetPrefixParslet(token).Parse(this, token);

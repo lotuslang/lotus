@@ -1,4 +1,4 @@
-[System.Diagnostics.DebuggerDisplay("<{Kind}> {rep.ToString()} @ {Location}")]
+[System.Diagnostics.DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
 public record Token : ILocalized
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);

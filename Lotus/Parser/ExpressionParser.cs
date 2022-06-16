@@ -183,6 +183,7 @@ public class ExpressionParser : Parser<ValueNode>
 
                 // if it's an identifier, we should reconsume it so the error doesn't run over
                 if (Tokenizer.Current.Kind == TokenKind.identifier) {
+                    isValid = false;
                     Tokenizer.Reconsume();
                 } else if (Tokenizer.Current.Kind == TokenKind.semicolon) {
                     isValid = false;
@@ -222,9 +223,6 @@ public class ExpressionParser : Parser<ValueNode>
 
         // we probably got out-of-scope (EOF or end of block)
         //
-        // TODO: Handle EOF differently (like show where the start of the tuple
-        // was instead of the bottom of the file)
-        //
         // Or maybe we should just do that all the time ? Like if we got an unexpected
         // token we could show the first line/element of the tuple, and then show the end
         // or even where the error occurred (this also goes for earlier errors)
@@ -242,7 +240,8 @@ public class ExpressionParser : Parser<ValueNode>
             } else {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     In = "a tuple",
-                    Expected = "an ending delimeter '" + end + "'"
+                    Expected = "an ending delimeter '" + end + "'",
+                    Location = items.LastOrDefault()?.Location ?? startingToken.Location
                 });
             }
 

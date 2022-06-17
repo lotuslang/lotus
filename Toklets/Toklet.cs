@@ -1,21 +1,19 @@
 using System;
 
-public class Toklet : IToklet<Token>
+public abstract class Toklet : IToklet<Token>
 {
-
-    private static Toklet _instance = new();
+    private static GenericToklet _instance = new GenericToklet();
     public static Toklet Instance => _instance;
 
-	private Toklet() : base() { }
+	protected Toklet() : base() { }
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (_ => true);
+    public abstract Predicate<IConsumer<char>> Condition { get; }
 
-    public virtual Token Consume(IConsumer<char> input, Tokenizer _) {
-        if (!input.Consume(out char currChar)) {
-            return new Token(currChar.ToString(), TokenKind.EOF, input.Position, false);
-        }
+    public abstract Token Consume(IConsumer<char> input, Tokenizer _);
 
-        return new(currChar.ToString(), currChar == ';' ? TokenKind.semicolon : TokenKind.delimiter, input.Position);
-    }
+    public static Toklet From(char c, TokenKind kind = TokenKind.delimiter)
+        => new CharToklet(c, kind);
+
+    public static Toklet From(string s, TokenKind kind = TokenKind.delimiter)
+        => new CharsToklet(s, kind);
 }

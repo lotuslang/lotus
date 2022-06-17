@@ -153,10 +153,8 @@ partial class Program
             return Task.FromResult(exitCode);
         }
 
-        var stmtNodes = tlNodes.WhereType<TopLevelStatementNode>();
-
-        foreach (var node in stmtNodes) {
-            Console.Write(ASTHelper.PrintStatement(node));
+        foreach (var node in tlNodes) {
+            Console.Write(ASTHelper.PrintTopLevel(node));
         }
 
         string s;

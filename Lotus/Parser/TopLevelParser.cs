@@ -69,9 +69,9 @@ public class TopLevelParser : Parser<TopLevelNode>
                 accessKeyword = (currToken as Token)!;
                 break;
             case "internal":
-                if (Tokenizer.Peek() != "protected")
+                if (Tokenizer.Peek() != "protected") {
                     accessKeyword = (currToken as Token)!;
-
+            } else {
                 accessKeyword = new Token(
                     currToken + " " + Tokenizer.Consume(),
                     TokenKind.keyword,
@@ -81,6 +81,7 @@ public class TopLevelParser : Parser<TopLevelNode>
                     // FIXME: We don't preserve the trivia between the two tokens :(
                     TrailingTrivia = Tokenizer.Current.TrailingTrivia
                 };
+            }
 
                 break;
             default:

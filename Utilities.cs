@@ -16,16 +16,18 @@ public static class Utilities
         "if",
         "else",
         "from",
-        "import",
-        "using",
-        "namespace",
-        "enum",
         "continue",
         "break",
+
         "public",
         "internal",
         "protected",
         "private",
+
+        "import",
+        "using",
+        "namespace",
+        "enum",
     };
 
     public static readonly HashSet<string> internalFunctions = new() {

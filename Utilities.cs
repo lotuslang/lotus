@@ -19,6 +19,7 @@ public static class Utilities
         "import",
         "using",
         "namespace",
+        "enum",
         "continue",
         "break",
         "public",

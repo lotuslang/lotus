@@ -38,6 +38,7 @@ public sealed class EnumParselet : ITopLevelParslet<EnumNode>
         var parent = ValueNode.NULL;
 
         if (parser.Tokenizer.Peek() == "::") {
+            parser.Tokenizer.Consume();
             parent = nameOrParent;
 
             if (!Utilities.IsName(parent)) {

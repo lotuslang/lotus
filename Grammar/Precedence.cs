@@ -37,6 +37,7 @@ Here's a beautiful ASCII table for operator precedence
 |            | a = c        | Assignment                                |
 +------------+--------------+-------------------------------------------+
 | 0          | ,            | Comma                                     |
+|            | a::b         | Inheritance                               |
 +------------+--------------+-------------------------------------------+
 
 Made with tablesgenerator.com
@@ -82,6 +83,7 @@ public enum Precedence {
     Comma = 0,
     Parenthesis = Comma,
     Curly = Comma,
+    DoubleColon = Comma,
 
     Assignment = Comma + 1,
     Declaration = Assignment,

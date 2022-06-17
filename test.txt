@@ -88,3 +88,24 @@ while (_global++ < 13)
 /* some /* nested */ comments */
 
 // some one-line comment
+
+public enum TokenKind {
+    EOF = 0,
+    delimiter,
+    identifier,
+    number,
+    bool,
+    string,
+    operator,
+    keyword,
+    semicolon,
+    trivia,
+}
+
+public enum TokenKind.trivia::TriviaKind {
+    EOF = 0,
+    comment,
+    whitespace,
+    newline,
+    character
+}

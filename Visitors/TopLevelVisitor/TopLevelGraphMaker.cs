@@ -55,19 +55,19 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(EnumNode node) {
-        var root = new GraphNode(node.GetHashCode(), "enum " + node.Name.Token.Representation)
+        var root = new GraphNode(node.GetHashCode(), "enum " + node.Name.TypeName.Token.Representation)
             .SetColor(Enum.color)
             .SetTooltip(Enum.tooltip);
 
-        if (node.Parent != ValueNode.NULL) {
+        if (node.Name.Parent != ValueNode.NULL) {
             root.Add(
                 new GraphNode(
-                    DeterministicHashCode.Combine(node.Parent, "parent"),
+                    DeterministicHashCode.Combine(node.Name.Parent, "parent"),
                     "parent"
                 )
                 .SetColor(EnumParent.color)
                 .SetTooltip(EnumParent.tooltip)
-                .Add(ASTHelper.ToGraphNode(node.Parent))
+                .Add(ASTHelper.ToGraphNode(node.Name.Parent))
             );
         }
 
@@ -96,5 +96,22 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
 
+    public GraphNode Visit(TypeDecName typeDec) {
+        var root = ASTHelper.ToGraphNode(typeDec.TypeName)
+                    .SetColor("")
+                    .SetTooltip("type name");
+
+        if (typeDec.Parent == ValueNode.NULL) {
+            root.Add(
+                new GraphNode(DeterministicHashCode.Combine(typeDec.Parent, "parent"), "parent") {
+                    ASTHelper.ToGraphNode(typeDec.Parent)
+                }
+            );
+        }
+
+        return root;
+    }
+
+    public GraphNode ToGraphNode(TypeDecName typeDec) => typeDec.Accept(this);
     public GraphNode ToGraphNode(TopLevelNode node) => node.Accept(this);
 }

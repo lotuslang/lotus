@@ -108,5 +108,57 @@ public class TopLevelParser : Parser<TopLevelNode>
         return Current;
     }
 
+    public TypeDecName ConsumeTypeDeclarationName() {
+        bool isValid = true;
+
+        var nameOrParent = ExpressionParser.Consume();
+
+        var nameValue = nameOrParent;
+        var parent = ValueNode.NULL;
+        var colonToken = Token.NULL;
+
+        if (Tokenizer.Peek() == "::") {
+            colonToken = Tokenizer.Consume();
+            parent = nameOrParent;
+
+            if (!Utilities.IsName(parent)) {
+                // TODO: make a custom error for things that are supposed to be names
+                // + that would allow them to be clearer about why the value cannot
+                //   be a name, because rn it would spit out "OperationNodes cannot
+                //   be used to specify an enum's parent" but to the user that doesn't
+                //   mean anything
+                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                    Value = parent,
+                    Message = parent.GetType().Name + "s cannot be used to specify the name of a base type",
+                    As = "a type's parent name"
+                });
+
+                isValid = false;
+            }
+
+            nameValue = ExpressionParser.Consume();
+        }
+
+        if (nameValue is not IdentNode name) {
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = nameValue,
+                Expected = "an identifier",
+                As = "a new type name"
+            });
+
+            isValid = false;
+            name = new IdentNode(
+                new IdentToken(
+                    nameValue.Token.Representation,
+                    nameValue.Token.Location,
+                    false
+                ),
+                false
+            );
+        }
+
+        return new TypeDecName(name, parent, colonToken, isValid);
+    }
+
     public override TopLevelParser Clone() => new(this);
 }

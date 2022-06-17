@@ -10,4 +10,6 @@ public interface ITopLevelVisitor<T>
     T Visit(NamespaceNode node) => Default(node);
     T Visit(UsingNode node) => Default(node);
     T Visit(EnumNode node) => Default(node);
+
+    T Visit(TypeDecName name);
 }

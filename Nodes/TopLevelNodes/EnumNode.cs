@@ -1,7 +1,6 @@
 public record EnumNode(
-    IdentNode Name,
+    TypeDecName Name,
     IList<ValueNode> Values,
-    ValueNode Parent,
     Token EnumToken,
     Token OpenBracket,
     Token CloseBracket,
@@ -9,9 +8,8 @@ public record EnumNode(
 ) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, CloseBracket.Location), IsValid), IAccessible {
     public new static readonly EnumNode NULL
         = new(
-            IdentNode.NULL,
+            TypeDecName.NULL,
             Array.Empty<ValueNode>(),
-            ValueNode.NULL,
             Token.NULL,
             Token.NULL,
             Token.NULL,

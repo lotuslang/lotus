@@ -32,50 +32,7 @@ public sealed class EnumParselet : ITopLevelParslet<EnumNode>
 
         bool isValid = true;
 
-        var nameOrParent = parser.ExpressionParser.Consume();
-
-        var nameValue = nameOrParent;
-        var parent = ValueNode.NULL;
-
-        if (parser.Tokenizer.Peek() == "::") {
-            parser.Tokenizer.Consume();
-            parent = nameOrParent;
-
-            if (!Utilities.IsName(parent)) {
-                // TODO: make a custom error for things that are supposed to be names
-                // + that would allow them to be clearer about why the value cannot
-                //   be a name, because rn it would spit out "OperationNodes cannot
-                //   be used to specify an enum's parent" but to the user that doesn't
-                //   mean anything
-                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                    Value = parent,
-                    Message = parent.GetType().Name + "s cannot be used to specify an enum's parent",
-                    As = "an enum's parent value"
-                });
-
-                isValid = false;
-            }
-
-            nameValue = parser.ExpressionParser.Consume();
-        }
-
-        if (nameValue is not IdentNode name) {
-            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = nameValue,
-                Expected = "an identifier",
-                As = "a new enum name"
-            });
-
-            isValid = false;
-            name = new IdentNode(
-                new IdentToken(
-                    nameValue.Token.Representation,
-                    nameValue.Token.Location,
-                    false
-                ),
-                false
-            );
-        }
+        var name = parser.ConsumeTypeDeclarationName();
 
         if (!parser.Tokenizer.Consume(out var openBracket) || openBracket != "{") {
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
@@ -141,6 +98,6 @@ public sealed class EnumParselet : ITopLevelParslet<EnumNode>
             isValid = false;
         }
 
-        return new EnumNode(name, values, parent, enumToken, openBracket, closingBracket, isValid);
+        return new EnumNode(name, values, enumToken, openBracket, closingBracket, isValid);
     }
 }

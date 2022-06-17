@@ -44,6 +44,8 @@ internal static class ASTHelper
 
     public static string PrintValue(ValueNode node) => ValuePrinter.Print(node);
 
+    public static string PrintTypeName(TypeDecName typeDec) => TopLevelPrinter.Print(typeDec);
+
     public static string PrintToken(Token token) => TokenPrinter.Print(token);
 
     public static GraphNode ToGraphNode(Token token) => TokenGraphMaker.ToGraphNode(token);
@@ -53,6 +55,9 @@ internal static class ASTHelper
     public static GraphNode ToGraphNode(ValueNode node) => StatementGraphMaker.ToGraphNode(node);
 
     public static GraphNode ToGraphNode(TopLevelNode node) => TopLevelGraphMaker.ToGraphNode(node);
+
+    public static GraphNode ToGraphNode(TypeDecName typeDec) => TopLevelGraphMaker.ToGraphNode(typeDec);
+
 
     public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
 

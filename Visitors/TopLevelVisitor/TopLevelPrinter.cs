@@ -19,14 +19,9 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
 
         s += ASTHelper.PrintToken(node.EnumToken);
 
-        if (node.Parent != ValueNode.NULL) {
-            s += ASTHelper.PrintNode(node.Parent)
-               + "::";
-        }
-
-        return s + ASTHelper.PrintNode(node.Name)
+        return s + Print(node.Name)
                  + ASTHelper.PrintToken(node.OpenBracket)
-                 + String.Join(", ", node.Values.Select(ASTHelper.PrintNode))
+                 + String.Join(",", node.Values.Select(ASTHelper.PrintNode))
                  + ASTHelper.PrintToken(node.CloseBracket);
     }
 
@@ -43,6 +38,15 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(UsingNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Name);
 
+    public string Visit(TypeDecName typeDec)
+            => typeDec.Parent == ValueNode.NULL
+                    ? ASTHelper.PrintNode(typeDec.TypeName)
+                    : ASTHelper.PrintNode(typeDec.Parent)
+                        + ASTHelper.PrintToken(typeDec.ColonToken)
+                        + ASTHelper.PrintNode(typeDec.TypeName);
+
+
+    public string Print(TypeDecName typeDec) => Visit(typeDec);
 
     public string Print(TopLevelNode node) => node.Accept(this);
 }

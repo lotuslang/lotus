@@ -17,7 +17,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
         base.Initialize(internalGrammar);
     }
 
-    private void InitializeTriviaToklets()
+    private void InitializeToklets()
         => internalGrammar
             .RegisterToklet(NumberToklet.Instance)
             .RegisterToklet(ComplexStringToklet.Instance)
@@ -27,7 +27,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterToklet(Toklet.Instance)
             ;
 
-    private void InitializeToklets()
+    private void InitializeTriviaToklets()
         => internalGrammar
             .RegisterTriviaToklet(CommentTriviaToklet.Instance)
             .RegisterTriviaToklet(WhitespaceTriviaToklet.Instance)
@@ -155,5 +155,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterTopLevelParslets("namespace", NamespaceParslet.Instance)
             .RegisterTopLevelParslets("from", ImportParslet.Instance)
             .RegisterTopLevelParslets("using", UsingParslet.Instance)
+            .RegisterTopLevelParslets("enum", EnumParselet.Instance)
             ;
 }

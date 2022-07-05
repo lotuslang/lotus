@@ -35,4 +35,10 @@ public record SimpleBlock
     {
         IsOneLiner = true;
     }
+
+    [System.Diagnostics.DebuggerHidden()]
+    [System.Diagnostics.DebuggerStepThrough()]
+    [System.Diagnostics.DebuggerNonUserCode()]
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    public T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

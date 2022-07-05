@@ -18,11 +18,11 @@ public abstract class UnexpectedError : LotusError, ILocalized, IContextualized
         }
     }
 
-    public string? In { get; init; }
+    public virtual string? In { get; init; }
 
-    public string? As { get; init; }
+    public virtual string? As { get; init; }
 
-    public Union<string, IEnumerable<string>, None> Expected { get; init; } = new None();
+    public virtual Union<string, IEnumerable<string>, None> Expected { get; init; } = new None();
 
     protected UnexpectedError(ErrorArea area, string caller, string callerPath)
         : base(area, caller, callerPath) { }

@@ -28,6 +28,7 @@ public static class Utilities
         "using",
         "namespace",
         "enum",
+        "struct",
     };
 
     public static readonly HashSet<string> internalFunctions = new() {
@@ -203,7 +204,7 @@ public static class Utilities
 
         return type.Name.Remove(type.Name.Length - 2)
              + '<'
-             + String.Join(", ", type.GenericTypeArguments.Select(t => t.GetDisplayName()))
+             + Join(", ", GetDisplayName, type.GenericTypeArguments)
              + '>';
     }
 }

@@ -10,5 +10,5 @@ public abstract record TopLevelNode(Token Token, LocationRange Location, bool Is
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 
-    private record Dummy() : TopLevelNode(Token.NULL, false);
+    internal record Dummy() : TopLevelNode(Token.NULL, false);
 }

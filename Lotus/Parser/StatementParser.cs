@@ -64,7 +64,7 @@ public class StatementParser : Parser<StatementNode>
 
         // if the token is EOF, return StatementNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
-            return (Current = Default);
+            return (Current = Default with { Location = currToken.Location });
         }
 
         if (Grammar.TryGetStatementParslet(currToken, out var parslet)) {

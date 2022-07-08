@@ -156,6 +156,24 @@ public static class Logger
                 break;
             case IValued<Node> unxNode:
                 var node = unxNode.Value;
+
+                if (node is ValueNode.Dummy or StatementNode.Dummy or TopLevelNode.Dummy) {
+                    return FormatUnexpected(
+                        new UnexpectedError<Token>(
+                            error.Area,
+                            caller: error.Caller,
+                            callerPath: error.CallerPath
+                        ) {
+                            Value = unxNode.Value.Token,
+                            As = error.As,
+                            In = error.In,
+                            Location = error.Location,
+                            Expected = error.Expected,
+                            Message = error.Message,
+                        }
+                    );
+                }
+
                 sb.Append(
                       node.GetType().Name
                     + " '"

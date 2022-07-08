@@ -15,5 +15,5 @@ public abstract record ValueNode(Token Token, LocationRange Location, bool IsVal
 
     public static explicit operator StatementNode(ValueNode node) => (StatementExpressionNode)node;
 
-    private record Dummy() : ValueNode(Token.NULL, false);
+    internal record Dummy() : ValueNode(Token.NULL, false);
 }

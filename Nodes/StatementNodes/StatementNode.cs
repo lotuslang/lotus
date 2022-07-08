@@ -14,5 +14,5 @@ public abstract record StatementNode(Token Token, LocationRange Location, bool I
 
     public static explicit operator TopLevelNode(StatementNode node) => (TopLevelStatementNode)node;
 
-    private record Dummy() : StatementNode(Token.NULL, false);
+    internal record Dummy() : StatementNode(Token.NULL, false);
 }

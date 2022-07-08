@@ -68,10 +68,9 @@ public class ExpressionParser : Parser<ValueNode>
 
             if (token.Kind == TokenKind.EOF) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                        Message = "Encountered an EOF where a value was expected",
-                        Location = Position
-                    }
-                );
+                    Message = "Encountered an EOF where a value was expected",
+                    Location = Position
+                });
             } else {
                 if (token.Kind == TokenKind.keyword)
                     notes = "You can't use " + token.Representation + " as an identifier/name, because it's a reserved keyword";
@@ -86,14 +85,14 @@ public class ExpressionParser : Parser<ValueNode>
                           "a bool, "
                         + (token.Kind != TokenKind.@operator ? "prefix operator, " : "")
                         + "string, variable name, or number",
-                        ExtraNotes = notes
+                    ExtraNotes = notes
                 });
 
                 if (token.Kind == TokenKind.semicolon)
                     Tokenizer.Reconsume();
             }
 
-            return Default with { Token = token };
+            return ConstantDefault with { Token = token, Location = token.Location };
         }
 
         var left = Grammar.GetPrefixParslet(token).Parse(this, token);
@@ -254,7 +253,7 @@ public class ExpressionParser : Parser<ValueNode>
                 Value = items.LastOrDefault() ?? ValueNode.NULL,
                 In = "a tuple",
                 Location = items.LastOrDefault()?.Location ?? Position,
-                Message =  (items.Count > expectedItemCount ? "There was too many" : "There wasn't enough")
+                Message = (items.Count > expectedItemCount ? "There were too many" : "There weren't enough")
                          + "values in this tuple.",
                 Expected = expectedItemCount + $" values, but got " + items.Count
             });

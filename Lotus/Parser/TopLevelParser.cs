@@ -57,7 +57,7 @@ public class TopLevelParser : Parser<TopLevelNode>
 
         // if the token is EOF, return TopLevelNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
-            return (Current = Default);
+            return (Current = Default with { Location = currToken.Location });
         }
 
         var accessKeyword = Token.NULL;

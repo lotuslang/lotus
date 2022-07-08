@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 public abstract class Parser<T> : IConsumer<T> where T : Node
 {
     protected readonly Queue<T> reconsumeQueue;
@@ -126,6 +128,68 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
         return Default;
     }
+
+    public bool TryConsume<TNode>([NotNullWhen(true)] out TNode? output, out T asNode) where TNode : T {
+        asNode = Consume();
+
+        output = asNode as TNode;
+
+        return output is not null;
+    }
+
+    public Result<TNode> TryConsume<TNode>(out T asNode) where TNode : T
+        => (asNode = Consume()) as TNode ?? Result<TNode>.Error;
+
+    public TNode Consume<TNode>(TNode defaultVal, Action<T> errorHandler) where TNode : T {
+        if (!TryConsume<TNode>(out var output, out var val)) {
+            if (!val.IsValid)
+                // if it's not valid, it probably already emitted an error
+                Logger.errorStack.Pop();
+
+            errorHandler(val);
+        }
+
+        return output ?? defaultVal;
+    }
+
+    public TNode Consume<TNode>(TNode defaultVal, string? @in = null, string? @as = null) where TNode : T
+        => Consume<TNode>(
+            defaultVal,
+            val =>
+                Logger.Error(new UnexpectedError<T>(ErrorArea.Parser) {
+                    Value = val,
+                    In = @in,
+                    As = @as,
+                    Expected = typeof(TNode).Name
+                })
+        );
+
+    public bool TryConsumeEither<TNode1, TNode2>(Union<TNode1, TNode2> defaultVal, out Union<TNode1, TNode2> res, out T asNode)
+        where TNode1 : T
+        where TNode2 : T {
+        asNode = Consume();
+
+        switch (asNode) {
+            case TNode1 t1:
+                res = t1;
+                return true;
+            case TNode2 t2:
+                res = t2;
+                return true;
+            default:
+                res = defaultVal;
+                return false;
+        }
+    }
+
+    public Result<Union<T1, T2>> TryConsumeEither<T1, T2>(out T asNode)
+        where T1 : T
+        where T2 : T
+        =>  (asNode = Consume()) switch {
+                T1 t1 => new(t1),
+                T2 t2 => new(t2),
+                _ => Result<Union<T1, T2>>.Error
+            };
 
     public abstract Parser<T> Clone();
     IConsumer<T> IConsumer<T>.Clone() => Clone();

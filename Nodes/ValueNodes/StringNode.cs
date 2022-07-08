@@ -7,9 +7,9 @@ public record StringNode(StringToken Token, bool IsValid = true)
 
     public new static readonly StringNode NULL = new(StringToken.NULL, false);
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 }

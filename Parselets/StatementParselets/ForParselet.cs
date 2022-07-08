@@ -1,11 +1,7 @@
 
 public sealed class ForParslet : IStatementParslet<ForNode>
 {
-
-    private static ForParslet _instance = new();
-    public static ForParslet Instance => _instance;
-
-	private ForParslet() : base() { }
+    public static readonly ForParslet Instance = new();
 
     public ForNode Parse(StatementParser parser, Token forToken) {
         if (forToken is not Token forKeyword || forKeyword != "for")

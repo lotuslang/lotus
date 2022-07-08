@@ -1,9 +1,6 @@
-using System;
-
 public abstract class Toklet : IToklet<Token>
 {
-    private static GenericToklet _instance = new GenericToklet();
-    public static Toklet Instance => _instance;
+    public static readonly Toklet Default = new Generic();
 
 	protected Toklet() : base() { }
 
@@ -11,9 +8,22 @@ public abstract class Toklet : IToklet<Token>
 
     public abstract Token Consume(IConsumer<char> input, Tokenizer _);
 
-    public static Toklet From(char c, TokenKind kind = TokenKind.delimiter)
+    public static IToklet<Token> From(char c, TokenKind kind = TokenKind.delimiter)
         => new CharToklet(c, kind);
 
-    public static Toklet From(string s, TokenKind kind = TokenKind.delimiter)
+    public static IToklet<Token> From(string s, TokenKind kind = TokenKind.delimiter)
         => new CharsToklet(s, kind);
+
+    private sealed class Generic : Toklet {
+        private static readonly Predicate<IConsumer<char>> _condition = (_ => true);
+        public override Predicate<IConsumer<char>> Condition => _condition;
+
+        public override Token Consume(IConsumer<char> input, Tokenizer _) {
+            if (!input.Consume(out char currChar)) {
+                return new Token(currChar.ToString(), TokenKind.EOF, input.Position, false);
+            }
+
+            return new(currChar.ToString(), TokenKind.delimiter, input.Position);
+        }
+    }
 }

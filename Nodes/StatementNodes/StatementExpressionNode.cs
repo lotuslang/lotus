@@ -3,9 +3,14 @@ public record StatementExpressionNode(ValueNode Value)
 {
     public static implicit operator ValueNode(StatementExpressionNode node) => node.Value;
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    public new LocationRange Location {
+        get => Value.Location;
+        init => Value = Value with { Location = value };
+    }
+
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

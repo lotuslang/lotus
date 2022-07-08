@@ -2,7 +2,7 @@ using System.Collections;
 
 internal sealed class MarkupChain : IEnumerable<Markup>
 {
-    [System.Diagnostics.DebuggerDisplay("{Prev?.Value.DbgString() ?? \"\"} < {Value.DbgString()} > {Next?.Value.DbgString() ?? \"\"}")]
+    [DebuggerDisplay("{Prev?.Value.DbgString() ?? \"\"} < {Value.DbgString()} > {Next?.Value.DbgString() ?? \"\"}")]
     internal sealed class MarkupNode {
         public Markup Value { get; init; }
         public MarkupNode? Next { get; set; }
@@ -74,10 +74,10 @@ internal sealed class MarkupChain : IEnumerable<Markup>
             AddLast(chain.head);
     }
 
-    public IEnumerator<Markup> GetEnumerator() => new MarkupChainEnumerator(this);
+    public IEnumerator<Markup> GetEnumerator() => new Enumerator(this);
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    internal class MarkupChainEnumerator : IEnumerator<Markup>
+    private class Enumerator : IEnumerator<Markup>
     {
         private readonly MarkupChain chain;
 
@@ -88,7 +88,7 @@ internal sealed class MarkupChain : IEnumerable<Markup>
 
         object? IEnumerator.Current => _item;
 
-        public MarkupChainEnumerator(MarkupChain chain) {
+        public Enumerator(MarkupChain chain) {
             this.chain = chain;
             _nextNode = chain.head;
         }

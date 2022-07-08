@@ -1,11 +1,6 @@
-
 public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
 {
-
-    private static StringLiteralParslet _instance = new();
-    public static StringLiteralParslet Instance => _instance;
-
-	private StringLiteralParslet() : base() { }
+    public static readonly StringLiteralParslet Instance = new();
 
     public StringNode Parse(ExpressionParser parser, Token token) {
         if (token is ComplexStringToken complexString) {

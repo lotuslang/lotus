@@ -1,15 +1,11 @@
 
 public sealed class OperatorToklet : IToklet<OperatorToken>
 {
-
-    private static OperatorToklet _instance = new();
-    public static OperatorToklet Instance => _instance;
-
-	private OperatorToklet() : base() { }
-
+    public static readonly OperatorToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => {
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (input => {
                 switch (input.Consume()) {
                     case   '+' or '-'
                         or '*' or '/'

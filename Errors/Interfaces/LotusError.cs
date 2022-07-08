@@ -1,5 +1,3 @@
-using System;
-
 public abstract class LotusError : Exception
 {
     public string Caller { get; }

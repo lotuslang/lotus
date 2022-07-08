@@ -1,10 +1,6 @@
 public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 {
-
-    private static DoWhileParslet _instance = new();
-    public static DoWhileParslet Instance => _instance;
-
-	private DoWhileParslet() : base() { }
+    public static readonly DoWhileParslet Instance = new();
 
     public WhileNode Parse(StatementParser parser, Token doToken) {
         if (doToken is not Token doKeyword || doKeyword != "do") {

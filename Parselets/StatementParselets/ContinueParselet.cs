@@ -1,10 +1,6 @@
 public sealed class ContinueParslet : IStatementParslet<ContinueNode>
 {
-
-    private static ContinueParslet _instance = new();
-    public static ContinueParslet Instance => _instance;
-
-	private ContinueParslet() : base() { }
+    public static readonly ContinueParslet Instance = new();
 
     public ContinueNode Parse(StatementParser parser, Token continueToken) {
         if (continueToken is not Token continueKeyword || continueKeyword != "continue") {

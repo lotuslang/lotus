@@ -1,11 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 public abstract class UnexpectedError : LotusError, ILocalized, IContextualized
 {
-
     // This is specifically null so that it's faster to check for
     protected LocationRange? loc = null;
 

@@ -1,26 +1,25 @@
 public class Tokenizer : IConsumer<Token>
 {
-
     public Token Current { get; protected set; }
 
     public Token Default {
         get => Token.NULL with { Location = Position };
     }
 
-    protected Queue<Token> reconsumeQueue;
+    protected Queue<Token> _reconsumeQueue;
 
     public LocationRange Position {
         get => Current.Location;
     }
 
-    protected StringConsumer input;
+    protected StringConsumer _input;
 
     public ReadOnlyGrammar Grammar { get; protected set; }
 
     protected Tokenizer() {
-        reconsumeQueue = new Queue<Token>();
+        _reconsumeQueue = new Queue<Token>();
 
-        input = new StringConsumer(Array.Empty<char>());
+        _input = new StringConsumer(Array.Empty<char>());
 
         Current = Token.NULL;
 
@@ -41,24 +40,24 @@ public class Tokenizer : IConsumer<Token>
     }
 
     public Tokenizer(StringConsumer stringConsumer, ReadOnlyGrammar grammar) : this(grammar) {
-        input = stringConsumer.Clone();
+        _input = stringConsumer.Clone();
     }
 
     public Tokenizer(IConsumer<char> consumer, ReadOnlyGrammar grammar) : this(grammar) {
-        input = new StringConsumer(consumer);
+        _input = new StringConsumer(consumer);
     }
 
     public Tokenizer(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(new StringConsumer(""), grammar) {
         var cloned = tokenConsumer.Clone();
         while (cloned.Consume(out _)) {
-            reconsumeQueue.Enqueue(tokenConsumer.Current);
+            _reconsumeQueue.Enqueue(tokenConsumer.Current);
         }
     }
 
     public Tokenizer(Tokenizer tokenizer) : this(tokenizer, tokenizer.Grammar) { }
 
-    public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer.input, grammar) {
-        reconsumeQueue = new Queue<Token>(tokenizer.reconsumeQueue);
+    public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer._input, grammar) {
+        _reconsumeQueue = new Queue<Token>(tokenizer._reconsumeQueue);
 
         Current = tokenizer.Current;
     }
@@ -70,12 +69,12 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out var token) && Object.ReferenceEquals(token, Current)) {
+        if (_reconsumeQueue.TryPeek(out var token) && Object.ReferenceEquals(token, Current)) {
             Logger.Warning("Calling reconsume multiple times in a row !", Position);
             return;
         }
 
-        reconsumeQueue.Enqueue(Current);
+        _reconsumeQueue.Enqueue(Current);
     }
 
     // Because of stupid interface rule
@@ -86,7 +85,7 @@ public class Tokenizer : IConsumer<Token>
 
         var output = Consume(preserveTrivia);
 
-        reconsumeQueue.Enqueue(output);
+        _reconsumeQueue.Enqueue(output);
 
         Current = oldCurrent;
 
@@ -112,7 +111,7 @@ public class Tokenizer : IConsumer<Token>
 
         foreach (var token in output.Reverse()) {
             // no we don't put it in the same loop as Consume() because then it would just consume the reconsume indefinitely
-            reconsumeQueue.Enqueue(token);
+            _reconsumeQueue.Enqueue(token);
         }
 
         return output;
@@ -130,44 +129,44 @@ public class Tokenizer : IConsumer<Token>
     public Token Consume(bool preserveTrivia = false) {
 
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
-        if (reconsumeQueue.Count != 0) {
-            return (Current = reconsumeQueue.Dequeue());
+        if (_reconsumeQueue.Count != 0) {
+            return (Current = _reconsumeQueue.Dequeue());
         }
 
         // If there is nothing left to consume, return an EOF token
-        if (!input.Consume(out var currChar)) {
+        if (!_input.Consume(out var currChar)) {
             return (Current = Default);
         }
 
-        input.Reconsume();
+        _input.Reconsume();
 
         if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
 
-            Current = Grammar.MatchToklet(input).Consume(input, this);
+            Current = Grammar.MatchToklet(_input).Consume(_input, this);
 
             if (leadingTrivia != null)
                 Current.AddLeadingTrivia(leadingTrivia);
 
-            if (input.Peek() != '\n') {
+            if (_input.Peek() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
                 if (trailingTrivia != null)
                     Current.AddTrailingTrivia(trailingTrivia);
             }
         } else {
-            Current = Grammar.MatchToklet(input).Consume(input, this);
+            Current = Grammar.MatchToklet(_input).Consume(_input, this);
         }
 
         return Current;
     }
 
     public TriviaToken? ConsumeTrivia() {
-        var triviaToklet = Grammar.MatchTriviaToklet(input);
+        var triviaToklet = Grammar.MatchTriviaToklet(_input);
 
         if (triviaToklet is null) return null;
 
-        return triviaToklet.Consume(input, this);
+        return triviaToklet.Consume(_input, this);
     }
 
     public IConsumer<Token> Clone() => new Tokenizer(this);

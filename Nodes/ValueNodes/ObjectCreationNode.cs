@@ -5,9 +5,9 @@ public record ObjectCreationNode(FunctionCallNode Invocation, Token Token, bool 
 
     public ValueNode TypeName => Invocation.Name;
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -5,7 +5,8 @@ public record EnumNode(
     Token OpenBracket,
     Token CloseBracket,
     bool IsValid
-) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, CloseBracket.Location), IsValid), IAccessible {
+) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, CloseBracket.Location), IsValid), IAccessible
+{
     public new static readonly EnumNode NULL
         = new(
             TypeDecName.NULL,
@@ -62,9 +63,9 @@ public record EnumNode(
         return _accessLevel;
     }
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

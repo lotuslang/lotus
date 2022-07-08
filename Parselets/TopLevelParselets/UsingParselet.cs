@@ -1,10 +1,6 @@
 public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 {
-
-    private static UsingParslet _instance = new();
-    public static UsingParslet Instance => _instance;
-
-	private UsingParslet() : base() { }
+    public static readonly UsingParslet Instance = new();
 
     public UsingNode Parse(TopLevelParser parser, Token usingToken) {
         if (usingToken is not Token usingKeyword || usingToken != "using")

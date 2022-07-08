@@ -1,6 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
-
 public record IfNode(
     ParenthesizedValueNode Condition,
     SimpleBlock Body,
@@ -13,9 +10,9 @@ public record IfNode(
 
     public bool HasElse => ElseNode != ElseNode.NULL;
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

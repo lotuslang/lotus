@@ -2,12 +2,12 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
 {
     public Precedence Precedence { get; }
 
-    readonly OperationType opType;
+    private readonly OperationType _opType;
 
     public PostfixOperatorParslet(OperationType operation) {
         Precedence = Precedence.Unary;
 
-        opType = operation;
+        _opType = operation;
     }
 
     public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
@@ -18,7 +18,7 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
         return new OperationNode(
             operatorToken,
             new[] { left },
-            opType
+            _opType
         );
     }
 }

@@ -1,10 +1,6 @@
 public sealed class IdentifierParslet : IPrefixParslet<IdentNode>
 {
-
-    private static IdentifierParslet _instance = new();
-    public static IdentifierParslet Instance => _instance;
-
-	private IdentifierParslet() : base() { }
+    public static readonly IdentifierParslet Instance = new();
 
     public IdentNode Parse(ExpressionParser parser, Token token) {
         if (token is not IdentToken identToken) {

@@ -1,4 +1,6 @@
-public abstract record Node : ILocalized {
+[DebuggerDisplay("[{GetType().Name}]: {Token.Representation}")]
+public abstract record Node : ILocalized
+{
     public static readonly Node NULL = ValueNode.NULL;
 
     public Token Token { get; init; }

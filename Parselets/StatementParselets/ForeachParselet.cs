@@ -1,10 +1,6 @@
 public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 {
-
-    private static ForeachParslet _instance = new();
-    public static ForeachParslet Instance => _instance;
-
-	private ForeachParslet() : base() { }
+    public static readonly ForeachParslet Instance = new();
 
     public ForeachNode Parse(StatementParser parser, Token foreachToken) {
         if (foreachToken is not Token foreachKeyword || foreachKeyword != "foreach")

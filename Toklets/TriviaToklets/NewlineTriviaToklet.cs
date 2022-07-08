@@ -1,12 +1,6 @@
-
 public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 {
-
-    private static NewlineTriviaToklet _instance = new();
-    public static NewlineTriviaToklet Instance => _instance;
-
-	private NewlineTriviaToklet() : base() { }
-
+    public static readonly NewlineTriviaToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
 	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() is '\n');

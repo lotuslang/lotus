@@ -1,14 +1,8 @@
 public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
 {
-    public Precedence Precedence {
-        get => Precedence.FuncCall;
-    }
+    public Precedence Precedence => Precedence.FuncCall;
 
-
-    private static FuncCallParslet _instance = new();
-    public static FuncCallParslet Instance => _instance;
-
-	private FuncCallParslet() : base() { }
+    public static readonly FuncCallParslet Instance = new();
 
     public FunctionCallNode Parse(ExpressionParser parser, Token leftParen, ValueNode function) {
         if (leftParen != "(")

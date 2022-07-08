@@ -1,7 +1,5 @@
-
 public sealed class LotusTokenizer : Tokenizer
 {
-
     public LotusTokenizer(StringConsumer stringConsumer) : base(stringConsumer, LotusGrammar.Instance)
     { }
 

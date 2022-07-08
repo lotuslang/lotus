@@ -97,7 +97,7 @@ public class TopLevelParser : Parser<TopLevelNode>
             Current = parslet.Parse(this, currToken);
 
             // TODO: Throw an error when there's a modifier but the node isn't
-            //       supposed to be moded
+            //       supposed to be modded
             if (accessKeyword != Token.NULL && Current is IAccessible accessibleCurrent)
                 accessibleCurrent.AccessKeyword = accessKeyword;
         } else {

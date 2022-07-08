@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 [DebuggerStepThrough]
 [DebuggerDisplay("{DbgString()}")]
 internal record Style(

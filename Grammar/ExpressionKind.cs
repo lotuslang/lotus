@@ -1,5 +1,4 @@
-public enum ExpressionKind
-{
+public enum ExpressionKind {
     NotAnExpr,
     Number,
     String,

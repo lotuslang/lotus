@@ -1,4 +1,3 @@
-
 public class ExpressionParser : Parser<ValueNode>
 {
     public override ValueNode Current {

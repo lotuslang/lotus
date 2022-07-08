@@ -1,11 +1,6 @@
-
 public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 {
-
-    private static ObjectCreationParslet _instance = new();
-    public static ObjectCreationParslet Instance => _instance;
-
-	private ObjectCreationParslet() : base() { }
+    public static readonly ObjectCreationParslet Instance = new();
 
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
 
@@ -25,9 +20,9 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         //      - new string()[1]
         //      - new string.world()
         //      - new string.hello()[1].hi
-        //      - new (string.hello)()       <--- INVALID but accept anyway...
         //
         // cases to check for rejection ;
+        //      - new (string.hello)()
         //      - new ++string()
         //      - new string[0]()
         //      - new string[0].hello()

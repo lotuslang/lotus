@@ -2,15 +2,11 @@ using System.Text;
 
 public sealed class NumberToklet : IToklet<NumberToken>
 {
-
-    private static NumberToklet _instance = new();
-    public static NumberToklet Instance => _instance;
-
-	private NumberToklet() : base() { }
-
+    public static readonly NumberToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => {
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (input => {
                 var current = input.Consume();
 
                 return  Char.IsDigit(current)

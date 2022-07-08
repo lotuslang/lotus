@@ -2,7 +2,6 @@ public interface IStatementVisitor<T>
 {
     T Default(StatementNode node);
 
-
     T Visit(StatementNode node) => Default(node);
 
     T Visit(BreakNode node) => Default(node);
@@ -17,7 +16,6 @@ public interface IStatementVisitor<T>
     T Visit(ReturnNode node) => Default(node);
     T Visit(StatementExpressionNode node) => Default(node as StatementNode);
     T Visit(WhileNode node) => Default(node);
-
 
     T Visit(SimpleBlock block);
 }

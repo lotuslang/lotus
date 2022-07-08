@@ -1,11 +1,6 @@
-
 internal sealed class ValuePrinter : IValueVisitor<string>
 {
     public string Default(ValueNode node)
-        => ASTHelper.PrintToken(node.Token);
-
-
-    public string Visit(BoolNode node)
         => ASTHelper.PrintToken(node.Token);
 
     public string Visit(FunctionCallNode node)
@@ -77,7 +72,6 @@ internal sealed class ValuePrinter : IValueVisitor<string>
         => ASTHelper.PrintToken(node.OpeningToken)
          + Utilities.Join(",", Print, node.Values)
          + ASTHelper.PrintToken(node.ClosingToken);
-
 
     public string Print(ValueNode node) => node.Accept(this);
 }

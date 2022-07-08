@@ -1,6 +1,5 @@
 internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor<GraphNode>
 {
-
     protected readonly (string tooltip, string color) Break = ("break keyword", "");
 
     protected readonly (string tooltip, string color) Continue = ("continue keyword", "");
@@ -41,7 +40,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     protected readonly (string tooltip, string color) FuncCall = ("call to a function", "tomato");
     protected readonly (string tooltip, string color) FuncCallParam = ("argument", "");
 
-    protected readonly (string tooltip, string color) Ident = ("identifier", "");
+    protected readonly (string tooltip, string color) Ident = ("identifier", "grey");
 
     protected readonly (string tooltip, string color) Number = ("number", "");
 
@@ -101,10 +100,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public GraphNode Visit(ElseNode node)
         => new GraphNode(node.GetHashCode(), "else") {
-                node.BlockOrIfNode.Match(
-                    b => Visit(b),
-                    n => ToGraphNode(n)
-                )
+                node.BlockOrIfNode.Match(ToGraphNode, ToGraphNode)
            }.SetColor(Else.color)
             .SetTooltip(Else.tooltip);
 
@@ -373,7 +369,8 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
             .SetColor(SimpleBlock.color)
             .SetTooltip(SimpleBlock.tooltip);
 
-        foreach (var statement in block.Content) root.Add(ToGraphNode(statement));
+        foreach (var statement in block.Content)
+            root.Add(ToGraphNode(statement));
 
         return root;
     }
@@ -382,5 +379,5 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public virtual GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
-    public GraphNode ToGraphNode(SimpleBlock block) => Visit(block);
+    public virtual GraphNode ToGraphNode(SimpleBlock block) => block.Accept(this);
 }

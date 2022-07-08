@@ -1,10 +1,6 @@
 public sealed class ElseParslet : IStatementParslet<ElseNode>
 {
-
-    private static ElseParslet _instance = new();
-    public static ElseParslet Instance => _instance;
-
-	private ElseParslet() : base() { }
+    public static readonly ElseParslet Instance = new();
 
     public ElseNode Parse(StatementParser parser, Token elseToken) {
         if (elseToken is not Token elseKeyword || elseKeyword != "else") {

@@ -1,15 +1,12 @@
-
 public sealed class StringToklet : IToklet<StringToken>
 {
-
-    private static StringToklet _instance = new();
-    public static StringToklet Instance => _instance;
-
-	private StringToklet() : base() { }
-
+    public static readonly StringToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() == '\'' || input.Current == '"');
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (input =>
+            input.Consume() == '\'' || input.Current == '"'
+        );
 
     public StringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
 

@@ -1,5 +1,3 @@
-using System;
-
 public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>
 {
     public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);

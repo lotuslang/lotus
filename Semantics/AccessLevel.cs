@@ -1,7 +1,7 @@
 /// <summary>
 /// Whether the member/type is public, private, protected, internal, or public.
 /// </summary>
-// [System.Flags]
+[Flags]
 public enum AccessLevel {
 	/// <summary>
 	/// NOTE : This is only used internally to represent a accessor that does not exist

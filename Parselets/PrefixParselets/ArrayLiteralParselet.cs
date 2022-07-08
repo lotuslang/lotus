@@ -1,10 +1,6 @@
 public sealed class ArrayLiteralParslet : IPrefixParslet<TupleNode>
 {
-
-    private static ArrayLiteralParslet _instance = new();
-    public static ArrayLiteralParslet Instance => _instance;
-
-	private ArrayLiteralParslet() : base() { }
+    public static readonly ArrayLiteralParslet Instance = new();
 
     public TupleNode Parse(ExpressionParser parser, Token leftBracket) {
         if (leftBracket != "[")

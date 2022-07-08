@@ -1,20 +1,18 @@
-
 internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IStatementVisitor<IEnumerable<ValueNode>>
 {
-    private static readonly ValueNode[] emptyArray = Array.Empty<ValueNode>();
+    private static readonly ValueNode[] _empty = Array.Empty<ValueNode>();
 
     public IEnumerable<ValueNode> Default(StatementNode node)
-        => emptyArray;
+        => _empty;
 
     public IEnumerable<ValueNode> Default(ValueNode node)
-        => emptyArray;
-
+        => _empty;
 
     public IEnumerable<ValueNode> Visit(DeclarationNode node)
         => new[] { node.Value };
 
     public IEnumerable<ValueNode> Visit(ElseNode node)
-        => node.HasIf ? ExtractValue((IfNode)node.BlockOrIfNode) : emptyArray;
+        => node.HasIf ? ExtractValue((IfNode)node.BlockOrIfNode) : _empty;
 
     public IEnumerable<ValueNode> Visit(ForeachNode node)
         => new[] { node.ItemName, node.CollectionRef };
@@ -26,7 +24,7 @@ internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IS
         => node.Value.Accept(this);
 
     public IEnumerable<ValueNode> Visit(ReturnNode node)
-        => node.IsReturningValue ? new[] { node.Value } : emptyArray;
+        => node.IsReturningValue ? new[] { node.Value } : _empty;
 
     public IEnumerable<ValueNode> Visit(StatementExpressionNode node) => ExtractValue(node.Value);
 
@@ -52,11 +50,12 @@ internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IS
     public IEnumerable<ValueNode> Visit(TupleNode node)
         => node.Values;
 
-
     public IEnumerable<ValueNode> Visit(SimpleBlock block)
-        => emptyArray;
+        => _empty;
+
+
+    public IEnumerable<ValueNode> ExtractValue(SimpleBlock block) => Visit(block);
 
     public IEnumerable<ValueNode> ExtractValue(StatementNode node) => node.Accept(this);
-
     public IEnumerable<ValueNode> ExtractValue(ValueNode node) => node.Accept(this);
 }

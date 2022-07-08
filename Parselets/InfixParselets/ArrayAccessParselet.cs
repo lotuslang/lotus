@@ -1,14 +1,8 @@
-
 public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 {
-    public Precedence Precedence {
-        get => Precedence.ArrayAccess;
-    }
+    public Precedence Precedence => Precedence.ArrayAccess;
 
-    private static ArrayAccessParslet _instance = new();
-    public static ArrayAccessParslet Instance => _instance;
-
-	private ArrayAccessParslet() : base() { }
+    public static readonly ArrayAccessParslet Instance = new();
 
     public OperationNode Parse(ExpressionParser parser, Token openingBracket, ValueNode array) {
 

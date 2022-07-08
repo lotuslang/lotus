@@ -1,7 +1,10 @@
-internal class CharsToklet : Toklet
+public sealed class CharsToklet : IToklet<Token>
 {
     public readonly string matchString;
     public readonly TokenKind kind;
+
+    public Predicate<IConsumer<char>> Condition => _condition;
+    private readonly Predicate<IConsumer<char>> _condition;
 
     public CharsToklet(string match, TokenKind kind = TokenKind.delimiter) : base() {
         if (match.Length == 0) {
@@ -20,10 +23,8 @@ internal class CharsToklet : Toklet
         };
     }
 
-    public override Predicate<IConsumer<char>> Condition => _condition;
-    private readonly Predicate<IConsumer<char>> _condition;
 
-    public override Token Consume(IConsumer<char> input, Tokenizer _) {
+    public Token Consume(IConsumer<char> input, Tokenizer _) {
         var currChar = input.Consume();
         var startPos = input.Position;
 

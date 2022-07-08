@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 public class StringConsumer : IConsumer<char>
 {
-
     public readonly static char EOF = '\u0003';
 
     public char Default => EOF;

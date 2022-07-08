@@ -1,10 +1,6 @@
 public sealed class PrintParslet : IStatementParslet<PrintNode>
 {
-
-    private static PrintParslet _instance = new();
-    public static PrintParslet Instance => _instance;
-
-	private PrintParslet() : base() { }
+    public static readonly PrintParslet Instance = new();
 
     public PrintNode Parse(StatementParser parser, Token printToken) {
         if (printToken is not Token printKeyword || printKeyword != "print") {

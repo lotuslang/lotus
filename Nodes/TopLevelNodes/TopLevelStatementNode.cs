@@ -3,9 +3,14 @@ public record TopLevelStatementNode(StatementNode Statement)
 {
     public static implicit operator StatementNode(TopLevelStatementNode node) => node.Statement;
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    public new LocationRange Location {
+        get => Statement.Location;
+        init => Statement = Statement with { Location = value };
+    }
+
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

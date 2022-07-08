@@ -36,9 +36,7 @@ public interface IConsumer<T> : IEnumerable<T>
 
     IConsumer<T> Clone();
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ConsumerEnumerator<T>(this);
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Consumer<T>.Enumerator(this);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    //T[] Peek(int n);
 }

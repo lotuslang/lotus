@@ -2,14 +2,13 @@ using System.Text;
 
 public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 {
-
-    private static CommentTriviaToklet _instance = new();
-    public static CommentTriviaToklet Instance => _instance;
-
-	private CommentTriviaToklet() : base() { }
+    public static readonly CommentTriviaToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (consumer => consumer.Consume() is '/' && (consumer.Consume() is '/' or '*'));
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (consumer =>
+            consumer.Consume() is '/' && (consumer.Consume() is '/' or '*')
+        );
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {
 

@@ -1,7 +1,6 @@
-
 internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>, IValueVisitor<IEnumerable<StatementNode>>
 {
-    private static readonly StatementNode[] emptyArray = Array.Empty<StatementNode>();
+    private static readonly StatementNode[] _empty = Array.Empty<StatementNode>();
 
     public IEnumerable<StatementNode> Default(StatementNode node)
         => new[] { node };
@@ -13,10 +12,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
         => new StatementNode[] { (StatementExpressionNode)node.Value, node };
 
     public IEnumerable<StatementNode> Visit(ElseNode node)
-        => (node.BlockOrIfNode.Match(
-                body => Visit(body),
-                node => Flatten(node)
-        )).Append(node);
+        => node.BlockOrIfNode.Match(Flatten, Flatten).Append(node);
 
     public IEnumerable<StatementNode> Visit(ForeachNode node)
         => Flatten(node.CollectionRef)
@@ -43,7 +39,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
     public IEnumerable<StatementNode> Visit(IfNode node)
         =>  Flatten(node.Condition)
                 .Concat(Visit(node.Body))
-                .Concat(node.HasElse ? Flatten(node.ElseNode!) : emptyArray)
+                .Concat(node.HasElse ? Flatten(node.ElseNode!) : _empty)
                 .Append(node);
 
     public IEnumerable<StatementNode> Visit(PrintNode node)
@@ -51,7 +47,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
                 .Append(node);
 
     public IEnumerable<StatementNode> Visit(ReturnNode node)
-        => (node.IsReturningValue ? Flatten(node.Value) : emptyArray)
+        => (node.IsReturningValue ? Flatten(node.Value) : _empty)
                 .Append(node);
 
     public IEnumerable<StatementNode> Visit(StatementExpressionNode node) => Flatten(node.Value);
@@ -94,9 +90,9 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
         // - SelectMany(node => node) transforms the IEnumerable<StatementNode>[] returned by the previous operation into a lat IEnumerable<StatementNode>
         //   => returns a IEnumerable<StatementNode>
         => block.Content
-                .Select(Flatten)
-                .SelectMany(node => node);
-    public IEnumerable<StatementNode> Flatten(StatementNode node) => node.Accept(this);
+                .SelectMany(Flatten);
 
+    public IEnumerable<StatementNode> Flatten(SimpleBlock block) => Visit(block);
+    public IEnumerable<StatementNode> Flatten(StatementNode node) => node.Accept(this);
     public IEnumerable<StatementNode> Flatten(ValueNode node) => node.Accept(this);
 }

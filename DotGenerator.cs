@@ -1,7 +1,7 @@
 using System.Text;
 using System.Collections;
 
-[System.Diagnostics.DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
+[DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
 public class Graph
 {
     protected string name;
@@ -149,14 +149,14 @@ public class Graph
         var code = new DeterministicHashCode();
 
         foreach (var node in rootNodes) {
-            code.Add(node, GraphNodeComparer.Instance);
+            code.Add(node, GraphNode.EqualityComparer);
         }
 
         if (includeProps) {
             foreach (var props in new[] { GraphProps, NodeProps, EdgeProps }) {
                 foreach (var prop in props) {
-                    code.Add(StringComparer.Instance.GetHashCode(prop.Key));
-                    code.Add(StringComparer.Instance.GetHashCode(prop.Value));
+                    code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Key));
+                    code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Value));
                 }
             }
         }
@@ -165,8 +165,8 @@ public class Graph
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{ID}:{Name}")]
-public class GraphNode : IEnumerable<GraphNode>
+[DebuggerDisplay("{ID}:{Name}")]
+public class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 {
     /// <summary>
     /// The unique identifier for this node.
@@ -260,10 +260,10 @@ public class GraphNode : IEnumerable<GraphNode>
     public override int GetHashCode() {
         var code = new DeterministicHashCode();
 
-        code.Add(Name, StringComparer.Instance);
+        code.Add(Name, DeterministicStringComparer.Instance);
 
         foreach (var node in Children) {
-            code.Add(node, GraphNodeComparer.Instance);
+            code.Add(node, EqualityComparer);
         }
 
         return code.ToHashCode();
@@ -274,43 +274,26 @@ public class GraphNode : IEnumerable<GraphNode>
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
-}
 
-public class GraphNodeComparer : IEqualityComparer<GraphNode>
-{
-    private static GraphNodeComparer _instance = new();
-    public static GraphNodeComparer Instance => _instance;
+    public override bool Equals(object? obj)
+        => Equals(obj as GraphNode);
 
-    private GraphNodeComparer() { }
+    public bool Equals(GraphNode? node)
+        => EqualityComparer.Equals(this, node);
 
-    public bool Equals(GraphNode? n1, GraphNode? n2) => n1?.GetHashCode() == n2?.GetHashCode();
+    public static IEqualityComparer<GraphNode> EqualityComparer => EqComparer.Instance;
 
-    public int GetHashCode(GraphNode n) => n.GetHashCode();
-}
+    private class EqComparer : EqualityComparer<GraphNode>
+    {
+        private static EqComparer _instance = new();
+        public static EqComparer Instance => _instance;
 
-public class StringComparer : IEqualityComparer<string>
-{
-    private static StringComparer _instance = new();
-    public static StringComparer Instance => _instance;
+        private EqComparer() { }
 
-    private StringComparer() {}
+        public override bool Equals(GraphNode? n1, GraphNode? n2)
+            => n1?.GetHashCode() == n2?.GetHashCode();
 
-    public bool Equals(string? s1, string? s2) => GetHashCode(s1!) == GetHashCode(s2!);
-
-    public int GetHashCode(string str) {
-        unchecked {
-            int hash1 = 5381;
-            int hash2 = hash1;
-
-            for (int i = 0; i < str.Length && str[i] != '\0'; i += 2) {
-                hash1 = ((hash1 << 5) + hash1) ^ str[i];
-                if (i == str.Length - 1 || str[i + 1] == '\0')
-                    break;
-                hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
-            }
-
-            return hash1 + (hash2 * 1566083941);
-        }
+        public override int GetHashCode(GraphNode n) => n.GetHashCode();
     }
 }
 
@@ -318,7 +301,7 @@ public struct DeterministicHashCode
 {
     private int current;
 
-    private static readonly StringComparer stringComparer = StringComparer.Instance;
+    private static readonly DeterministicStringComparer stringComparer = DeterministicStringComparer.Instance;
 
     public void Add<T1>(T1 value) => current = (current * 21) + value!.GetHashCode();
 

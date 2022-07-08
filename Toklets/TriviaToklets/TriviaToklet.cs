@@ -1,4 +1,3 @@
-
 public class TriviaToklet : ITriviaToklet<TriviaToken>
 {
     public Predicate<IConsumer<char>> Condition => _condition;

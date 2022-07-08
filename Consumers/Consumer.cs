@@ -96,4 +96,36 @@ public class Consumer<T> : IConsumer<T>
     public Consumer<T> Clone() => new(this);
 
     IConsumer<T> IConsumer<T>.Clone() => Clone();
+
+    internal class Enumerator : IEnumerator<T> {
+        private IConsumer<T> consumer;
+        private readonly IConsumer<T> originalConsumer;
+
+        private T _current;
+
+        public T Current => _current;
+
+        object System.Collections.IEnumerator.Current => _current!; // i dont care tbh
+
+        public Enumerator(IConsumer<T> consumer) {
+            this.consumer = consumer;
+            _current = consumer.Default;
+            originalConsumer = consumer.Clone();
+        }
+
+
+        public bool MoveNext() {
+            if (!consumer.Consume(out _current)) {
+                //_current = consumer.Default;
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public void Reset() => consumer = originalConsumer.Clone();
+        // suggested by roslyn, don't know either :shrug:
+        public void Dispose() => GC.SuppressFinalize(this);
+    }
 }

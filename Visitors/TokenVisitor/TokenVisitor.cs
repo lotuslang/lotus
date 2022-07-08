@@ -4,7 +4,6 @@ public interface ITokenVisitor<T>
 
     T Default(TriviaToken? token);
 
-
     T Visit(Token token) => Default(token);
 
     T Visit(BoolToken token) => Visit(token as Token);
@@ -13,7 +12,6 @@ public interface ITokenVisitor<T>
     T Visit(NumberToken token) => Visit(token as Token);
     T Visit(OperatorToken token) => Default(token);
     T Visit(StringToken token) => Visit(token as Token);
-
 
     T Visit(TriviaToken? token) => Default(token);
 

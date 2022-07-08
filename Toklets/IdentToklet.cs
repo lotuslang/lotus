@@ -1,15 +1,12 @@
-
 public sealed class IdentToklet : IToklet<Token>
 {
-
-    private static IdentToklet _instance = new();
-    public static IdentToklet Instance => _instance;
-
-	private IdentToklet() : base() { }
-
+    public static readonly IdentToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => Char.IsLetter(input.Consume()) || input.Current == '_');
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (input =>
+            Char.IsLetter(input.Consume()) || input.Current == '_'
+        );
 
     public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
 

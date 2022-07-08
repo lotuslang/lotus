@@ -1,10 +1,6 @@
 public sealed class WhileParslet : IStatementParslet<WhileNode>
 {
-
-    private static WhileParslet _instance = new();
-    public static WhileParslet Instance => _instance;
-
-	private WhileParslet() : base() { }
+    public static readonly WhileParslet Instance = new();
 
     public WhileNode Parse(StatementParser parser, Token whileToken) {
         if (whileToken is not Token whileKeyword || whileKeyword != "while") {

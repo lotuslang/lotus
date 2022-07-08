@@ -1,10 +1,6 @@
 public sealed class IfParslet : IStatementParslet<IfNode>
 {
-
-    private static IfParslet _instance = new();
-    public static IfParslet Instance => _instance;
-
-	private IfParslet() : base() { }
+    public static readonly IfParslet Instance = new();
 
     public IfNode Parse(StatementParser parser, Token ifToken) {
         if (ifToken is not Token ifKeyword || ifKeyword != "if") {

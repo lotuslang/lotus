@@ -1,8 +1,10 @@
 internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisitor<string>
 {
-    public string Default(StatementNode node) => ASTHelper.PrintToken(node.Token);
+    public string Default(StatementNode node)
+        => ASTHelper.PrintToken(node.Token);
 
-    public string Default(ValueNode node) => ASTHelper.PrintValue(node);
+    public string Default(ValueNode node)
+        => ASTHelper.PrintValue(node);
 
     public string Visit(DeclarationNode node)
         => ASTHelper.PrintToken(node.Token)
@@ -12,7 +14,7 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
 
     public string Visit(ElseNode node)
         => ASTHelper.PrintToken(node.Token)
-         + node.BlockOrIfNode.Match(b => Visit(b), n => Print(n));
+         + node.BlockOrIfNode.Match(Print, Print);
 
     public string Visit(ForeachNode node)
         => ASTHelper.PrintToken(node.Token)
@@ -67,7 +69,8 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
         => ASTHelper.PrintToken(node.Token)
          + (node.IsReturningValue ? ASTHelper.PrintValue(node.Value) : "");
 
-    public string Visit(StatementExpressionNode node) => ASTHelper.PrintValue(node.Value);
+    public string Visit(StatementExpressionNode node)
+        => ASTHelper.PrintValue(node.Value);
 
     public string Visit(WhileNode node)
         => node.IsDoLoop ?
@@ -81,11 +84,11 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
               + ASTHelper.PrintValue(node.Condition)
               + Visit(node.Body);
 
-
     public string Visit(SimpleBlock block)
         => (!block.IsOneLiner ? ASTHelper.PrintToken(block.OpeningToken) : "")
          + Utilities.Join("", Print, block.Content)
          + (!block.IsOneLiner ? ASTHelper.PrintToken(block.ClosingToken) : "");
 
+    public string Print(SimpleBlock block) => Visit(block);
     public string Print(StatementNode node) => node.Accept(this);
 }

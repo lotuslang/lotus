@@ -1,4 +1,3 @@
-
 public interface IPrefixParslet<out T> where T : ValueNode
 {
     T Parse(ExpressionParser parser, Token token);

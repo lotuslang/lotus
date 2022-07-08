@@ -1,11 +1,6 @@
-
 public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDeclarationNode>
 {
-
-    private static FunctionDeclarationParslet _instance = new();
-    public static FunctionDeclarationParslet Instance => _instance;
-
-    private FunctionDeclarationParslet() : base() { }
+    public static readonly FunctionDeclarationParslet Instance = new();
 
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
 

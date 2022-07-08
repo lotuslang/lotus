@@ -1,4 +1,4 @@
-[System.Diagnostics.DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
+[DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
 public record Token : ILocalized
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);
@@ -18,17 +18,17 @@ public record Token : ILocalized
         IsValid = isValid;
     }
 
-    protected TriviaToken? leading, trailing;
+    protected TriviaToken? _leading, _trailing;
 
     public TriviaToken? LeadingTrivia {
-        get => leading;
+        get => _leading;
         init {
             if (value is null) return;
             AddLeadingTrivia(value);
         }
     }
     public TriviaToken? TrailingTrivia {
-        get => trailing;
+        get => _trailing;
         init {
             if (value is null) return;
             AddTrailingTrivia(value);
@@ -44,10 +44,10 @@ public record Token : ILocalized
             return;
         }
 
-        if (leading is null)
-            leading = trivia;
+        if (_leading is null)
+            _leading = trivia;
         else
-            leading.AddLeadingTrivia(trivia);
+            _leading.AddLeadingTrivia(trivia);
     }
 
     public void AddTrailingTrivia(TriviaToken? trivia) {
@@ -59,10 +59,10 @@ public record Token : ILocalized
             return;
         }
 
-        if (trailing is null)
-            trailing = trivia;
+        if (_trailing is null)
+            _trailing = trivia;
         else
-            trailing.AddTrailingTrivia(trivia);
+            _trailing.AddTrailingTrivia(trivia);
     }
 
     public bool HasTrivia(TriviaKind kind, out TriviaToken? trivia) {
@@ -91,22 +91,22 @@ public record Token : ILocalized
     }
 
     public bool HasTrivia(string rep, out TriviaToken? trivia) {
-        if (leading is not null) {
-            if (leading == rep) {
-                trivia = leading;
+        if (_leading is not null) {
+            if (_leading == rep) {
+                trivia = _leading;
                 return true;
             }
 
-            return leading.HasTrivia(rep, out trivia);
+            return _leading.HasTrivia(rep, out trivia);
         }
 
-        if (trailing is not null) {
-            if (trailing == rep) {
-                trivia = trailing;
+        if (_trailing is not null) {
+            if (_trailing == rep) {
+                trivia = _trailing;
                 return true;
             }
 
-            return trailing.HasTrivia(rep, out trivia);
+            return _trailing.HasTrivia(rep, out trivia);
         }
 
         trivia = null;
@@ -122,9 +122,9 @@ public record Token : ILocalized
 
     internal Token ShallowClone() => new Token(this);
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -1,15 +1,10 @@
-
 public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 {
-
-    private static ComplexStringToklet _instance = new();
-    public static ComplexStringToklet Instance => _instance;
-
-	private ComplexStringToklet() : base() { }
-
+    public static readonly ComplexStringToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => {
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (input => {
                 var current = input.Consume();
 
                 if (current != '$') return false;

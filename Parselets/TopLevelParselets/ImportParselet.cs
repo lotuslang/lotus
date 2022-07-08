@@ -1,11 +1,6 @@
-
 public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
-
-    private static ImportParslet _instance = new();
-    public static ImportParslet Instance => _instance;
-
-	private ImportParslet() : base() { }
+    public static readonly ImportParslet Instance = new();
 
     public ImportNode Parse(TopLevelParser parser, Token fromToken) {
         if (fromToken is not Token fromKeyword || fromToken != "from")

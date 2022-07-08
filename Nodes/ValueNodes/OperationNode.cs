@@ -8,7 +8,7 @@ public record OperationNode : ValueNode
 
     public new OperatorToken Token { get => (base.Token as OperatorToken)!; init => base.Token = value; }
 
-    private ReadOnlyCollection<ValueNode> operands = new(Array.Empty<ValueNode>());
+    private ReadOnlyCollection<ValueNode> operands = Array.Empty<ValueNode>().AsReadOnly();
     public ReadOnlyCollection<ValueNode> Operands {
         get => operands;
         init {
@@ -49,9 +49,9 @@ public record OperationNode : ValueNode
         Operands = operands.AsReadOnly();
     }
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 }

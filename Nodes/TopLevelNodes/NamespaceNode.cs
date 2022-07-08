@@ -1,4 +1,3 @@
-//TODO; Namespace can only have no-method names, we should make a class for that
 public record NamespaceNode(ValueNode Name, Token Token, bool IsValid = true)
 : TopLevelNode(Token, new LocationRange(Token.Location, Name.Location), IsValid), IAccessible
 {
@@ -50,9 +49,9 @@ public record NamespaceNode(ValueNode Name, Token Token, bool IsValid = true)
         return _accessLevel;
     }
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

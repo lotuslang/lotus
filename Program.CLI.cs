@@ -1,22 +1,18 @@
 using System.IO;
-using System.Reflection;
-using System.Globalization;
 using System.Threading.Tasks;
 
 using System.CommandLine;
-using System.CommandLine.Parsing;
 
-//#pragma warning disable
 partial class Program
 {
-    static FileInfo sourceCodeFile;
+    static FileInfo _sourceCodeFile;
 
     static RootCommand BuildRootCommand() {
         var forceOption = new Option<bool>("--force", "Ignore compilation errors before executing commands");
         forceOption.AddAlias("-f");
 
         var fileArgument = new Argument<FileInfo>("input", "The file to read code from");
-        fileArgument.SetDefaultValue(sourceCodeFile);
+        fileArgument.SetDefaultValue(_sourceCodeFile);
         fileArgument.LegalFilePathsOnly();
         fileArgument.Arity = ArgumentArity.ZeroOrOne;
         fileArgument.AddValidator((result) => {

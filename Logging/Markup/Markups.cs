@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 internal abstract record Markup
 {
     internal abstract string DbgString();

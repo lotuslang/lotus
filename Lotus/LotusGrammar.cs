@@ -26,7 +26,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterToklet(OperatorToklet.Instance)
             .RegisterToklet(Toklet.From(';', TokenKind.semicolon))
             .RegisterToklet(Toklet.From("::"))
-            .RegisterToklet(Toklet.Instance)
+            .RegisterToklet(Toklet.Default)
             ;
 
     private void InitializeTriviaToklets()

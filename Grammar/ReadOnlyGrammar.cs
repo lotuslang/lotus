@@ -1,13 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-// /!\
-// The design and structure of this class is very much a WiP
-// (yes, even more than the rest of the project) !
-// If you have any suggestions or feedback, please feel free to
-// open an issue or a PR
-// /!\
-
 public class ReadOnlyGrammar
 {
     protected IDictionary<ExpressionKind, IPrefixParslet<ValueNode>> prefixParslets;

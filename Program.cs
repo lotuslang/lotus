@@ -26,7 +26,7 @@ partial class Program
 #endif
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-        sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.txt"));
+        _sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.txt"));
 
         _cli = BuildRootCommand();
     }

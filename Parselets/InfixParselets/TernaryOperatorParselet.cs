@@ -2,10 +2,7 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence => Precedence.Ternary;
 
-    private static TernaryOperatorParslet _instance = new();
-    public static TernaryOperatorParslet Instance => _instance;
-
-	private TernaryOperatorParslet() : base() { }
+    public static readonly TernaryOperatorParslet Instance = new();
 
     public OperationNode Parse(ExpressionParser parser, Token questionMarkToken, ValueNode condition) {
         if (!(questionMarkToken is OperatorToken questionMarkOperator && questionMarkOperator == "?")) {

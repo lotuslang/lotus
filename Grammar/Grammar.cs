@@ -1,7 +1,5 @@
-
 public class Grammar : ReadOnlyGrammar
 {
-
     // Parameters default to an empty dictionary if null or unspecified
     public Grammar(
         IDictionary<ExpressionKind, IPrefixParslet<ValueNode>>? prefixParslets = null,

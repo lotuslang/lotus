@@ -1,4 +1,3 @@
-
 public class StatementParser : Parser<StatementNode>
 {
     public ExpressionParser ExpressionParser { get; protected set; }

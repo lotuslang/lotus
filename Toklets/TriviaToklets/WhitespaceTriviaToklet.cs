@@ -1,15 +1,12 @@
-
 public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken>
 {
-
-    private static WhitespaceTriviaToklet _instance = new();
-    public static WhitespaceTriviaToklet Instance => _instance;
-
-	private WhitespaceTriviaToklet() : base() { }
-
+    public static readonly WhitespaceTriviaToklet Instance = new();
 
     public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() != '\n' && Char.IsWhiteSpace(input.Current));
+	private static readonly Predicate<IConsumer<char>> _condition =
+        (input =>
+            input.Consume() != '\n' && Char.IsWhiteSpace(input.Current)
+        );
 
     public WhitespaceTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;

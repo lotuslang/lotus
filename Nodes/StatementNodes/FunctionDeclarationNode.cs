@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 public record FunctionDeclarationNode(
     SimpleBlock Body,
     IList<FunctionParameter> Parameters,
@@ -29,9 +27,9 @@ public record FunctionDeclarationNode(
 
     public bool HasReturnType => ReturnType != ValueNode.NULL;
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

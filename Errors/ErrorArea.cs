@@ -1,4 +1,4 @@
-//[System.Flags]
+[Flags]
 public enum ErrorArea {
     Tokenizer = 1,
     Parser = 2,
@@ -6,7 +6,8 @@ public enum ErrorArea {
     TypeChecker = 8,
 }
 
-internal static class ErrorAreaExtension {
+internal static class ErrorAreaExtension
+{
     public static string ToName(this ErrorArea area)
         => area switch {
             ErrorArea.TypeChecker => "Type checking",

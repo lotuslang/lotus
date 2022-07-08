@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 public record ImportNode(IList<ValueNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
 : TopLevelNode(
     Token,
@@ -12,9 +10,9 @@ public record ImportNode(IList<ValueNode> Names, FromNode FromStatement, Token T
 {
     public new static readonly ImportNode NULL = new(Array.Empty<ValueNode>(), FromNode.NULL, Token.NULL, false);
 
-    [System.Diagnostics.DebuggerHidden()]
-    [System.Diagnostics.DebuggerStepThrough()]
-    [System.Diagnostics.DebuggerNonUserCode()]
+    [DebuggerHidden()]
+    [DebuggerStepThrough()]
+    [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

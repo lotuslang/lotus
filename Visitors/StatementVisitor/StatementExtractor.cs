@@ -1,10 +1,9 @@
-
 internal sealed class StatementExtractor : IStatementVisitor<IEnumerable<StatementNode>>
 {
-    private static readonly StatementNode[] emptyArray = Array.Empty<StatementNode>();
+    private static readonly StatementNode[] _empty = Array.Empty<StatementNode>();
 
     public IEnumerable<StatementNode> Default(StatementNode _)
-        => emptyArray;
+        => _empty;
 
     public IEnumerable<StatementNode> Visit(ElseNode node)
         => Visit(node.Body);

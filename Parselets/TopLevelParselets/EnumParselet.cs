@@ -1,9 +1,6 @@
 public sealed class EnumParselet : ITopLevelParslet<EnumNode>
 {
-    private static readonly EnumParselet _instance = new();
-    public static EnumParselet Instance => _instance;
-
-    private EnumParselet() { }
+    public static readonly EnumParselet Instance = new();
 
     public EnumNode Parse(TopLevelParser parser, Token enumToken) {
 

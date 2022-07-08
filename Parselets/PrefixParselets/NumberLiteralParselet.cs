@@ -1,10 +1,6 @@
 public sealed class NumberLiteralParslet : IPrefixParslet<NumberNode>
 {
-
-    private static NumberLiteralParslet _instance = new();
-    public static NumberLiteralParslet Instance => _instance;
-
-	private NumberLiteralParslet() : base() { }
+    public static readonly NumberLiteralParslet Instance = new();
 
     public NumberNode Parse(ExpressionParser parser, Token token) {
         if (token is NumberToken numberToken) {

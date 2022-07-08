@@ -1,10 +1,6 @@
 public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
 {
-
-    private static LeftParenParslet _instance = new();
-    public static LeftParenParslet Instance => _instance;
-
-	private LeftParenParslet() : base() { }
+    public static readonly LeftParenParslet Instance = new();
 
     public ValueNode Parse(ExpressionParser parser, Token leftParenToken) {
         if (leftParenToken != "(")

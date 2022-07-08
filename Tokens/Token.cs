@@ -120,6 +120,8 @@ public record Token : ILocalized
     public static implicit operator string(Token token)
         => token.Representation;
 
+    internal Token ShallowClone() => new Token(this);
+
     [System.Diagnostics.DebuggerHidden()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.Diagnostics.DebuggerNonUserCode()]

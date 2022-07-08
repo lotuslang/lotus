@@ -82,12 +82,7 @@ public class Tokenizer : IConsumer<Token>
     public Token Peek() => Peek(preserveTrivia: false);
 
     public Token Peek(bool preserveTrivia = false) {
-        var oldCurrent = new Token(
-            Current.Representation,
-            Current.Kind,
-            Current.Location,
-            Current.IsValid
-        ) {LeadingTrivia = Current.LeadingTrivia, TrailingTrivia = Current.TrailingTrivia} ;
+        var oldCurrent = Current.ShallowClone();
 
         var output = Consume(preserveTrivia);
 

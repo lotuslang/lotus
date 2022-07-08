@@ -62,6 +62,12 @@ internal sealed class ValuePrinter : IValueVisitor<string>
                      + Print(node.Operands[1])
                      + ASTHelper.PrintToken(node.AdditionalTokens[0])
                      + Print(node.Operands[2]);
+            case OperationType.Unknown:
+                return ASTHelper.PrintToken(node.Token)
+                     + (node.Operands.Count == 0
+                        ?   ""
+                        :   "(" + Utilities.Join(",", Print, node.Operands) + ")"
+                    );
             default:
                 throw new Exception("Oho, someone forgot to implement a printer for an operation type...");
         }

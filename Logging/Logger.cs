@@ -113,7 +113,10 @@ public static class Logger
         //      - IContextualized
         //      - UnexpectedError (abstract class)
 
-        if (error is UnexpectedError eUnx) {
+        // TODO: NotAName handling (e.g. traversing parse tree to print which part makes it "not a name")
+        /*if (error is NotANameError eNotAName) {
+            sb.AppendLine(FormatNotAName(eNotAName)).AppendLine();
+        } else*/ if (error is UnexpectedError eUnx) {
             sb.AppendLine(FormatUnexpected(eUnx)).AppendLine();
         } else if (error is IContextualized eCtx) {
             //* FormatUnexpected already takes care of context for us, so we only do it

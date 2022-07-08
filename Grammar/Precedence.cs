@@ -118,6 +118,6 @@ public enum Precedence {
 
     FuncCall = Unary + 1,
 
-    Access = FuncCall + 1,
+    Access = FuncCall + 1, // If you change Access go check DotAccessParslet
     ArrayAccess = Access,
 }

@@ -7,7 +7,9 @@ public interface IValueVisitor<T>
     T Visit(BoolNode node) => Default(node);
     T Visit(ComplexStringNode node) => Visit(node as StringNode);
     T Visit(FunctionCallNode node) => Default(node);
-    T Visit(IdentNode node) => Default(node);
+    T Visit(NameNode node) => Default(node);
+    T Visit(IdentNode node) => Visit(node as NameNode);
+    T Visit(FullNameNode node) => Visit(node as NameNode);
     T Visit(NumberNode node) => Default(node);
     T Visit(ObjectCreationNode node) => Default(node);
     T Visit(OperationNode node) => Default(node);

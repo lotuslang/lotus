@@ -1,4 +1,4 @@
-public record ImportNode(IList<ValueNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
+public record ImportNode(IList<NameNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
 : TopLevelNode(
     Token,
     new LocationRange(
@@ -8,7 +8,7 @@ public record ImportNode(IList<ValueNode> Names, FromNode FromStatement, Token T
     IsValid
 )
 {
-    public new static readonly ImportNode NULL = new(Array.Empty<ValueNode>(), FromNode.NULL, Token.NULL, false);
+    public new static readonly ImportNode NULL = new(Array.Empty<NameNode>(), FromNode.NULL, Token.NULL, false);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

@@ -49,7 +49,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
             bool isValid = true;
 
-            if (type != ValueNode.NULL && !Utilities.IsName(type)) {
+            if (type is not NameNode typeName) {
                 Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                     Value = type,
                     As = "a parameter type in a function's parameter list",
@@ -57,6 +57,15 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 });
 
                 isValid = false;
+
+                typeName = new IdentNode(
+                    new IdentToken(
+                        type.Token,
+                        type.Location,
+                        false
+                    ),
+                    false
+                );
             }
 
             var defaultValue = ValueNode.NULL;
@@ -88,7 +97,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 );
             }
 
-            parameters!.Add(new FunctionParameter(type, paramName, defaultValue, equalSign, isValid));
+            parameters!.Add(new FunctionParameter(typeName, paramName, defaultValue, equalSign, isValid));
         }
 
         while (parser.Tokenizer.Peek() != ")") {
@@ -147,7 +156,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                     goto LOOP_END_CHECK;
                 }
 
-                var paramType = typeNameArray.Operands.FirstOrDefault(ValueNode.NULL);
+                var paramType = typeNameArray.Operands.FirstOrDefault(
+                    NameNode.NULL with {
+                        Location = typeNameArray.Token.Location
+                    }
+                );
 
                 // if there's less than 2 names (illegal)
                 if (typeNameArray.Operands.Count < 2) { // FIXME: We should really make an error type for wrong-numbered things
@@ -165,7 +178,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                     Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                         Value = typeNameArray.Operands[0],
                         Location = errorLoc,
-                        Message = "A typed parameter-group should declare at least two parameters, which is not the case here.",
+                        Message = "A parameter-group should declare at least two parameters, instead of just " + typeNameArray.Operands.Count,
                     });
 
                     isValid = false;
@@ -174,7 +187,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 // iterate over every parameter name and add them to the list
                 // we skip one cause the first operand of an array access is the type name
                 foreach (var paramNameNode in typeNameArray.Operands.Skip(1)) {
-                    addParameter(paramType ?? ValueNode.NULL, paramNameNode);
+                    addParameter(paramType, paramNameNode);
                 }
             } else if (parser.Tokenizer.Peek().Kind == TokenKind.identifier) {
                 // if there's still an identifier after typeOrName,
@@ -183,7 +196,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 addParameter(typeOrName, parser.ExpressionParser.Consume());
             } else {
                 // otherwise, that means we have a parameter without type info
-                addParameter(ValueNode.NULL, typeOrName);
+                addParameter(NameNode.NULL, typeOrName);
             }
 
         LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to alternatives
@@ -232,23 +245,29 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             isValid = false;
         }
 
-        var returnType = ValueNode.NULL;
+        var returnType = NameNode.NULL;
 
         var colonToken = Token.NULL;
 
         if (parser.Tokenizer.Peek() == ":") {
             colonToken = parser.Tokenizer.Consume(); // consume the colon
 
-            returnType = parser.ExpressionParser.Consume();
+            returnType = parser.ExpressionParser.Consume<NameNode>(
+                IdentNode.NULL,
+                @as: "a return type in a function declaration"
+            );
 
-            if (!Utilities.IsName(returnType)) {
-                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                    Value = returnType,
-                    As = "a return type in a function declaration",
-                    Expected = "a type name"
-                });
-
+            if (!returnType.IsValid) {
                 isValid = false;
+
+                returnType = new IdentNode(
+                    new IdentToken(
+                        returnType.Token.Representation,
+                        returnType.Location,
+                        false
+                    ),
+                    false
+                );
             }
         }
 

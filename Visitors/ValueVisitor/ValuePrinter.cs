@@ -73,5 +73,10 @@ internal sealed class ValuePrinter : IValueVisitor<string>
          + Utilities.Join(",", Print, node.Values)
          + ASTHelper.PrintToken(node.ClosingToken);
 
+    public string Visit(NameNode name)
+        => Utilities.Join(".", ASTHelper.PrintToken, name.Parts);
+
+    public string Print(NameNode name) => Visit(name);
+
     public string Print(ValueNode node) => node.Accept(this);
 }

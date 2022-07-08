@@ -1,3 +1,4 @@
+[Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
 internal sealed class NameChecker : IValueVisitor<bool>
 {
     public bool Default(ValueNode node) => false;
@@ -17,7 +18,7 @@ internal sealed class NameChecker : IValueVisitor<bool>
         return false;
     }
 
-    public bool Visit(IdentNode node) => true;
+    public bool Visit(NameNode name) => true;
 
     public bool IsName(ValueNode node) => node.Accept(this);
 }

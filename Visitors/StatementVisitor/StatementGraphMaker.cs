@@ -153,10 +153,10 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
                 var paramNameNode = ToGraphNode(parameter.Name);
 
-                if (parameter.Type == ValueNode.NULL) {
-                    paramNameNode.Add(new GraphNode(DeterministicHashCode.Combine(ValueNode.NULL, parameter), "any"));
+                if (parameter.TypeName == NameNode.NULL) {
+                    paramNameNode.Add(new GraphNode(DeterministicHashCode.Combine(NameNode.NULL, parameter), "any"));
                 } else {
-                    paramNameNode.Add(ToGraphNode(parameter.Type));
+                    paramNameNode.Add(ToGraphNode(parameter.TypeName));
                 }
 
                 if (parameter.HasDefaultValue) {
@@ -290,10 +290,10 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         return root;
     }
 
-    public GraphNode Visit(IdentNode node)
-        => Default(node)
+    public GraphNode Visit(NameNode node)
+        => new GraphNode(node.GetHashCode(), Utilities.Join(".", (ident => ident.Representation), node.Parts))
             .SetColor(Ident.color)
-            .SetTooltip(Ident.tooltip);
+            .SetTooltip("name");
 
     public GraphNode Visit(NumberNode node)
         => Default(node)

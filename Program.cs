@@ -4,7 +4,6 @@ using System.Globalization;
 
 using System.CommandLine;
 
-//#pragma warning disable
 partial class Program
 {
     static RootCommand _cli;

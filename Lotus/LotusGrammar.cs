@@ -80,7 +80,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterInfixBinaryOperator(ExpressionKind.LessOrEq, Precedence.LessThanOrEqual, OperationType.LessOrEqual)
             .RegisterInfixBinaryOperator(ExpressionKind.Greater, Precedence.GreaterThan, OperationType.Greater)
             .RegisterInfixBinaryOperator(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, OperationType.GreaterOrEqual)
-            .RegisterInfixBinaryOperator(ExpressionKind.Access, Precedence.Access, OperationType.Access)
             .RegisterInfixBinaryOperator(ExpressionKind.Assignment, Precedence.Assignment, OperationType.Assign)
             ;
 
@@ -89,6 +88,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterInfix(ExpressionKind.Array, ArrayAccessParslet.Instance)
             .RegisterInfix(ExpressionKind.LeftParen, FuncCallParslet.Instance)
             .RegisterInfix(ExpressionKind.Ternary, TernaryOperatorParslet.Instance)
+            .RegisterInfix(ExpressionKind.Access, DotAccessParslet.Instance)
             ;
 
         // postfix operators

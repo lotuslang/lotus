@@ -1,6 +1,5 @@
 internal sealed class ConstantVisualizer : StatementGraphMaker
 {
-
     private string ConstantColor { get; }
 
     private string NonConstantColor { get; }

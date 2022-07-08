@@ -1,5 +1,4 @@
-public record IdentNode(IdentToken Token, bool IsValid = true)
-: ValueNode(Token, IsValid)
+public record IdentNode(IdentToken Token, bool IsValid = true) : NameNode(Token, new[] { Token }, IsValid)
 {
     public new static readonly IdentNode NULL = new(IdentToken.NULL, false);
 

@@ -109,55 +109,47 @@ public class TopLevelParser : Parser<TopLevelNode>
     }
 
     public TypeDecName ConsumeTypeDeclarationName() {
-        bool isValid = true;
 
-        var nameOrParent = ExpressionParser.Consume();
+        var typeName = ExpressionParser.Consume<NameNode>(IdentNode.NULL, @as: "the name of a type");
 
-        var nameValue = nameOrParent;
-        var parent = ValueNode.NULL;
+        var parent = NameNode.NULL;
         var colonToken = Token.NULL;
 
         if (Tokenizer.Peek() == "::") {
             colonToken = Tokenizer.Consume();
-            parent = nameOrParent;
+            parent = typeName;
 
-            if (!Utilities.IsName(parent)) {
-                // TODO: make a custom error for things that are supposed to be names
-                // + that would allow them to be clearer about why the value cannot
-                //   be a name, because rn it would spit out "OperationNodes cannot
-                //   be used to specify an enum's parent" but to the user that doesn't
-                //   mean anything
-                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                    Value = parent,
-                    Message = parent.GetType().Name + "s cannot be used to specify the name of a base type",
-                    As = "a type's parent name"
-                });
-
-                isValid = false;
-            }
-
-            nameValue = ExpressionParser.Consume();
+            typeName = ExpressionParser.Consume<IdentNode>(IdentNode.NULL, @as: "the name of a type");
         }
 
-        if (nameValue is not IdentNode name) {
-            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = nameValue,
+        bool isValid = typeName.IsValid;
+
+        if (typeName.IsValid && typeName.Parts.Count != 1) {
+            Logger.Error(new NotANameError(ErrorArea.Parser) {
+                Value = ExpressionParser.Current,
                 Expected = "an identifier",
-                As = "a new type name"
+                As = "the name of a new type"
             });
 
             isValid = false;
-            name = new IdentNode(
+        }
+
+        if (typeName is not IdentNode typeIdent) {
+            var token = typeName.Parts.FirstOrDefault(IdentToken.NULL);
+
+            var location = typeName.Location;
+
+            typeIdent = new IdentNode(
                 new IdentToken(
-                    nameValue.Token.Representation,
-                    nameValue.Token.Location,
+                    token.Representation,
+                    location,
                     false
                 ),
                 false
             );
         }
 
-        return new TypeDecName(name, parent, colonToken, isValid);
+        return new TypeDecName(typeIdent, parent, colonToken, isValid);
     }
 
     public override TopLevelParser Clone() => new(this);

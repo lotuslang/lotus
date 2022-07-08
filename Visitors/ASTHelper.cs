@@ -1,5 +1,6 @@
-internal static class ASTHelper
+﻿internal static class ASTHelper
 {
+    [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
     public static readonly NameChecker NameChecker = new();
 
     public static readonly TopLevelPrinter TopLevelPrinter = new();
@@ -26,7 +27,7 @@ internal static class ASTHelper
 
     public static readonly ConstantVisualizer ConstantVisualizer = new();
 
-
+    [Obsolete("ASTHelper.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
     public static bool IsName(ValueNode node) => NameChecker.IsName(node);
 
     public static string PrintNode(Node node)
@@ -44,13 +45,27 @@ internal static class ASTHelper
     public static string PrintValue(ValueNode node) => ValuePrinter.Print(node);
     public static string PrintTypeName(TypeDecName typeDec) => TopLevelPrinter.Print(typeDec);
     public static string PrintToken(Token token) => TokenPrinter.Print(token);
+    public static string PrintUnion<T, U>(Union<T, U> u) where T : Node
+                                                         where U : Node
+        => u.Match(PrintNode, PrintNode);
 
     public static GraphNode ToGraphNode(Token token) => TokenGraphMaker.ToGraphNode(token);
     public static GraphNode ToGraphNode(ValueNode node) => StatementGraphMaker.ToGraphNode(node);
     public static GraphNode ToGraphNode(StatementNode node) => StatementGraphMaker.ToGraphNode(node);
     public static GraphNode ToGraphNode(TopLevelNode node) => TopLevelGraphMaker.ToGraphNode(node);
     public static GraphNode ToGraphNode(TypeDecName typeDec) => TopLevelGraphMaker.ToGraphNode(typeDec);
-
+    public static GraphNode UnionToGraphNode<T, U>(Union<T, U> u) where T : Node
+                                                                  where U : Node
+        => u.Match(ToGraphNode, ToGraphNode);
+    private static GraphNode ToGraphNode(Node node)
+        => node switch {
+            ValueNode vn     => ToGraphNode(vn),
+            StatementNode sn => ToGraphNode(sn),
+            TopLevelNode tn  => ToGraphNode(tn),
+            _                => throw new NotImplementedException(
+                                    "There's no ToGraphNode() method for type " + node.GetType() + " or any of its base types"
+                                )
+        };
 
     public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
 

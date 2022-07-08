@@ -1,6 +1,5 @@
 internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 {
-
     protected readonly (string tooltip, string color) From = ("from statement", "navy");
     protected readonly (string tooltip, string color) FromOrigin = ("origin name", "");
 
@@ -16,7 +15,6 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     protected readonly (string tooltip, string color) EnumParent = ("this enum's parent value/name", "");
     protected readonly (string tooltip, string color) EnumValues = ("this enum's values", "");
 
-
     protected readonly (string tooltip, string color) TopLevel = (nameof(TopLevelNode), "black");
 
 
@@ -30,7 +28,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     public GraphNode Visit(FromNode node)
         => new GraphNode(node.GetHashCode(), "from") {
-               ASTHelper.ToGraphNode(node.OriginName)
+               ASTHelper.UnionToGraphNode(node.OriginName)
                    .SetTooltip("origin name")
            }.SetColor(From.color)
             .SetTooltip(From.tooltip);
@@ -55,11 +53,11 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(EnumNode node) {
-        var root = new GraphNode(node.GetHashCode(), "enum " + node.Name.TypeName.Token.Representation)
+        var root = new GraphNode(node.GetHashCode(), "enum " + ASTHelper.PrintTypeName(node.Name))
             .SetColor(Enum.color)
             .SetTooltip(Enum.tooltip);
 
-        if (node.Name.Parent != ValueNode.NULL) {
+        if (node.Name.HasParent) {
             root.Add(
                 new GraphNode(
                     DeterministicHashCode.Combine(node.Name.Parent, "parent"),
@@ -92,7 +90,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     public GraphNode Visit(UsingNode node)
         => new GraphNode(node.GetHashCode(), "using") {
-                ASTHelper.ToGraphNode(node.Name)
+                ASTHelper.UnionToGraphNode(node.Name)
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
 
@@ -101,10 +99,10 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
                     .SetColor("")
                     .SetTooltip("type name");
 
-        if (typeDec.Parent == ValueNode.NULL) {
+        if (typeDec.HasParent) {
             root.Add(
                 new GraphNode(DeterministicHashCode.Combine(typeDec.Parent, "parent"), "parent") {
-                    ASTHelper.ToGraphNode(typeDec.Parent)
+                    ASTHelper.ToGraphNode(typeDec.Parent as ValueNode)
                 }
             );
         }

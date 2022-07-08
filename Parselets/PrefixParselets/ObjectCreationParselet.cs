@@ -34,11 +34,11 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         // that errors don't jeopardize the stability of the parser or of later
         // phases
 
-        var typeName = parser.Consume(Precedence.FuncCall);
+        var type = parser.Consume(Precedence.FuncCall);
 
-        if (!Utilities.IsName(typeName)) {
+        if (type is not NameNode typeName) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = typeName,
+                Value = type,
                 In = "an object instantiation",
                 Expected = "a type name."
             });
@@ -46,13 +46,22 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
             isValid = false;
 
             parser.Tokenizer.Reconsume();
+
+            typeName = new IdentNode(
+                new IdentToken(
+                    type.Token.Representation,
+                    type.Location,
+                    false
+                ),
+                false
+            );
         }
 
         // calling FuncCall.Parse is really dangerous, since we could get an InvalidCallException
         // if typeName isn't correctly parsed/lexed
         var args = FuncCallParslet.ConsumeFunctionArguments(parser);
 
-        var call = new FunctionCallNode(args, typeName, args.IsValid && typeName.IsValid);
+        var call = new FunctionCallNode(args, typeName, args.IsValid && type.IsValid);
 
         return new ObjectCreationNode(call, newKeyword, isValid);
     }

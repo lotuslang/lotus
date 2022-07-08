@@ -6,21 +6,21 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         if (fromToken is not Token fromKeyword || fromToken != "from")
             throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, fromToken.Location));
 
-        var fromOrigin = parser.ExpressionParser.Consume();
+        var fromIsValid = parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
+            defaultVal: NameNode.NULL,
+            out var fromOrigin,
+            out var fromVal
+        );
 
-        var fromIsValid = true;
-
-        var importIsValid = true;
-
-        if (fromOrigin is not StringNode && !Utilities.IsName(fromOrigin)) {
+        if (!fromIsValid) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = fromOrigin,
+                Value = fromVal,
                 In = "a from statement",
                 Expected = "string or name"
             });
-
-            fromIsValid = false;
         }
+
+        var importIsValid = true;
 
         var from = new FromNode(fromOrigin, fromKeyword, fromIsValid);
 
@@ -52,29 +52,38 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             importKeyword = new Token(importToken.Representation, TokenKind.keyword, importToken.Location, false);
         }
 
-        var importList = new List<ValueNode>();
+        var importList = new List<NameNode>();
 
         do {
-            var import = parser.ExpressionParser.Consume(); // consume the import's name
+            // consume the import's name
+            var import = parser.ExpressionParser.Consume<NameNode>(
+                NameNode.NULL,
+                @in: "an import statement",
+                @as: "a namespace or type name"
+            );
 
-            if (!Utilities.IsName(import)) {
-
-                if (!import.IsValid && import.Token.Representation == "*") {
+            if (!import.IsValid) {
+                if (parser.ExpressionParser.Current.Token == "*") {
                     Logger.errorStack.Pop();
 
-                    Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                        Value = import.Token,
+                    Logger.Error(new NotANameError(ErrorArea.Parser) {
+                        Value = parser.ExpressionParser.Current,
                         ExtraNotes = "Wildcards ('*') are not allowed in import statements. Consider writing a `using` statement instead. "
-                                + "For example, you could write : 'using " + ASTHelper.PrintValue(from.OriginName) + "' "
+                                + "For example, you could write : 'using "
+                                + ASTHelper.PrintUnion(from.OriginName)
+                                + "' "
                                 + "at the top of your file.",
                     });
-                } else {
-                    Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                        Value = import,
-                        In = "a import statement",
-                        Expected = "a type name"
-                    });
                 }
+
+                import = new IdentNode(
+                    new IdentToken(
+                        parser.ExpressionParser.Current.Token.Representation,
+                        parser.ExpressionParser.Current.Location,
+                        false
+                    ),
+                    false
+                );
 
                 importIsValid = false;
             }

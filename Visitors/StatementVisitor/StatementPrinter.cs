@@ -38,7 +38,7 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
         static string printParameter(FunctionParameter param) {
             var output = "";
 
-            if (param.Type != ValueNode.NULL) output += ASTHelper.PrintValue(param.Type);
+            if (param.TypeName != ValueNode.NULL) output += ASTHelper.PrintValue(param.TypeName);
 
             output += ASTHelper.PrintValue(param.Name);
 

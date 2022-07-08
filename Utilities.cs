@@ -43,6 +43,7 @@ public static class Utilities
         return count;
     }
 
+    [Obsolete("Utilities.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
     [DebuggerStepThrough]
     public static bool IsName(ValueNode node)
         => ASTHelper.IsName(node);

@@ -1,7 +1,7 @@
 public record FunctionDeclarationNode(
     SimpleBlock Body,
     IList<FunctionParameter> Parameters,
-    ValueNode ReturnType,
+    NameNode ReturnType,
     IdentToken Name,
     Token Token,
     Token OpeningParenthesis,
@@ -14,7 +14,7 @@ public record FunctionDeclarationNode(
         = new(
             SimpleBlock.NULL,
             Array.Empty<FunctionParameter>(),
-            ValueNode.NULL,
+            NameNode.NULL,
             IdentToken.NULL,
             Token.NULL,
             Token.NULL,
@@ -25,7 +25,7 @@ public record FunctionDeclarationNode(
 
     internal bool isInternal = false;
 
-    public bool HasReturnType => ReturnType != ValueNode.NULL;
+    public bool HasReturnType => ReturnType != NameNode.NULL;
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]
@@ -36,7 +36,7 @@ public record FunctionDeclarationNode(
 
 /// <summary>You define parameters, you make arguments</summary>
 public record FunctionParameter(
-    ValueNode Type,
+    NameNode TypeName,
     IdentNode Name,
     ValueNode DefaultValue,
     Token EqualSign,

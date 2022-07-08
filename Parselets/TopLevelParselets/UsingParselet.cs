@@ -6,20 +6,20 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
         if (usingToken is not Token usingKeyword || usingToken != "using")
             throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, usingToken.Location));
 
-        var importName = parser.ExpressionParser.Consume();
+        var isValid = parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
+            defaultVal: NameNode.NULL,
+            out var import,
+            out var importVal
+        );
 
-        var isValid = true;
-
-        if (importName is not StringNode && !Utilities.IsName(importName)) {
+        if(!isValid) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = importName,
-                As = "a namespace in a using statement",
-                Expected = "string or name"
+                Value = importVal,
+                As = "a namespace",
+                Expected = "either a string or a name"
             });
-
-            isValid = false;
         }
 
-        return new UsingNode(importName, usingKeyword, isValid);
+        return new UsingNode(import, usingKeyword, isValid);
     }
 }

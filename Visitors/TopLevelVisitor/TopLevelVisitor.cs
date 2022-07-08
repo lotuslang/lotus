@@ -2,7 +2,6 @@ public interface ITopLevelVisitor<T>
 {
     T Default(TopLevelNode node);
 
-
     T Visit(TopLevelNode node) => Default(node);
     T Visit(TopLevelStatementNode node) => Default(node);
     T Visit(FromNode node) => Default(node);

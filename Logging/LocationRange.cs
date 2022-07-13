@@ -1,3 +1,4 @@
+[DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})")]
 public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>
 {
     public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);
@@ -71,13 +72,16 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
 
     public bool IsSingleLocation() => LineLength == 1 && ColumnLength == 1;
 
-
     public Location GetFirstLocation() => new(firstLine, firstColumn, filename);
 
     public Location GetLastLocation() => new(lastLine, lastColumn, filename);
 
-
-    public override string ToString() => this;
+    public override string ToString() {
+        if (IsSingleLocation())
+            return GetFirstLocation().ToString();
+        else
+            return $"{filename}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";
+    }
 
     public int CompareTo(LocationRange? other) {
         if (other is null) return -1;
@@ -104,10 +108,5 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
             output = this.ColumnLength.CompareTo(other.ColumnLength);
 
         return output;
-    }
-
-    public static implicit operator string(LocationRange range) {
-        if (range.IsSingleLocation()) return range.GetFirstLocation();
-        else return $"{range.filename}({range.firstLine}:{range.firstColumn} - {range.lastLine}:{range.lastColumn})";
     }
 }

@@ -2,12 +2,12 @@ public sealed class CharacterTriviaToklet : ITriviaToklet<CharacterTriviaToken>
 {
     public readonly char character;
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-    private Predicate<IConsumer<char>> _condition;
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+    private Func<char, Func<IConsumer<char>>, bool> _condition;
 
     public CharacterTriviaToklet(char c) {
         character = c;
-        _condition = (input => input.Consume() == character);
+        _condition = ((currChar, _) => currChar == character);
     }
 
     public CharacterTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {

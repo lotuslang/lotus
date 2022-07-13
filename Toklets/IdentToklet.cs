@@ -2,10 +2,10 @@ public sealed class IdentToklet : IToklet<Token>
 {
     public static readonly IdentToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (input =>
-            Char.IsLetter(input.Consume()) || input.Current == '_'
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, _) =>
+            Char.IsLetter(currChar) || currChar == '_'
         );
 
     public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {

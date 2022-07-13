@@ -101,8 +101,8 @@ public sealed class Result<T> : Union<T, None>
     private Result() : base(None.Instance) { }
 
 
-    private static Result<T> _err = new();
-    public static Result<T> Error => _err;
+    private static readonly Result<T> _err = new();
+    public static ref readonly Result<T> Error => ref _err;
 
     public void OnError(Action act) {
         if (!IsOk()) act();

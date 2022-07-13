@@ -4,14 +4,14 @@ public sealed class CharToklet : IToklet<Token>
     public readonly char matchChr;
     public readonly TokenKind kind;
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-    private readonly Predicate<IConsumer<char>> _condition;
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+    private readonly Func<char, Func<IConsumer<char>>, bool> _condition;
 
     public CharToklet(char match, TokenKind kind = TokenKind.delimiter) : base() {
         matchChr = match;
         this.kind = kind;
         _matchChrAsStr = matchChr.ToString();
-        _condition = (input) => input.Current == matchChr;
+        _condition = (currChar, _) => currChar == matchChr;
     }
 
     public Token Consume(IConsumer<char> input, Tokenizer _) {

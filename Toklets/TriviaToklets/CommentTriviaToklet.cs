@@ -4,10 +4,10 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 {
     public static readonly CommentTriviaToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (consumer =>
-            consumer.Consume() is '/' && (consumer.Consume() is '/' or '*')
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, getInput) =>
+            currChar is '/' && (getInput().Consume() is '/' or '*')
         );
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {

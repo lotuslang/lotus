@@ -4,18 +4,13 @@ public class TopLevelParser : Parser<TopLevelNode>
 
     public ExpressionParser ExpressionParser => StatementParser.ExpressionParser;
 
-    public override TopLevelNode Current {
-        get;
-        protected set;
-    } = ConstantDefault;
-
     public new static readonly TopLevelNode ConstantDefault = TopLevelNode.NULL;
 
     public override TopLevelNode Default => ConstantDefault with { Location = Position };
 
     protected void Init() {
         StatementParser = new StatementParser(Tokenizer);
-        Current = ConstantDefault;
+        _curr = ConstantDefault;
     }
 
 #nullable disable
@@ -50,14 +45,15 @@ public class TopLevelParser : Parser<TopLevelNode>
         return output.ToArray();
     }
 
-    public override TopLevelNode Consume() {
+    public override ref readonly TopLevelNode Consume() {
         base.Consume();
 
         var currToken = Tokenizer.Consume();
 
         // if the token is EOF, return TopLevelNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
-            return (Current = Default with { Location = currToken.Location });
+            _curr = Default with { Location = currToken.Location };
+            return ref _curr;
         }
 
         var accessKeyword = Token.NULL;
@@ -94,7 +90,7 @@ public class TopLevelParser : Parser<TopLevelNode>
         currToken = Tokenizer.Consume();
 
         if (Grammar.TryGetTopLevelParslet(currToken, out var parslet)) {
-            Current = parslet.Parse(this, currToken);
+            _curr = parslet.Parse(this, currToken);
 
             // TODO: Throw an error when there's a modifier but the node isn't
             //       supposed to be modded
@@ -102,10 +98,10 @@ public class TopLevelParser : Parser<TopLevelNode>
                 accessibleCurrent.AccessKeyword = accessKeyword;
         } else {
             Tokenizer.Reconsume();
-            Current = new TopLevelStatementNode(StatementParser.Consume());
+            _curr = new TopLevelStatementNode(StatementParser.Consume());
         }
 
-        return Current;
+        return ref _curr;
     }
 
     public TypeDecName ConsumeTypeDeclarationName() {

@@ -2,18 +2,13 @@ public class StatementParser : Parser<StatementNode>
 {
     public ExpressionParser ExpressionParser { get; protected set; }
 
-    public override StatementNode Current {
-        get;
-        protected set;
-    }
-
     public new static readonly StatementNode ConstantDefault = StatementNode.NULL;
 
     public override StatementNode Default => ConstantDefault with { Location = Position };
 
     protected void Init() {
         ExpressionParser = new ExpressionParser(Tokenizer);
-        Current = ConstantDefault with { Location = Tokenizer.Position };
+        _curr = ConstantDefault with { Location = Tokenizer.Position };
     }
 
 #nullable disable
@@ -48,10 +43,10 @@ public class StatementParser : Parser<StatementNode>
         return output.ToArray();
     }
 
-    public override StatementNode Consume()
-        => Consume(true);
+    public override ref readonly StatementNode Consume()
+        => ref Consume(true);
 
-    public StatementNode Consume(bool checkSemicolon = true) {
+    public ref readonly StatementNode Consume(bool checkSemicolon = true) {
         base.Consume();
 
         // Consume a token
@@ -63,14 +58,15 @@ public class StatementParser : Parser<StatementNode>
 
         // if the token is EOF, return StatementNode.NULL
         if (currToken == Tokenizer.Default || currToken == "\u0003") {
-            return (Current = Default with { Location = currToken.Location });
+            _curr = Default with { Location = currToken.Location };
+            return ref _curr;
         }
 
         if (Grammar.TryGetStatementParslet(currToken, out var parslet)) {
-            Current = parslet.Parse(this, currToken);
+            _curr = parslet.Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();
-            Current = new StatementExpressionNode(ExpressionParser.Consume());
+            _curr = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
         if (checkSemicolon && NeedsSemicolon(Current)) {
@@ -82,7 +78,7 @@ public class StatementParser : Parser<StatementNode>
             }
         }
 
-        return Current;
+        return ref _curr;
     }
 
 
@@ -104,7 +100,7 @@ public class StatementParser : Parser<StatementNode>
                 });
             }
 
-            Current = Current with { IsValid = false };
+            _curr = Current with { IsValid = false };
             Tokenizer.Reconsume();
         }
     }

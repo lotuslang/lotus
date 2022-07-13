@@ -6,7 +6,7 @@ public interface IConsumer<T> : IEnumerable<T>
     /// Gets the last object consumed by this IConsumer.
     /// </summary>
     /// <value>Last object consumed.</value>
-    T Current { get; }
+    ref readonly T Current { get; }
 
     T Default { get; }
 
@@ -23,7 +23,7 @@ public interface IConsumer<T> : IEnumerable<T>
     /// </summary>
     /// <returns>The consumed object</returns>
     //[return: MaybeNull]
-    T Consume();
+    ref readonly T Consume();
 
     /// <summary>
     /// Consumes an object and returns it.

@@ -1,16 +1,11 @@
 public class ExpressionParser : Parser<ValueNode>
 {
-    public override ValueNode Current {
-        get;
-        protected set;
-    } = ConstantDefault;
-
     public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
 
     public override ValueNode Default => ConstantDefault with { Location = Position };
 
     public void Init() {
-        Current = ConstantDefault with { Location = Tokenizer.Position };
+        _curr = ConstantDefault with { Location = Tokenizer.Position };
     }
 
     public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
@@ -47,15 +42,15 @@ public class ExpressionParser : Parser<ValueNode>
         return output.ToArray();
     }
 
-    public override ValueNode Consume()
-        => Consume(Precedence.Comma);
+    public override ref readonly ValueNode Consume()
+        => ref Consume(Precedence.Comma);
 
-    public ValueNode Consume(Precedence precedence = 0) {
+    public ref readonly ValueNode Consume(Precedence precedence = 0) {
         base.Consume();
 
-        Current = ConsumeValue(precedence);
+        _curr = ConsumeValue(precedence);
 
-        return Current;
+        return ref _curr;
     }
 
     private ValueNode ConsumeValue(Precedence precedence) {

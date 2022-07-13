@@ -2,16 +2,10 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 {
     public static readonly ComplexStringToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (input => {
-                var current = input.Consume();
-
-                if (current != '$') return false;
-
-                current = input.Consume();
-
-                return current is '\'' or '"';
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, getInput) => {
+                return currChar == '$' && getInput().Consume() is '\'' or '"';
             }
         );
 

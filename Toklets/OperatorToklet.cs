@@ -3,10 +3,10 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 {
     public static readonly OperatorToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (input => {
-                switch (input.Consume()) {
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, getInput) => {
+                switch (currChar) {
                     case   '+' or '-'
                         or '*' or '/'
                         or '%' or '^'
@@ -15,9 +15,9 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
                         or '!' or '?':
                         return true;
                     case '&':
-                        return input.Consume() == '&';
+                        return getInput().Consume() == '&';
                     case '|':
-                        return input.Consume() == '|';
+                        return getInput().Consume() == '|';
                     default:
                         return false;
                 }

@@ -2,10 +2,10 @@ public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken
 {
     public static readonly WhitespaceTriviaToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (input =>
-            input.Consume() != '\n' && Char.IsWhiteSpace(input.Current)
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, _) =>
+            currChar != '\n' && Char.IsWhiteSpace(currChar)
         );
 
     public WhitespaceTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {

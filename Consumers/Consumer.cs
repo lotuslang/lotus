@@ -1,99 +1,103 @@
-using System.Diagnostics.CodeAnalysis;
-
 public class Consumer<T> : IConsumer<T>
 {
-    private bool reconsumeFlag;
+    protected bool _atStart;
 
-    private readonly Stack<T> inputStack;
+    protected T[] _data;
+    protected int _currIdx;
 
-    [property: AllowNull]
-    public T Current { get; protected set; }
+    public virtual ref readonly T Current => ref _data[_currIdx];
 
-    public T Default { get; protected set; }
+    public int Count => _data.Length - (_currIdx + 1);
 
+    public T ConstantDefault;
+
+    public T Default => ConstantDefault;
+
+    protected Location lastPos;
     protected Location internalPos;
 
-    public LocationRange Position => (Current is ILocalized tLoc ? tLoc.Location : internalPos);
+    public virtual LocationRange Position => (Current is ILocalized tLoc ? tLoc.Location : internalPos);
 
-    protected Consumer() {
-        inputStack = new Stack<T>();
+    protected void Init() {
+        _data = Array.Empty<T>();
+        _atStart = true;
         internalPos = new Location(1, -1);
-        Default = default(T)!;
-        Current = Default;
+        ConstantDefault = default(T)!;
     }
 
+#nullable disable
+    protected Consumer() {
+        Init();
+    }
+#nullable restore
+
     public Consumer(IEnumerable<T> enumerable, T defaultValue, string filename) : this() {
-        Default = defaultValue;
-        inputStack = new Stack<T>(enumerable.Reverse());
+        ConstantDefault = defaultValue;
+
+        _data = enumerable.ToArray();
+
         internalPos = internalPos with { filename = filename };
     }
 
     public Consumer(Consumer<T> consumer) : this() {
-        Default = consumer.Default;
+        ConstantDefault = consumer.Default;
 
-        inputStack = consumer.inputStack.Clone();
-        internalPos = internalPos with { filename = consumer.Position.filename };
+        _data = consumer._data;
+        _currIdx = consumer._currIdx;
+        _atStart = consumer._atStart;
+
+        internalPos = consumer.internalPos;
     }
 
     public Consumer(IConsumer<T> consumer) : this() {
-        Default = consumer.Default;
+        ConstantDefault = consumer.Default;
 
-        foreach (var item in consumer) {
-            inputStack.Push(item);
-        }
+        _data = consumer.ToArray();
 
-        inputStack = new Stack<T>(inputStack);
         internalPos = internalPos with { filename = consumer.Position.filename };
     }
 
-    public bool Consume(out T item) {
-        if (inputStack.Count == 0) {
-            Current = Default;
+    public virtual bool Consume(out T item) {
+        if (!_atStart && Count <= 0) {
             item = Default;
             return false;
         }
 
-        item = Consume()!;
+        item = Consume();
 
         return true;
     }
 
-    public T Consume() {
-
-        if (reconsumeFlag) {
-            reconsumeFlag = false;
-            internalPos = internalPos with { column = internalPos.column + 1 };
-            return Current;
+    public virtual ref readonly T Consume() {
+        if (!_atStart && Count <= 0) {
+            _currIdx++; // still update because reconsume() might be called
+            return ref ConstantDefault;
         }
 
-        if (inputStack.Count == 0) {
-            Current = Default!;
-            return Current;
+        if (!_atStart) {
+            _currIdx++;
+        } else {
+            _atStart = false;
         }
 
         internalPos = internalPos with { column = internalPos.column + 1 };
 
-        Current = inputStack.Pop();
-
-        return Current;
+        return ref _data[_currIdx];
     }
 
-    public void Reconsume() {
-        reconsumeFlag = true;
-
-        internalPos = internalPos with { column = internalPos.column - 1 };
+    public virtual void Reconsume() {
+        if (_currIdx <= 0)
+            _atStart = true;
+        else
+            _currIdx--;
     }
 
 
-    public T Peek() {
-        if (reconsumeFlag) return Current;
-
-        if (!inputStack.TryPeek(out var result)) result = Default;
-
-        return result;
+    public virtual T Peek() {
+        return Count <= 0 ? ConstantDefault : _data[_atStart ? _currIdx : _currIdx + 1];
     }
 
-    public Consumer<T> Clone() => new(this);
+    public virtual Consumer<T> Clone() => new(this);
 
     IConsumer<T> IConsumer<T>.Clone() => Clone();
 

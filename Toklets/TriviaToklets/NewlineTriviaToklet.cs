@@ -2,8 +2,9 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 {
     public static readonly NewlineTriviaToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (input => input.Consume() is '\n');
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, _) => currChar is '\n');
 
     public NewlineTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;

@@ -137,13 +137,36 @@ public class ReadOnlyGrammar
         this.triviaToklets = triviaToklets ?? new List<ITriviaToklet<TriviaToken>>();
     }
 
-    public IToklet<Token> MatchToklet(StringConsumer input)
+    private Func<IConsumer<char>> GetCloningFunc(IConsumer<char> input)
+        => () => {
+            var output = input.Clone();
+            output.Consume();
+            return output;
+        };
+
+    public IToklet<Token> MatchToklet(StringConsumer input) {
+        var currChar = input.Peek();
+
         // we can mark this as non-nullable as the basic `Toklet` will always match, therefore
         // we will always find at least one
-        => toklets.Find(toklet => toklet.Condition(input.Clone()))!;
+        return toklets.Find(
+            toklet => toklet.Condition(
+                currChar,
+                GetCloningFunc(input)
+            )
+        )!;
+    }
 
-    public ITriviaToklet<TriviaToken>? MatchTriviaToklet(StringConsumer input)
-        => triviaToklets.Find(toklet => toklet.Condition(input.Clone()));
+    public ITriviaToklet<TriviaToken>? MatchTriviaToklet(StringConsumer input) {
+        var currChar = input.Peek();
+
+        return triviaToklets.Find(
+            toklet => toklet.Condition(
+                currChar,
+                GetCloningFunc(input)
+            )
+        );
+    }
 
     public ExpressionKind GetExpressionKind(Token token) {
 

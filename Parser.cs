@@ -10,11 +10,12 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
         get => Current.Location;
     }
 
+    protected T _curr;
     /// <summary>
     /// Gets the last StatementNode object consumed by this instance.
     /// </summary>
     /// <value>The last StatementNode consumed.</value>
-    public abstract T Current { get; protected set; }
+    public ref readonly T Current => ref _curr;
 
     /// <summary>
     /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="Node.NULL"/>
@@ -35,7 +36,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     protected Parser() {
         reconsumeQueue = new Queue<T>();
 
-        Current = ConstantDefault;
+        _curr = ConstantDefault;
 
         Grammar = new ReadOnlyGrammar();
     }
@@ -79,12 +80,12 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     public Parser(Parser<T> parser) : this(parser.Grammar) {
         reconsumeQueue = parser.reconsumeQueue;
         Tokenizer = parser.Tokenizer;
-        Current = parser.Current;
+        _curr = parser.Current;
     }
 
     public Parser(Parser<T> parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
         reconsumeQueue = parser.reconsumeQueue;
-        Current = parser.Current;
+        _curr = parser.Current;
     }
 
     /// <summary>
@@ -113,10 +114,11 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// Consume a StatementNode object and returns it.
     /// </summary>
     /// <returns>The StatementNode object consumed.</returns>
-    public virtual T Consume() {
+    public virtual ref readonly T Consume() {
         // If we are instructed to reconsume the last node, then dequeue a node from the reconsumeQueue and return it
         if (reconsumeQueue.Count != 0) {
-            return reconsumeQueue.Dequeue();
+            _curr = reconsumeQueue.Dequeue();
+            return ref _curr;
         }
 
         if (Tokenizer is null) {
@@ -126,7 +128,8 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
             });
         }
 
-        return Default;
+        _curr = Default;
+        return ref _curr;
     }
 
     public bool TryConsume<TNode>([NotNullWhen(true)] out TNode? output, out T asNode) where TNode : T {

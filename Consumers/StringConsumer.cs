@@ -1,156 +1,77 @@
 using System.IO;
-using System.Diagnostics.CodeAnalysis;
 
-public class StringConsumer : IConsumer<char>
+public sealed class StringConsumer : Consumer<char>
 {
     public readonly static char EOF = '\u0003';
 
-    public char Default => EOF;
+    private new Location lastPos;
 
-    protected Queue<char> reconsumeQueue;
+    private Location pos; // we keep it because it's more convenient and makes sense since a character always has an atomic location
 
-    protected Stack<char> stack;
+	public override LocationRange Position => pos;
 
-    public int Count => stack.Count + reconsumeQueue.Count;
-
-    private Location lastPosition;
-
-    public char Current { get; protected set; }
-
-    protected Location pos; // we keep it because it's more convenient and makes sense since a character always has an atomic location
-
-	public LocationRange Position => pos;
-
-    protected StringConsumer() {
-        Current = EOF;
-        stack = new Stack<char>();
+    private new void Init() {
+        _data = Array.Empty<char>();
+        _atStart = true;
         pos = new Location(1, -1);
-        reconsumeQueue = new Queue<char>();
-        lastPosition = new Location(0, -1);
+        lastPos = new Location(0, -1);
     }
 
-    public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") : this() {
-        var cloned = consumer.Clone();
-        while (cloned.Consume(out var item)) {
-            stack.Push(item);
-        }
-
-        stack = new Stack<char>(consumer.Peek());
-
-        stack = new Stack<char>(stack);
-
-        pos = new Location(1, -1, fileName);
+#nullable disable
+    private StringConsumer() : base() {
+        Init();
     }
 
     public StringConsumer(StringConsumer consumer) : this() {
-		stack = consumer.stack.Clone();
+		_data = consumer._data;
+        _currIdx = consumer._currIdx;
 
-        Current = consumer.Current;
+        _atStart = consumer._atStart;
 
-        pos = new Location(consumer.pos.line, consumer.pos.column, consumer.pos.filename);
+        // Since Location is a record, the underlying value never mutates
+        pos = consumer.pos;
 
-        reconsumeQueue = new Queue<char>(consumer.reconsumeQueue);
-
-        lastPosition = consumer.lastPosition;
+        lastPos = consumer.lastPos;
     }
 
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
-        stack = new Stack<char>(collection.Reverse());
+        _data = collection.ToArray();
 
         pos = new Location(1, -1, fileName);
     }
 
-    public StringConsumer(Uri fileInfo) : this(File.ReadAllLines(fileInfo.AbsolutePath), fileInfo.AbsolutePath)
+    public StringConsumer(Uri fileInfo) : this(File.ReadAllText(fileInfo.AbsolutePath), fileInfo.AbsolutePath)
     { }
 
     public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") : this() {
-        foreach (var line in lines)
-        {
-            foreach (var ch in line)
-            {
-                stack.Push(ch);
-            }
-
-            stack.Push('\n');
-        }
-
-        stack = new Stack<char>(stack);
+        _data = String.Join('\n', lines).ToCharArray();
 
         pos = new Location(1, -1, fileName);
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd(), fileName)
     { }
+#nullable restore
 
-    public void Reconsume() {
-
-        reconsumeQueue.Enqueue(Current);
-
-        pos = lastPosition;
+    public override void Reconsume() {
+        base.Reconsume();
+        pos = lastPos;
     }
 
-    public bool Consume([MaybeNullWhen(false)] out char result) {
-        result = Consume();
-
-        return result != EOF;
-    }
-
-    public char Consume() {
+    public override ref readonly char Consume() {
 
         // If we are instructed to reconsume the last char, then dequeue a char from the reconsumeQueue and return it
-        if (reconsumeQueue.Count != 0) {
-            if (reconsumeQueue.Peek() == '\n') {
-                UpdatePosForNewline();
-            }
+        lastPos = pos;
 
-             pos = pos with { column = pos.column + 1 };
-
-            return reconsumeQueue.Dequeue();
-        }
-
-        lastPosition = pos;
-
-        if (Count == 0) {
-            Current = EOF;
-
-            return Current;
-        }
-
-        Current = stack.Pop();
-
-        if (Current == '\n') {
+        if (base.Consume() == '\n')
             UpdatePosForNewline();
-        }
 
         pos = pos with { column = pos.column + 1 };
 
-        return Current;
+        return ref _data[_currIdx];
     }
 
-    public char Peek() {
-
-        if (reconsumeQueue.Count != 0) {
-            return reconsumeQueue.Peek();
-        }
-
-        return Count == 0 ? EOF : stack.Peek();
-    }
-
-    public char[] Peek(int n) {
-        var output = new char[n];
-
-        var consumer = this.Clone();
-
-        for (int i = 0; i < n; i++) {
-            output[i] = consumer.Consume();
-        }
-
-        return output;
-    }
-
-    public StringConsumer Clone() => new(this);
-
-    IConsumer<char> IConsumer<char>.Clone() => Clone();
+    public override StringConsumer Clone() => new(this);
 
     private void UpdatePosForNewline() => pos = pos with { line = pos.line + 1, column = -1 };
 }

@@ -2,10 +2,10 @@ public sealed class StringToklet : IToklet<StringToken>
 {
     public static readonly StringToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (input =>
-            input.Consume() == '\'' || input.Current == '"'
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, _) =>
+            currChar is '"' or '\"'
         );
 
     public StringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {

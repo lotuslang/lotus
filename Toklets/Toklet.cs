@@ -4,7 +4,7 @@ public abstract class Toklet : IToklet<Token>
 
 	protected Toklet() : base() { }
 
-    public abstract Predicate<IConsumer<char>> Condition { get; }
+    public abstract ref readonly Func<char, Func<IConsumer<char>>, bool> Condition { get; }
 
     public abstract Token Consume(IConsumer<char> input, Tokenizer _);
 
@@ -15,8 +15,8 @@ public abstract class Toklet : IToklet<Token>
         => new CharsToklet(s, kind);
 
     private sealed class Generic : Toklet {
-        private static readonly Predicate<IConsumer<char>> _condition = (_ => true);
-        public override Predicate<IConsumer<char>> Condition => _condition;
+        private static readonly Func<char, Func<IConsumer<char>>, bool> _condition = ((_, _) => true);
+        public override ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
 
         public override Token Consume(IConsumer<char> input, Tokenizer _) {
             if (!input.Consume(out char currChar)) {

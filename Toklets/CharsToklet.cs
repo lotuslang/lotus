@@ -3,8 +3,8 @@ public sealed class CharsToklet : IToklet<Token>
     public readonly string matchString;
     public readonly TokenKind kind;
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-    private readonly Predicate<IConsumer<char>> _condition;
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+    private readonly Func<char, Func<IConsumer<char>>, bool> _condition;
 
     public CharsToklet(string match, TokenKind kind = TokenKind.delimiter) : base() {
         if (match.Length == 0) {
@@ -13,8 +13,14 @@ public sealed class CharsToklet : IToklet<Token>
 
         matchString = match;
         this.kind = kind;
-        _condition = (input) => {
-            foreach (var c in matchString) {
+
+        _condition = (currChar, getInput) => {
+            if (currChar != matchString[0])
+                return false;
+
+            var input = getInput();
+
+            foreach (var c in matchString.AsSpan(1)) {
                 if (input.Consume() != c)
                     return false;
             }

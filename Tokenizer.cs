@@ -1,6 +1,7 @@
 public class Tokenizer : IConsumer<Token>
 {
-    public Token Current { get; protected set; }
+    protected Token _curr;
+    public ref readonly Token Current => ref _curr;
 
     public Token Default {
         get => Token.NULL with { Location = Position };
@@ -21,7 +22,7 @@ public class Tokenizer : IConsumer<Token>
 
         _input = new StringConsumer(Array.Empty<char>());
 
-        Current = Token.NULL;
+        _curr = Token.NULL;
 
         Grammar = new ReadOnlyGrammar();
     }
@@ -59,7 +60,7 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer._input, grammar) {
         _reconsumeQueue = new Queue<Token>(tokenizer._reconsumeQueue);
 
-        Current = tokenizer.Current;
+        _curr = tokenizer.Current;
     }
 
     public Tokenizer(Uri fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar) { }
@@ -87,19 +88,14 @@ public class Tokenizer : IConsumer<Token>
 
         _reconsumeQueue.Enqueue(output);
 
-        Current = oldCurrent;
+        _curr = oldCurrent;
 
         return output;
     }
 
     public Token[] Peek(int n, bool preserveTrivia = false) {
 
-        var oldCurrent = new Token(
-            Current.Representation,
-            Current.Kind,
-            Current.Location,
-            Current.IsValid
-        ) { LeadingTrivia = Current.LeadingTrivia, TrailingTrivia = Current.TrailingTrivia };
+        var oldCurrent = Current.ShallowClone();
 
         var output = new Token[n];
 
@@ -107,7 +103,7 @@ public class Tokenizer : IConsumer<Token>
             output[n] = Consume(preserveTrivia);
         }
 
-        Current = oldCurrent;
+        _curr = oldCurrent;
 
         foreach (var token in output.Reverse()) {
             // no we don't put it in the same loop as Consume() because then it would just consume the reconsume indefinitely
@@ -124,18 +120,20 @@ public class Tokenizer : IConsumer<Token>
     }
 
     // Because of stupid interface rule
-    public Token Consume() => Consume(preserveTrivia: false);
+    public ref readonly Token Consume() => ref Consume(preserveTrivia: false);
 
-    public Token Consume(bool preserveTrivia = false) {
+    public ref readonly Token Consume(bool preserveTrivia = false) {
 
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
         if (_reconsumeQueue.Count != 0) {
-            return (Current = _reconsumeQueue.Dequeue());
+            _curr = _reconsumeQueue.Dequeue();
+            return ref _curr;
         }
 
         // If there is nothing left to consume, return an EOF token
         if (!_input.Consume(out var currChar)) {
-            return (Current = Default);
+            _curr = Default;
+            return ref _curr;
         }
 
         _input.Reconsume();
@@ -143,7 +141,7 @@ public class Tokenizer : IConsumer<Token>
         if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
 
-            Current = Grammar.MatchToklet(_input).Consume(_input, this);
+            _curr = Grammar.MatchToklet(_input).Consume(_input, this);
 
             if (leadingTrivia != null)
                 Current.AddLeadingTrivia(leadingTrivia);
@@ -155,10 +153,10 @@ public class Tokenizer : IConsumer<Token>
                     Current.AddTrailingTrivia(trailingTrivia);
             }
         } else {
-            Current = Grammar.MatchToklet(_input).Consume(_input, this);
+            _curr = Grammar.MatchToklet(_input).Consume(_input, this);
         }
 
-        return Current;
+        return ref _curr;
     }
 
     public TriviaToken? ConsumeTrivia() {

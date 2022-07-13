@@ -1,19 +1,21 @@
-[DebuggerDisplay("<{Kind}> {Representation} @ {Location}")]
+[DebuggerDisplay("<{_kind}> {_repr} @ {Location}")]
 public record Token : ILocalized
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);
 
-    public TokenKind Kind { get; }
+    protected TokenKind _kind;
+    public ref readonly TokenKind Kind => ref _kind;
 
-    public string Representation { get; init; }
+    protected string _repr;
+    public ref readonly string Representation => ref _repr;
 
     public LocationRange Location { get; init; }
 
     public bool IsValid { get; set; }
 
     public Token(string repr, TokenKind kind, LocationRange location, bool isValid = true) {
-        Representation = repr;
-        Kind = kind;
+        _repr = repr;
+        _kind = kind;
         Location = location;
         IsValid = isValid;
     }
@@ -119,6 +121,9 @@ public record Token : ILocalized
 
     public static implicit operator string(Token token)
         => token.Representation;
+
+    public static implicit operator ReadOnlySpan<char>(Token token)
+        => token._repr;
 
     internal Token ShallowClone() => new Token(this);
 

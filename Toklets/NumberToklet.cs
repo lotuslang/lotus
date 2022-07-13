@@ -4,13 +4,11 @@ public sealed class NumberToklet : IToklet<NumberToken>
 {
     public static readonly NumberToklet Instance = new();
 
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition =
-        (input => {
-                var current = input.Consume();
-
-                return  Char.IsDigit(current)
-                    || (current == '.' && Char.IsDigit(input.Consume()));
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
+        ((currChar, getInput) => {
+                return  Char.IsDigit(currChar)
+                    || (currChar == '.' && Char.IsDigit(getInput().Consume()));
             }
         );
 
@@ -85,9 +83,11 @@ public sealed class NumberToklet : IToklet<NumberToken>
             }
         }
 
+        bool nextIsNumber() => Condition(input.Consume(), () => input.Clone());
+
         // if we have a decimal separator...
         if (currChar == '.') {
-            if (Condition(input.Clone())) {
+            if (nextIsNumber()) {
                 var errorCount = Logger.ErrorCount;
 
                 numberStr.Append(currChar).Append(Consume(input, _).Representation);
@@ -127,7 +127,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // we already had a "power-of-ten separator", so this is not valid.
         if (currChar is 'e' or 'E') {
-            if (Condition(input.Clone())) {
+            if (nextIsNumber()) {
                 var errorCount = Logger.ErrorCount;
 
                 numberStr.Append(currChar).Append(Consume(input, _).Representation);

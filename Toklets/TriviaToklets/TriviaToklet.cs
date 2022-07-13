@@ -1,7 +1,7 @@
 public class TriviaToklet : ITriviaToklet<TriviaToken>
 {
-    public Predicate<IConsumer<char>> Condition => _condition;
-	private static readonly Predicate<IConsumer<char>> _condition = (_ => false);
+    public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition = ((_, _) => false);
 
     [System.Diagnostics.CodeAnalysis.DoesNotReturn]
     public TriviaToken Consume(IConsumer<char> input, Tokenizer _)

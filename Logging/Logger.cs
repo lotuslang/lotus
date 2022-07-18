@@ -177,7 +177,7 @@ public static class Logger
                 }
 
                 sb.Append(
-                      node.GetType().Name
+                      (node is OperationNode opNode ? opNode.OperationType + " (" + opNode.Token + ')': node.GetType().Name)
                     + " '"
                     + (node.Location.LineLength < 100 ? ASTHelper.PrintNode(node).Trim() : "")
                     + "'"

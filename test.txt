@@ -29,9 +29,9 @@ var a = 0;
 var b = arr != [] ? arr : [ 0 ];
 
 // NOTE: Function that have parameters with the `type [a, b]` syntax will not be printed
-// exactly as they appear in the file. Instead, their parameters will be printed as `type a,type  b`
+// exactly as they appear in the file.
 // I think this is fine for now, since the fix would be non-trivial and it wouldn't change much
-func someFunc1(a, string [b, c], int d): int {
+func someFunc1(char a, string [b, c], int d): int {
     print(a.toString() + b + c);
 }
 

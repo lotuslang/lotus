@@ -52,8 +52,8 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             if (type is not NameNode typeName) {
                 Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                     Value = type,
-                    As = "a parameter type in a function's parameter list",
-                    Expected = "a type name (a qualified name)"
+                    As = "a param type in a function's parameter list",
+                    Expected = "a type name"
                 });
 
                 isValid = false;
@@ -85,8 +85,8 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
                 Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                     Value = paramNameNode,
-                    As = "a parameter name in a function's parameter list",
-                    Expected = "a simple name (an identifier)"
+                    As = "a param name in a function's parameter list",
+                    Expected = "an identifier"
                 });
 
                 isValid = false;
@@ -133,11 +133,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             * disgusting to look at. Fuck all of you.
             */
 
-            var typeOrName = parser.ExpressionParser.Consume();
+            var typeName = parser.ExpressionParser.Consume();
 
             // i don't wanna talk about it any more than i already did
 
-            if (typeOrName is OperationNode typeNameArray) {
+            if (typeName is OperationNode typeNameArray) {
                 // if it's a list of parameters with the same type
 
                 // if this isn't an array-access-like thing
@@ -189,14 +189,51 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 foreach (var paramNameNode in typeNameArray.Operands.Skip(1)) {
                     addParameter(paramType, paramNameNode);
                 }
-            } else if (parser.Tokenizer.Peek().Kind == TokenKind.identifier) {
-                // if there's still an identifier after typeOrName,
-                // it's a typed parameter (and the name is the token we peeked at)
+            } else if (parser.Tokenizer.Peek() != ",") {
+                // if there's no comma after the type, then there's probably a param's name
 
-                addParameter(typeOrName, parser.ExpressionParser.Consume());
+                addParameter(typeName, parser.ExpressionParser.Consume());
             } else {
                 // otherwise, that means we have a parameter without type info
-                addParameter(NameNode.NULL, typeOrName);
+                //! in that case, typeName is probably a parameter name
+
+                // add it anyway for consistency and in case the param name
+                // isn't even a name, because addParameter handles that for us
+                addParameter(NameNode.NULL, typeName);
+
+                // if the param name wasn't valid, no need to emit a second misleading
+                // error
+                if (!parameters.Last().IsValid) {
+                    isValid = false;
+                    goto LOOP_END_CHECK;
+                }
+
+                var notes = "Did you forget to specify a type for this parameter ? "
+                          + "For example, you could write :\n\t"
+                          + "func "
+                          + ASTHelper.PrintToken(funcName)
+                          + ASTHelper.PrintToken(openingParen);
+
+                if (parameters.Count != 0) {
+                    notes += "..., ";
+                }
+
+                notes += "int " + ASTHelper.PrintNode(typeName);
+
+                if (parser.Tokenizer.Peek() != ")") {
+                    notes += ", ...";
+                }
+
+                notes += ") -> ...";
+
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = parser.Tokenizer.Peek(),
+                    In = "function parameter list",
+                    Expected = "a parameter name",
+                    ExtraNotes = notes
+                });
+
+                isValid = false;
             }
 
         LOOP_END_CHECK: // FIXME: i know, this is bad practice, and i'm fully open to alternatives

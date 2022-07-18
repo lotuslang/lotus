@@ -14,6 +14,8 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
         // consume the '$' in front
         input.Consume();
 
+        var startPos = input.Position;
+
         var endingDelimiter = input.Consume();
 
         //consume a character
@@ -23,8 +25,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
         var output = new System.Text.StringBuilder();
 
         var isValid = true;
-
-        var startPos = input.Position;
 
         var sections = new List<Token[]>();
 

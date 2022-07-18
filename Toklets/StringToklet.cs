@@ -12,6 +12,8 @@ public sealed class StringToklet : IToklet<StringToken>
 
         var endingDelimiter = input.Consume();
 
+        var startPos = input.Position;
+
         // consume a character
         var currChar = input.Consume();
 
@@ -19,8 +21,6 @@ public sealed class StringToklet : IToklet<StringToken>
         var output = new System.Text.StringBuilder();
 
         var isValid = true;
-
-        var startPos = input.Position;
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {

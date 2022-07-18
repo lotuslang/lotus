@@ -157,6 +157,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
             .RegisterTopLevelParslets("namespace", NamespaceParslet.Instance)
             .RegisterTopLevelParslets("from", ImportParslet.Instance)
             .RegisterTopLevelParslets("using", UsingParslet.Instance)
-            .RegisterTopLevelParslets("enum", EnumParselet.Instance)
+            .RegisterTopLevelParslets("enum", EnumParslet.Instance)
             ;
 }

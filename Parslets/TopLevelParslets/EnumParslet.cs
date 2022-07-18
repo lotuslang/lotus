@@ -1,6 +1,6 @@
-public sealed class EnumParselet : ITopLevelParslet<EnumNode>
+public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 {
-    public static readonly EnumParselet Instance = new();
+    public static readonly EnumParslet Instance = new();
 
     public EnumNode Parse(TopLevelParser parser, Token enumToken) {
 

@@ -4,8 +4,10 @@ public sealed class IdentToklet : IToklet<Token>
 
     public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
 	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
-        ((currChar, _) =>
-            Char.IsLetter(currChar) || currChar == '_'
+        ((currChar, getInput) =>
+               currChar == '_'
+            || Char.IsLetter(currChar)
+            || (currChar == '@' && Char.IsLetter(getInput().Consume()))
         );
 
     public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {

@@ -203,7 +203,7 @@ public class ExpressionParser : Parser<ValueNode>
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = Tokenizer.Consume(),
                     In = "a tuple",
-                    Expected = "value"
+                    Expected = "a value"
                 });
 
                 isValid = false;

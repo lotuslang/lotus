@@ -5,7 +5,7 @@ internal sealed class ValuePrinter : IValueVisitor<string>
 
     public string Visit(FunctionCallNode node)
         => Print(node.Name)
-         + Utilities.Join(",", Print, node.ArgList);
+         + Print(node.ArgList);
 
     public string Visit(ObjectCreationNode node)
         => ASTHelper.PrintToken(node.Token) + Print(node.Invocation);

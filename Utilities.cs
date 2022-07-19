@@ -100,10 +100,6 @@ public static class Utilities
     }
 
     [DebuggerStepThrough]
-    public static string Join<T>(string separator, Func<T, string> convert, params T[] value)
-        => Join(separator, convert, coll: value);
-
-    [DebuggerStepThrough]
     public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
         var count = coll.Count();
 

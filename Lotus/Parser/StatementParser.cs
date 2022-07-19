@@ -57,7 +57,7 @@ public class StatementParser : Parser<StatementNode>
         { }
 
         // if the token is EOF, return StatementNode.NULL
-        if (currToken == Tokenizer.Default || currToken == "\u0003") {
+        if (currToken.Kind == TokenKind.EOF) {
             _curr = Default with { Location = currToken.Location };
             return ref _curr;
         }

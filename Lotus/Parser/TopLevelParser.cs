@@ -51,7 +51,7 @@ public class TopLevelParser : Parser<TopLevelNode>
         var currToken = Tokenizer.Consume();
 
         // if the token is EOF, return TopLevelNode.NULL
-        if (currToken == Tokenizer.Default || currToken == "\u0003") {
+        if (currToken.Kind == TokenKind.EOF) {
             _curr = Default with { Location = currToken.Location };
             return ref _curr;
         }

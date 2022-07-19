@@ -14,10 +14,13 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 
         int charCounter = 1;
 
-        // we don't need to check if there's a '\r' before cause it's always followed by a '\n' anyway
-        while (input.Consume(out char currChar) && currChar == '\n') charCounter++;
+        char currChar;
 
-        input.Reconsume();
+        while (input.Consume(out currChar) && currChar == '\n') charCounter++;
+
+        // if it's an eof, we shouldn't reconsume cause we would just go back and be stuck otherwise
+        if (currChar != input.Default)
+            input.Reconsume();
 
         return new NewlineTriviaToken(
             charCounter,

@@ -138,19 +138,26 @@ public class Tokenizer : IConsumer<Token>
 
         _input.Reconsume();
 
+        TriviaToken? leadingTrivia = null;
+
         if (!preserveTrivia && currChar != ',') {
-            var leadingTrivia = ConsumeTrivia();
+            leadingTrivia = ConsumeTrivia();
+
+            if (_input.Count == 0) {
+                _curr = Default with { LeadingTrivia = leadingTrivia };
+                return ref _curr;
+            }
 
             _curr = Grammar.MatchToklet(_input).Consume(_input, this);
 
             if (leadingTrivia != null)
-                Current.AddLeadingTrivia(leadingTrivia);
+                _curr.AddLeadingTrivia(leadingTrivia);
 
             if (_input.Peek() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
                 if (trailingTrivia != null)
-                    Current.AddTrailingTrivia(trailingTrivia);
+                    _curr.AddTrailingTrivia(trailingTrivia);
             }
         } else {
             _curr = Grammar.MatchToklet(_input).Consume(_input, this);

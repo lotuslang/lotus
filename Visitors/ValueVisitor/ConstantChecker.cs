@@ -27,13 +27,13 @@ internal sealed class ConstantChecker : IValueVisitor<bool>
     }
 
     public bool Visit(ParenthesizedValueNode node)
-        => IsContant(node.Values);
+        => IsContant(node.Value);
 
     public bool Visit(StringNode node)
         => true;
 
     public bool Visit(TupleNode node)
-        => node.Values.All(IsContant);
+        => node.Items.All(IsContant);
 
     public bool IsContant(ValueNode node) => node.Accept(this);
 }

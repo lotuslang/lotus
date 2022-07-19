@@ -45,10 +45,10 @@ internal sealed class ValueExtractor : IValueVisitor<IEnumerable<ValueNode>>, IS
         => node.Operands;
 
     public IEnumerable<ValueNode> Visit(ParenthesizedValueNode node)
-        => new[] { node.Values };
+        => new[] { node.Value };
 
     public IEnumerable<ValueNode> Visit(TupleNode node)
-        => node.Values;
+        => node.Items;
 
     public IEnumerable<ValueNode> Visit(SimpleBlock block)
         => _empty;

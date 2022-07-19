@@ -345,7 +345,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     }
 
     public GraphNode Visit(ParenthesizedValueNode node)
-        => ToGraphNode(node.Values);
+        => ToGraphNode(node.Value);
 
     public GraphNode Visit(StringNode node)
         => new GraphNode(node.GetHashCode(), "'" + node.Value.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
@@ -357,7 +357,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                         .SetColor(Tuple.color)
                         .SetTooltip(Tuple.tooltip);
 
-        foreach (var value in node.Values) {
+        foreach (var value in node.Items) {
             root.Add(ToGraphNode(value));
         }
 

@@ -61,7 +61,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
                 .Append((StatementExpressionNode)node);
 
     public IEnumerable<StatementNode> Visit(FunctionCallNode node)
-        => node.ArgList.Values.SelectMany(Flatten)
+        => node.ArgList.Items.SelectMany(Flatten)
                 .Append((StatementExpressionNode)node);
 
     public IEnumerable<StatementNode> Visit(ObjectCreationNode node)
@@ -69,11 +69,11 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
                 .Append((StatementExpressionNode)node);
 
     public IEnumerable<StatementNode> Visit(ParenthesizedValueNode node)
-        => Flatten(node.Values)
+        => Flatten(node.Value)
                 .Append((StatementExpressionNode)node);
 
     public IEnumerable<StatementNode> Visit(TupleNode node)
-        =>  node.Values.SelectMany(Flatten)
+        =>  node.Items.SelectMany(Flatten)
                 .Append((StatementExpressionNode)node);
 
     // TODO: Find an easier/clearer/faster way to do this

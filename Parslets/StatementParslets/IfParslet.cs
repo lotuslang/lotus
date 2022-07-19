@@ -30,12 +30,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
                             +"you can use the logical operators (OR ||, AND &&, XOR ^^, etc...)"
                 });
 
-                condition = new ParenthesizedValueNode(
-                    tuple.Count == 0 ? ValueNode.NULL : tuple.Values[0],
-                    tuple.OpeningToken,
-                    tuple.ClosingToken,
-                    isValid: false
-                );
+                condition = tuple.AsParenthesized();
             } else {
                 condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL, isValid: false);
             }

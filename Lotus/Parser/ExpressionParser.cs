@@ -115,27 +115,57 @@ public class ExpressionParser : Parser<ValueNode>
     }
 
     public TupleNode ConsumeTuple(string start, string end, uint expectedItemCount = 0) {
+        var baseTuple = ConsumeTuple<ValueNode>(start, end, (parser) => new[] { parser.Consume() });
+
+        var items = baseTuple.Items;
+
+        // if expectedItemCount is 0, then it means there's no limit
+        if (baseTuple.IsValid && expectedItemCount != 0 && expectedItemCount != items.Count) {
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Value = items.LastOrDefault() ?? ValueNode.NULL,
+                In = "a tuple",
+                Location = items.LastOrDefault()?.Location ?? Position,
+                Message = (items.Count > expectedItemCount ? "There were too many" : "There weren't enough")
+                         + "values in this tuple.",
+                Expected = expectedItemCount + $" values, but got " + items.Count
+            });
+
+            baseTuple.IsValid = false;
+        }
+
+        return new(baseTuple);
+    }
+
+    public TupleNode<TValue> ConsumeTuple<TValue>(
+        string start,
+        string end,
+        Func<ExpressionParser, IEnumerable<TValue>> valParser
+    )
+        where TValue : ILocalized
+    {
         var startingToken = Tokenizer.Consume();
 
         var isValid = true;
 
+        var @in = new Lazy<string>(() => "a" + typeof(TValue).Name + " list", isThreadSafe: false);
+
         if (startingToken.Representation != start) {
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) { // should we use InvalidCall instead ?
                 Value = startingToken,
-                In = "a tuple",
+                In = @in.Value,
                 Expected = start
             });
 
             isValid = false;
         }
 
-        var items = new List<ValueNode>();
+        var items = new List<TValue>();
 
         while (Tokenizer.Consume(out var token) && token != end) {
 
             Tokenizer.Reconsume();
 
-            items.Add(Consume());
+            items.AddRange(valParser(this));
 
             if (Tokenizer.Consume() != ",") {
 
@@ -145,11 +175,11 @@ public class ExpressionParser : Parser<ValueNode>
 
                 var lastItem = items.Last();
 
-                if (!isValid || !lastItem.IsValid) {
+                if (!isValid || !this.Current.IsValid) {
                     continue;
                 }
 
-                if (Tokenizer.Current.Kind == TokenKind.keyword || lastItem.Token.Kind == TokenKind.keyword) {
+                if (Tokenizer.Current.Kind == TokenKind.keyword) {
                     Tokenizer.Reconsume();
 
                     // If we set isValid here without emitting an error, execution will just continue normally
@@ -168,9 +198,9 @@ public class ExpressionParser : Parser<ValueNode>
 
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = Tokenizer.Current,
-                    In = "a tuple",
+                    In = @in.Value,
                     Expected = "a ',' or '" + end + "'",
-                    Message = "Did you forget '" + end + "' or a comma in this tuple ?"
+                    Message = "Did you forget '" + end + "' or a comma in this " + typeof(TValue).Name + " list ?"
                 });
 
 
@@ -202,8 +232,8 @@ public class ExpressionParser : Parser<ValueNode>
             if (Tokenizer.Peek() == end) {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = Tokenizer.Consume(),
-                    In = "a tuple",
-                    Expected = "a value"
+                    In = @in.Value,
+                    Expected = "a " + typeof(TValue).Name
                 });
 
                 isValid = false;
@@ -223,7 +253,7 @@ public class ExpressionParser : Parser<ValueNode>
             if (endingToken.Kind != TokenKind.EOF) {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = endingToken,
-                    In = "a tuple",
+                    In = @in.Value,
                     Expected = "an ending delimiter '" + end + "'"
                 });
 
@@ -232,7 +262,7 @@ public class ExpressionParser : Parser<ValueNode>
                 }
             } else {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    In = "a tuple",
+                    In = @in.Value,
                     Expected = "an ending delimeter '" + end + "'",
                     Location = items.LastOrDefault()?.Location ?? startingToken.Location
                 });
@@ -241,21 +271,7 @@ public class ExpressionParser : Parser<ValueNode>
             isValid = false;
         }
 
-        // if expectedItemCount is 0, then it means there's no limit
-        if (isValid && expectedItemCount != 0 && expectedItemCount != items.Count) {
-            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = items.LastOrDefault() ?? ValueNode.NULL,
-                In = "a tuple",
-                Location = items.LastOrDefault()?.Location ?? Position,
-                Message = (items.Count > expectedItemCount ? "There were too many" : "There weren't enough")
-                         + "values in this tuple.",
-                Expected = expectedItemCount + $" values, but got " + items.Count
-            });
-
-            isValid = false;
-        }
-
-        return new TupleNode(items, startingToken, endingToken, isValid);
+        return new TupleNode<TValue>(items, startingToken, endingToken, isValid);
     }
 
     public override ExpressionParser Clone() => new(this);

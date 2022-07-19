@@ -70,7 +70,7 @@ internal sealed class ValuePrinter : IValueVisitor<string>
 
     public string Visit(TupleNode node)
         => ASTHelper.PrintToken(node.OpeningToken)
-         + Utilities.Join(",", Print, node.Values)
+         + Utilities.Join(",", Print, node.Items)
          + ASTHelper.PrintToken(node.ClosingToken);
 
     public string Visit(NameNode name)

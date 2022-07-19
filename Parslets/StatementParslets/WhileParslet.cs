@@ -21,11 +21,7 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
             isValid = false;
 
             if (conditionNode is TupleNode tuple) {
-                condition = new ParenthesizedValueNode(
-                    tuple.Count == 0 ? ValueNode.NULL : tuple.Values[0],
-                    tuple.OpeningToken,
-                    tuple.ClosingToken
-                );
+                condition = tuple.AsParenthesized();
             } else {
                 condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL);
             }

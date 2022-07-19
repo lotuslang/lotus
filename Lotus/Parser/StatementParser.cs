@@ -184,7 +184,15 @@ public class StatementParser : Parser<StatementNode>
         return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
     }
 
-    // IMPORTANT: Update me if you add a new statement
+    public ParameterList<TParam> ConsumeParamList<TParam>(Func<ExpressionParser, TParam> argParser) where TParam : Parameter
+        => ConsumeParamList((parser) => new[] { argParser(parser) });
+
+    public ParameterList<TParam> ConsumeParamList<TParam>(Func<ExpressionParser, IEnumerable<TParam>> argParser) where TParam : Parameter {
+        var baseTuple = ExpressionParser.ConsumeTuple<TParam>("(", ")", argParser);
+
+        return new ParameterList<TParam>(baseTuple);
+    }
+
     private bool NeedsSemicolon(StatementNode node)
         => node is not (
                    ElseNode

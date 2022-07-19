@@ -138,18 +138,18 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     }
 
     public GraphNode Visit(FunctionDeclarationNode node) {
-        var root = new GraphNode(node.GetHashCode(), "func " + node.Name.Representation)
+        var root = new GraphNode(node.GetHashCode(), "func " + node.FuncName.Representation)
                         .SetColor(FuncDec.color)
                         .SetTooltip(FuncDec.tooltip);
 
-        if (node.Parameters.Count == 0) {
-            root.Add(new GraphNode(node.Parameters.GetHashCode(), "(no params)"));
+        if (node.ParamList.Items.Count == 0) {
+            root.Add(new GraphNode(node.ParamList.GetHashCode(), "(no params)"));
         } else {
-            var parametersNode = new GraphNode(node.Parameters.GetHashCode(), "param")
+            var parametersNode = new GraphNode(node.ParamList.GetHashCode(), "param")
                                         .SetColor(FuncDecParameters.color)
                                         .SetTooltip(FuncDecParameters.tooltip);
 
-            foreach (var parameter in node.Parameters) { // FIXME: Write tooltips
+            foreach (var parameter in node.ParamList.Items) { // FIXME: Write tooltips
 
                 var paramNameNode = ToGraphNode(parameter.Name);
 

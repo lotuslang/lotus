@@ -29,7 +29,7 @@ internal sealed class Flattener : IStatementVisitor<IEnumerable<StatementNode>>,
     public IEnumerable<StatementNode> Visit(FunctionDeclarationNode node) {
         IEnumerable<StatementNode> output = new List<StatementNode>();
 
-        foreach (var param in node.Parameters) {
+        foreach (var param in node.ParamList.Items) {
             if (param.HasDefaultValue) output = output.Concat(Flatten(param.DefaultValue!));
         }
 

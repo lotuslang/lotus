@@ -1,11 +1,9 @@
 public record FunctionDeclarationNode(
     SimpleBlock Body,
-    IList<FunctionParameter> Parameters,
+    ParameterList<FunctionParameter> ParamList,
     NameNode ReturnType,
-    IdentToken Name,
+    IdentToken FuncName,
     Token Token,
-    Token OpeningParenthesis,
-    Token ClosingParenthesis,
     Token ColonToken,
     bool IsValid = true
 ) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
@@ -13,11 +11,9 @@ public record FunctionDeclarationNode(
     public new static readonly FunctionDeclarationNode NULL
         = new(
             SimpleBlock.NULL,
-            Array.Empty<FunctionParameter>(),
+            ParameterList<FunctionParameter>.NULL,
             NameNode.NULL,
             IdentToken.NULL,
-            Token.NULL,
-            Token.NULL,
             Token.NULL,
             Token.NULL,
             false
@@ -41,6 +37,16 @@ public record FunctionParameter(
     ValueNode DefaultValue,
     Token EqualSign,
     bool IsValid = true
-) {
+) : Parameter(TypeName, Name, IsValid)
+{
+
+    public static readonly FunctionParameter NULL = new(
+        NameNode.NULL,
+        IdentNode.NULL,
+        ValueNode.NULL,
+        Token.NULL,
+        false
+    );
+
     public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
 }

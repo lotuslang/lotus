@@ -138,6 +138,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
     }
 
     private void InitializeStatementParslets()
+    //! IMPORTANT: Update StatementParser.NeedsSemicolon if you add a new statement
         => internalGrammar
             .RegisterStatementParslet("var", DeclarationParslet.Instance)
             .RegisterStatementParslet("func", FunctionDeclarationParslet.Instance)

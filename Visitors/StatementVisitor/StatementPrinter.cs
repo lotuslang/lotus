@@ -33,7 +33,7 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
          + Visit(node.Body);
 
     public string Visit(FunctionDeclarationNode node) {
-        var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.Name) + ASTHelper.PrintToken(node.OpeningParenthesis);
+        var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.FuncName) + ASTHelper.PrintToken(node.ParamList.OpeningToken);
 
         static string printParameter(FunctionParameter param) {
             var output = "";
@@ -47,7 +47,7 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
             return output;
         }
 
-        output += Utilities.Join(",", printParameter, node.Parameters) + ASTHelper.PrintToken(node.ClosingParenthesis);
+        output += Utilities.Join(",", printParameter, node.ParamList.Items) + ASTHelper.PrintToken(node.ParamList.ClosingToken);
 
         if (node.HasReturnType) output += ASTHelper.PrintToken(node.ColonToken) + ASTHelper.PrintValue(node.ReturnType);
 

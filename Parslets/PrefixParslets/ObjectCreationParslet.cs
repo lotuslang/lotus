@@ -52,8 +52,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
                     type.Token.Representation,
                     type.Location,
                     false
-                ),
-                false
+                )
             );
         }
 

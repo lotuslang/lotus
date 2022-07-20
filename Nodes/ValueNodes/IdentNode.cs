@@ -1,6 +1,6 @@
-public record IdentNode(IdentToken Token, bool IsValid = true) : NameNode(Token, new[] { Token }, IsValid)
+public record IdentNode(IdentToken Token) : NameNode(Token, new[] { Token }, Token.IsValid)
 {
-    public new static readonly IdentNode NULL = new(IdentToken.NULL, false);
+    public new static readonly IdentNode NULL = new(IdentToken.NULL);
 
     public new IdentToken Token { get => (base.Token as IdentToken)!; init => base.Token = value; }
 

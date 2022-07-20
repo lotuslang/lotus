@@ -11,8 +11,9 @@ public record ComplexStringNode : StringNode
     }
 
     public ComplexStringNode(ComplexStringToken token, IList<ValueNode> codeSections, bool isValid = true)
-        : base(token, isValid)
+        : base(token)
     {
+        IsValid = isValid;
         sections = new List<ValueNode>(codeSections);
     }
 

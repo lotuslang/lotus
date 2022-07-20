@@ -50,8 +50,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                         returnType.Token.Representation,
                         returnType.Location,
                         false
-                    ),
-                    false
+                    )
                 );
             }
         }
@@ -110,8 +109,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             isValid = false;
 
             paramName = new IdentNode(
-                new IdentToken(paramNameNode.Token.Representation, paramNameNode.Token.Location, false),
-                false
+                new IdentToken(
+                    paramNameNode.Token.Representation,
+                    paramNameNode.Token.Location,
+                    false
+                )
             );
         }
 

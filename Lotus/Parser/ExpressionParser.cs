@@ -147,7 +147,7 @@ public class ExpressionParser : Parser<ValueNode>
 
         var isValid = true;
 
-        var @in = new Lazy<string>(() => "a" + typeof(TValue).Name + " list", isThreadSafe: false);
+        var @in = new Lazy<string>(() => "a " + typeof(TValue).Name + " list", isThreadSafe: false);
 
         if (startingToken.Representation != start) {
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) { // should we use InvalidCall instead ?

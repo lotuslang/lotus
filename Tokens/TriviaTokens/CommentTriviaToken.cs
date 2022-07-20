@@ -2,6 +2,7 @@ public record CommentTriviaToken : TriviaToken
 {
     public new static readonly CommentTriviaToken NULL = new("", LocationRange.NULL, isValid: false);
 
+    // we have to use a list (arr as IList).Add throws NotSupported
     public List<CommentTriviaToken> InnerComments { get; init; }
 
     public CommentTriviaToken(string rep,

@@ -1,6 +1,6 @@
-public record BoolNode(BoolToken Token, bool IsValid = true) : ValueNode(Token, IsValid)
+public record BoolNode(BoolToken Token) : ValueNode(Token, Token.IsValid)
 {
-    public new static readonly BoolNode NULL = new(BoolToken.NULL, false);
+    public new static readonly BoolNode NULL = new(BoolToken.NULL);
 
     public bool Value => Token.Value;
 

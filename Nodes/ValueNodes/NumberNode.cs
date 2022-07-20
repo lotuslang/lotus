@@ -1,7 +1,7 @@
-public record NumberNode(NumberToken Token, bool IsValid = true)
-: ValueNode(Token, IsValid)
+public record NumberNode(NumberToken Token)
+: ValueNode(Token, Token.IsValid)
 {
-    public new static readonly NumberNode NULL = new(NumberToken.NULL, false);
+    public new static readonly NumberNode NULL = new(NumberToken.NULL);
 
     public new NumberToken Token { get => (base.Token as NumberToken)!; init => base.Token = value; }
 

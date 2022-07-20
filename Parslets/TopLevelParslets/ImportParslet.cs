@@ -81,8 +81,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
                         parser.ExpressionParser.Current.Token.Representation,
                         parser.ExpressionParser.Current.Location,
                         false
-                    ),
-                    false
+                    )
                 );
 
                 importIsValid = false;

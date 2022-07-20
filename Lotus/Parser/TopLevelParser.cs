@@ -140,8 +140,7 @@ public class TopLevelParser : Parser<TopLevelNode>
                     token.Representation,
                     location,
                     false
-                ),
-                false
+                )
             );
         }
 

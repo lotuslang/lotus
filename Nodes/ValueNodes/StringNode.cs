@@ -1,11 +1,11 @@
-public record StringNode(StringToken Token, bool IsValid = true)
-: ValueNode(Token, IsValid)
+public record StringNode(StringToken Token)
+: ValueNode(Token, Token.IsValid)
 {
     public new StringToken Token { get => (base.Token as StringToken)!; init => base.Token = value; }
 
     public string Value => Token.Representation;
 
-    public new static readonly StringNode NULL = new(StringToken.NULL, false);
+    public new static readonly StringNode NULL = new(StringToken.NULL);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

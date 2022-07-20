@@ -16,23 +16,20 @@ public sealed class IdentToklet : IToklet<Token>
         var currChar = input.Consume();
 
         // the output token
-        var output = new System.Text.StringBuilder();
+        var output = new System.Text.StringBuilder().Append(currChar);
 
         var startPos = input.Position;
 
         // if the character is not a letter or a low line
-        if (currChar != '_' && !Char.IsLetter(currChar)) {
+        if (currChar is not '_' and not '@' && !Char.IsLetter(currChar)) {
             throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, new LocationRange(startPos, input.Position)));
         }
 
         // while the current character is a letter, a digit, or a low line
-        while (Char.IsLetterOrDigit(currChar) || currChar == '_') {
+        while (input.Consume(out currChar) && (Char.IsLetterOrDigit(currChar) || currChar is '_')) {
 
             // add it to the value of output
             output.Append(currChar);
-
-            // consume a character
-            currChar = input.Consume();
         }
 
         var outputStr = output.ToString();

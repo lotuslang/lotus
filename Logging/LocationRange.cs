@@ -33,6 +33,8 @@ public record LocationRange(int firstLine, int lastLine, int firstColumn, int la
         }
     }
 
+    public LocationRange(ILocalized first, ILocalized last) : this(first.Location, last.Location) {}
+
     public void Deconstruct(out Location first, out Location last) {
         first = GetFirstLocation();
 

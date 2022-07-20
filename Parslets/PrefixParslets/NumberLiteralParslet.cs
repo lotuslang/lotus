@@ -3,10 +3,10 @@ public sealed class NumberLiteralParslet : IPrefixParslet<NumberNode>
     public static readonly NumberLiteralParslet Instance = new();
 
     public NumberNode Parse(ExpressionParser parser, Token token) {
-        if (token is NumberToken numberToken) {
-            return new NumberNode(numberToken);
-        }
+        var numberToken = token as NumberToken;
 
-        throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
+        Debug.Assert(numberToken is not null);
+
+        return new NumberNode(numberToken);
     }
 }

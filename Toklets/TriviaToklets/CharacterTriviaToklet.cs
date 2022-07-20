@@ -13,9 +13,7 @@ public sealed class CharacterTriviaToklet : ITriviaToklet<CharacterTriviaToken>
     public CharacterTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var currChar = input.Consume();
 
-        if (currChar != character) {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, input.Position));
-        }
+        Debug.Assert(currChar == character);
 
         return new CharacterTriviaToken(currChar, input.Position);
     }

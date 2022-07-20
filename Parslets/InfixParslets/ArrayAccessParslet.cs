@@ -5,9 +5,7 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
     public static readonly ArrayAccessParslet Instance = new();
 
     public OperationNode Parse(ExpressionParser parser, Token openingBracket, ValueNode array) {
-
-        if (openingBracket != "[")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, openingBracket.Location));
+        Debug.Assert(openingBracket == "[");
 
         var isValid = true;
 

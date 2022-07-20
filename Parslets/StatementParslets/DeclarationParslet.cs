@@ -3,12 +3,9 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
     public static readonly DeclarationParslet Instance = new();
 
     public DeclarationNode Parse(StatementParser parser, Token varToken) {
+        Debug.Assert(varToken == "var");
 
         var isValid = true;
-
-        // if the token isn't the keyword "var", throw an exception
-        if (varToken is not Token varKeyword || varKeyword != "var")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, varToken.Location));
 
         // consume the name of the variable we're declaring
         var nameToken = parser.Tokenizer.Consume();
@@ -55,6 +52,6 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         var value = parser.ExpressionParser.Consume();
 
         // return that value
-        return new DeclarationNode(value, name, varKeyword, equalSign, isValid);
+        return new DeclarationNode(value, name, varToken, equalSign, isValid);
     }
 }

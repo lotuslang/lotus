@@ -15,15 +15,12 @@ public sealed class IdentToklet : IToklet<Token>
         // consume a character
         var currChar = input.Consume();
 
+        Debug.Assert(currChar is '_' or '@' || Char.IsLetter(currChar));
+
         // the output token
         var output = new System.Text.StringBuilder().Append(currChar);
 
         var startPos = input.Position;
-
-        // if the character is not a letter or a low line
-        if (currChar is not '_' and not '@' && !Char.IsLetter(currChar)) {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, new LocationRange(startPos, input.Position)));
-        }
 
         // while the current character is a letter, a digit, or a low line
         while (input.Consume(out currChar) && (Char.IsLetterOrDigit(currChar) || currChar is '_')) {
@@ -39,7 +36,7 @@ public sealed class IdentToklet : IToklet<Token>
         input.Reconsume();
 
         if (outputStr is "true" or "false") {
-            return new BoolToken(outputStr, new LocationRange(startPos, input.Position));
+            return new BoolToken(outputStr, outputStr == "true" ? true : false, new LocationRange(startPos, input.Position));
         }
 
         if (Utilities.keywords.Contains(outputStr)) {

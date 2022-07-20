@@ -3,9 +3,7 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
     public static readonly ReturnParslet Instance = new();
 
     public ReturnNode Parse(StatementParser parser, Token returnToken) {
-
-        if (returnToken is not Token returnKeyword || returnKeyword != "return")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, returnToken.Location));
+        Debug.Assert(returnToken == "return");
 
         var nextToken = parser.Tokenizer.Peek();
 
@@ -18,6 +16,6 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
         }
 
 
-        return new ReturnNode(value, returnKeyword);
+        return new ReturnNode(value, returnToken);
     }
 }

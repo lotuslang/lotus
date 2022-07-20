@@ -5,9 +5,10 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
     public static readonly TernaryOperatorParslet Instance = new();
 
     public OperationNode Parse(ExpressionParser parser, Token questionMarkToken, ValueNode condition) {
-        if (!(questionMarkToken is OperatorToken questionMarkOperator && questionMarkOperator == "?")) {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, questionMarkToken.Location));
-        }
+        var questionMarkOperator = questionMarkToken as OperatorToken;
+
+        Debug.Assert(questionMarkOperator is not null);
+        Debug.Assert(questionMarkOperator.Representation == "?");
 
         var isValid = true;
 

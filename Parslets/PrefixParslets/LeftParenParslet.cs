@@ -3,8 +3,7 @@ public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
     public static readonly LeftParenParslet Instance = new();
 
     public ValueNode Parse(ExpressionParser parser, Token leftParenToken) {
-        if (leftParenToken != "(")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, leftParenToken.Location));
+        Debug.Assert(leftParenToken == "(");
 
         parser.Tokenizer.Reconsume();
 

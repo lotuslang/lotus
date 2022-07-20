@@ -3,8 +3,7 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
     public static readonly UsingParslet Instance = new();
 
     public UsingNode Parse(TopLevelParser parser, Token usingToken) {
-        if (usingToken is not Token usingKeyword || usingToken != "using")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, usingToken.Location));
+        Debug.Assert(usingToken == "using");
 
         var isValid = parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
             defaultVal: NameNode.NULL,
@@ -20,6 +19,6 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
             });
         }
 
-        return new UsingNode(import, usingKeyword, isValid);
+        return new UsingNode(import, usingToken, isValid);
     }
 }

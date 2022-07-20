@@ -1,7 +1,7 @@
 [DebuggerDisplay("{Location} {Kind} : {val}")]
 public record BoolToken : Token
 {
-    public new static readonly BoolToken NULL = new(false, LocationRange.NULL, false);
+    public new static readonly BoolToken NULL = new("", false, LocationRange.NULL, false);
 
     // no you can't remove it because properties can't be the out parameter in the "TryParse" call
     protected bool _val;
@@ -11,20 +11,8 @@ public record BoolToken : Token
         init => _val = value;
     }
 
-    public BoolToken(string representation, LocationRange location, bool isValid = true)
-        : base(representation, TokenKind.@bool, location, isValid)
-    {
-        if (representation.Length != 0 && !Boolean.TryParse(representation, out _val)) {
-            throw Logger.Fatal(new InternalError(ErrorArea.Tokenizer) {
-                Message = $"Could not parse string {representation} as a boolean",
-                ExtraNotes = "A boolean can only take the values 'true' and 'false'",
-                Location = location
-            });
-        }
-    }
-
-    public BoolToken(bool value, LocationRange location, bool isValid = true)
-        : base(value.ToString().ToLower(), TokenKind.@bool, location, isValid)
+    public BoolToken(string rep, bool value, LocationRange location, bool isValid = true)
+        : base(rep, TokenKind.@bool, location, isValid)
     {
         _val = value;
     }

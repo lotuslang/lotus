@@ -9,8 +9,7 @@ public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
     public NewlineTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         var startingPosition = input.Position;
 
-        if (input.Consume() != '\n' && input.Current != '\r')
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, new LocationRange(startingPosition, input.Position)));
+        Debug.Assert(input.Consume() == '\n');
 
         int charCounter = 1;
 

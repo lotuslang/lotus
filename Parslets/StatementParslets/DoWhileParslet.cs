@@ -3,9 +3,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
     public static readonly DoWhileParslet Instance = new();
 
     public WhileNode Parse(StatementParser parser, Token doToken) {
-        if (doToken is not Token doKeyword || doKeyword != "do") {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, doToken.Location));
-        }
+        Debug.Assert(doToken == "do");
 
         var isValid = true;
 
@@ -58,6 +56,6 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             }
         }
 
-        return new WhileNode(condition, body, whileKeyword, doKeyword, isValid);
+        return new WhileNode(condition, body, whileKeyword, doToken, isValid);
     }
 }

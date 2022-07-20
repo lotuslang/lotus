@@ -10,17 +10,17 @@ public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
     }
 
     public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
-        if (token is OperatorToken operatorToken) {
-            return new OperationNode(
-                operatorToken,
-                new[] {
-                    left,
-                    parser.Consume(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
-                },
-                _opType
-            );
-        }
+        var operatorToken = token as OperatorToken;
 
-        throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
+        Debug.Assert(operatorToken is not null);
+
+        return new OperationNode(
+            operatorToken,
+            new[] {
+                left,
+                parser.Consume(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
+            },
+            _opType
+        );
     }
 }

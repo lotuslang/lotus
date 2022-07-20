@@ -14,7 +14,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
     public NumberToken Consume(IConsumer<char> input, Tokenizer _) {
         // the output token
-        var numberStr = new StringBuilder();
+        var numberSB = new StringBuilder();
 
         var currChar = input.Consume();
 
@@ -26,7 +26,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
         while (Char.IsDigit(currChar)) {
 
             // add it to the value of output
-            numberStr.Append(currChar);
+            numberSB.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -36,7 +36,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
         if (currChar == '.')
         {
             // add it to the value of output
-            numberStr.Append(currChar);
+            numberSB.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -46,7 +46,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
         while (Char.IsDigit(currChar)) {
 
             // add it to the value of output
-            numberStr.Append(currChar);
+            numberSB.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -56,7 +56,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
         if (currChar is 'e' or 'E') {
 
             // add the e/E to the output
-            numberStr.Append(currChar);
+            numberSB.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
@@ -66,7 +66,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             if (currChar is '+' or '-') {
 
                 // add it to the value of output
-                numberStr.Append(currChar);
+                numberSB.Append(currChar);
 
                 // consume a character
                 currChar = input.Consume();
@@ -76,7 +76,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             while (Char.IsDigit(currChar)) {
 
                 // add it to the value of output
-                numberStr.Append(currChar);
+                numberSB.Append(currChar);
 
                 // consume a character
                 currChar = input.Consume();
@@ -90,7 +90,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             if (nextIsNumber()) {
                 var errorCount = Logger.ErrorCount;
 
-                numberStr.Append(currChar).Append(Consume(input, _).Representation);
+                numberSB.Append(currChar).Append(Consume(input, _).Representation);
 
                 // The above .Consume(...) could generate extra errors, except we don't really
                 // want to show them to the user since they don't really matter ; we just wanna
@@ -99,7 +99,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
                     Logger.errorStack.Pop();
                 }
 
-                var str = numberStr.ToString();
+                var str = numberSB.ToString();
 
                 if (str.Contains('e') || str.Contains('E')) {
                     // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)
@@ -130,7 +130,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             if (nextIsNumber()) {
                 var errorCount = Logger.ErrorCount;
 
-                numberStr.Append(currChar).Append(Consume(input, _).Representation);
+                numberSB.Append(currChar).Append(Consume(input, _).Representation);
 
                 while (Logger.ErrorCount > errorCount) {
                     Logger.errorStack.Pop();
@@ -138,7 +138,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             }
 
             Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
-                Value = numberStr.ToString(),
+                Value = numberSB.ToString(),
                 As = "a number. There already was a power-of-ten separator earlier",
                 Location = new LocationRange(originPos, input.Position),
             });
@@ -150,6 +150,18 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         input.Reconsume();
 
-        return new NumberToken(numberStr.ToString(), new LocationRange(originPos, input.Position), isValid);
+        double val = 0;
+        string numberStr = numberSB.ToString();
+
+        if (isValid && numberStr.Length != 0 && !Double.TryParse(numberStr.AsSpan(), out val)) {
+            Logger.Error(new UnexpectedError<string>(ErrorArea.Parser) {
+                Value = numberStr,
+                Message = "The number " + numberSB + " cannot be expressed in lotus"
+            });
+
+            isValid = false;
+        }
+
+        return new NumberToken(numberStr, val, new LocationRange(originPos, input.Position), isValid);
     }
 }

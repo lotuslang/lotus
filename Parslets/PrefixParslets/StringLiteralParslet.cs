@@ -3,7 +3,11 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
     public static readonly StringLiteralParslet Instance = new();
 
     public StringNode Parse(ExpressionParser parser, Token token) {
-        if (token is ComplexStringToken complexString) {
+        var strToken = token as StringToken;
+
+        Debug.Assert(strToken is not null);
+
+        if (strToken is ComplexStringToken complexString) {
             var node = new ComplexStringNode(complexString, new List<ValueNode>());
 
             foreach (var section in complexString.CodeSections) {
@@ -44,10 +48,6 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             return node;
         }
 
-        if (token is StringToken strToken) {
-            return new StringNode(strToken);
-        }
-
-        throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
+        return new StringNode(strToken);
     }
 }

@@ -121,12 +121,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
             return ref _curr;
         }
 
-        if (Tokenizer is null) {
-            throw Logger.Fatal(new InternalError(ErrorArea.Parser) {
-                Message = "The parser's tokenizer was null. Something went seriously wrong",
-                Location = Position
-            });
-        }
+        Debug.Assert(
+            condition: Tokenizer is not null,
+            "The parser's tokenizer was null. Something went seriously wrong"
+        );
 
         _curr = Default;
         return ref _curr;

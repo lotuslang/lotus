@@ -1,7 +1,7 @@
 [DebuggerDisplay("{Location} {Kind} : {val}")]
 public record NumberToken : Token
 {
-    public new static readonly NumberToken NULL = new(double.NaN, LocationRange.NULL, false);
+    public new static readonly NumberToken NULL = new("", Double.NaN, LocationRange.NULL, false);
 
     protected double _val;
 
@@ -10,19 +10,9 @@ public record NumberToken : Token
         init => _val = value;
     }
 
-    public NumberToken(string representation, LocationRange location, bool isValid = true)
-        : base(representation, TokenKind.number, location, isValid)
-    {
-        if (isValid && representation.Length != 0 && !Double.TryParse(representation, out _val))
-            throw Logger.Fatal(new InternalError(ErrorArea.Tokenizer) {
-                Message = "This NumberToken has been marked valid, but could not parse string '" + representation + "' as a number",
-                Location = Location
-            });
-    }
-
-    public NumberToken(double d, LocationRange location, bool isValid = true)
-        : base(d.ToString().ToLower(), TokenKind.number, location, isValid)
-    {
+    public NumberToken(string s, double d, LocationRange location, bool isValid = true)
+        : base(s, TokenKind.number, location, isValid) {
+        _repr = s;
         _val = d;
     }
 

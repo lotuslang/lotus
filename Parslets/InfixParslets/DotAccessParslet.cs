@@ -7,9 +7,10 @@ public sealed class DotAccessParslet : IInfixParslet<ValueNode>
     private static readonly BinaryOperatorParslet _opParslet = new(Precedence.Access, OperationType.Access);
 
     public ValueNode Parse(ExpressionParser parser, Token dotToken, ValueNode left) {
-        if (dotToken is not OperatorToken { Representation: "." } dotOpToken) {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, dotToken.Location));
-        }
+        var dotOpToken = dotToken as OperatorToken;
+
+        Debug.Assert(dotOpToken is not null);
+        Debug.Assert(dotOpToken.Representation == ".");
 
         if (left is not NameNode leftName) {
             if (left is not IdentNode leftIdent) {

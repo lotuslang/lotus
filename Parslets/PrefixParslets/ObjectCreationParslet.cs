@@ -4,9 +4,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
 
-        // if the token isn't the keyword "new", throw an exception
-        if (newToken is not Token newKeyword || newKeyword != "new")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, newToken.Location));
+        Debug.Assert(newToken == "new");
 
         var isValid = true;
 
@@ -62,6 +60,6 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 
         var call = new FunctionCallNode(args, typeName, args.IsValid && type.IsValid);
 
-        return new ObjectCreationNode(call, newKeyword, isValid);
+        return new ObjectCreationNode(call, newToken, isValid);
     }
 }

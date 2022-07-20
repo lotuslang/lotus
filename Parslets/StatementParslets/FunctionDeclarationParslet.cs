@@ -3,10 +3,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
     public static readonly FunctionDeclarationParslet Instance = new();
 
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
-
-        // if the token consumed was not "func", then throw an exception
-        if (funcToken is not Token funcKeyword || funcKeyword != "func")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, funcToken.Location));
+        Debug.Assert(funcToken == "func");
 
         var isValid = true;
 
@@ -64,7 +61,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             paramList,
             returnType,
             funcName,
-            funcKeyword,
+            funcToken,
             colonToken,
             isValid
         );

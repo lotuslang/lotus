@@ -3,9 +3,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
     public static readonly IfParslet Instance = new();
 
     public IfNode Parse(StatementParser parser, Token ifToken) {
-        if (ifToken is not Token ifKeyword || ifKeyword != "if") {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, ifToken.Location));
-        }
+        Debug.Assert(ifToken == "if");
 
         var isValid = true;
 
@@ -44,7 +42,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
             elseNode = ElseParslet.Instance.Parse(parser, parser.Tokenizer.Consume());
         }
 
-        return new IfNode(condition, body, elseNode, ifKeyword, isValid);
+        return new IfNode(condition, body, elseNode, ifToken, isValid);
     }
 
     // TODO: Later

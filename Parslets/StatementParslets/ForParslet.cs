@@ -4,8 +4,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
     public static readonly ForParslet Instance = new();
 
     public ForNode Parse(StatementParser parser, Token forToken) {
-        if (forToken is not Token forKeyword || forKeyword != "for")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, forToken.Location));
+        Debug.Assert(forToken == "for");
 
         var header = new List<StatementNode>();
 
@@ -109,7 +108,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         if (!hasEOF)
             body = parser.ConsumeSimpleBlock();
 
-        return new ForNode(forKeyword, header.ToArray(), body, openingParen, closingParen, isValid);
+        return new ForNode(forToken, header.ToArray(), body, openingParen, closingParen, isValid);
     }
 
     private static StatementNode GetDefaultStatement(LocationRange pos)

@@ -18,11 +18,11 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
         var currChar = input.Consume();
 
-        if (currChar != '/') {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, input.Position));
-        }
+        Debug.Assert(currChar == '/');
 
         currChar = input.Consume();
+
+        Debug.Assert(currChar is '/' or '*');
 
         if (currChar == '/') {
 
@@ -84,7 +84,8 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             ) { TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
         }
 
-        throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, new LocationRange(startingPosition, input.Position)));
+        Debug.Assert(false, "wtf even happened??");
+        throw null;
     }
 
     public CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer)

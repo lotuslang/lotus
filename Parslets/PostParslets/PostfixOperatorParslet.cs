@@ -9,9 +9,9 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
     }
 
     public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
-        if (token is not OperatorToken operatorToken) {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, token.Location));
-        }
+        var operatorToken = token as OperatorToken;
+
+        Debug.Assert(operatorToken is not null);
 
         return new OperationNode(
             operatorToken,

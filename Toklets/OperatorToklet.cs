@@ -123,6 +123,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             return new OperatorToken(currCharStr, Precedence.Unary, false, input.Position);
         }
 
-        throw Logger.Fatal(new InvalidCallError(ErrorArea.Tokenizer, new LocationRange(currPos, input.Position)));
+        Debug.Assert(false, "OperatorToklet was called on the wrong characters");
+        throw null;
     }
 }

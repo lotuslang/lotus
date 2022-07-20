@@ -3,8 +3,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
     public static readonly ImportParslet Instance = new();
 
     public ImportNode Parse(TopLevelParser parser, Token fromToken) {
-        if (fromToken is not Token fromKeyword || fromToken != "from")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, fromToken.Location));
+        Debug.Assert(fromToken == "from");
 
         var fromIsValid = parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
             defaultVal: NameNode.NULL,
@@ -22,7 +21,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         var importIsValid = true;
 
-        var from = new FromNode(fromOrigin, fromKeyword, fromIsValid);
+        var from = new FromNode(fromOrigin, fromToken, fromIsValid);
 
         // TODO: Would it be better to have parser.ConsumeValue() here ? it would probably do the same thing
         //

@@ -5,8 +5,7 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
     public static readonly FuncCallParslet Instance = new();
 
     public FunctionCallNode Parse(ExpressionParser parser, Token leftParen, ValueNode function) {
-        if (leftParen != "(")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, leftParen.Location));
+        Debug.Assert(leftParen == "(");
 
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
         parser.Tokenizer.Reconsume();

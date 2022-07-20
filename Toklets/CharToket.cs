@@ -18,8 +18,7 @@ public sealed class CharToklet : IToklet<Token>
         var currChar = input.Consume();
         var charPos = input.Position;
 
-        if (matchChr != currChar)
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, charPos));
+        Debug.Assert(currChar == matchChr);
 
         return new Token(_matchChrAsStr, kind, charPos);
     }

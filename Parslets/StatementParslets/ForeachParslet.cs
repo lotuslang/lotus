@@ -3,8 +3,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
     public static readonly ForeachParslet Instance = new();
 
     public ForeachNode Parse(StatementParser parser, Token foreachToken) {
-        if (foreachToken is not Token foreachKeyword || foreachKeyword != "foreach")
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, foreachToken.Location));
+        Debug.Assert(foreachToken == "foreach");
 
         var isValid = true;
 
@@ -91,7 +90,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
         var body = parser.ConsumeSimpleBlock();
 
         return new ForeachNode(
-            foreachKeyword,
+            foreachToken,
             inKeyword,
             new IdentNode(itemName),
             collectionName,

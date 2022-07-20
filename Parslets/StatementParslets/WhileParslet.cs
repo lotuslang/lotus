@@ -3,9 +3,7 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
     public static readonly WhileParslet Instance = new();
 
     public WhileNode Parse(StatementParser parser, Token whileToken) {
-        if (whileToken is not Token whileKeyword || whileKeyword != "while") {
-            throw Logger.Fatal(new InvalidCallError(ErrorArea.Parser, whileToken.Location));
-        }
+        Debug.Assert(whileToken == "while");
 
         var isValid = true;
 
@@ -29,6 +27,6 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
 
         var body = parser.ConsumeSimpleBlock();
 
-        return new WhileNode(condition, body, whileKeyword, Token.NULL, isValid);
+        return new WhileNode(condition, body, whileToken, Token.NULL, isValid);
     }
 }

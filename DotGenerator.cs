@@ -190,7 +190,7 @@ public class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     public GraphNode(string name) : this(new Random().Next(), name) { }
 
-    public GraphNode(int id, string text) : this(id.ToString(), "\"" + text + "\"") { }
+    public GraphNode(int id, string text) : this(id.ToString(), text) { }
 
     public GraphNode(string id, string text) {
         ID = id;
@@ -226,12 +226,17 @@ public class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     public GraphNode SetTooltip(string tooltipText)
         => SetProperty("tooltip", tooltipText);
 
+    public GraphNode SetName(string name) {
+        Name = name;
+        return this;
+    }
+
     public string ToText(HashSet<GraphNode> registry, int tabs = 2) {
         // Create a new string builder
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.Append($"\n" + new string('\t', tabs - 1) + ID + " [label=" + Name);
+        strBuilder.Append($"\n" + new string('\t', tabs - 1) + ID + " [label=\"" + Name + '"');
 
         foreach (var property in Properties) {
             strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");

@@ -1,27 +1,21 @@
-public record TupleNode<TValue>(IList<TValue> Items, Token Token, Token ClosingToken, bool IsValid = true)
-: ValueNode(Token, new LocationRange(Token.Location, ClosingToken.Location), IsValid), IEnumerable<TValue>
-where TValue : ILocalized
+public record TupleNode
+: ValueNode, IEnumerable<ValueNode>
 {
-    public new static readonly TupleNode<TValue> NULL = new(Array.Empty<TValue>(), Token.NULL, Token.NULL, false);
+    public new static readonly TupleNode NULL = new(Tuple<ValueNode>.NULL);
 
-    public Token OpeningToken { get => Token; init => Token = value; }
+    private Tuple<ValueNode> _internalTuple;
 
-    public int Count => Items.Count;
+    public IList<ValueNode> Items => _internalTuple.Items;
+    public Token OpeningToken => _internalTuple.OpeningToken;
+    public Token ClosingToken => _internalTuple.ClosingToken;
+    public int Count => _internalTuple.Count;
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
-    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
+    public TupleNode(Tuple<ValueNode> tuple) : base(tuple.OpeningToken, tuple.Location, tuple.IsValid)
+        => _internalTuple = tuple;
 
-    public IEnumerator<TValue> GetEnumerator() => Items.GetEnumerator();
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-}
+    public TupleNode(IList<ValueNode> items, Token openingToken, Token closingToken, bool isValid = true)
+        : this(new Tuple<ValueNode>(items, openingToken, closingToken, isValid)) { }
 
-public record TupleNode(IList<ValueNode> Items, Token Token, Token ClosingToken, bool IsValid = true)
-: TupleNode<ValueNode>(Items, Token, ClosingToken, IsValid)
-{
-    public new static readonly TupleNode NULL = new(Array.Empty<ValueNode>(), Token.NULL, Token.NULL, false);
 
     /// <summary>
     /// <strong>TRUNCATES</strong> the tuple to the first element and turns it into a paren expression.
@@ -40,11 +34,8 @@ public record TupleNode(IList<ValueNode> Items, Token Token, Token ClosingToken,
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 
-    public TupleNode(TupleNode<ValueNode> tuple)
-        : this(
-            tuple.Items,
-            tuple.OpeningToken,
-            tuple.ClosingToken,
-            tuple.IsValid
-        ) {}
+    public IEnumerator<ValueNode> GetEnumerator() => _internalTuple.GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public static explicit operator Tuple<ValueNode>(TupleNode node) => node._internalTuple;
 }

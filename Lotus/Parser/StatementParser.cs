@@ -105,7 +105,7 @@ public class StatementParser : Parser<StatementNode>
         }
     }
 
-    public SimpleBlock ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
+    public Tuple<StatementNode> ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
         var isValid = true;
 
         // to consume a one-liner, you just consume a statement and return
@@ -120,7 +120,9 @@ public class StatementParser : Parser<StatementNode>
                 isValid = false;
             }
 
-            return new SimpleBlock(statement, statement.Token.Location, isValid);
+            return new Tuple<StatementNode>(new[] { statement }, Token.NULL, Token.NULL, isValid) {
+                Location = statement.Location
+            };
         }
 
         var openingBracket = Tokenizer.Consume();
@@ -181,16 +183,7 @@ public class StatementParser : Parser<StatementNode>
 
         Tokenizer.Consume();
 
-        return new SimpleBlock(statements.ToArray(), location, openingBracket, closingBracket, isValid);
-    }
-
-    public ParameterList<TParam> ConsumeParamList<TParam>(Func<ExpressionParser, TParam> argParser) where TParam : Parameter
-        => ConsumeParamList((parser) => new[] { argParser(parser) });
-
-    public ParameterList<TParam> ConsumeParamList<TParam>(Func<ExpressionParser, IEnumerable<TParam>> argParser) where TParam : Parameter {
-        var baseTuple = ExpressionParser.ConsumeTuple<TParam>("(", ")", argParser);
-
-        return new ParameterList<TParam>(baseTuple);
+        return new Tuple<StatementNode>(statements, openingBracket, closingBracket, isValid);
     }
 
     private bool NeedsSemicolon(StatementNode node)

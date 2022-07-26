@@ -1,6 +1,6 @@
 public record FunctionDeclarationNode(
-    SimpleBlock Body,
-    ParameterList<FunctionParameter> ParamList,
+    Tuple<StatementNode> Body,
+    Tuple<FunctionParameter> ParamList,
     NameNode ReturnType,
     IdentToken FuncName,
     Token Token,
@@ -10,8 +10,8 @@ public record FunctionDeclarationNode(
 {
     public new static readonly FunctionDeclarationNode NULL
         = new(
-            SimpleBlock.NULL,
-            ParameterList<FunctionParameter>.NULL,
+            Tuple<StatementNode>.NULL,
+            Tuple<FunctionParameter>.NULL,
             NameNode.NULL,
             IdentToken.NULL,
             Token.NULL,

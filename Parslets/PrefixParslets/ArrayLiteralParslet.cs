@@ -7,6 +7,6 @@ public sealed class ArrayLiteralParslet : IPrefixParslet<TupleNode>
 
         parser.Tokenizer.Reconsume();
 
-        return parser.ConsumeTuple("[", "]");
+        return new TupleNode(parser.ConsumeTuple("[", "]"));
     }
 }

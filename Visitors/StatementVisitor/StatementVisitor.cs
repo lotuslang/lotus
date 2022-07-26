@@ -24,5 +24,5 @@ public interface IStatementVisitor<T>
         }
     }
 
-    T Visit(SimpleBlock block);
+    T Visit(Tuple<StatementNode> block);
 }

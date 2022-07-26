@@ -7,7 +7,7 @@ public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
 
         parser.Tokenizer.Reconsume();
 
-        var valueTuple = parser.ConsumeTuple("(", ")");
+        var valueTuple = new TupleNode(parser.ConsumeTuple("(", ")"));
 
         if (valueTuple.Count == 0) {
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {

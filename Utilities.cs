@@ -35,6 +35,11 @@ public static class Utilities
         "print",
     };
 
+    public static bool IsOneLiner(this Tuple<StatementNode> block)
+        => block.Count == 1
+        && block.OpeningToken == Token.NULL
+        && block.ClosingToken == Token.NULL;
+
     public static int GetNumberOfDigits(int i) {
         int count = 0;
 

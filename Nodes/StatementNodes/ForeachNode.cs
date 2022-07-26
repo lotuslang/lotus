@@ -6,7 +6,7 @@ public record ForeachNode(
     Token InToken,
     IdentNode ItemName,
     ValueNode CollectionRef,
-    SimpleBlock Body,
+    Tuple<StatementNode> Body,
     Token OpenParenthesis,
     Token CloseParenthesis,
     bool IsValid = true
@@ -18,7 +18,7 @@ public record ForeachNode(
             Token.NULL,
             IdentNode.NULL,
             ValueNode.NULL,
-            SimpleBlock.NULL,
+            Tuple<StatementNode>.NULL,
             Token.NULL,
             Token.NULL,
             false

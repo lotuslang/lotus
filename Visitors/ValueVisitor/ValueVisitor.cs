@@ -15,6 +15,5 @@ public interface IValueVisitor<T>
     T Visit(OperationNode node) => Default(node);
     T Visit(ParenthesizedValueNode node) => Visit(node as TupleNode);
     T Visit(StringNode node) => Default(node);
-    T Visit(TupleNode node) => Visit(node as TupleNode<ValueNode>);
-    T Visit<TVal>(TupleNode<TVal> node) where TVal : ILocalized => Default(node);
+    T Visit(TupleNode node) => Default(node);
 }

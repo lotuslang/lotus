@@ -1,7 +1,7 @@
-public record FunctionCallNode(TupleNode ArgList, ValueNode Name, bool IsValid = true)
+public record FunctionCallNode(Tuple<ValueNode> ArgList, ValueNode Name, bool IsValid = true)
 : ValueNode(Name.Token, new LocationRange(Name.Location, ArgList.Location), IsValid)
 {
-    public new static readonly FunctionCallNode NULL = new(TupleNode.NULL, ValueNode.NULL, false);
+    public new static readonly FunctionCallNode NULL = new(Tuple<ValueNode>.NULL, ValueNode.NULL, false);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

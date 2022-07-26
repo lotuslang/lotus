@@ -103,7 +103,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         }
 
         // We have to change position cause default filename doesn't match current otherwise
-        var body = SimpleBlock.NULL with { Location = parser.Position };
+        var body = Tuple<StatementNode>.NULL with { Location = parser.Position };
 
         if (!hasEOF)
             body = parser.ConsumeSimpleBlock();

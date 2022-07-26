@@ -114,7 +114,7 @@ public class ExpressionParser : Parser<ValueNode>
         return left;
     }
 
-    public TupleNode ConsumeTuple(string start, string end, uint expectedItemCount = 0) {
+    public Tuple<ValueNode> ConsumeTuple(string start, string end, uint expectedItemCount = 0) {
         var baseTuple = ConsumeTuple<ValueNode>(start, end, (parser) => new[] { parser.Consume() });
 
         var items = baseTuple.Items;
@@ -133,10 +133,10 @@ public class ExpressionParser : Parser<ValueNode>
             baseTuple.IsValid = false;
         }
 
-        return new(baseTuple);
+        return baseTuple;
     }
 
-    public TupleNode<TValue> ConsumeTuple<TValue>(
+    public Tuple<TValue> ConsumeTuple<TValue>(
         string start,
         string end,
         Func<ExpressionParser, IEnumerable<TValue>> valParser
@@ -271,7 +271,7 @@ public class ExpressionParser : Parser<ValueNode>
             isValid = false;
         }
 
-        return new TupleNode<TValue>(items, startingToken, endingToken, isValid);
+        return new Tuple<TValue>(items, startingToken, endingToken, isValid);
     }
 
     public override ExpressionParser Clone() => new(this);

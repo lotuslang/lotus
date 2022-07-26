@@ -1,12 +1,12 @@
 public record IfNode(
     ParenthesizedValueNode Condition,
-    SimpleBlock Body,
+    Tuple<StatementNode> Body,
     ElseNode ElseNode,
     Token Token,
     bool IsValid = true
 ) : StatementNode(Token, new LocationRange(Token.Location, ElseNode != ElseNode.NULL ? ElseNode.Location : Body.Location), IsValid)
 {
-    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, ElseNode.NULL, Token.NULL, false);
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, ElseNode.NULL, Token.NULL, false);
 
     public bool HasElse => ElseNode != ElseNode.NULL;
 

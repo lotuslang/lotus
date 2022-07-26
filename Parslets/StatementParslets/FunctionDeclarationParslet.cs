@@ -25,7 +25,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location, false);
         }
 
-        var paramList = parser.ConsumeParamList(ParseFuncParam);
+        var paramList = parser.ExpressionParser.ConsumeTuple<FunctionParameter>("(", ")", ParseFuncParam);
 
         var returnType = NameNode.NULL;
 

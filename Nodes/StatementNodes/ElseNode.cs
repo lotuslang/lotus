@@ -1,9 +1,9 @@
-public record ElseNode(Union<SimpleBlock, IfNode> BlockOrIfNode, Token Token, bool IsValid = true)
+public record ElseNode(Union<Tuple<StatementNode>, IfNode> BlockOrIfNode, Token Token, bool IsValid = true)
 : StatementNode(Token, new LocationRange(Token.Location, BlockOrIfNode.Match(b => b.Location, n => n.Location)), IsValid)
 {
-    public new static readonly ElseNode NULL = new(SimpleBlock.NULL, Token.NULL, false);
+    public new static readonly ElseNode NULL = new(Tuple<StatementNode>.NULL, Token.NULL, false);
 
-    public SimpleBlock Body => BlockOrIfNode.Match(b => b, n => n.Body);
+    public Tuple<StatementNode> Body => BlockOrIfNode.Match(b => b, n => n.Body);
 
     public bool HasIf => BlockOrIfNode.Match(b => false, n => true);
 

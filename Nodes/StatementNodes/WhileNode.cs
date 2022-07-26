@@ -1,6 +1,6 @@
 public record WhileNode(
     ParenthesizedValueNode Condition,
-    SimpleBlock Body,
+    Tuple<StatementNode> Body,
     Token Token,
     Token DoToken,
     bool IsValid = true
@@ -12,7 +12,7 @@ public record WhileNode(
     IsValid
 )
 {
-    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, SimpleBlock.NULL, Token.NULL, Token.NULL, false);
+    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, Token.NULL, Token.NULL, false);
 
     public bool IsDoLoop => DoToken != Token.NULL;
 

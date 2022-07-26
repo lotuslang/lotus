@@ -53,7 +53,9 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     protected readonly (string tooltip, string color) Value = ("ValueNode", "lightgrey");
 
-    protected readonly (string tooltip, string color) Tuple = ("List of values", "");
+    protected readonly (string tooltip, string color) ValueTuple = ("List of values", "");
+
+    protected readonly (string tooltip, string color) Tuple = ("tuple", "");
 
     protected readonly (string tooltip, string color) SimpleBlock = ("body", "darkviolet");
 
@@ -354,8 +356,8 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public GraphNode Visit(TupleNode node) {
         var root = new GraphNode(node.GetHashCode(), node.Count == 0 ? "Empty tuple" : "Tuple with\\n" + node.Count + " elements")
-                        .SetColor(Tuple.color)
-                        .SetTooltip(Tuple.tooltip);
+                        .SetColor(ValueTuple.color)
+                        .SetTooltip(ValueTuple.tooltip);
 
         foreach (var value in node.Items) {
             root.Add(ToGraphNode(value));
@@ -364,13 +366,20 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         return root;
     }
 
-    public GraphNode Visit(SimpleBlock block) {
-        var root = new GraphNode(block.GetHashCode(), "block")
-            .SetColor(SimpleBlock.color)
-            .SetTooltip(SimpleBlock.tooltip);
+    public GraphNode Visit(Tuple<StatementNode> block)
+        => ToGraphNode<StatementNode>(block)
+                .SetName("body")
+                .SetTooltip(SimpleBlock.tooltip)
+                .SetColor(SimpleBlock.color);
 
-        foreach (var statement in block.Content)
-            root.Add(ToGraphNode(statement));
+    public GraphNode ToGraphNode<TVal>(Tuple<TVal> tuple) where TVal : Node {
+
+        var root = new GraphNode(tuple.GetHashCode(), "tuple")
+            .SetColor(Tuple.color)
+            .SetTooltip(Tuple.tooltip);
+
+        foreach (var node in tuple.Items)
+            root.Add(ASTHelper.ToGraphNode(node));
 
         return root;
     }
@@ -379,5 +388,5 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public virtual GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
-    public virtual GraphNode ToGraphNode(SimpleBlock block) => block.Accept(this);
+    public virtual GraphNode ToGraphNode(Tuple<StatementNode> block) => Visit(block);
 }

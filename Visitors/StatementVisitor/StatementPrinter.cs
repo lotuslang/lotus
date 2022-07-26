@@ -84,11 +84,11 @@ internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisito
               + ASTHelper.PrintValue(node.Condition)
               + Visit(node.Body);
 
-    public string Visit(SimpleBlock block)
-        => (!block.IsOneLiner ? ASTHelper.PrintToken(block.OpeningToken) : "")
-         + Utilities.Join("", Print, block.Content)
-         + (!block.IsOneLiner ? ASTHelper.PrintToken(block.ClosingToken) : "");
+    public string Visit(Tuple<StatementNode> block)
+        => (!block.IsOneLiner() ? ASTHelper.PrintToken(block.OpeningToken) : "")
+         + Utilities.Join("", Print, block.Items)
+         + (!block.IsOneLiner() ? ASTHelper.PrintToken(block.ClosingToken) : "");
 
-    public string Print(SimpleBlock block) => Visit(block);
+    public string Print(Tuple<StatementNode> block) => Visit(block);
     public string Print(StatementNode node) => node.Accept(this);
 }

@@ -19,12 +19,6 @@
 
     public static readonly ConstantChecker ConstantChecker = new();
 
-    public static readonly ValueExtractor ValueExtractor = new();
-
-    public static readonly StatementExtractor StatementExtractor = new();
-
-    public static readonly Flattener Flattener = new();
-
     public static readonly ConstantVisualizer ConstantVisualizer = new();
 
     [Obsolete("ASTHelper.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
@@ -68,11 +62,6 @@
         };
 
     public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
-
-    public static IEnumerable<ValueNode> ExtractValue(StatementNode node) => ValueExtractor.ExtractValue(node);
-    public static IEnumerable<StatementNode> ExtractStatement(StatementNode node) => StatementExtractor.ExtractStatement(node);
-
-    public static IEnumerable<StatementNode> Flatten(StatementNode node) => Flattener.Flatten(node);
 
     public static GraphNode ShowConstants(StatementNode node) => ConstantVisualizer.ShowConstants(node);
     public static GraphNode ShowConstants(ValueNode node) => ConstantVisualizer.ShowConstants(node);

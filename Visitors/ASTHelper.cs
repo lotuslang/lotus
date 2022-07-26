@@ -1,4 +1,4 @@
-﻿internal static class ASTHelper
+internal static class ASTHelper
 {
     [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
     public static readonly NameChecker NameChecker = new();
@@ -51,7 +51,7 @@
     public static GraphNode UnionToGraphNode<T, U>(Union<T, U> u) where T : Node
                                                                   where U : Node
         => u.Match(ToGraphNode, ToGraphNode);
-    private static GraphNode ToGraphNode(Node node)
+    public static GraphNode ToGraphNode(Node node)
         => node switch {
             ValueNode vn     => ToGraphNode(vn),
             StatementNode sn => ToGraphNode(sn),

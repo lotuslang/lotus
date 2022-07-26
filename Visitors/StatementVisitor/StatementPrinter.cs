@@ -1,10 +1,7 @@
-internal sealed class StatementPrinter : IValueVisitor<string>, IStatementVisitor<string>
+internal sealed class StatementPrinter : IStatementVisitor<string>
 {
     public string Default(StatementNode node)
         => ASTHelper.PrintToken(node.Token);
-
-    public string Default(ValueNode node)
-        => ASTHelper.PrintValue(node);
 
     public string Visit(DeclarationNode node)
         => ASTHelper.PrintToken(node.Token)

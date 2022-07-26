@@ -23,6 +23,4 @@ public interface IStatementVisitor<T>
             return Visit(node as StatementNode);
         }
     }
-
-    T Visit(Tuple<StatementNode> block);
 }

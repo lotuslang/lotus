@@ -14,8 +14,15 @@ public interface IStatementVisitor<T>
     T Visit(IfNode node) => Default(node);
     T Visit(PrintNode node) => Default(node);
     T Visit(ReturnNode node) => Default(node);
-    T Visit(StatementExpressionNode node) => Default(node as StatementNode);
     T Visit(WhileNode node) => Default(node);
+
+    T Visit(StatementExpressionNode node) {
+        if (this is IValueVisitor<T> thisValVisitor) {
+            return node.Value.Accept(thisValVisitor);
+        } else {
+            return Visit(node as StatementNode);
+        }
+    }
 
     T Visit(SimpleBlock block);
 }

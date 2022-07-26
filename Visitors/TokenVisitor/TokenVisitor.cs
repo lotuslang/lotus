@@ -18,4 +18,5 @@ public interface ITokenVisitor<T>
     T Visit(CommentTriviaToken token) => Default(token);
     T Visit(NewlineTriviaToken token) => Visit(token as WhitespaceTriviaToken);
     T Visit(WhitespaceTriviaToken token) => Default(token);
+    T Visit(CharacterTriviaToken token) => Default(token);
 }

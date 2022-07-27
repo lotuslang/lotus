@@ -141,7 +141,6 @@ public class ExpressionParser : Parser<ValueNode>
         string end,
         Func<ExpressionParser, IEnumerable<TValue>> valParser
     )
-        where TValue : ILocalized
     {
         var startingToken = Tokenizer.Consume();
 
@@ -228,7 +227,7 @@ public class ExpressionParser : Parser<ValueNode>
             // it's an error.
             // Example : (hello, there, friend,) // right here
             //           ----------------------^--------------
-            //                      litterally right there
+            //                      literally right there
             if (Tokenizer.Peek() == end) {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = Tokenizer.Consume(),
@@ -264,7 +263,7 @@ public class ExpressionParser : Parser<ValueNode>
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     In = @in.Value,
                     Expected = "an ending delimeter '" + end + "'",
-                    Location = items.LastOrDefault()?.Location ?? startingToken.Location
+                    Location = (items.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
                 });
             }
 

@@ -4,7 +4,7 @@ public record EnumNode(
     Token EnumToken,
     Token OpenBracket,
     Token CloseBracket,
-    bool IsValid
+    bool IsValid = true
 ) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, CloseBracket.Location), IsValid), IAccessible
 {
     public new static readonly EnumNode NULL

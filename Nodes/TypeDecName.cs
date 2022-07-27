@@ -1,4 +1,4 @@
-public record TypeDecName(IdentNode TypeName, NameNode Parent, Token ColonToken, bool isValid)
+public record TypeDecName(IdentNode TypeName, NameNode Parent, Token ColonToken, bool IsValid = true)
 {
     private bool _hasParent = Parent != NameNode.NULL;
     public bool HasParent => _hasParent;

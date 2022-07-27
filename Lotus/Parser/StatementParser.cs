@@ -69,7 +69,7 @@ public class StatementParser : Parser<StatementNode>
             _curr = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
-        if (checkSemicolon && NeedsSemicolon(Current)) {
+        if (checkSemicolon && Utilities.NeedsSemicolon(Current)) {
             CheckSemicolon();
 
             // consume trailing semicolons
@@ -80,8 +80,6 @@ public class StatementParser : Parser<StatementNode>
 
         return ref _curr;
     }
-
-
 
     private void CheckSemicolon() {
         if (!Tokenizer.Consume(out var currToken) || currToken.Kind != TokenKind.semicolon) {
@@ -185,17 +183,6 @@ public class StatementParser : Parser<StatementNode>
 
         return new Tuple<StatementNode>(statements, openingBracket, closingBracket, isValid);
     }
-
-    private bool NeedsSemicolon(StatementNode node)
-        => node is not (
-                   ElseNode
-                or ForeachNode
-                or ForNode
-                or FunctionDeclarationNode
-                or IfNode
-                or WhileNode
-            )
-;
 
     public override StatementParser Clone() => new(this);
 }

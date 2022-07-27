@@ -211,6 +211,16 @@ public static class Utilities
              + Join(", ", GetDisplayName, type.GenericTypeArguments)
              + '>';
     }
+
+    public static bool NeedsSemicolon(StatementNode node)
+        => node is not (
+                   ElseNode
+                or ForeachNode
+                or ForNode
+                or FunctionDeclarationNode
+                or IfNode
+                or WhileNode
+            );
 }
 
 internal class DeterministicStringComparer : IEqualityComparer<string>

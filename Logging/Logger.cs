@@ -176,6 +176,23 @@ public static class Logger
                     );
                 }
 
+                if (node is StatementExpressionNode stmtExprNode) {
+                    return FormatUnexpected(
+                        new UnexpectedError<ValueNode>(
+                            error.Area,
+                            caller: error.Caller,
+                            callerPath: error.CallerPath
+                        ) {
+                            Value = stmtExprNode.Value,
+                            As = error.As,
+                            In = error.In,
+                            Location = error.Location,
+                            Expected = error.Expected,
+                            Message = error.Message,
+                        }
+                    );
+                }
+
                 sb.Append(
                       (node is OperationNode opNode ? opNode.OperationType + " (" + opNode.Token + ')': node.GetType().Name)
                     + " '"

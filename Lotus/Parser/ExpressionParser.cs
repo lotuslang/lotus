@@ -114,8 +114,9 @@ public class ExpressionParser : Parser<ValueNode>
         return left;
     }
 
-    public Tuple<ValueNode> ConsumeTuple(string start, string end, uint expectedItemCount = 0) {
-        var baseTuple = ConsumeTuple<ValueNode>(start, end, (parser) => new[] { parser.Consume() });
+    private static ValueTupleParslet<ValueNode> _defaultTupleParslet = new(static (parser) => parser.Consume());
+    public Tuple<ValueNode> ConsumeTuple(uint expectedItemCount = 0) {
+        var baseTuple = _defaultTupleParslet.Parse(this);
 
         var items = baseTuple.Items;
 
@@ -134,143 +135,6 @@ public class ExpressionParser : Parser<ValueNode>
         }
 
         return baseTuple;
-    }
-
-    public Tuple<TValue> ConsumeTuple<TValue>(
-        string start,
-        string end,
-        Func<ExpressionParser, IEnumerable<TValue>> valParser
-    )
-    {
-        var startingToken = Tokenizer.Consume();
-
-        var isValid = true;
-
-        var @in = new Lazy<string>(() => "a " + typeof(TValue).Name + " list", isThreadSafe: false);
-
-        if (startingToken.Representation != start) {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) { // should we use InvalidCall instead ?
-                Value = startingToken,
-                In = @in.Value,
-                Expected = start
-            });
-
-            isValid = false;
-        }
-
-        var items = new List<TValue>();
-
-        while (Tokenizer.Consume(out var token) && token != end) {
-
-            Tokenizer.Reconsume();
-
-            items.AddRange(valParser(this));
-
-            if (Tokenizer.Consume() != ",") {
-
-                if (Tokenizer.Current == end) {
-                    break;
-                }
-
-                var lastItem = items.Last();
-
-                if (!isValid || !this.Current.IsValid) {
-                    continue;
-                }
-
-                if (Tokenizer.Current.Kind == TokenKind.keyword) {
-                    Tokenizer.Reconsume();
-
-                    // If we set isValid here without emitting an error, execution will just continue normally
-                    // since the errors at the end require that isValid is set to true
-                    // FIXME: Although, it might be better to emit a custom error here :shrug:
-                    //isValid = false;
-
-                    break;
-                }
-
-                if (Tokenizer.Current == "}") {
-                    Tokenizer.Reconsume();
-
-                    break;
-                }
-
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = Tokenizer.Current,
-                    In = @in.Value,
-                    Expected = "a ',' or '" + end + "'",
-                    Message = "Did you forget '" + end + "' or a comma in this " + typeof(TValue).Name + " list ?"
-                });
-
-
-                // if it's an identifier, we should reconsume it so the error doesn't run over
-                if (Tokenizer.Current.Kind == TokenKind.identifier) {
-                    isValid = false;
-                    Tokenizer.Reconsume();
-                } else if (Tokenizer.Current.Kind == TokenKind.semicolon) {
-                    isValid = false;
-                    Tokenizer.Reconsume();
-
-                    break;
-                } else if (Tokenizer.Peek() == ",") {
-                    isValid = false;
-                    Tokenizer.Consume();
-                }
-
-
-                //Tokenizer.Reconsume();
-
-                continue;
-            }
-
-            // since we know that there's a comma right before, if there's an ending delimiter right after it,
-            // it's an error.
-            // Example : (hello, there, friend,) // right here
-            //           ----------------------^--------------
-            //                      literally right there
-            if (Tokenizer.Peek() == end) {
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = Tokenizer.Consume(),
-                    In = @in.Value,
-                    Expected = "a " + typeof(TValue).Name
-                });
-
-                isValid = false;
-
-                break;
-            }
-        }
-
-        var endingToken = Tokenizer.Current;
-
-        // we probably got out-of-scope (EOF or end of block)
-        //
-        // Or maybe we should just do that all the time ? Like if we got an unexpected
-        // token we could show the first line/element of the tuple, and then show the end
-        // or even where the error occurred (this also goes for earlier errors)
-        if (isValid && endingToken != end) { // we probably either got an EOF or a bracket
-            if (endingToken.Kind != TokenKind.EOF) {
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = endingToken,
-                    In = @in.Value,
-                    Expected = "an ending delimiter '" + end + "'"
-                });
-
-                if (endingToken == "}") {
-                    Tokenizer.Reconsume();
-                }
-            } else {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    In = @in.Value,
-                    Expected = "an ending delimeter '" + end + "'",
-                    Location = (items.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
-                });
-            }
-
-            isValid = false;
-        }
-
-        return new Tuple<TValue>(items, startingToken, endingToken, isValid);
     }
 
     public override ExpressionParser Clone() => new(this);

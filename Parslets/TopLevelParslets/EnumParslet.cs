@@ -2,6 +2,13 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 {
     public static readonly EnumParslet Instance = new();
 
+    private static readonly ValueTupleParslet<ValueNode> _enumValuesParslet
+        = new(static (parser) => parser.Consume()) {
+            Start = "{",
+            End = "}",
+            AcceptEndingComma = true
+        };
+
     public EnumNode Parse(TopLevelParser parser, Token enumToken) {
 
         /*
@@ -29,7 +36,7 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 
         var name = parser.ConsumeTypeDeclarationName();
 
-        var values = parser.ExpressionParser.ConsumeTuple("{", "}");
+        var values = _enumValuesParslet.Parse(parser.ExpressionParser);
 
         // check that every field is the right format/type
         foreach (var node in values) {

@@ -20,5 +20,5 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
     }
 
     public static Tuple<ValueNode> ConsumeFunctionArguments(ExpressionParser parser)
-        => parser.ConsumeTuple("(", ")");
+        => parser.ConsumeTuple();
 }

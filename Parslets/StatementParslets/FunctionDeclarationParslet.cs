@@ -2,6 +2,13 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 {
     public static readonly FunctionDeclarationParslet Instance = new();
 
+    private static readonly ValueTupleParslet<FunctionParameter> _paramListParslet
+        = new(ParseFuncParam) {
+            Start = "(",
+            End = ")",
+            AcceptEndingComma = false,
+        };
+
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
         Debug.Assert(funcToken == "func");
 
@@ -25,7 +32,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location, false);
         }
 
-        var paramList = parser.ExpressionParser.ConsumeTuple<FunctionParameter>("(", ")", ParseFuncParam);
+        var paramList = _paramListParslet.Parse(parser.ExpressionParser);
 
         var returnType = NameNode.NULL;
 

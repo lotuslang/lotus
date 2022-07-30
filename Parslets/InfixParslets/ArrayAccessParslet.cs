@@ -4,6 +4,12 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 
     public static readonly ArrayAccessParslet Instance = new();
 
+    private static readonly ValueTupleParslet<ValueNode> _indexTupleParslet
+        = new(static (parser) => parser.Consume()) {
+            Start = "[",
+            End = "]"
+        };
+
     public OperationNode Parse(ExpressionParser parser, Token openingBracket, ValueNode array) {
         Debug.Assert(openingBracket == "[");
 
@@ -11,7 +17,7 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 
         parser.Tokenizer.Reconsume();
 
-        var indexTuple = parser.ConsumeTuple("[", "]");
+        var indexTuple = _indexTupleParslet.Parse(parser);
 
         indexTuple.Items.Insert(0, array);
 

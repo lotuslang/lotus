@@ -7,8 +7,8 @@ public record ForeachNode(
     IdentNode ItemName,
     ValueNode CollectionRef,
     Tuple<StatementNode> Body,
-    Token OpenParenthesis,
-    Token CloseParenthesis,
+    Token OpeningParen,
+    Token ClosingParen,
     bool IsValid = true
 ) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
 {

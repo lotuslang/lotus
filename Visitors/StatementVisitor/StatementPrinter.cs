@@ -15,11 +15,11 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
 
     public string Visit(ForeachNode node)
         => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintToken(node.OpenParenthesis)
+         + ASTHelper.PrintToken(node.OpeningParen)
          + ASTHelper.PrintValue(node.ItemName)
          + ASTHelper.PrintToken(node.InToken)
          + ASTHelper.PrintValue(node.CollectionRef)
-         + ASTHelper.PrintToken(node.CloseParenthesis)
+         + ASTHelper.PrintToken(node.ClosingParen)
          + Print(node.Body);
 
     public string Visit(ForNode node)

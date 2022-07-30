@@ -112,5 +112,5 @@ public sealed class ForParslet : IStatementParslet<ForNode>
     }
 
     private static StatementNode GetDefaultStatement(LocationRange pos)
-        => StatementNode.NULL with { Token = Token.NULL with { Location = pos, IsValid = true }, Location = pos };
+        => StatementNode.NULL with { Token = Token.NULL with { Location = pos, IsValid = true }, Location = pos, IsValid = true };
 }

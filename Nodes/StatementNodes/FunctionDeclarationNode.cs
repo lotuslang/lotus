@@ -32,12 +32,12 @@ public sealed record FunctionDeclarationNode(
 
 /// <summary>You define parameters, you make arguments</summary>
 public record FunctionParameter(
-    NameNode TypeName,
+    NameNode Type,
     IdentNode Name,
     ValueNode DefaultValue,
     Token EqualSign,
     bool IsValid = true
-) : Parameter(TypeName, Name, IsValid)
+) : Parameter(Type, Name, IsValid)
 {
 
     public static readonly FunctionParameter NULL = new(

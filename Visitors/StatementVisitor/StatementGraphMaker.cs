@@ -121,18 +121,18 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                         .SetColor(For.color)
                         .SetTooltip(For.tooltip);
 
-        if (node.Header.Count != 0) {
-            var headerNode = new GraphNode(node.Header.GetHashCode(), "header")
-                .SetColor(ForHeader.color)
-                .SetTooltip(ForHeader.tooltip);
+        var headerNode = new GraphNode(node.Header.GetHashCode(), "header")
+            .SetColor(ForHeader.color)
+            .SetTooltip(ForHeader.tooltip);
 
-            foreach (var statement in node.Header) headerNode.Add(ToGraphNode(statement));
-
-            root.Add(headerNode);
-
-        } else {
-            root.Add(new GraphNode(node.Header.GetHashCode(), "(empty header)"));
+        foreach (var statement in node.Header) {
+            if (statement.Token.Kind == TokenKind.EOF)
+                headerNode.Add(new GraphNode(Statement.GetHashCode(), "(empty)"));
+            else
+                headerNode.Add(ToGraphNode(statement));
         }
+
+        root.Add(headerNode);
 
         root.Add(ToGraphNode(node.Body));
 

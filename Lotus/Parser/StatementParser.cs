@@ -103,86 +103,11 @@ public class StatementParser : Parser<StatementNode>
         }
     }
 
-    public Tuple<StatementNode> ConsumeSimpleBlock(bool areOneLinersAllowed = true) {
-        var isValid = true;
 
-        // to consume a one-liner, you just consume a statement and return
-        if (areOneLinersAllowed && Tokenizer.Peek() != "{") {
-            if (!Consume(out var statement)) {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    In = "a simple block",
-                    Expected = "a statement",
-                    Location = Tokenizer.Current.Location
-                });
-
-                isValid = false;
-            }
-
-            return new Tuple<StatementNode>(new[] { statement }, Token.NULL, Token.NULL, isValid) {
-                Location = statement.Location
-            };
-        }
-
-        var openingBracket = Tokenizer.Consume();
-
-        // we don't have to check for EOF because that is (sorta) handled by "areOneLinersAllowed"
-        if (openingBracket != "{") {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                Value = openingBracket,
-                In = "at the start of simple block",
-                Expected = "{",
-                ExtraNotes = "This probably means there was an internal error, please report this!"
-            });
-
-            Tokenizer.Reconsume();
-        }
-
-        var location = openingBracket.Location;
-
-        var statements = new List<StatementNode>();
-
-        while (Tokenizer.Peek() != "}") {
-            statements.Add(Consume());
-
-            if (Tokenizer.Peek().Kind == TokenKind.EOF) {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    In = "a simple block",
-                    Expected = "a statement",
-                    Location = Tokenizer.Current.Location
-                });
-
-                isValid = false;
-
-                break;
-            }
-
-            //if (Tokenizer.Peek() == ";") Tokenizer.Consume();
-        }
-
-        var closingBracket = Tokenizer.Peek();
-
-        if (!(!isValid && closingBracket.Kind == TokenKind.EOF) && closingBracket != "}") {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                Value = closingBracket,
-                In = "a simple block",
-                Expected = "the character '}'"
-            });
-
-            if (closingBracket.Kind == TokenKind.EOF) {
-                // if this node was already invalid, it probably means that we already encountered an EOF,
-                // so no need to tell the user twice
-                if (!isValid) Logger.errorStack.Pop();
-            } else {
-                Tokenizer.Reconsume();
-            }
-
-            isValid = false;
-        }
-
-        Tokenizer.Consume();
-
-        return new Tuple<StatementNode>(statements, openingBracket, closingBracket, isValid);
-    }
+    public Tuple<StatementNode> ConsumeSimpleBlock(bool areOneLinersAllowed = true)
+        => (areOneLinersAllowed
+            ? StatementBlockParslet.Default
+            : StatementBlockParslet.NoOneLiner).Parse(this);
 
     public override StatementParser Clone() => new(this);
 }

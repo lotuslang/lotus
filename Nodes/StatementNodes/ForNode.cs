@@ -3,14 +3,12 @@
 /// </summary>
 public record ForNode(
     Token Token,
-    IList<StatementNode> Header,
+    Tuple<StatementNode> Header,
     Tuple<StatementNode> Body,
-    Token OpeningParenthesis,
-    Token ClosingParenthesis,
     bool IsValid = true
 ) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
 {
-    public new static readonly ForNode NULL = new(Token.NULL, Array.Empty<StatementNode>(), Tuple<StatementNode>.NULL, Token.NULL, Token.NULL, false);
+    public new static readonly ForNode NULL = new(Token.NULL, Tuple<StatementNode>.NULL, Tuple<StatementNode>.NULL, false);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

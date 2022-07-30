@@ -24,9 +24,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
 
     public string Visit(ForNode node)
         => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintToken(node.OpeningParenthesis)
-         + Utilities.Join(",", Print, node.Header)
-         + ASTHelper.PrintToken(node.ClosingParenthesis)
+         + Print(node.Header, ",")
          + Print(node.Body);
 
     public string Visit(FunctionDeclarationNode node) {

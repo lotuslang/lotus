@@ -1,8 +1,8 @@
-public class Union<T, U>
+public sealed class Union<T, U>
 {
-    protected readonly T? t;
-    protected readonly U? u;
-    protected readonly int tag;
+    private readonly T? t;
+    private readonly U? u;
+    private readonly int tag;
 
     public Union(T item) { t = item; tag = 0; }
     public Union(U item) { u = item; tag = 1; }
@@ -49,10 +49,10 @@ public class Union<T, U>
 
 public class Union<T, U, V>
 {
-    protected readonly T? t;
-    protected readonly U? u;
-    protected readonly V? v;
-    protected readonly int tag;
+    private readonly T? t;
+    private readonly U? u;
+    private readonly V? v;
+    private readonly int tag;
 
     public Union(T item) { t = item; tag = 0; }
     public Union(U item) { u = item; tag = 1; }
@@ -95,25 +95,39 @@ public sealed class None {
     public static readonly None Instance = new();
 }
 
-public sealed class Result<T> : Union<T, None>
+public sealed class Result<T>
 {
-    public Result(T value) : base(value) { }
-    private Result() : base(None.Instance) { }
+    private readonly T? t;
 
+    public ref readonly T? Value => ref t;
+
+    private bool isOk = false;
+
+    private Result() { }
+
+    public Result(T value) {
+        t = value;
+        isOk = true;
+    }
 
     private static readonly Result<T> _err = new();
     public static ref readonly Result<T> Error => ref _err;
 
     public void OnError(Action act) {
-        if (!IsOk()) act();
+        if (!isOk) act();
     }
 
     public T Rescue(Func<T> gen) {
-        if (IsOk()) return t!;
-        else        return gen();
+        if (isOk) return t!;
+        else      return gen();
     }
 
-    public bool IsOk() => tag == 1;
+    [System.Diagnostics.CodeAnalysis.MemberNotNullWhen(true, nameof(Value))]
+    public bool IsOk() => isOk;
+
+    public Union<T, None> AsUnion() => (Union<T, None>)this;
 
     public static implicit operator Result<T>(T t) => new(t);
+    public static implicit operator Union<T, None>(Result<T> res)
+        => res.isOk ? new(res.t!) : new(None.Instance);
 }

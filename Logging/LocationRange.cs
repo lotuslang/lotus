@@ -1,5 +1,5 @@
 [DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})")]
-public record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>
+public sealed record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>
 {
     public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);
 

@@ -1,12 +1,12 @@
-public class StatementParser : Parser<StatementNode>
+public sealed class StatementParser : Parser<StatementNode>
 {
-    public ExpressionParser ExpressionParser { get; protected set; }
+    public ExpressionParser ExpressionParser { get; private set; }
 
     public new static readonly StatementNode ConstantDefault = StatementNode.NULL;
 
     public override StatementNode Default => ConstantDefault with { Location = Position };
 
-    protected void Init() {
+    private void Init() {
         ExpressionParser = new ExpressionParser(Tokenizer);
         _curr = ConstantDefault with { Location = Tokenizer.Position };
     }

@@ -1,4 +1,4 @@
-public class TopLevelParser : Parser<TopLevelNode>
+public sealed class TopLevelParser : Parser<TopLevelNode>
 {
     public StatementParser StatementParser { get; private set; }
 
@@ -8,7 +8,7 @@ public class TopLevelParser : Parser<TopLevelNode>
 
     public override TopLevelNode Default => ConstantDefault with { Location = Position };
 
-    protected void Init() {
+    private void Init() {
         StatementParser = new StatementParser(Tokenizer);
         _curr = ConstantDefault;
     }

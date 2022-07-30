@@ -1,4 +1,4 @@
-public record PrintNode(Token Token, ValueNode Value, bool IsValid = true)
+public sealed record PrintNode(Token Token, ValueNode Value, bool IsValid = true)
 : StatementNode(Token, Token.Location, IsValid)
 {
     public new static readonly PrintNode NULL = new(Token.NULL, ValueNode.NULL, false);

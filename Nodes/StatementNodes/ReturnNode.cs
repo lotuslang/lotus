@@ -1,4 +1,4 @@
-public record ReturnNode(ValueNode Value, Token Token, bool IsValid = true)
+public sealed record ReturnNode(ValueNode Value, Token Token, bool IsValid = true)
 : StatementNode(
     Token,
     Value != ValueNode.NULL

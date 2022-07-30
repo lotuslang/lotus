@@ -1,4 +1,4 @@
-public record Tuple<T> : ILocalized, IEnumerable<T>
+public sealed record Tuple<T> : ILocalized, IEnumerable<T>
 {
     public T this[int i] => Items[i];
 

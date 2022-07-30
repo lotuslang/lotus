@@ -1,4 +1,4 @@
-public record NewlineTriviaToken : WhitespaceTriviaToken
+public sealed record NewlineTriviaToken : WhitespaceTriviaToken
 {
     public new static readonly NewlineTriviaToken NULL = new(0, LocationRange.NULL, false);
     public NewlineTriviaToken(int count,

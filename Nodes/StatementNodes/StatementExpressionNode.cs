@@ -1,4 +1,4 @@
-public record StatementExpressionNode(ValueNode Value)
+public sealed record StatementExpressionNode(ValueNode Value)
 : StatementNode(Value.Token, Value.Location, Value.IsValid)
 {
     public static implicit operator ValueNode(StatementExpressionNode node) => node.Value;

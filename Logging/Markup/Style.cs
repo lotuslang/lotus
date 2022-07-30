@@ -1,6 +1,6 @@
 [DebuggerStepThrough]
 [DebuggerDisplay("{DbgString()}")]
-internal record Style(
+internal sealed record Style(
     TextColor? Foreground = null,
     TextColor? Background = null,
     TextFormat Format = TextFormat.None

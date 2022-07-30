@@ -1,4 +1,4 @@
-public record ParenthesizedValueNode(ValueNode Value, Token Token, Token ClosingToken, bool IsValid = true)
+public sealed record ParenthesizedValueNode(ValueNode Value, Token Token, Token ClosingToken, bool IsValid = true)
 : ValueNode(Token, new LocationRange(Token, ClosingToken), IsValid)
 {
     public new static readonly ParenthesizedValueNode NULL = new(ValueNode.NULL, Token.NULL, Token.NULL, false);

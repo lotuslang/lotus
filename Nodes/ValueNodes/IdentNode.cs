@@ -1,4 +1,4 @@
-public record IdentNode(IdentToken Token) : NameNode(Token, new[] { Token }, Token.IsValid)
+public sealed record IdentNode(IdentToken Token) : NameNode(Token, new[] { Token }, Token.IsValid)
 {
     public new static readonly IdentNode NULL = new(IdentToken.NULL);
 

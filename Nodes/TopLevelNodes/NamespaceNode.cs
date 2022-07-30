@@ -1,4 +1,4 @@
-public record NamespaceNode(NameNode Name, Token Token, bool IsValid = true)
+public sealed record NamespaceNode(NameNode Name, Token Token, bool IsValid = true)
 : TopLevelNode(Token, new LocationRange(Token.Location, Name.Location), IsValid), IAccessible
 {
     public new static readonly NamespaceNode NULL = new(NameNode.NULL, Token.NULL, false);

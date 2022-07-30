@@ -1,4 +1,4 @@
-public record CharacterTriviaToken(char Character, LocationRange Location, bool IsValid = true)
+public sealed record CharacterTriviaToken(char Character, LocationRange Location, bool IsValid = true)
 : TriviaToken(Character.ToString(), TriviaKind.character, Location, IsValid)
 {
     public new static readonly CharacterTriviaToken NULL = new('\0', LocationRange.NULL, false);

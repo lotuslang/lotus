@@ -1,4 +1,4 @@
-public record IfNode(
+public sealed record IfNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,
     ElseNode ElseNode,

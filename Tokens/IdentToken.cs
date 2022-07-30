@@ -1,4 +1,4 @@
-public record IdentToken(string Representation, LocationRange Location, bool IsValid = true)
+public sealed record IdentToken(string Representation, LocationRange Location, bool IsValid = true)
 : Token(Representation, TokenKind.identifier, Location, IsValid)
 {
     public new static readonly IdentToken NULL = new("", LocationRange.NULL, false);

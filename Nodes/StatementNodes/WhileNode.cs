@@ -1,4 +1,4 @@
-public record WhileNode(
+public sealed record WhileNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,
     Token Token,

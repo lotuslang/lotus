@@ -1,4 +1,4 @@
-public record TopLevelStatementNode(StatementNode Statement)
+public sealed record TopLevelStatementNode(StatementNode Statement)
 : TopLevelNode(Statement.Token, Statement.Location, Statement.IsValid)
 {
     public static implicit operator StatementNode(TopLevelStatementNode node) => node.Statement;

@@ -1,4 +1,4 @@
-public record CommentTriviaToken : TriviaToken
+public sealed record CommentTriviaToken : TriviaToken
 {
     public new static readonly CommentTriviaToken NULL = new("", LocationRange.NULL, isValid: false);
 

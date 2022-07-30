@@ -1,14 +1,11 @@
 [DebuggerDisplay("{Location} {Kind} : {val}")]
-public record NumberToken : Token
+public sealed record NumberToken : Token
 {
     public new static readonly NumberToken NULL = new("", Double.NaN, LocationRange.NULL, false);
 
-    protected double _val;
+    private double _val;
 
-    public double Value {
-        get => _val;
-        init => _val = value;
-    }
+    public ref readonly double Value => ref _val;
 
     public NumberToken(string s, double d, LocationRange location, bool isValid = true)
         : base(s, TokenKind.number, location, isValid) {

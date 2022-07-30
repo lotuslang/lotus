@@ -1,4 +1,4 @@
-public record FullNameNode(OperatorToken DotToken, IList<IdentToken> Parts, bool IsValid = true)
+public sealed record FullNameNode(OperatorToken DotToken, IList<IdentToken> Parts, bool IsValid = true)
 : NameNode(DotToken, Parts, IsValid)
 {
 

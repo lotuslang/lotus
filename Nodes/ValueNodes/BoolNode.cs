@@ -1,4 +1,4 @@
-public record BoolNode(BoolToken Token) : ValueNode(Token, Token.IsValid)
+public sealed record BoolNode(BoolToken Token) : ValueNode(Token, Token.IsValid)
 {
     public new static readonly BoolNode NULL = new(BoolToken.NULL);
 

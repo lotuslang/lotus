@@ -1,4 +1,4 @@
-public record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location, bool IsValid = true)
+public sealed record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location, bool IsValid = true)
 : StringToken(Representation, Location, IsValid)
 {
     public new static readonly ComplexStringToken NULL = new("", new List<Token[]>(), LocationRange.NULL, false);

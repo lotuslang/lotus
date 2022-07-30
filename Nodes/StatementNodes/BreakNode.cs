@@ -1,4 +1,4 @@
-public record BreakNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
+public sealed record BreakNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
 {
     public new static readonly BreakNode NULL = new(Token.NULL, false);
 

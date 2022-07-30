@@ -1,4 +1,4 @@
-public record ContinueNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
+public sealed record ContinueNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
 {
     public new static readonly ContinueNode NULL = new(Token.NULL, false);
 

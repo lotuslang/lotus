@@ -1,5 +1,5 @@
 [DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({line}:{column})")]
-public record Location(int line, int column, string filename = "<std>")
+public sealed record Location(int line, int column, string filename = "<std>")
 {
     public static readonly Location NULL = new(-1, -1);
 

@@ -1,4 +1,4 @@
-public record TupleNode
+public sealed record TupleNode
 : ValueNode, IEnumerable<ValueNode>
 {
     public new static readonly TupleNode NULL = new(Tuple<ValueNode>.NULL);

@@ -1,7 +1,7 @@
 /// <summary>
 /// Represents a variable declaration statement (var a = b)
 /// </summary>
-public record DeclarationNode(ValueNode Value, IdentToken Name, Token Token, Token EqualToken, bool IsValid = true)
+public sealed record DeclarationNode(ValueNode Value, IdentToken Name, Token Token, Token EqualToken, bool IsValid = true)
 : StatementNode(Token, new LocationRange(Token.Location, Value.Location), IsValid)
 {
     public new static readonly DeclarationNode NULL = new(ValueNode.NULL, IdentToken.NULL, Token.NULL, Token.NULL, false);

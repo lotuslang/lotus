@@ -2,45 +2,35 @@ using System.Text;
 using System.Collections;
 
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
-public class Graph
+public sealed class Graph
 {
-    protected string name;
+    private string name;
 
     /// <summary>
     /// The name of this graph.
     /// </summary>
     /// <value>A string that represents the name of this graph.</value>
-    public string Name {
-        get => name;
-    }
+    public ref readonly string Name => ref name;
 
-    protected List<GraphNode> rootNodes;
+    private List<GraphNode> rootNodes;
 
     /// <summary>
     /// The nodes that are the roots of independent trees.
     /// </summary>
     /// <value>A List of GraphNode containing every root node.</value>
-    public List<GraphNode> RootNodes {
-        get => rootNodes;
-    }
+    public ref readonly List<GraphNode> RootNodes => ref rootNodes;
 
-    protected Dictionary<string, string> graphprops;
+    private Dictionary<string, string> graphprops;
 
-    public Dictionary<string, string> GraphProps {
-        get => graphprops;
-    }
+    public ref readonly Dictionary<string, string> GraphProps => ref graphprops;
 
-    protected Dictionary<string, string> nodeprops;
+    private Dictionary<string, string> nodeprops;
 
-    public Dictionary<string, string> NodeProps {
-        get => nodeprops;
-    }
+    public ref readonly Dictionary<string, string> NodeProps => ref nodeprops;
 
-    protected Dictionary<string, string> edgeprops;
+    private Dictionary<string, string> edgeprops;
 
-    public Dictionary<string, string> EdgeProps {
-        get => edgeprops;
-    }
+    public ref readonly Dictionary<string, string> EdgeProps => ref edgeprops;
 
     public Graph(string name) {
         this.name = name;
@@ -65,7 +55,7 @@ public class Graph
         // Create a new string builder
         var strBuilder = new StringBuilder();
 
-        // Append the keyword 'diagraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
+        // Append the keyword 'digraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
         strBuilder.AppendLine("graph " + name);
         strBuilder.AppendLine("{");
 
@@ -166,13 +156,13 @@ public class Graph
 }
 
 [DebuggerDisplay("{ID}:{Name}")]
-public class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
+public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 {
     /// <summary>
     /// The unique identifier for this node.
     /// </summary>
     /// <value>A string representing the ID of this node.</value>
-    public string ID { get; protected set; }
+    public string ID { get; private set; }
 
     /// <summary>
     /// The name of this node.
@@ -184,9 +174,9 @@ public class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
     /// <value>A list of GraphNode this node is pointing to, (i.e. children).</value>
-    public List<GraphNode> Children { get; protected set; }
+    public List<GraphNode> Children { get; private set; }
 
-    public Dictionary<string, string> Properties { get; protected set; }
+    public Dictionary<string, string> Properties { get; private set; }
 
     public GraphNode(string name) : this(new Random().Next(), name) { }
 
@@ -288,7 +278,7 @@ public class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     public static IEqualityComparer<GraphNode> EqualityComparer => EqComparer.Instance;
 
-    private class EqComparer : EqualityComparer<GraphNode>
+    private sealed class EqComparer : EqualityComparer<GraphNode>
     {
         private static EqComparer _instance = new();
         public static EqComparer Instance => _instance;

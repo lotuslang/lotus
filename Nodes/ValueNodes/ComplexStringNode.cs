@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 
-public record ComplexStringNode : StringNode
+public sealed record ComplexStringNode : StringNode
 {
     public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, Array.Empty<ValueNode>(), false);
 
-    protected List<ValueNode> sections;
+    private List<ValueNode> sections;
 
     public ReadOnlyCollection<ValueNode> CodeSections {
         get => sections.AsReadOnly();

@@ -1,4 +1,4 @@
-public record FromNode(Union<StringNode, NameNode> OriginName, Token Token, bool IsValid = true)
+public sealed record FromNode(Union<StringNode, NameNode> OriginName, Token Token, bool IsValid = true)
 : TopLevelNode(Token, IsValid)
 {
     public new static readonly FromNode NULL = new(StringNode.NULL, Token.NULL, false);

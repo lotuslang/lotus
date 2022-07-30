@@ -1,4 +1,4 @@
-public class ExpressionParser : Parser<ValueNode>
+public sealed class ExpressionParser : Parser<ValueNode>
 {
     public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
 

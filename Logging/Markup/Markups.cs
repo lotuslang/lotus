@@ -4,7 +4,7 @@ internal abstract record Markup
 
     [DebuggerStepThrough]
     [DebuggerDisplay("{DbgString()}")]
-    public record TextFormatMarker(TextFormat Format) : Markup
+    public sealed record TextFormatMarker(TextFormat Format) : Markup
     {
         public static readonly TextFormatMarker None =
             new TextFormatMarker(TextFormat.None);
@@ -21,7 +21,7 @@ internal abstract record Markup
 
     [DebuggerStepThrough]
     [DebuggerDisplay("{DbgString()}")]
-    public record ColorMarker(TextColor Color, bool IsBackground) : Markup
+    public sealed record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker ResetBackground =
             new ColorMarker(TextColor.ResetColor, true);
@@ -37,7 +37,7 @@ internal abstract record Markup
 
     [DebuggerStepThrough]
     [DebuggerDisplay("{DbgString()}")]
-    public record StyleMarker(Style Style) : Markup
+    public sealed record StyleMarker(Style Style) : Markup
     {
         public static readonly StyleMarker Reset =
             new StyleMarker(
@@ -54,7 +54,7 @@ internal abstract record Markup
     }
 
     [DebuggerStepThrough]
-    public record Text(string Content) : Markup
+    public sealed record Text(string Content) : Markup
     {
         public override string ToString() => Content;
 

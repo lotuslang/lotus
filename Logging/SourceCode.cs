@@ -4,7 +4,7 @@ using System.IO;
 // I had to invoke dark powers to write the following functions, hopefully without bugs, so edit
 // with *extreme* care.
 // It takes way longer than it looks to figure out, so please again : beware !
-public class SourceCode
+public sealed class SourceCode
 {
     public string[] RawText { get; }
 

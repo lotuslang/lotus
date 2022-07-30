@@ -16,7 +16,7 @@ public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
 
         return new OperationNode(
             operatorToken,
-            new[] {
+            new[] { // FIXME: why not just use a static readonly buffer we write to each time ? 
                 left,
                 parser.Consume(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
             },

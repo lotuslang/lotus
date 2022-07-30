@@ -1,15 +1,11 @@
 [DebuggerDisplay("{Location} {Kind} : {val}")]
-public record BoolToken : Token
+public sealed record BoolToken : Token
 {
     public new static readonly BoolToken NULL = new("", false, LocationRange.NULL, false);
 
-    // no you can't remove it because properties can't be the out parameter in the "TryParse" call
-    protected bool _val;
+    private bool _val;
 
-    public bool Value {
-        get => _val;
-        init => _val = value;
-    }
+    public ref readonly bool Value => ref _val;
 
     public BoolToken(string rep, bool value, LocationRange location, bool isValid = true)
         : base(rep, TokenKind.@bool, location, isValid)

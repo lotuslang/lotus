@@ -1,7 +1,7 @@
 /// <summary>
 /// Represents a foreach loop statement (foreach (item in collection) { })
 /// </summary>
-public record ForeachNode(
+public sealed record ForeachNode(
     Token Token,
     Token InToken,
     IdentNode ItemName,

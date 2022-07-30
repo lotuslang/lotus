@@ -1,7 +1,7 @@
 /// <summary>
 /// Represents a for-loop statement
 /// </summary>
-public record ForNode(
+public sealed record ForNode(
     Token Token,
     Tuple<StatementNode> Header,
     Tuple<StatementNode> Body,

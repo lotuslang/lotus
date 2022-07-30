@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-public record OperationNode : ValueNode
+public sealed record OperationNode : ValueNode
 {
     public new static readonly OperationNode NULL = new(OperatorToken.NULL, Array.Empty<ValueNode>(), OperationType.Unknown, false);
 

@@ -1,4 +1,4 @@
-public record EnumNode(
+public sealed record EnumNode(
     TypeDecName Name,
     Tuple<ValueNode> Values,
     Token EnumToken,

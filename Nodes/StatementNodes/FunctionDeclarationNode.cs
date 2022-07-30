@@ -1,4 +1,4 @@
-public record FunctionDeclarationNode(
+public sealed record FunctionDeclarationNode(
     Tuple<StatementNode> Body,
     Tuple<FunctionParameter> ParamList,
     NameNode ReturnType,

@@ -1,4 +1,4 @@
-public record ImportNode(IList<NameNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
+public sealed record ImportNode(IList<NameNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
 : TopLevelNode(
     Token,
     new LocationRange(

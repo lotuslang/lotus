@@ -1,4 +1,4 @@
-public record NumberNode(NumberToken Token)
+public sealed record NumberNode(NumberToken Token)
 : ValueNode(Token, Token.IsValid)
 {
     public new static readonly NumberNode NULL = new(NumberToken.NULL);

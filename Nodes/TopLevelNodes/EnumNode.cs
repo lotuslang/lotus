@@ -1,21 +1,20 @@
 public record EnumNode(
     TypeDecName Name,
-    IList<ValueNode> Values,
+    Tuple<ValueNode> Values,
     Token EnumToken,
-    Token OpenBracket,
-    Token CloseBracket,
     bool IsValid = true
-) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, CloseBracket.Location), IsValid), IAccessible
+) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, Values.ClosingToken.Location), IsValid), IAccessible
 {
     public new static readonly EnumNode NULL
         = new(
             TypeDecName.NULL,
-            Array.Empty<ValueNode>(),
-            Token.NULL,
-            Token.NULL,
+            Tuple<ValueNode>.NULL,
             Token.NULL,
             false
         );
+
+    public Token OpeningBracket => Values.OpeningToken;
+    public Token ClosingBracket => Values.ClosingToken;
 
     public Token AccessKeyword { get; set; } = Token.NULL;
 

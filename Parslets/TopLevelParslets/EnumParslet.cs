@@ -27,74 +27,26 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
         *
         */
 
-        bool isValid = true;
-
         var name = parser.ConsumeTypeDeclarationName();
 
-        if (!parser.Tokenizer.Consume(out var openBracket) || openBracket != "{") {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                Value = openBracket,
-                Expected = "an opening bracket '{'"
-            });
+        var values = parser.ExpressionParser.ConsumeTuple("{", "}");
 
-            isValid = false;
-        }
-
-        var values = new List<ValueNode>();
-
-        while (parser.Tokenizer.Consume(out var nextToken) && nextToken != "}") {
-            parser.Tokenizer.Reconsume();
-
-            var val = parser.ExpressionParser.Consume();
-
-            if (val is not IdentNode && val is not OperationNode { OperationType: OperationType.Assign }) {
-                if (val.Token.Kind == TokenKind.EOF) {
-                    Logger.errorStack.Pop();
-                    break;
-                }
-
+        // check that every field is the right format/type
+        foreach (var node in values) {
+            if (node is not IdentNode and not OperationNode { OperationType: OperationType.Assign }) {
                 Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                    Value = val,
-                    Expected = "a name or an assignment",
-                    As = "an enum value"
+                    Value = node,
+                    In = "an enum body",
+                    As = "an enum field",
+                    Expected = "an identifier, maybe with an assigned value"
                 });
 
-                val.IsValid = false;
-            }
-
-            values.Add(val);
-
-            if (!parser.Tokenizer.Consume(out nextToken) || nextToken != ",") {
-                if (nextToken == "}") {
-                    break; // normal path
-                }
-
-                isValid = false;
-
-                if (nextToken.Kind == TokenKind.EOF)
-                    break; // handled by code afterwards
-
-                if (nextToken.Kind is TokenKind.identifier)
-                    parser.Tokenizer.Reconsume();
-
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = nextToken,
-                    Expected = "a comma ',' or a closing bracket '}'"
-                });
+                values.IsValid = false;
             }
         }
 
-        var closingBracket = parser.Tokenizer.Current;
+        var isValid = enumToken.IsValid && name.IsValid && values.IsValid;
 
-        if (closingBracket.Kind == TokenKind.EOF) {
-            Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                Expected = "a closing bracket '}'",
-                Location = values.LastOrDefault()?.Location ?? openBracket.Location
-            });
-
-            isValid = false;
-        }
-
-        return new EnumNode(name, values, enumToken, openBracket, closingBracket, isValid);
+        return new EnumNode(name, values, enumToken, isValid);
     }
 }

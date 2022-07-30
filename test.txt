@@ -99,7 +99,7 @@ public enum TokenKind {
     operator,
     keyword,
     semicolon,
-    trivia,
+    trivia
 }
 
 public enum TokenKind.trivia::TriviaKind {

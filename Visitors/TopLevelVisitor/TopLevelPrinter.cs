@@ -20,9 +20,9 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
         s += ASTHelper.PrintToken(node.EnumToken);
 
         return s + Print(node.Name)
-                 + ASTHelper.PrintToken(node.OpenBracket)
+                 + ASTHelper.PrintToken(node.OpeningBracket)
                  + Utilities.Join(",", ASTHelper.PrintNode, node.Values)
-                 + ASTHelper.PrintToken(node.CloseBracket);
+                 + ASTHelper.PrintToken(node.ClosingBracket);
     }
 
     public string Visit(ImportNode node)

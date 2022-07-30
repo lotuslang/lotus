@@ -1,7 +1,6 @@
-public interface IPrefixParslet<out T> where T : ValueNode
-{
-    T Parse(ExpressionParser parser, Token token);
-}
+public interface IPrefixParslet<out T> : IParslet<ExpressionParser, Token, T>
+where T : ValueNode
+{}
 
 public interface IInfixParslet<out T> where T : ValueNode
 {
@@ -12,12 +11,21 @@ public interface IInfixParslet<out T> where T : ValueNode
 public interface IPostfixParslet<out T> : IInfixParslet<T> where T : ValueNode
 { }
 
-public interface IStatementParslet<out T> where T : StatementNode
+public interface IStatementParslet<out T> : IParslet<StatementParser, Token, T>
+where T : StatementNode
+{}
+
+public interface ITopLevelParslet<out T> : IParslet<TopLevelParser, Token, T>
+where T : TopLevelNode
+{}
+
+public interface IParslet<in TParser, out TOut> : IParslet<TParser, None, TOut>
 {
-    T Parse(StatementParser parser, Token token);
+    TOut Parse(TParser parser);
+    TOut IParslet<TParser, None, TOut>.Parse(TParser parser, None arg) => Parse(parser);
 }
 
-public interface ITopLevelParslet<out T> where T : TopLevelNode
+public interface IParslet<in TParser, in TArg, out TOut>
 {
-    T Parse(TopLevelParser parser, Token token);
+    TOut Parse(TParser parser, TArg arg);
 }

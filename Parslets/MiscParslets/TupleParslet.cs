@@ -7,7 +7,7 @@ public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, V
     public ValueTupleParslet(Func<ExpressionParser, TValue> valParser) : base(valParser) {}
 }
 
-public class TupleParslet<TParser, TPNode, TValue>
+public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TValue>>
     where TPNode : Node
     where TParser : Parser<TPNode>
 {

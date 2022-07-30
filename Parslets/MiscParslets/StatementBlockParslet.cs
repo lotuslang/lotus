@@ -1,4 +1,4 @@
-public sealed class StatementBlockParslet {
+public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<StatementNode>> {
     private readonly bool areOneLinersAllowed;
 
     public static readonly StatementBlockParslet Default = new(true);

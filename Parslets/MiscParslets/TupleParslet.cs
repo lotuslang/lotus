@@ -22,7 +22,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
     public string End { get; init; } = ")";
     public string Delim { get; init; } = ",";
     public bool AcceptEndingComma { get; init; } = false;
-    public string In { get; init; } = new Lazy<string>(static () => "a " + typeof(TValue).Name + " list", isThreadSafe: false).Value;
+    public string In { get; init; } = "a " + typeof(TValue).Name + " list";
 
     public TupleParslet(Func<TParser, IEnumerable<TValue>> valParser) {
         isSimpleParser = false;

@@ -19,7 +19,7 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 
         var indexTuple = _indexTupleParslet.Parse(parser);
 
-        indexTuple.Items.Insert(0, array);
+        indexTuple = indexTuple with { Items = indexTuple.Items.Insert(0, array) };
 
         return new OperationNode(
             new OperatorToken(

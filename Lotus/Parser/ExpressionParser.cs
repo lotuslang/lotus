@@ -121,14 +121,14 @@ public sealed class ExpressionParser : Parser<ValueNode>
         var items = baseTuple.Items;
 
         // if expectedItemCount is 0, then it means there's no limit
-        if (baseTuple.IsValid && expectedItemCount != 0 && expectedItemCount != items.Count) {
+        if (baseTuple.IsValid && expectedItemCount != 0 && expectedItemCount != items.Length) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                 Value = items.LastOrDefault() ?? ValueNode.NULL,
                 In = "a tuple",
                 Location = items.LastOrDefault()?.Location ?? Position,
-                Message = (items.Count > expectedItemCount ? "There were too many" : "There weren't enough")
+                Message = (items.Length > expectedItemCount ? "There were too many" : "There weren't enough")
                          + "values in this tuple.",
-                Expected = expectedItemCount + $" values, but got " + items.Count
+                Expected = expectedItemCount + $" values, but got " + items.Length
             });
 
             baseTuple.IsValid = false;

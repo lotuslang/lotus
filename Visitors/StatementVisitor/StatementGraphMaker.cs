@@ -144,7 +144,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                         .SetColor(FuncDec.color)
                         .SetTooltip(FuncDec.tooltip);
 
-        if (node.ParamList.Items.Count == 0) {
+        if (node.ParamList.Items.Length == 0) {
             root.Add(new GraphNode(node.ParamList.GetHashCode(), "(no params)"));
         } else {
             var parametersNode = new GraphNode(node.ParamList.GetHashCode(), "param")
@@ -248,7 +248,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                         .SetColor(ComplexString.color)
                         .SetTooltip(ComplexString.tooltip);
 
-        if (node.CodeSections.Count != 0) {
+        if (node.CodeSections.Length != 0) {
             var sectionNode = new GraphNode(DeterministicHashCode.Combine(node, "sections"), "code sections");
 
             foreach (var section in node.CodeSections) {

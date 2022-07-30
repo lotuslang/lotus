@@ -17,6 +17,7 @@
     <Using Include="System.Linq" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Diagnostics" />
+    <Using Include="System.Collections.Immutable" />
 
     <Using Remove="System.IO" />
     <Using Remove="System.Net.Http" />

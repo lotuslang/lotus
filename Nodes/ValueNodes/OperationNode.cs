@@ -1,32 +1,18 @@
-using System.Collections.ObjectModel;
-
 public sealed record OperationNode : ValueNode
 {
     public new static readonly OperationNode NULL = new(OperatorToken.NULL, Array.Empty<ValueNode>(), OperationType.Unknown, false);
 
-    public ReadOnlyCollection<Token> AdditionalTokens { get; }
+    public ImmutableArray<Token> AdditionalTokens { get; }
 
     public new OperatorToken Token { get => (base.Token as OperatorToken)!; init => base.Token = value; }
 
-    private ReadOnlyCollection<ValueNode> operands = Array.Empty<ValueNode>().AsReadOnly();
-    public ReadOnlyCollection<ValueNode> Operands {
-        get => operands;
-        init {
-            operands = value;
-
-            Location = OperationKind switch {
-                OperationKind.Unary => new LocationRange(Token.Location, operands[0].Location),
-                OperationKind.Binary => new LocationRange(operands[0].Location, operands[1].Location),
-                OperationKind.Ternary => new LocationRange(operands[0].Location, operands[2].Location),
-                _ => Token.Location
-            };
-        }
-    }
+    private ImmutableArray<ValueNode> operands = ImmutableArray<ValueNode>.Empty;
+    public ref readonly ImmutableArray<ValueNode> Operands => ref operands;
 
     public OperationType OperationType { get; init; }
 
     public OperationKind OperationKind {
-        get => Operands.Count switch {
+        get => Operands.Length switch {
             1 => OperationKind.Unary,
             2 => OperationKind.Binary,
             3 => OperationKind.Ternary,
@@ -34,19 +20,20 @@ public sealed record OperationNode : ValueNode
         };
     }
 
-    public OperationNode(OperatorToken token, IList<ValueNode> operands, OperationType opType, bool isValid = true, params Token[] additionalTokens)
+    public OperationNode(OperatorToken token, IEnumerable<ValueNode> operands, OperationType opType, bool isValid = true, params Token[] additionalTokens)
         : base(token, token.Location, isValid)
     {
         OperationType = opType;
-        AdditionalTokens = new ReadOnlyCollection<Token>(additionalTokens);
+        AdditionalTokens = additionalTokens.ToImmutableArray();
         Token = token;
+        this.operands = operands.ToImmutableArray();
 
         Location = OperationKind switch {
             OperationKind.Unary => new LocationRange(token.Location, operands.First().Location),
             OperationKind.Binary or OperationKind.Ternary => new LocationRange(operands.First().Location, operands.Last().Location),
             _ => Token.Location
         };
-        Operands = operands.AsReadOnly();
+
     }
 
     [DebuggerHidden()]

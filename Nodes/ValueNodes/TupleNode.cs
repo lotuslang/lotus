@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Runtime.CompilerServices;
+
 public sealed record TupleNode
 : ValueNode, IEnumerable<ValueNode>
 {
@@ -5,7 +8,7 @@ public sealed record TupleNode
 
     private Tuple<ValueNode> _internalTuple;
 
-    public IList<ValueNode> Items => _internalTuple.Items;
+    public ImmutableArray<ValueNode> Items => _internalTuple.Items;
     public Token OpeningToken => _internalTuple.OpeningToken;
     public Token ClosingToken => _internalTuple.ClosingToken;
     public int Count => _internalTuple.Count;
@@ -13,7 +16,7 @@ public sealed record TupleNode
     public TupleNode(Tuple<ValueNode> tuple) : base(tuple.OpeningToken, tuple.Location, tuple.IsValid)
         => _internalTuple = tuple;
 
-    public TupleNode(IList<ValueNode> items, Token openingToken, Token closingToken, bool isValid = true)
+    public TupleNode(ImmutableArray<ValueNode> items, Token openingToken, Token closingToken, bool isValid = true)
         : this(new Tuple<ValueNode>(items, openingToken, closingToken, isValid)) { }
 
 
@@ -31,11 +34,14 @@ public sealed record TupleNode
     [DebuggerHidden()]
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
-    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
 
-    public IEnumerator<ValueNode> GetEnumerator() => _internalTuple.GetEnumerator();
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ImmutableArray<ValueNode>.Enumerator GetEnumerator() => _internalTuple.GetEnumerator();
+
+    IEnumerator<ValueNode> IEnumerable<ValueNode>.GetEnumerator() => (_internalTuple as IEnumerable<ValueNode>).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => (_internalTuple as IEnumerable).GetEnumerator();
 
     public static explicit operator Tuple<ValueNode>(TupleNode node) => node._internalTuple;
 }

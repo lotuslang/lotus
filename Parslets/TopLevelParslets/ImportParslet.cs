@@ -91,6 +91,6 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         parser.Tokenizer.Reconsume();
 
-        return new ImportNode(importList, from, importKeyword, importIsValid);
+        return new ImportNode(importList.ToImmutableArray(), from, importKeyword, importIsValid);
     }
 }

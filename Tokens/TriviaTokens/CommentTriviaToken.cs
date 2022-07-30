@@ -2,8 +2,7 @@ public sealed record CommentTriviaToken : TriviaToken
 {
     public new static readonly CommentTriviaToken NULL = new("", LocationRange.NULL, isValid: false);
 
-    // we have to use a list (arr as IList).Add throws NotSupported
-    public List<CommentTriviaToken> InnerComments { get; init; }
+    public ImmutableArray<CommentTriviaToken> InnerComments { get; init; }
 
     public CommentTriviaToken(string rep,
                               LocationRange location,
@@ -11,11 +10,8 @@ public sealed record CommentTriviaToken : TriviaToken
                               bool isValid = true)
         : base(rep, TriviaKind.comment, location, isValid)
     {
-        InnerComments = inner?.ToList() ?? new List<CommentTriviaToken>();
+        InnerComments = inner?.ToImmutableArray() ?? ImmutableArray<CommentTriviaToken>.Empty;
     }
-
-    public void AddComment(CommentTriviaToken comment)
-        => InnerComments.Add(comment);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

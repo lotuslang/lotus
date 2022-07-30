@@ -6,7 +6,7 @@ public sealed record ParenthesizedValueNode(ValueNode Value, Token Token, Token 
     public Token OpeningToken => Token;
 
     public TupleNode AsTupleNode()
-        => new(new[] { Value }, Token, ClosingToken, IsValid);
+        => new(ImmutableArray.Create(Value), Token, ClosingToken, IsValid);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

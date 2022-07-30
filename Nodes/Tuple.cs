@@ -1,15 +1,18 @@
+using System.Collections;
+using System.Runtime.CompilerServices;
+
 public sealed record Tuple<T> : ILocalized, IEnumerable<T>
 {
     public T this[int i] => Items[i];
 
-    public IList<T> Items { get; }
+    public ImmutableArray<T> Items { get; init; }
     public Token OpeningToken { get; }
     public Token ClosingToken { get; }
 
     public static readonly Tuple<T> NULL = new(Array.Empty<T>(), Token.NULL, Token.NULL, false);
 
-    public Tuple(IList<T> items, Token opening, Token closing, bool isValid = true) {
-        Items = items;
+    public Tuple(IEnumerable<T> items, Token opening, Token closing, bool isValid = true) {
+        Items = items.ToImmutableArray();
         OpeningToken = opening;
         ClosingToken = closing;
         IsValid = isValid;
@@ -20,8 +23,11 @@ public sealed record Tuple<T> : ILocalized, IEnumerable<T>
 
     public bool IsValid { get; set; }
 
-    public int Count => Items.Count;
+    public int Count => Items.Length;
 
-    public IEnumerator<T> GetEnumerator() => Items.GetEnumerator();
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ImmutableArray<T>.Enumerator GetEnumerator() => Items.GetEnumerator();
+
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => (Items as IEnumerable<T>).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => (Items as IEnumerable).GetEnumerator();
 }

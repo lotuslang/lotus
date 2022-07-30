@@ -120,7 +120,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
         bool isValid = typeName.IsValid;
 
-        if (typeName.IsValid && typeName.Parts.Count != 1) {
+        if (typeName.IsValid && typeName.Parts.Length != 1) {
             Logger.Error(new NotANameError(ErrorArea.Parser) {
                 Value = ExpressionParser.Current,
                 Expected = "an identifier",

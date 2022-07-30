@@ -1,7 +1,7 @@
-public abstract record NameNode(Token Token, IList<IdentToken> Parts, bool IsValid = true)
+public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts, bool IsValid = true)
 : ValueNode(
     Token,
-    Parts.Count == 0
+    Parts.Length == 0
         ? Token.Location
         : new LocationRange(Parts.First().Location, Parts.Last().Location),
     IsValid

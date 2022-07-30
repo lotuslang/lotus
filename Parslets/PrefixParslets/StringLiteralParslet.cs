@@ -8,7 +8,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
         Debug.Assert(strToken is not null);
 
         if (strToken is ComplexStringToken complexString) {
-            var node = new ComplexStringNode(complexString, new List<ValueNode>());
+            var sections = ImmutableArray.CreateBuilder<ValueNode>(complexString.CodeSections.Count);
 
             foreach (var section in complexString.CodeSections) {
                 var endPos = (section.LastOrDefault()?.Location ?? parser.Position).GetLastLocation();
@@ -21,7 +21,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
 
                 var sectionParser = new ExpressionParser(sectionConsumer);
 
-                node.AddSection(sectionParser.Consume());
+                sections.Add(sectionParser.Consume());
 
                 if (sectionParser.Current.IsValid && sectionConsumer.Peek() != sectionConsumer.Default) {
                     var location = sectionConsumer.Position;
@@ -45,7 +45,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
                 }
             }
 
-            return node;
+            return new ComplexStringNode(complexString, sections.MoveToImmutable()); ;
         }
 
         return new StringNode(strToken);

@@ -182,11 +182,11 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             var paramType = typeNameArray.Operands.FirstOrDefault(ValueNode.NULL);
 
             // if there's less than 2 names (illegal)
-            if (typeNameArray.Operands.Count < 2) { // FIXME: We should really make an error type for wrong-numbered things
+            if (typeNameArray.Operands.Length < 2) { // FIXME: We should really make an error type for wrong-numbered things
 
                 var errorLoc = paramType.Location;
 
-                if (typeNameArray.Operands.Count == 0) {
+                if (typeNameArray.Operands.Length == 0) {
                     errorLoc =
                         new LocationRange(
                             typeNameArray.AdditionalTokens[0].Location,

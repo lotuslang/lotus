@@ -1,24 +1,18 @@
-using System.Collections.ObjectModel;
-
 public sealed record ComplexStringNode : StringNode
 {
-    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, Array.Empty<ValueNode>(), false);
+    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, ImmutableArray<ValueNode>.Empty, false);
 
-    private List<ValueNode> sections;
+    public ImmutableArray<ValueNode> CodeSections;
 
-    public ReadOnlyCollection<ValueNode> CodeSections {
-        get => sections.AsReadOnly();
-    }
-
-    public ComplexStringNode(ComplexStringToken token, IList<ValueNode> codeSections, bool isValid = true)
+    public ComplexStringNode(ComplexStringToken token, ImmutableArray<ValueNode> codeSections, bool isValid = true)
         : base(token)
     {
         IsValid = isValid;
-        sections = new List<ValueNode>(codeSections);
+        CodeSections = codeSections;
     }
 
     public void AddSection(ValueNode section)
-        => sections.Add(section);
+        => CodeSections = CodeSections.Add(section);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

@@ -5,7 +5,7 @@ internal sealed class NameChecker : IValueVisitor<bool>
 
     public bool Visit(OperationNode node) {
         if (node.OperationType == OperationType.Access) {
-            if (node.Operands.Count != 2) return false;
+            if (node.Operands.Length != 2) return false;
 
             // we only need to check the left-hand operand, because we know the right-hand operand
             // is an IdentNode, because an access operation is defined as :

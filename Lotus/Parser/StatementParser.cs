@@ -104,7 +104,7 @@ public class StatementParser : Parser<StatementNode>
     }
 
 
-    public Tuple<StatementNode> ConsumeSimpleBlock(bool areOneLinersAllowed = true)
+    public Tuple<StatementNode> ConsumeStatementBlock(bool areOneLinersAllowed = true)
         => (areOneLinersAllowed
             ? StatementBlockParslet.Default
             : StatementBlockParslet.NoOneLiner).Parse(this);

@@ -34,7 +34,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
             }
         }
 
-        var body = parser.ConsumeSimpleBlock();
+        var body = parser.ConsumeStatementBlock();
 
         var elseNode = ElseNode.NULL;
 

@@ -87,7 +87,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
             parser.Tokenizer.Reconsume();
         }
 
-        var body = parser.ConsumeSimpleBlock();
+        var body = parser.ConsumeStatementBlock();
 
         return new ForeachNode(
             foreachToken,

@@ -11,6 +11,6 @@ public sealed class ElseParslet : IStatementParslet<ElseNode>
             return new ElseNode(ifNode, elseToken);
         }
 
-        return new ElseNode(parser.ConsumeSimpleBlock(), elseToken);
+        return new ElseNode(parser.ConsumeStatementBlock(), elseToken);
     }
 }

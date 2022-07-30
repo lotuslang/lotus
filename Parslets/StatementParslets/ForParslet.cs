@@ -106,7 +106,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         var body = Tuple<StatementNode>.NULL with { Location = parser.Position };
 
         if (!hasEOF)
-            body = parser.ConsumeSimpleBlock();
+            body = parser.ConsumeStatementBlock();
 
         return new ForNode(forToken, new Tuple<StatementNode>(header, openingParen, closingParen), body, isValid);
     }

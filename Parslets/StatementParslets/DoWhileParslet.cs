@@ -7,7 +7,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 
         var isValid = true;
 
-        var body = parser.ConsumeSimpleBlock();
+        var body = parser.ConsumeStatementBlock();
 
         if (parser.Tokenizer.Consume() is not Token whileKeyword || whileKeyword != "while") {
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {

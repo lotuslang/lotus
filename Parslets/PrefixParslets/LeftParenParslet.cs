@@ -16,7 +16,7 @@ public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
                 Location = new LocationRange(leftParenToken.Location, parser.Tokenizer.Current.Location)
             });
 
-            return new ParenthesizedValueNode(ValueNode.NULL, leftParenToken, parser.Tokenizer.Current, isValid: false);
+            return new ParenthesizedValueNode(ValueNode.NULL, leftParenToken, parser.Tokenizer.Current, IsValid: false);
         }
 
         return valueTuple.Count == 1 ? valueTuple.AsParenthesized() : valueTuple;

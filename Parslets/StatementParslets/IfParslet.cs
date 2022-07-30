@@ -30,7 +30,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
                 condition = tuple.AsParenthesized();
             } else {
-                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL, isValid: false);
+                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL, IsValid: false);
             }
         }
 

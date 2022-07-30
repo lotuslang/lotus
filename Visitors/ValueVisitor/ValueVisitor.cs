@@ -13,7 +13,7 @@ public interface IValueVisitor<T>
     T Visit(NumberNode node) => Default(node);
     T Visit(ObjectCreationNode node) => Default(node);
     T Visit(OperationNode node) => Default(node);
-    T Visit(ParenthesizedValueNode node) => Visit(node as TupleNode);
+    T Visit(ParenthesizedValueNode node) => Default(node);
     T Visit(StringNode node) => Default(node);
     T Visit(TupleNode node) => Default(node);
 }

@@ -221,6 +221,41 @@ public static class Utilities
                 or IfNode
                 or WhileNode
             );
+
+    public static AccessLevel GetAccess(string str)
+        => str switch {
+            "public" => AccessLevel.Public,
+            "internal" => AccessLevel.Internal,
+            "private" => AccessLevel.Private,
+            _ => AccessLevel.Default,
+        };
+
+    public static AccessLevel GetAccessAndValidate(
+        Token accessToken,
+        AccessLevel defaultLvl,
+        AccessLevel validLvls
+    ) {
+        var _accessLevel = AccessLevel.Default;
+
+        if (accessToken == Token.NULL) {
+            _accessLevel = defaultLvl;
+        } else {
+            var err =
+                new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = accessToken,
+                    As = "an access modifier for a type",
+                    Expected = "either 'public' or 'internal'"
+                };
+
+            _accessLevel = Utilities.GetAccess(accessToken);
+
+            if ((_accessLevel & validLvls) == AccessLevel.Default) {
+                Logger.Error(err);
+            }
+        }
+
+        return _accessLevel;
+    }
 }
 
 internal class DeterministicStringComparer : IEqualityComparer<string>

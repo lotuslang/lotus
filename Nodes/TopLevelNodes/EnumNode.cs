@@ -18,49 +18,10 @@ public sealed record EnumNode(
 
     public Token AccessKeyword { get; set; } = Token.NULL;
 
-    private AccessLevel _accessLevel = AccessLevel.Unreachable;
+    public AccessLevel AccessLevel { get; set; } = AccessLevel.Public;
 
-    public AccessLevel GetAccessLevel() {
-        if (_accessLevel != AccessLevel.Unreachable)
-            return _accessLevel;
-
-        if (AccessKeyword == Token.NULL) {
-            _accessLevel = AccessLevel.Public;
-        } else {
-            var err =
-                new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = AccessKeyword,
-                    As = "an access modifier for a type",
-                    Expected = "either 'public' or 'internal'"
-                };
-
-            switch (AccessKeyword.Representation) {
-                case "public":
-                    _accessLevel = AccessLevel.Public;
-                    break;
-                case "internal":
-                    _accessLevel = AccessLevel.Internal;
-                    break;
-                case "private":
-                    Logger.Error(err);
-                    // TODO: IsValid = false;
-                    _accessLevel = AccessLevel.Private;
-                    break;
-                case "internal protected": // internal protected isn't valid
-                    Logger.Error(err);
-                    // IsValid = false;
-                    _accessLevel = AccessLevel.Protected;
-                    break;
-                default:
-                    Logger.Error(err);
-                    // IsValid = false;
-                    _accessLevel = AccessLevel.Unreachable;
-                    break;
-            }
-        }
-
-        return _accessLevel;
-    }
+    AccessLevel IAccessible.DefaultAccessLevel => AccessLevel.Public;
+    AccessLevel IAccessible.ValidLevels => AccessLevel.Public | AccessLevel.Internal;
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

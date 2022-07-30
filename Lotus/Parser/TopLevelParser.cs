@@ -60,25 +60,9 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
         switch (currToken) {
             case "public":
-            case "protected":
             case "private":
-                accessKeyword = (currToken as Token)!;
-                break;
             case "internal":
-                if (Tokenizer.Peek() != "protected") {
-                    accessKeyword = (currToken as Token)!;
-            } else {
-                accessKeyword = new Token(
-                    currToken + " " + Tokenizer.Consume(),
-                    TokenKind.keyword,
-                    new LocationRange(currToken.Location, Tokenizer.Current.Location)
-                ) {
-                    LeadingTrivia = currToken.LeadingTrivia,
-                    // FIXME: We don't preserve the trivia between the two tokens :(
-                    TrailingTrivia = Tokenizer.Current.TrailingTrivia
-                };
-            }
-
+                accessKeyword = (currToken as Token)!;
                 break;
             default:
                 Tokenizer.Reconsume();
@@ -94,8 +78,14 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
             // TODO: Throw an error when there's a modifier but the node isn't
             //       supposed to be modded
-            if (accessKeyword != Token.NULL && Current is IAccessible accessibleCurrent)
-                accessibleCurrent.AccessKeyword = accessKeyword;
+
+            if (Current is IAccessible accCurrent) {
+                accCurrent.AccessLevel = Utilities.GetAccessAndValidate(
+                    accessKeyword,
+                    accCurrent.DefaultAccessLevel,
+                    accCurrent.ValidLevels
+                );
+            }
         } else {
             Tokenizer.Reconsume();
             _curr = new TopLevelStatementNode(StatementParser.Consume());

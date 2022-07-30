@@ -1,6 +1,7 @@
 public interface IAccessible
 {
-    AccessLevel GetAccessLevel();
+    AccessLevel AccessLevel { get; set; }
 
-    Token AccessKeyword { get; set; }
+    AccessLevel ValidLevels { get; }
+    AccessLevel DefaultAccessLevel { get; }
 }

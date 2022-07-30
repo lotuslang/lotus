@@ -37,9 +37,8 @@ public record FunctionParameter(
     ValueNode DefaultValue,
     Token EqualSign,
     bool IsValid = true
-) : Parameter(Type, Name, IsValid)
+) : Parameter(Type, Name, new LocationRange(Type, DefaultValue == ValueNode.NULL ? Name : DefaultValue), IsValid)
 {
-
     public static readonly FunctionParameter NULL = new(
         NameNode.NULL,
         IdentNode.NULL,

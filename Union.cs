@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 public sealed class Union<T, U>
 {
     private readonly T? t;
@@ -122,8 +124,25 @@ public sealed class Result<T>
         else      return gen();
     }
 
+    public T Rescue(T val) {
+        if (isOk) return t!;
+        else      return val;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Match(Action<T> f, Action g) {
+        if (isOk)
+            f(t!);
+        else
+            g();
+    }
+
+    public TResult Match<TResult>(Func<T, TResult> f, Func<TResult> g) {
+        return isOk ? f(t!) : g();
+    }
+
     [System.Diagnostics.CodeAnalysis.MemberNotNullWhen(true, nameof(Value))]
-    public bool IsOk() => isOk;
+    public ref readonly bool IsOk() => ref isOk;
 
     public Union<T, None> AsUnion() => (Union<T, None>)this;
 

@@ -240,21 +240,24 @@ public static class Utilities
         if (accessToken == Token.NULL) {
             _accessLevel = defaultLvl;
         } else {
-            var err =
-                new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = accessToken,
-                    As = "an access modifier for a type",
-                    Expected = "either 'public' or 'internal'"
-                };
-
             _accessLevel = Utilities.GetAccess(accessToken);
 
             if ((_accessLevel & validLvls) == AccessLevel.Default) {
-                Logger.Error(err);
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = accessToken,
+                    As = "an access modifier",
+                    Expected = "One of " + String.Join(", ", GetMatchingValues(validLvls))
+                });
             }
         }
 
         return _accessLevel;
+    }
+
+    public static IEnumerable<TEnum> GetMatchingValues<TEnum>(this TEnum flag) where TEnum : struct, Enum {
+        foreach (TEnum value in Enum.GetValues<TEnum>())
+            if (flag.HasFlag(value))
+                yield return value;
     }
 }
 

@@ -6,7 +6,7 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
         = new(static (parser) => parser.Consume()) {
             Start = "{",
             End = "}",
-            AcceptEndingComma = true
+            EndingDelimBehaviour = TupleEndingDelimBehaviour.Accept
         };
 
     public EnumNode Parse(TopLevelParser parser, Token enumToken) {

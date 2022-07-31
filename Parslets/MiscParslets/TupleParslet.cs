@@ -7,6 +7,9 @@ public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, V
     public ValueTupleParslet(Func<ExpressionParser, TValue> valParser) : base(valParser) {}
 }
 
+
+public enum TupleEndingDelimBehaviour { Reject, Accept, Force }
+
 public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TValue>>
     where TPNode : Node
     where TParser : Parser<TPNode>
@@ -21,7 +24,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
     public string Start { get; init; } = "(";
     public string End { get; init; } = ")";
     public string Delim { get; init; } = ",";
-    public bool AcceptEndingComma { get; init; } = false;
+    public TupleEndingDelimBehaviour EndingDelimBehaviour { get; init; } = TupleEndingDelimBehaviour.Reject;
     public string In { get; init; } = "a " + typeof(TValue).Name + " list";
 
     public TupleParslet(Func<TParser, IEnumerable<TValue>> valParser) {
@@ -63,6 +66,16 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             if (parser.Tokenizer.Consume() != Delim) {
 
                 if (parser.Tokenizer.Current == End) {
+                    if (EndingDelimBehaviour is TupleEndingDelimBehaviour.Force) {
+                        Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                            Value = parser.Tokenizer.Current,
+                            In = In,
+                            Expected = "a '" + Delim + "' before the closing '" + End + "'"
+                        });
+
+                        isValid = false;
+                    }
+
                     break;
                 }
 
@@ -123,7 +136,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             //           ----------------------^--------------
             //                      literally right there
             if (parser.Tokenizer.Peek() == End) {
-                if (AcceptEndingComma) {
+                if (EndingDelimBehaviour is TupleEndingDelimBehaviour.Accept or TupleEndingDelimBehaviour.Force ) {
                     parser.Tokenizer.Consume();
                     break;
                 }

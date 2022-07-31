@@ -63,12 +63,14 @@ public sealed class StringConsumer : Consumer<char>
         // If we are instructed to reconsume the last char, then dequeue a char from the reconsumeQueue and return it
         lastPos = pos;
 
-        if (base.Consume() == '\n')
+        ref readonly var output = ref base.Consume();
+
+        if (output == '\n')
             UpdatePosForNewline();
 
         pos = pos with { column = pos.column + 1 };
 
-        return ref _data[_currIdx];
+        return ref output;
     }
 
     public override StringConsumer Clone() => new(this);

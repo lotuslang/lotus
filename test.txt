@@ -49,7 +49,7 @@ from origin import someType
 
 using std.collections
 
-namespace my_space
+public namespace my_space
 
 foreach (item in collection) { }
 
@@ -89,7 +89,7 @@ while (_global++ < 13)
 
 // some one-line comment
 
-public enum TokenKind {
+internal enum TokenKind {
     EOF = 0,
     delimiter,
     identifier,
@@ -102,7 +102,7 @@ public enum TokenKind {
     trivia
 }
 
-public enum TokenKind.trivia::TriviaKind {
+enum TokenKind.trivia::TriviaKind {
     EOF = 0,
     comment,
     whitespace,

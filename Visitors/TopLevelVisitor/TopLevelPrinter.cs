@@ -10,20 +10,13 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(TopLevelStatementNode node)
         => ASTHelper.PrintStatement(node.Statement);
 
-    public string Visit(EnumNode node) {
-        var s = "";
-
-        if (node.AccessToken != Token.NULL) {
-            s = ASTHelper.PrintToken(node.AccessToken);
-        }
-
-        s += ASTHelper.PrintToken(node.EnumToken);
-
-        return s + Print(node.Name)
-                 + ASTHelper.PrintToken(node.OpeningBracket)
-                 + Utilities.Join(",", ASTHelper.PrintNode, node.Values)
-                 + ASTHelper.PrintToken(node.ClosingBracket);
-    }
+    public string Visit(EnumNode node)
+        => ASTHelper.PrintToken(node.AccessToken)
+         + ASTHelper.PrintToken(node.EnumToken)
+         + Print(node.Name)
+         + ASTHelper.PrintToken(node.OpeningBracket)
+         + Utilities.Join(",", ASTHelper.PrintNode, node.Values)
+         + ASTHelper.PrintToken(node.ClosingBracket);
 
     public string Visit(ImportNode node)
         => Visit(node.FromStatement)
@@ -31,8 +24,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + Utilities.Join(",", ASTHelper.PrintNode, node.Names);
 
     public string Visit(NamespaceNode node)
-        // FIXME: Add AccMods as well
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintNode(node.Name);
+        => ASTHelper.PrintToken(node.AccessToken) + ASTHelper.PrintToken(node.Token) + ASTHelper.PrintNode(node.Name);
 
     public string Visit(UsingNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintUnion(node.Name);

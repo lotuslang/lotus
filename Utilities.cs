@@ -246,7 +246,8 @@ public static class Utilities
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = accessToken,
                     As = "an access modifier",
-                    Expected = "One of " + String.Join(", ", GetMatchingValues(validLvls))
+                    Message = "The " + accessToken + " modifier is not valid here",
+                    Expected = "one of " + String.Join(", ", GetMatchingValues(validLvls))
                 });
             }
         }

@@ -85,6 +85,14 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
                     accCurrent.DefaultAccessLevel,
                     accCurrent.ValidLevels
                 );
+            } else if (Current.IsValid && accessKeyword != Token.NULL) {
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = accessKeyword,
+                    As = "an access modifier",
+                    Message = Current.GetType().Name + "s cannot be marked '" + accessKeyword + "'"
+                });
+
+                Current.IsValid = false;
             }
         } else {
             Tokenizer.Reconsume();

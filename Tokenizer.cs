@@ -28,14 +28,7 @@ public class Tokenizer : IConsumer<Token>
     }
 
     protected Tokenizer(ReadOnlyGrammar grammar) : this() {
-        if (grammar is null) {
-            Logger.Warning(new InvalidCallError(ErrorArea.Tokenizer, Position) {
-                Message = "Something tried to create a new Tokenizer with a null grammar."
-                        + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
-            });
-
-            grammar = new ReadOnlyGrammar();
-        }
+        Debug.Assert(grammar is not null);
 
         Grammar = grammar;
     }
@@ -70,10 +63,7 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
     public void Reconsume() {
-        if (_reconsumeQueue.TryPeek(out var token) && Object.ReferenceEquals(token, Current)) {
-            Logger.Warning("Calling reconsume multiple times in a row !", Position);
-            return;
-        }
+        Debug.Assert(!_reconsumeQueue.TryPeek(out var token) || !Object.ReferenceEquals(token, Current));
 
         _reconsumeQueue.Enqueue(Current);
     }

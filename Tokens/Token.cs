@@ -38,13 +38,7 @@ public record Token : ILocalized
     }
 
     public void AddLeadingTrivia(TriviaToken? trivia) {
-        if (trivia is null) {
-            Logger.Warning(new InvalidCallError(ErrorArea.Tokenizer, Location) {
-                Message = "Something tried to add a null (leading) TriviaToken to this token, but that's not allowed"
-            });
-
-            return;
-        }
+        Debug.Assert(trivia is not null);
 
         if (_leading is null)
             _leading = trivia;
@@ -53,13 +47,7 @@ public record Token : ILocalized
     }
 
     public void AddTrailingTrivia(TriviaToken? trivia) {
-        if (trivia is null) {
-            Logger.Warning(new InvalidCallError(ErrorArea.Tokenizer, Location) {
-                Message = "Something tried to add a null (trailing) TriviaToken to this token, but that's not allowed"
-            });
-
-            return;
-        }
+        Debug.Assert(trivia is not null);
 
         if (_trailing is null)
             _trailing = trivia;

@@ -22,14 +22,14 @@ public sealed record LocationRange(int firstLine, int lastLine, int firstColumn,
 
     public LocationRange(LocationRange first, LocationRange last) : this(first.firstLine, last.lastLine, first.firstColumn, last.lastColumn, first.filename) {
         if (first.filename != last.filename) {
-            Logger.Warning(
-                  "Tried to created a LocationRange using ranges that do not have the same origin/filename ("
+            Logger.Warning(new InternalError() {
+                Message = "Tried to created a LocationRange using ranges that do not have the same origin/filename ("
                 + System.IO.Path.GetFileName(first.filename)
                 + " vs "
                 + System.IO.Path.GetFileName(last.filename)
                 + "). Setting filename to the first range's filename ('" + first.filename + "')",
-                location: first
-            );
+                Location = first
+            });
         }
     }
 

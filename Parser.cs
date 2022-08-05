@@ -43,14 +43,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 #pragma warning restore
 
     protected Parser(ReadOnlyGrammar grammar) : this() {
-        if (grammar is null) {
-            Logger.Warning(new InvalidCallError(ErrorArea.Parser, Position) {
-                Message = "Something tried to create a new Parser with a null grammar."
-                        + "That's not allowed, and might throw in future versions, but for now the grammar will just be empty...",
-            });
-
-            grammar = new ReadOnlyGrammar();
-        }
+        Debug.Assert(grammar is not null);
 
         Grammar = grammar;
     }

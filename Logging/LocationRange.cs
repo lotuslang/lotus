@@ -62,12 +62,12 @@ public sealed record LocationRange(int firstLine, int lastLine, int firstColumn,
     public bool Contains(LocationRange range)
         => this != range && GetFirstLocation() > range.GetFirstLocation() && range.GetLastLocation() < GetLastLocation();
 
-    public bool IsLaterThan(LocationRange range)
+    public bool IsAfter(LocationRange range)
         => range.firstLine == this.firstLine
                 ? range.firstColumn < this.firstColumn
                 : range.firstLine < this.firstLine;
 
-    public bool IsEarlierThan(LocationRange range)
+    public bool IsBefore(LocationRange range)
         => range.firstLine == this.firstLine
                 ? range.firstColumn > this.firstColumn
                 : range.firstLine > this.firstLine;

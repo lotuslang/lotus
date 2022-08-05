@@ -15,6 +15,9 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     protected readonly (string tooltip, string color) EnumParent = ("this enum's parent value/name", "");
     protected readonly (string tooltip, string color) EnumValues = ("this enum's values", "");
 
+    protected readonly (string tooltip, string color) Struct = (nameof(StructNode), "");
+    protected readonly (string tooltip, string color) StructFields = ("this struct's fields", "");
+
     protected readonly (string tooltip, string color) TopLevel = (nameof(TopLevelNode), "black");
 
 
@@ -93,6 +96,32 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
                 ASTHelper.UnionToGraphNode(node.Name)
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
+
+    public GraphNode Visit(StructNode node) {
+        var root = new GraphNode(node.GetHashCode(), "struct")
+            .SetColor(Struct.color)
+            .SetColor(Struct.tooltip);
+
+        var fields = new GraphNode(node.Fields.GetHashCode(), "Fields")
+            .SetColor(StructFields.color)
+            .SetTooltip(StructFields.tooltip);
+
+        foreach (var field in node.Fields) {
+            var fieldNode = ASTHelper.ToGraphNode(field.Name);
+
+            fieldNode.Add(ASTHelper.ToGraphNode(field.Type));
+
+            if (field.HasDefaultValue) {
+                fieldNode.Add(ASTHelper.ToGraphNode(field.DefaultValue));
+            }
+
+            fields.Add(fieldNode);
+        }
+
+        root.Add(fields);
+
+        return root;
+    }
 
     public GraphNode Visit(TypeDecName typeDec) {
         var root = ASTHelper.ToGraphNode(typeDec.TypeName)

@@ -109,3 +109,8 @@ enum TokenKind.trivia::TriviaKind {
     newline,
     character
 }
+
+internal struct test {
+    someStuff: int;
+    otherStuff: str = "58" + hi;
+}

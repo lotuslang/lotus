@@ -5,6 +5,8 @@ public sealed record NamespaceNode(NameNode Name, Token Token)
 
     public AccessLevel AccessLevel { get; set; } = AccessLevel.Public;
 
+    public Token AccessToken { get; set; } = Token.NULL;
+
     AccessLevel IAccessible.DefaultAccessLevel => AccessLevel.Public;
     AccessLevel IAccessible.ValidLevels => AccessLevel.Public | AccessLevel.Internal;
 

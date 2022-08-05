@@ -62,7 +62,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             case "public":
             case "private":
             case "internal":
-                accessKeyword = (currToken as Token)!;
+                accessKeyword = currToken;
                 break;
             default:
                 Tokenizer.Reconsume();
@@ -85,6 +85,8 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
                     accCurrent.DefaultAccessLevel,
                     accCurrent.ValidLevels
                 );
+
+                accCurrent.AccessToken = accessKeyword;
             } else if (Current.IsValid && accessKeyword != Token.NULL) {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = accessKeyword,

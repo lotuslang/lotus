@@ -13,8 +13,8 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(EnumNode node) {
         var s = "";
 
-        if (node.AccessKeyword != Token.NULL) {
-            s = ASTHelper.PrintToken(node.AccessKeyword);
+        if (node.AccessToken != Token.NULL) {
+            s = ASTHelper.PrintToken(node.AccessToken);
         }
 
         s += ASTHelper.PrintToken(node.EnumToken);

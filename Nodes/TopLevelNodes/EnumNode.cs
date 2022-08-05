@@ -14,7 +14,7 @@ public sealed record EnumNode(
     public Token OpeningBracket => Values.OpeningToken;
     public Token ClosingBracket => Values.ClosingToken;
 
-    public Token AccessKeyword { get; set; } = Token.NULL;
+    public Token AccessToken { get; set; } = Token.NULL;
 
     public AccessLevel AccessLevel { get; set; } = AccessLevel.Public;
 

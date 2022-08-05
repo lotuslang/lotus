@@ -155,11 +155,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
                 var paramNameNode = ToGraphNode(parameter.Name);
 
-                if (parameter.Type == NameNode.NULL) {
-                    paramNameNode.Add(new GraphNode(DeterministicHashCode.Combine(NameNode.NULL, parameter), "any"));
-                } else {
-                    paramNameNode.Add(ToGraphNode(parameter.Type));
-                }
+                paramNameNode.Add(ToGraphNode(parameter.Type));
 
                 if (parameter.HasDefaultValue) {
                     paramNameNode.Add(ToGraphNode(parameter.DefaultValue));

@@ -1,5 +1,5 @@
 public sealed record PrintNode(Token Token, ValueNode Value)
-: StatementNode(Token, Token.Location)
+: StatementNode(Token, new LocationRange(Token, Value))
 {
     public new static readonly PrintNode NULL = new(Token.NULL, ValueNode.NULL) { IsValid = false };
 

@@ -24,7 +24,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
 
     public string Visit(ForNode node)
         => ASTHelper.PrintToken(node.Token)
-         + Print(node.Header, ",")
+         + ASTHelper.PrintTuple(node.Header, ",", Print)
          + Print(node.Body);
 
     public string Visit(FunctionDeclarationNode node) {
@@ -80,14 +80,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
               + Print(node.Body);
 
     public string Print(Tuple<StatementNode> tuple)
-        => ASTHelper.PrintToken(tuple.OpeningToken)
-         + Utilities.Join("", (stmt) => Print(stmt) + (Utilities.NeedsSemicolon(stmt) ? ";" : ""), tuple.Items)
-         + ASTHelper.PrintToken(tuple.ClosingToken);
-
-    public string Print<T>(Tuple<T> tuple, string sep) where T : StatementNode
-        => ASTHelper.PrintToken(tuple.OpeningToken)
-         + Utilities.Join(sep, Print, tuple.Items)
-         + ASTHelper.PrintToken(tuple.ClosingToken);
+        => ASTHelper.PrintTuple(tuple, "", (stmt) => Print(stmt) + (Utilities.NeedsSemicolon(stmt) ? ";" : ""));
 
     public string Print(StatementNode node) => node.Accept(this);
 }

@@ -14,27 +14,25 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
         => ASTHelper.PrintToken(node.AccessToken)
          + ASTHelper.PrintToken(node.EnumToken)
          + Print(node.Name)
-         + ASTHelper.PrintToken(node.OpeningBracket)
-         + Utilities.Join(",", ASTHelper.PrintNode, node.Values)
-         + ASTHelper.PrintToken(node.ClosingBracket);
+         + ASTHelper.PrintTuple(node.Values, ",", ASTHelper.PrintValue);
 
     public string Visit(ImportNode node)
         => Visit(node.FromStatement)
          + ASTHelper.PrintToken(node.Token)
-         + Utilities.Join(",", ASTHelper.PrintNode, node.Names);
+         + Utilities.Join(",", ASTHelper.PrintValue, node.Names);
 
     public string Visit(NamespaceNode node)
-        => ASTHelper.PrintToken(node.AccessToken) + ASTHelper.PrintToken(node.Token) + ASTHelper.PrintNode(node.Name);
+        => ASTHelper.PrintToken(node.AccessToken) + ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Name);
 
     public string Visit(UsingNode node)
         => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintUnion(node.Name);
 
     public string Visit(TypeDecName typeDec)
         => !typeDec.HasParent
-                ? ASTHelper.PrintNode(typeDec.TypeName)
-                : ASTHelper.PrintNode(typeDec.Parent)
+                ? ASTHelper.PrintValue(typeDec.TypeName)
+                : ASTHelper.PrintValue(typeDec.Parent)
                     + ASTHelper.PrintToken(typeDec.ColonToken)
-                    + ASTHelper.PrintNode(typeDec.TypeName);
+                    + ASTHelper.PrintValue(typeDec.TypeName);
 
     public string Print(TypeDecName typeDec) => Visit(typeDec);
     public string Print(TopLevelNode node) => node.Accept(this);

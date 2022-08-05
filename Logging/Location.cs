@@ -1,7 +1,9 @@
 [DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({line}:{column})")]
-public sealed record Location(int line, int column, string filename = "<std>")
+public sealed record Location(int line, int column, string filename = "<std>") : ILocalized
 {
     public static readonly Location NULL = new(-1, -1);
+
+    LocationRange ILocalized.Location => this;
 
     public override string ToString()
         => $"{filename}({line}:{column})";

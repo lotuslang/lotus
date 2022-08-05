@@ -92,6 +92,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             }
         }
 
-        return new ComplexStringToken(output.ToString(), sections, new LocationRange(startPos, input.Position), isValid);
+        return new ComplexStringToken(output.ToString(), sections, new LocationRange(startPos, input.Position)) { IsValid = isValid };
     }
 }

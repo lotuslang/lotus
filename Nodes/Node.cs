@@ -7,11 +7,10 @@ public abstract record Node : ILocalized
     public LocationRange Location { get; init; }
     public bool IsValid { get; set; } = true;
 
-    public Node(Token token, LocationRange location, bool isValid = true) {
+    public Node(Token token, LocationRange location) {
         Token = token;
         Location = location;
-        IsValid = isValid;
     }
 
-    protected Node(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
+    protected Node(Token token) : this(token, token.Location) { }
 }

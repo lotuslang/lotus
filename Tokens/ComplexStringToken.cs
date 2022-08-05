@@ -1,7 +1,7 @@
-public sealed record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location, bool IsValid = true)
-: StringToken(Representation, Location, IsValid)
+public sealed record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location)
+: StringToken(Representation, Location)
 {
-    public new static readonly ComplexStringToken NULL = new("", new List<Token[]>(), LocationRange.NULL, false);
+    public new static readonly ComplexStringToken NULL = new("", new List<Token[]>(), LocationRange.NULL) { IsValid = false };
 
     public void AddSection(Token[] section)
         => CodeSections.Add(section);

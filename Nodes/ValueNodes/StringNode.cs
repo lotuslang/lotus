@@ -5,6 +5,10 @@ public record StringNode(StringToken Token)
 
     public string Value => Token.Representation;
 
+    protected StringNode(StringToken token, bool isValid) : this(token) {
+        IsValid = isValid;
+    }
+
     public new static readonly StringNode NULL = new(StringToken.NULL);
 
     [DebuggerHidden()]

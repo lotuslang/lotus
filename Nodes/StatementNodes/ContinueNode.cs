@@ -1,6 +1,6 @@
-public sealed record ContinueNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
+public sealed record ContinueNode(Token Token) : StatementNode(Token)
 {
-    public new static readonly ContinueNode NULL = new(Token.NULL, false);
+    public new static readonly ContinueNode NULL = new(Token.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

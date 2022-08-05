@@ -1,7 +1,7 @@
-public sealed record ObjectCreationNode(FunctionCallNode Invocation, Token Token, bool IsValid = true)
-: ValueNode(Token, new LocationRange(Token.Location, Invocation.Location), IsValid)
+public sealed record ObjectCreationNode(FunctionCallNode Invocation, Token Token)
+: ValueNode(Token, new LocationRange(Token.Location, Invocation.Location))
 {
-    public new static readonly ObjectCreationNode NULL = new(FunctionCallNode.NULL, Token.NULL, false);
+    public new static readonly ObjectCreationNode NULL = new(FunctionCallNode.NULL, Token.NULL) { IsValid = false };
 
     public ValueNode TypeName => Invocation.Name;
 

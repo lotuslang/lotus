@@ -54,6 +54,6 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 
         var isValid = enumToken.IsValid && name.IsValid && values.IsValid;
 
-        return new EnumNode(name, values, enumToken, isValid);
+        return new EnumNode(name, values, enumToken) { IsValid = isValid };
     }
 }

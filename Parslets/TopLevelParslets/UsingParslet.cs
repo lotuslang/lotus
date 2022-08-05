@@ -19,6 +19,6 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
             });
         }
 
-        return new UsingNode(import, usingToken, isValid);
+        return new UsingNode(import, usingToken) { IsValid = isValid };
     }
 }

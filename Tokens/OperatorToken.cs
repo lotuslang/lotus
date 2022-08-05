@@ -1,8 +1,8 @@
 [DebuggerDisplay("{Location} {Precedence}({(int)Precedence}) : {Representation}")]
-public sealed record OperatorToken(string Representation, Precedence Precedence, bool IsLeftAssociative, LocationRange Location, bool IsValid = true)
-: Token(Representation, TokenKind.@operator, Location, IsValid)
+public sealed record OperatorToken(string Representation, Precedence Precedence, bool IsLeftAssociative, LocationRange Location)
+: Token(Representation, TokenKind.@operator, Location)
 {
-    public new static readonly OperatorToken NULL = new("", Precedence.Comma, false, LocationRange.NULL, false);
+    public new static readonly OperatorToken NULL = new("", Precedence.Comma, false, LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

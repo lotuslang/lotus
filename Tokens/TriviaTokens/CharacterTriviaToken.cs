@@ -1,7 +1,7 @@
-public sealed record CharacterTriviaToken(char Character, LocationRange Location, bool IsValid = true)
-: TriviaToken(Character.ToString(), TriviaKind.character, Location, IsValid)
+public sealed record CharacterTriviaToken(char Character, LocationRange Location)
+: TriviaToken(Character.ToString(), TriviaKind.character, Location)
 {
-    public new static readonly CharacterTriviaToken NULL = new('\0', LocationRange.NULL, false);
+    public new static readonly CharacterTriviaToken NULL = new('\0', LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

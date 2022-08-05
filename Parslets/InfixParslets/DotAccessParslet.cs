@@ -34,7 +34,7 @@ public sealed class DotAccessParslet : IInfixParslet<ValueNode>
                 Expected = "an identifier",
             });
 
-            return new OperationNode(dotOpToken, new[] { leftName, rightPart }, OperationType.Access, false);
+            return new OperationNode(dotOpToken, new[] { leftName, rightPart }, OperationType.Access) { IsValid = false };
         }
 
         return new FullNameNode(leftName, ident, dotOpToken);

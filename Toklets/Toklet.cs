@@ -20,7 +20,7 @@ public abstract class Toklet : IToklet<Token>
 
         public override Token Consume(IConsumer<char> input, Tokenizer _) {
             if (!input.Consume(out char currChar)) {
-                return new Token(currChar.ToString(), TokenKind.EOF, input.Position, false);
+                return new Token(currChar.ToString(), TokenKind.EOF, input.Position) { IsValid = false };
             }
 
             return new(currChar.ToString(), TokenKind.delimiter, input.Position);

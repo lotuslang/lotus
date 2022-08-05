@@ -52,7 +52,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 
             isValid = false;
 
-            itemName = new IdentToken(itemNameToken.Representation, itemNameToken.Location, false);
+            itemName = new IdentToken(itemNameToken.Representation, itemNameToken.Location) { IsValid = false };
         }
 
         var inToken = parser.Tokenizer.Consume();
@@ -68,7 +68,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 
             parser.Tokenizer.Reconsume();
 
-            inKeyword = new Token(inToken.Representation, inToken.Kind, inToken.Location, false);
+            inKeyword = new Token(inToken.Representation, inToken.Kind, inToken.Location) { IsValid = false };
         }
 
         var collectionName = parser.ExpressionParser.Consume();
@@ -96,8 +96,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
             collectionName,
             body,
             openingParen,
-            closingParen,
-            isValid
-        );
+            closingParen
+        ) { IsValid = isValid };
     }
 }

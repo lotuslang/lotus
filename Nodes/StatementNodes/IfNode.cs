@@ -2,11 +2,10 @@ public sealed record IfNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,
     ElseNode ElseNode,
-    Token Token,
-    bool IsValid = true
-) : StatementNode(Token, new LocationRange(Token.Location, ElseNode != ElseNode.NULL ? ElseNode.Location : Body.Location), IsValid)
+    Token Token
+) : StatementNode(Token, new LocationRange(Token.Location, ElseNode != ElseNode.NULL ? ElseNode.Location : Body.Location))
 {
-    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, ElseNode.NULL, Token.NULL, false);
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, ElseNode.NULL, Token.NULL) { IsValid = false };
 
     public bool HasElse => ElseNode != ElseNode.NULL;
 

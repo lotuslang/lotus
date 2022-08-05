@@ -1,7 +1,7 @@
 [DebuggerDisplay("<{_kind}> {_repr} @ {Location}")]
 public record Token : ILocalized
 {
-    public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL, false);
+    public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL) { IsValid = false };
 
     protected TokenKind _kind;
     public ref readonly TokenKind Kind => ref _kind;
@@ -13,11 +13,10 @@ public record Token : ILocalized
 
     public bool IsValid { get; set; }
 
-    public Token(string repr, TokenKind kind, LocationRange location, bool isValid = true) {
+    public Token(string repr, TokenKind kind, LocationRange location) {
         _repr = repr;
         _kind = kind;
         Location = location;
-        IsValid = isValid;
     }
 
     protected TriviaToken? _leading, _trailing;

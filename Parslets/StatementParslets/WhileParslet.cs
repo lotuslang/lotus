@@ -27,6 +27,6 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
 
         var body = parser.ConsumeStatementBlock();
 
-        return new WhileNode(condition, body, whileToken, Token.NULL, isValid);
+        return new WhileNode(condition, body, whileToken, Token.NULL) { IsValid = isValid };
     }
 }

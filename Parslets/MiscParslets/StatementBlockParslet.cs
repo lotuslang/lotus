@@ -26,9 +26,9 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
             return new Tuple<StatementNode>(
                 new[] { statement },
                 Token.NULL,
-                Token.NULL,
-                isValid
+                Token.NULL
             ) {
+                IsValid = isValid,
                 Location = statement.Location
             };
         }
@@ -91,6 +91,6 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
 
         parser.Tokenizer.Consume();
 
-        return new Tuple<StatementNode>(statements, openingBracket, closingBracket, isValid);
+        return new Tuple<StatementNode>(statements, openingBracket, closingBracket) { IsValid = isValid };
     }
 }

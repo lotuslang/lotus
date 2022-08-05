@@ -1,7 +1,7 @@
-public sealed record FromNode(Union<StringNode, NameNode> OriginName, Token Token, bool IsValid = true)
-: TopLevelNode(Token, IsValid)
+public sealed record FromNode(Union<StringNode, NameNode> OriginName, Token Token)
+: TopLevelNode(Token)
 {
-    public new static readonly FromNode NULL = new(StringNode.NULL, Token.NULL, false);
+    public new static readonly FromNode NULL = new(StringNode.NULL, Token.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

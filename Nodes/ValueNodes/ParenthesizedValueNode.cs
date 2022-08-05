@@ -1,12 +1,12 @@
-public sealed record ParenthesizedValueNode(ValueNode Value, Token Token, Token ClosingToken, bool IsValid = true)
-: ValueNode(Token, new LocationRange(Token, ClosingToken), IsValid)
+public sealed record ParenthesizedValueNode(ValueNode Value, Token Token, Token ClosingToken)
+: ValueNode(Token, new LocationRange(Token, ClosingToken))
 {
-    public new static readonly ParenthesizedValueNode NULL = new(ValueNode.NULL, Token.NULL, Token.NULL, false);
+    public new static readonly ParenthesizedValueNode NULL = new(ValueNode.NULL, Token.NULL, Token.NULL) { IsValid = false };
 
     public Token OpeningToken => Token;
 
     public TupleNode AsTupleNode()
-        => new(ImmutableArray.Create(Value), Token, ClosingToken, IsValid);
+        => new(ImmutableArray.Create(Value), Token, ClosingToken) { IsValid = IsValid };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

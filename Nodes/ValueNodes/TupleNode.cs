@@ -16,8 +16,8 @@ public sealed record TupleNode
     public TupleNode(Tuple<ValueNode> tuple) : base(tuple.OpeningToken, tuple.Location, tuple.IsValid)
         => _internalTuple = tuple;
 
-    public TupleNode(ImmutableArray<ValueNode> items, Token openingToken, Token closingToken, bool isValid = true)
-        : this(new Tuple<ValueNode>(items, openingToken, closingToken, isValid)) { }
+    public TupleNode(ImmutableArray<ValueNode> items, Token openingToken, Token closingToken)
+        : this(new Tuple<ValueNode>(items, openingToken, closingToken)) { }
 
 
     /// <summary>
@@ -27,9 +27,8 @@ public sealed record TupleNode
         => new(
             Items.FirstOrDefault(ValueNode.NULL),
             OpeningToken,
-            ClosingToken,
-            IsValid
-        );
+            ClosingToken
+        ) { IsValid = IsValid };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

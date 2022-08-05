@@ -2,17 +2,15 @@ public sealed record WhileNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,
     Token Token,
-    Token DoToken,
-    bool IsValid = true
+    Token DoToken
 ) : StatementNode(
     Token,
     DoToken != Token.NULL
         ? new LocationRange(DoToken.Location, Token.Location)
-        : new LocationRange(Token.Location, Body.Location),
-    IsValid
+        : new LocationRange(Token.Location, Body.Location)
 )
 {
-    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, Token.NULL, Token.NULL, false);
+    public new static readonly WhileNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, Token.NULL, Token.NULL) { IsValid = false };
 
     public bool IsDoLoop => DoToken != Token.NULL;
 

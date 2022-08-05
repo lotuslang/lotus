@@ -1,9 +1,11 @@
-public sealed record TypeDecName(IdentNode TypeName, NameNode Parent, Token ColonToken, bool IsValid = true)
+public sealed record TypeDecName(IdentNode TypeName, NameNode Parent, Token ColonToken)
 {
     private bool _hasParent = Parent != NameNode.NULL;
     public bool HasParent => _hasParent;
 
-    public static readonly TypeDecName NULL = new (IdentNode.NULL, NameNode.NULL, Token.NULL, false);
+    public bool IsValid { get; set; }
+
+    public static readonly TypeDecName NULL = new (IdentNode.NULL, NameNode.NULL, Token.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

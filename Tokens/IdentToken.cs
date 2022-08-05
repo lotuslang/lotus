@@ -1,7 +1,7 @@
-public sealed record IdentToken(string Representation, LocationRange Location, bool IsValid = true)
-: Token(Representation, TokenKind.identifier, Location, IsValid)
+public sealed record IdentToken(string Representation, LocationRange Location)
+: Token(Representation, TokenKind.identifier, Location)
 {
-    public new static readonly IdentToken NULL = new("", LocationRange.NULL, false);
+    public new static readonly IdentToken NULL = new("", LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

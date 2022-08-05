@@ -136,13 +136,12 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             typeIdent = new IdentNode(
                 new IdentToken(
                     token.Representation,
-                    location,
-                    false
-                )
+                    location
+                ) { IsValid = false }
             );
         }
 
-        return new TypeDecName(typeIdent, parent, colonToken, isValid);
+        return new TypeDecName(typeIdent, parent, colonToken);
     }
 
     public override TopLevelParser Clone() => new(this);

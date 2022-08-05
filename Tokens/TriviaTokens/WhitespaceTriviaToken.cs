@@ -1,7 +1,7 @@
-public record WhitespaceTriviaToken(char WhitespaceChar, int WhitespaceCount, LocationRange Location, bool IsValid = true)
-: TriviaToken(new string(WhitespaceChar, WhitespaceCount), TriviaKind.whitespace, Location, IsValid)
+public record WhitespaceTriviaToken(char WhitespaceChar, int WhitespaceCount, LocationRange Location)
+: TriviaToken(new string(WhitespaceChar, WhitespaceCount), TriviaKind.whitespace, Location)
 {
-    public new static readonly WhitespaceTriviaToken NULL = new('\0', 0, LocationRange.NULL, false);
+    public new static readonly WhitespaceTriviaToken NULL = new('\0', 0, LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

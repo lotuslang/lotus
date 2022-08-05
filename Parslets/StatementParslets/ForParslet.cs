@@ -108,7 +108,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         if (!hasEOF)
             body = parser.ConsumeStatementBlock();
 
-        return new ForNode(forToken, new Tuple<StatementNode>(header, openingParen, closingParen), body, isValid);
+        return new ForNode(forToken, new Tuple<StatementNode>(header, openingParen, closingParen), body) { IsValid = isValid };
     }
 
     private static StatementNode GetDefaultStatement(LocationRange pos)

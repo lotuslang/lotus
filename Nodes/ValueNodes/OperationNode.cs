@@ -1,6 +1,6 @@
 public sealed record OperationNode : ValueNode
 {
-    public new static readonly OperationNode NULL = new(OperatorToken.NULL, Array.Empty<ValueNode>(), OperationType.Unknown, false);
+    public new static readonly OperationNode NULL = new(OperatorToken.NULL, Array.Empty<ValueNode>(), OperationType.Unknown) { IsValid = false };
 
     public ImmutableArray<Token> AdditionalTokens { get; }
 
@@ -20,8 +20,8 @@ public sealed record OperationNode : ValueNode
         };
     }
 
-    public OperationNode(OperatorToken token, IEnumerable<ValueNode> operands, OperationType opType, bool isValid = true, params Token[] additionalTokens)
-        : base(token, token.Location, isValid)
+    public OperationNode(OperatorToken token, IEnumerable<ValueNode> operands, OperationType opType, params Token[] additionalTokens)
+        : base(token, token.Location)
     {
         OperationType = opType;
         AdditionalTokens = additionalTokens.ToImmutableArray();

@@ -4,9 +4,8 @@ public sealed record FunctionDeclarationNode(
     NameNode ReturnType,
     IdentToken FuncName,
     Token Token,
-    Token ColonToken,
-    bool IsValid = true
-) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
+    Token ColonToken
+) : StatementNode(Token, new LocationRange(Token.Location, Body.Location))
 {
     public new static readonly FunctionDeclarationNode NULL
         = new(
@@ -15,9 +14,8 @@ public sealed record FunctionDeclarationNode(
             NameNode.NULL,
             IdentToken.NULL,
             Token.NULL,
-            Token.NULL,
-            false
-        );
+            Token.NULL
+        ) { IsValid = false };
 
     internal bool isInternal = false;
 
@@ -35,17 +33,15 @@ public record FunctionParameter(
     NameNode Type,
     IdentNode Name,
     ValueNode DefaultValue,
-    Token EqualSign,
-    bool IsValid = true
-) : Parameter(Type, Name, new LocationRange(Type, DefaultValue == ValueNode.NULL ? Name : DefaultValue), IsValid)
+    Token EqualSign
+) : Parameter(Type, Name, new LocationRange(Type, DefaultValue == ValueNode.NULL ? Name : DefaultValue))
 {
     public static readonly FunctionParameter NULL = new(
         NameNode.NULL,
         IdentNode.NULL,
         ValueNode.NULL,
-        Token.NULL,
-        false
-    );
+        Token.NULL
+    ) { IsValid = false };
 
     public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
 }

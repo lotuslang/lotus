@@ -1,7 +1,7 @@
-public sealed record NamespaceNode(NameNode Name, Token Token, bool IsValid = true)
-: TopLevelNode(Token, new LocationRange(Token.Location, Name.Location), IsValid), IAccessible
+public sealed record NamespaceNode(NameNode Name, Token Token)
+: TopLevelNode(Token, new LocationRange(Token.Location, Name.Location)), IAccessible
 {
-    public new static readonly NamespaceNode NULL = new(NameNode.NULL, Token.NULL, false);
+    public new static readonly NamespaceNode NULL = new(NameNode.NULL, Token.NULL) { IsValid = false };
 
     public AccessLevel AccessLevel { get; set; } = AccessLevel.Public;
 

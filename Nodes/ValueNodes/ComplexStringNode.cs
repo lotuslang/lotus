@@ -1,13 +1,12 @@
 public sealed record ComplexStringNode : StringNode
 {
-    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, ImmutableArray<ValueNode>.Empty, false);
+    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, ImmutableArray<ValueNode>.Empty) { IsValid = false };
 
     public ImmutableArray<ValueNode> CodeSections;
 
-    public ComplexStringNode(ComplexStringToken token, ImmutableArray<ValueNode> codeSections, bool isValid = true)
+    public ComplexStringNode(ComplexStringToken token, ImmutableArray<ValueNode> codeSections)
         : base(token)
     {
-        IsValid = isValid;
         CodeSections = codeSections;
     }
 

@@ -1,17 +1,15 @@
 public sealed record EnumNode(
     TypeDecName Name,
     Tuple<ValueNode> Values,
-    Token EnumToken,
-    bool IsValid = true
-) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, Values.ClosingToken.Location), IsValid), IAccessible
+    Token EnumToken
+) : TopLevelNode(EnumToken, new LocationRange(EnumToken.Location, Values.ClosingToken.Location)), IAccessible
 {
     public new static readonly EnumNode NULL
         = new(
             TypeDecName.NULL,
             Tuple<ValueNode>.NULL,
-            Token.NULL,
-            false
-        );
+            Token.NULL
+        ) { IsValid = false };
 
     public Token OpeningBracket => Values.OpeningToken;
     public Token ClosingBracket => Values.ClosingToken;

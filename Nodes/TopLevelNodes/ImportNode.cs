@@ -1,14 +1,13 @@
-public sealed record ImportNode(ImmutableArray<NameNode> Names, FromNode FromStatement, Token Token, bool IsValid = true)
+public sealed record ImportNode(ImmutableArray<NameNode> Names, FromNode FromStatement, Token Token)
 : TopLevelNode(
     Token,
     new LocationRange(
         FromStatement.Location,
         Names.LastOrDefault()?.Location ?? Token.Location // this shouldn't happen anyway
-    ),
-    IsValid
+    )
 )
 {
-    public new static readonly ImportNode NULL = new(ImmutableArray<NameNode>.Empty, FromNode.NULL, Token.NULL, false);
+    public new static readonly ImportNode NULL = new(ImmutableArray<NameNode>.Empty, FromNode.NULL, Token.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

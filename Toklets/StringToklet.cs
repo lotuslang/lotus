@@ -58,6 +58,6 @@ public sealed class StringToklet : IToklet<StringToken>
         }
 
         // return the output token
-        return new StringToken(output.ToString(), new LocationRange(startPos, input.Position), isValid);
+        return new StringToken(output.ToString(), new LocationRange(startPos, input.Position)) { IsValid = isValid };
     }
 }

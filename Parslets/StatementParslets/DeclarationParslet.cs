@@ -19,7 +19,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
 
             isValid = false;
 
-            name = new IdentToken(nameToken.Representation, nameToken.Location, false);
+            name = new IdentToken(nameToken.Representation, nameToken.Location) { IsValid = false };
 
             if (nameToken == "=") {
                 Logger.errorStack.Pop(); // remove the last exception
@@ -52,6 +52,6 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         var value = parser.ExpressionParser.Consume();
 
         // return that value
-        return new DeclarationNode(value, name, varToken, equalSign, isValid);
+        return new DeclarationNode(value, name, varToken, equalSign) { IsValid = isValid };
     }
 }

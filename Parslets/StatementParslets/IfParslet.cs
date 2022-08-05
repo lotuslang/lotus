@@ -30,7 +30,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
                 condition = tuple.AsParenthesized() with { IsValid = true };
             } else {
-                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL, IsValid: false);
+                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL) { IsValid = false };
             }
         }
 
@@ -42,7 +42,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
             elseNode = ElseParslet.Instance.Parse(parser, parser.Tokenizer.Consume());
         }
 
-        return new IfNode(condition, body, elseNode, ifToken, isValid);
+        return new IfNode(condition, body, elseNode, ifToken) { IsValid = isValid };
     }
 
     // TODO: Later

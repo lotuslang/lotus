@@ -29,7 +29,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
             if (funcNameToken == "(") parser.Tokenizer.Reconsume();
 
-            funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location, false);
+            funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location) { IsValid = false };
         }
 
         var paramList = _paramListParslet.Parse(parser.ExpressionParser);
@@ -52,9 +52,8 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                 returnType = new IdentNode(
                     new IdentToken(
                         returnType.Token.Representation,
-                        returnType.Location,
-                        false
-                    )
+                        returnType.Location
+                    ) { IsValid = false }
                 );
             }
         }
@@ -69,9 +68,8 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             returnType,
             funcName,
             funcToken,
-            colonToken,
-            isValid
-        );
+            colonToken
+        ) { IsValid = isValid };
     }
 
     static FunctionParameter MakeFuncParameter(ValueNode type, ValueNode paramNameNode) {
@@ -115,13 +113,12 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             paramName = new IdentNode(
                 new IdentToken(
                     paramNameNode.Token.Representation,
-                    paramNameNode.Token.Location,
-                    false
-                )
+                    paramNameNode.Token.Location
+                ) { IsValid = false }
             );
         }
 
-        return new FunctionParameter(typeName, paramName, defaultValue, equalSign, isValid);
+        return new FunctionParameter(typeName, paramName, defaultValue, equalSign) { IsValid = isValid };
     }
 
     static IEnumerable<FunctionParameter> ParseFuncParam(ExpressionParser parser) {

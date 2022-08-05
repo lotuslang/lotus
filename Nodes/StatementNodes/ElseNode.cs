@@ -1,7 +1,7 @@
-public sealed record ElseNode(Union<Tuple<StatementNode>, IfNode> BlockOrIfNode, Token Token, bool IsValid = true)
-: StatementNode(Token, new LocationRange(Token.Location, BlockOrIfNode.Match(b => b.Location, n => n.Location)), IsValid)
+public sealed record ElseNode(Union<Tuple<StatementNode>, IfNode> BlockOrIfNode, Token Token)
+: StatementNode(Token, new LocationRange(Token.Location, BlockOrIfNode.Match(b => b.Location, n => n.Location)))
 {
-    public new static readonly ElseNode NULL = new(Tuple<StatementNode>.NULL, Token.NULL, false);
+    public new static readonly ElseNode NULL = new(Tuple<StatementNode>.NULL, Token.NULL) { IsValid = false };
 
     public Tuple<StatementNode> Body => BlockOrIfNode.Match(b => b, n => n.Body);
 

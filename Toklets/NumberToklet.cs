@@ -162,6 +162,6 @@ public sealed class NumberToklet : IToklet<NumberToken>
             isValid = false;
         }
 
-        return new NumberToken(numberStr, val, new LocationRange(originPos, input.Position), isValid);
+        return new NumberToken(numberStr, val, new LocationRange(originPos, input.Position)) { IsValid = isValid };
     }
 }

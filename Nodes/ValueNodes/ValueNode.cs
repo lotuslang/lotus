@@ -1,9 +1,13 @@
-public abstract record ValueNode(Token Token, LocationRange Location, bool IsValid = true)
-: Node(Token, Location, IsValid)
+public abstract record ValueNode(Token Token, LocationRange Location)
+: Node(Token, Location)
 {
     public new static readonly ValueNode NULL = new Dummy();
 
-    protected ValueNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
+    protected ValueNode(Token token) : this(token, token.IsValid) { }
+    protected ValueNode(Token token, bool isValid) : this(token, token.Location, isValid) { }
+    protected ValueNode(Token token, LocationRange loc, bool isValid) : this(token, loc) {
+        IsValid = isValid;
+    }
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]
@@ -15,5 +19,5 @@ public abstract record ValueNode(Token Token, LocationRange Location, bool IsVal
 
     public static explicit operator StatementNode(ValueNode node) => (StatementExpressionNode)node;
 
-    internal record Dummy() : ValueNode(Token.NULL, false);
+    internal record Dummy() : ValueNode(Token.NULL);
 }

@@ -14,9 +14,8 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
 
         return new FunctionCallNode(
             argsTuple,
-            function,
-            argsTuple.IsValid
-        );
+            function
+        ) { IsValid = argsTuple.IsValid };
     }
 
     public static Tuple<ValueNode> ConsumeFunctionArguments(ExpressionParser parser)

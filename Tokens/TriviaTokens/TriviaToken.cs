@@ -2,8 +2,8 @@ public record TriviaToken : Token
 {
     public new TriviaKind Kind { get; init; }
 
-    public TriviaToken(string rep, TriviaKind kind, LocationRange location, bool isValid = true)
-        : base(rep, TokenKind.trivia, location, isValid) {
+    public TriviaToken(string rep, TriviaKind kind, LocationRange location)
+        : base(rep, TokenKind.trivia, location) {
         Kind = kind;
     }
 

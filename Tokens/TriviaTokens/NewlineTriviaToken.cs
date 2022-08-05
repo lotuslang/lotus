@@ -1,10 +1,8 @@
 public sealed record NewlineTriviaToken : WhitespaceTriviaToken
 {
-    public new static readonly NewlineTriviaToken NULL = new(0, LocationRange.NULL, false);
-    public NewlineTriviaToken(int count,
-                              LocationRange location,
-                              bool isValid = true)
-        : base('\n', count, location, isValid)
+    public new static readonly NewlineTriviaToken NULL = new(0, LocationRange.NULL) { IsValid = false };
+    public NewlineTriviaToken(int count, LocationRange location)
+        : base('\n', count, location)
     {
         Kind = TriviaKind.newline;
     }

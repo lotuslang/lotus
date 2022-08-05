@@ -1,6 +1,6 @@
-public sealed record BreakNode(Token Token, bool IsValid = true) : StatementNode(Token, IsValid)
+public sealed record BreakNode(Token Token) : StatementNode(Token)
 {
-    public new static readonly BreakNode NULL = new(Token.NULL, false);
+    public new static readonly BreakNode NULL = new(Token.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

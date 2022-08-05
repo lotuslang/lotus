@@ -48,9 +48,8 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
             typeName = new IdentNode(
                 new IdentToken(
                     type.Token.Representation,
-                    type.Location,
-                    false
-                )
+                    type.Location
+                ) { IsValid = false }
             );
         }
 
@@ -58,8 +57,8 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         // if typeName isn't correctly parsed/lexed
         var args = FuncCallParslet.ConsumeFunctionArguments(parser);
 
-        var call = new FunctionCallNode(args, typeName, args.IsValid && type.IsValid);
+        var call = new FunctionCallNode(args, typeName) { IsValid = args.IsValid && type.IsValid };
 
-        return new ObjectCreationNode(call, newToken, isValid);
+        return new ObjectCreationNode(call, newToken) { IsValid = isValid };
     }
 }

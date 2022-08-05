@@ -1,13 +1,12 @@
-public sealed record ReturnNode(ValueNode Value, Token Token, bool IsValid = true)
+public sealed record ReturnNode(ValueNode Value, Token Token)
 : StatementNode(
     Token,
     Value != ValueNode.NULL
         ? new LocationRange(Token.Location, Value.Location)
-        : Token.Location,
-    IsValid
+        : Token.Location
 )
 {
-    public new static readonly ReturnNode NULL = new(ValueNode.NULL, Token.NULL, false);
+    public new static readonly ReturnNode NULL = new(ValueNode.NULL, Token.NULL) { IsValid = false };
 
     public bool IsReturningValue => Value != ValueNode.NULL;
 

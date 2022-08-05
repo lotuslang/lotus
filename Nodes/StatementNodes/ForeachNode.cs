@@ -8,9 +8,8 @@ public sealed record ForeachNode(
     ValueNode CollectionRef,
     Tuple<StatementNode> Body,
     Token OpeningParen,
-    Token ClosingParen,
-    bool IsValid = true
-) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
+    Token ClosingParen
+) : StatementNode(Token, new LocationRange(Token.Location, Body.Location))
 {
     public new static readonly ForeachNode NULL
         = new(
@@ -20,9 +19,8 @@ public sealed record ForeachNode(
             ValueNode.NULL,
             Tuple<StatementNode>.NULL,
             Token.NULL,
-            Token.NULL,
-            false
-        );
+            Token.NULL
+        ) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

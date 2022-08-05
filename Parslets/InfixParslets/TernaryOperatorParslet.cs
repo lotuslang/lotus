@@ -38,6 +38,6 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
             });
         }
 
-        return new OperationNode(questionMarkOperator, new[] { condition, firstValue, secondValue }, OperationType.Conditional, isValid, colon);
+        return new OperationNode(questionMarkOperator, new[] { condition, firstValue, secondValue }, OperationType.Conditional, colon) { IsValid = isValid };
     }
 }

@@ -1,7 +1,7 @@
-public sealed record PrintNode(Token Token, ValueNode Value, bool IsValid = true)
-: StatementNode(Token, Token.Location, IsValid)
+public sealed record PrintNode(Token Token, ValueNode Value)
+: StatementNode(Token, Token.Location)
 {
-    public new static readonly PrintNode NULL = new(Token.NULL, ValueNode.NULL, false);
+    public new static readonly PrintNode NULL = new(Token.NULL, ValueNode.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

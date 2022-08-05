@@ -1,7 +1,9 @@
-public sealed record FullNameNode(OperatorToken DotToken, ImmutableArray<IdentToken> Parts, bool IsValid = true)
-: NameNode(DotToken, Parts, IsValid)
+public sealed record FullNameNode(OperatorToken DotToken, ImmutableArray<IdentToken> Parts)
+: NameNode(DotToken, Parts)
 {
 
     public FullNameNode(NameNode left, NameNode right, OperatorToken dotToken)
-        : this(dotToken, left.Parts.Concat(right.Parts).ToImmutableArray(), left.IsValid && right.IsValid) { }
+        : this(dotToken, left.Parts.Concat(right.Parts).ToImmutableArray()) {
+        IsValid = left.IsValid && right.IsValid;
+    }
 }

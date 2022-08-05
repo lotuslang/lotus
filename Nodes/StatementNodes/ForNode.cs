@@ -4,11 +4,10 @@
 public sealed record ForNode(
     Token Token,
     Tuple<StatementNode> Header,
-    Tuple<StatementNode> Body,
-    bool IsValid = true
-) : StatementNode(Token, new LocationRange(Token.Location, Body.Location), IsValid)
+    Tuple<StatementNode> Body
+) : StatementNode(Token, new LocationRange(Token.Location, Body.Location))
 {
-    public new static readonly ForNode NULL = new(Token.NULL, Tuple<StatementNode>.NULL, Tuple<StatementNode>.NULL, false);
+    public new static readonly ForNode NULL = new(Token.NULL, Tuple<StatementNode>.NULL, Tuple<StatementNode>.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

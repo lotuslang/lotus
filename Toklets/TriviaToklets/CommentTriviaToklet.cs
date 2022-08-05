@@ -37,7 +37,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             return new CommentTriviaToken(
                 strBuilder.ToString(),
                 new LocationRange(startingPosition, input.Position)
-            ) { TrailingTrivia = tokenizer.ConsumeTrivia() };
+            ) { IsValid = true, TrailingTrivia = tokenizer.ConsumeTrivia() };
         }
 
         if (currChar == '*') {
@@ -79,9 +79,8 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             return new CommentTriviaToken(
                 strBuilder.ToString(),
                 new LocationRange(startingPosition, input.Position),
-                inner: inner,
-                isValid: isValid
-            ) { TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
+                inner: inner
+            ) { IsValid = isValid, TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
         }
 
         Debug.Assert(false, "wtf even happened??");

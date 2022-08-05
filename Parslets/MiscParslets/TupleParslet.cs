@@ -182,6 +182,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             isValid = false;
         }
 
-        return new Tuple<TValue>(items, startingToken, endingToken, isValid);
+        return new Tuple<TValue>(items, startingToken, endingToken) { IsValid = isValid };
     }
 }

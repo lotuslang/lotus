@@ -19,9 +19,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             });
         }
 
-        var importIsValid = true;
-
-        var from = new FromNode(fromOrigin, fromToken, fromIsValid);
+        var from = new FromNode(fromOrigin, fromToken) { IsValid = fromIsValid };
 
         // TODO: Would it be better to have parser.ConsumeValue() here ? it would probably do the same thing
         //
@@ -39,6 +37,8 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         // After a (very short) test, the tokenizer seems better, but we should probably do more testing
         var importToken = parser.Tokenizer.Consume();
 
+        var importIsValid = true;
+
         if (importToken is not Token importKeyword || importKeyword != "import") {
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                 Value = importToken,
@@ -48,7 +48,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
             importIsValid = false;
 
-            importKeyword = new Token(importToken.Representation, TokenKind.keyword, importToken.Location, false);
+            importKeyword = new Token(importToken.Representation, TokenKind.keyword, importToken.Location) { IsValid = false };
         }
 
         var importList = new List<NameNode>();
@@ -78,9 +78,8 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
                 import = new IdentNode(
                     new IdentToken(
                         parser.ExpressionParser.Current.Token.Representation,
-                        parser.ExpressionParser.Current.Location,
-                        false
-                    )
+                        parser.ExpressionParser.Current.Location
+                    ) { IsValid = false }
                 );
 
                 importIsValid = false;
@@ -91,6 +90,6 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         parser.Tokenizer.Reconsume();
 
-        return new ImportNode(importList.ToImmutableArray(), from, importKeyword, importIsValid);
+        return new ImportNode(importList.ToImmutableArray(), from, importKeyword) { IsValid = importIsValid };
     }
 }

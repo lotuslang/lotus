@@ -13,8 +13,6 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
     public OperationNode Parse(ExpressionParser parser, Token openingBracket, ValueNode array) {
         Debug.Assert(openingBracket == "[");
 
-        var isValid = true;
-
         parser.Tokenizer.Reconsume();
 
         var indexTuple = _indexTupleParslet.Parse(parser);
@@ -26,13 +24,11 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
                 "[",
                 Precedence.ArrayAccess,
                 true,
-                openingBracket.Location,
-                openingBracket.IsValid
-            ) { LeadingTrivia = openingBracket.LeadingTrivia, TrailingTrivia = openingBracket.TrailingTrivia } ,
+                openingBracket.Location
+            ) { IsValid = openingBracket.IsValid, LeadingTrivia = openingBracket.LeadingTrivia, TrailingTrivia = openingBracket.TrailingTrivia } ,
             indexTuple.Items,
             OperationType.ArrayAccess,
-            isValid && indexTuple.IsValid,
             additionalTokens: indexTuple.ClosingToken
-        );
+        ) { IsValid = indexTuple.IsValid };
     }
 }

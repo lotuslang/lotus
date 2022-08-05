@@ -33,9 +33,8 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             whileKeyword = new Token(
                 parser.Tokenizer.Current,
                 parser.Tokenizer.Current.Kind,
-                parser.Tokenizer.Current.Location,
-                false
-            );
+                parser.Tokenizer.Current.Location
+            ) { IsValid = false };
         }
 
         var conditionNode = parser.ExpressionParser.Consume();
@@ -52,10 +51,10 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             if (conditionNode is TupleNode tuple) {
                 condition = tuple.AsParenthesized() with { IsValid = false };
             } else {
-                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL);
+                condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL) { IsValid = false };
             }
         }
 
-        return new WhileNode(condition, body, whileKeyword, doToken, isValid);
+        return new WhileNode(condition, body, whileKeyword, doToken) { IsValid = isValid };
     }
 }

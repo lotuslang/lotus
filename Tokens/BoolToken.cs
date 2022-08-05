@@ -1,14 +1,14 @@
 [DebuggerDisplay("{Location} {Kind} : {val}")]
 public sealed record BoolToken : Token
 {
-    public new static readonly BoolToken NULL = new("", false, LocationRange.NULL, false);
+    public new static readonly BoolToken NULL = new("", false, LocationRange.NULL) { IsValid = false };
 
     private bool _val;
 
     public ref readonly bool Value => ref _val;
 
-    public BoolToken(string rep, bool value, LocationRange location, bool isValid = true)
-        : base(rep, TokenKind.@bool, location, isValid)
+    public BoolToken(string rep, bool value, LocationRange location)
+        : base(rep, TokenKind.@bool, location)
     {
         _val = value;
     }

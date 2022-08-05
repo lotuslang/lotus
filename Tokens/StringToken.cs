@@ -1,7 +1,7 @@
-public record StringToken(string Representation, LocationRange Location, bool IsValid = true)
-: Token(Representation, TokenKind.@string, Location, IsValid)
+public record StringToken(string Representation, LocationRange Location)
+: Token(Representation, TokenKind.@string, Location)
 {
-    public new static readonly StringToken NULL = new("", LocationRange.NULL, false);
+    public new static readonly StringToken NULL = new("", LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

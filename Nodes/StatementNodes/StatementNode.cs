@@ -1,9 +1,13 @@
-public abstract record StatementNode(Token Token, LocationRange Location, bool IsValid = true)
-: Node(Token, Location, IsValid)
+public abstract record StatementNode(Token Token, LocationRange Location)
+: Node(Token, Location)
 {
     public new static readonly StatementNode NULL = new Dummy();
 
-    protected StatementNode(Token token, bool isValid = true) : this(token, token.Location, isValid) { }
+    protected StatementNode(Token token) : this(token, token.IsValid) { }
+    protected StatementNode(Token token, bool isValid) : this(token, token.Location, isValid) { }
+    protected StatementNode(Token token, LocationRange loc, bool isValid) : this(token, loc) {
+        IsValid = isValid;
+    }
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

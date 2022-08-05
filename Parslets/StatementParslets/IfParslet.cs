@@ -28,7 +28,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
                             +"you can use the logical operators (OR ||, AND &&, XOR ^^, etc...)"
                 });
 
-                condition = tuple.AsParenthesized();
+                condition = tuple.AsParenthesized() with { IsValid = true };
             } else {
                 condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL, IsValid: false);
             }

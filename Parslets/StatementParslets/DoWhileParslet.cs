@@ -50,7 +50,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             isValid = false;
 
             if (conditionNode is TupleNode tuple) {
-                condition = tuple.AsParenthesized();
+                condition = tuple.AsParenthesized() with { IsValid = false };
             } else {
                 condition = new ParenthesizedValueNode(conditionNode, Token.NULL, Token.NULL);
             }

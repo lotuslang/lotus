@@ -8,29 +8,13 @@ public sealed record LocationRange(int firstLine, int lastLine, int firstColumn,
     public int ColumnLength => lastColumn - firstColumn + 1;
 
     public LocationRange(Location first, Location last) : this(first.line, last.line, first.column, last.column, first.filename) {
-        if (first.filename != last.filename) {
-            Logger.Warning(new InternalError() {
-                Message = "Tried to created a LocationRange using locations that do not have the same origin/filename ("
-                + System.IO.Path.GetFileName(first.filename)
-                + " vs "
-                + System.IO.Path.GetFileName(last.filename)
-                + "). Setting filename to the first location's filename ('" + first.filename + "')",
-                Location = first
-            });
-        }
+        if (first.filename == "<std>")
+            filename = last.filename;
     }
 
     public LocationRange(LocationRange first, LocationRange last) : this(first.firstLine, last.lastLine, first.firstColumn, last.lastColumn, first.filename) {
-        if (first.filename != last.filename) {
-            Logger.Warning(new InternalError() {
-                Message = "Tried to created a LocationRange using ranges that do not have the same origin/filename ("
-                + System.IO.Path.GetFileName(first.filename)
-                + " vs "
-                + System.IO.Path.GetFileName(last.filename)
-                + "). Setting filename to the first range's filename ('" + first.filename + "')",
-                Location = first
-            });
-        }
+        if (first.filename == "<std>")
+            filename = last.filename;
     }
 
     public LocationRange(ILocalized first, ILocalized last) : this(first.Location, last.Location) {}

@@ -69,7 +69,7 @@ public class Tokenizer : IConsumer<Token>
     }
 
     // Because of stupid interface rule
-    public Token Peek() => Peek(preserveTrivia: false);
+    Token IConsumer<Token>.Peek() => Peek(preserveTrivia: false);
 
     public Token Peek(bool preserveTrivia = false) {
         var oldCurrent = Current.ShallowClone();
@@ -110,7 +110,7 @@ public class Tokenizer : IConsumer<Token>
     }
 
     // Because of stupid interface rule
-    public ref readonly Token Consume() => ref Consume(preserveTrivia: false);
+    ref readonly Token IConsumer<Token>.Consume() => ref Consume(preserveTrivia: false);
 
     public ref readonly Token Consume(bool preserveTrivia = false) {
 

@@ -53,7 +53,8 @@ public class Tokenizer : IConsumer<Token>
     public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer._input, grammar) {
         _reconsumeQueue = new Queue<Token>(tokenizer._reconsumeQueue);
 
-        _curr = tokenizer.Current;
+        _curr = tokenizer._curr;
+        _lastTok = tokenizer._lastTok;
     }
 
     public Tokenizer(Uri fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar) { }
@@ -62,43 +63,26 @@ public class Tokenizer : IConsumer<Token>
 
     public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
+    private Token _lastTok = Token.NULL;
     public void Reconsume() {
         Debug.Assert(!_reconsumeQueue.TryPeek(out var token) || !Object.ReferenceEquals(token, Current));
 
         _reconsumeQueue.Enqueue(Current);
+        _curr = _lastTok;
     }
 
     // Because of stupid interface rule
     Token IConsumer<Token>.Peek() => Peek(preserveTrivia: false);
 
     public Token Peek(bool preserveTrivia = false) {
-        var oldCurrent = Current.ShallowClone();
+        var oldLastTok = _lastTok.ShallowClone();
 
         var output = Consume(preserveTrivia);
 
         _reconsumeQueue.Enqueue(output);
 
-        _curr = oldCurrent;
-
-        return output;
-    }
-
-    public Token[] Peek(int n, bool preserveTrivia = false) {
-
-        var oldCurrent = Current.ShallowClone();
-
-        var output = new Token[n];
-
-        for (int i = 0; i < n; i++) {
-            output[n] = Consume(preserveTrivia);
-        }
-
-        _curr = oldCurrent;
-
-        foreach (var token in output.Reverse()) {
-            // no we don't put it in the same loop as Consume() because then it would just consume the reconsume indefinitely
-            _reconsumeQueue.Enqueue(token);
-        }
+        _curr = _lastTok;
+        _lastTok = oldLastTok;
 
         return output;
     }
@@ -113,6 +97,7 @@ public class Tokenizer : IConsumer<Token>
     ref readonly Token IConsumer<Token>.Consume() => ref Consume(preserveTrivia: false);
 
     public ref readonly Token Consume(bool preserveTrivia = false) {
+        _lastTok = _curr;
 
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
         if (_reconsumeQueue.Count != 0) {

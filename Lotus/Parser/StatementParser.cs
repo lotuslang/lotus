@@ -95,12 +95,11 @@ public sealed class StatementParser : Parser<StatementNode>
                     Value = currToken,
                     Location = currToken.Location
                 });
+
+                Tokenizer.Reconsume();
             }
 
-            _curr = Current with { IsValid = false };
-
-            if (Tokenizer.Peek().Kind != TokenKind.EOF)
-                Tokenizer.Reconsume();
+            _curr.IsValid = false;
         }
     }
 

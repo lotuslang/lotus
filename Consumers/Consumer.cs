@@ -60,6 +60,7 @@ public class Consumer<T> : IConsumer<T>
     public virtual bool Consume(out T item) {
         if (!_atStart && Count <= 0) {
             item = Default;
+            _currIdx++;
             return false;
         }
 

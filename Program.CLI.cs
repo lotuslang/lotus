@@ -11,7 +11,7 @@ partial class Program
         var forceOption = new Option<bool>("--force", "Ignore compilation errors before executing commands");
         forceOption.AddAlias("-f");
 
-        var fileArgument = new Argument<FileInfo>("input", "The file to read code from");
+        var fileArgument = new Argument<FileInfo>("input", "The file to read code from, or stdin if '-'");
         fileArgument.SetDefaultValue(_sourceCodeFile);
         fileArgument.LegalFilePathsOnly();
         fileArgument.Arity = ArgumentArity.ZeroOrOne;
@@ -40,7 +40,7 @@ partial class Program
         var silentVerb = new Command("silent", "Don't print anything to stdout (errors go to stderr)");
         silentVerb.AddArgument(fileArgument);
         silentVerb.SetHandler(
-            (file, force) => Task.FromResult(force ? 0 : HandleParsing(file, out _)),
+            (file, force) => Task.FromResult(HandleParsing(file, out _)),
             fileArgument,
             forceOption
         );

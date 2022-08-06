@@ -1,8 +1,13 @@
 using System.IO;
 
-public sealed class StringConsumer : Consumer<char>
+public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 {
     public readonly static char EOF = '\u0003';
+
+    public string Filename => pos.filename;
+
+    private Lazy<SourceCode> _src;
+    public SourceCode Source => _src.Value;
 
     private new Location lastPos;
 
@@ -15,6 +20,9 @@ public sealed class StringConsumer : Consumer<char>
         _atStart = true;
         pos = new Location(1, 0);
         lastPos = new Location(1, 0);
+
+        // _data will be fetched after init, so it's fine
+        _src = new Lazy<SourceCode>(() => new SourceCode(new string(_data)), isThreadSafe: false);
     }
 
 #nullable disable

@@ -88,21 +88,26 @@ partial class Program
         return g;
     }
 
-    static LotusTokenizer GetTokenizerForFile(FileInfo file) {
-        LotusTokenizer tokenizer;
+    static StringConsumer GetConsumerForFile(FileInfo file) {
+        StringConsumer consumer;
 
         var fileStr = file.ToString();
 
         if (fileStr == "-") {
             using var stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
 
-            tokenizer = new LotusTokenizer(stdin.ReadToEnd());
+            consumer = new StringConsumer(stdin.ReadToEnd());
         } else {
-            tokenizer = new LotusTokenizer(new Uri(file.FullName));
+            consumer = new StringConsumer(new Uri(file.FullName));
         }
 
-        return tokenizer;
+        Logger.RegisterSourceProvider(consumer);
+
+        return consumer;
     }
+
+    static LotusTokenizer GetTokenizerForFile(FileInfo file)
+        => new LotusTokenizer(GetConsumerForFile(file));
 
     static int HandleParsing(LotusTokenizer tokenizer, out List<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);

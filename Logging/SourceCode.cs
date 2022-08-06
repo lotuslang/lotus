@@ -6,24 +6,30 @@ using System.IO;
 // It takes way longer than it looks to figure out, so please again : beware !
 public sealed class SourceCode
 {
-    public string[] RawText { get; }
+    public string[] RawLines { get; }
 
     public SourceCode(Uri path) {
-        RawText = File.ReadAllLines(path.AbsolutePath);
+        RawLines = File.ReadAllLines(path.AbsolutePath);
     }
 
     public SourceCode(string text) {
-        RawText = text.Split('\n');
+        RawLines = text.Split('\n');
+    }
+
+    public SourceCode(string[] lines) {
+        RawLines = new string[lines.Length];
+
+        Array.Copy(lines, RawLines, lines.Length);
     }
 
     public SourceCode(IEnumerable<string> lines) {
-        RawText = lines.ToArray();
+        RawLines = lines.ToArray();
     }
 
     public string? GetRawLineAt(int lineNumber) {
-        if (lineNumber < 1 || RawText.Length < lineNumber) return null;
+        if (lineNumber < 1 || RawLines.Length < lineNumber) return null;
 
-        return RawText[lineNumber - 1];
+        return RawLines[lineNumber - 1];
     }
 
     public string GetPrettyLineAt(int lineNumber, string separator = "|") {

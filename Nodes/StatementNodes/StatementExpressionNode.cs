@@ -5,7 +5,10 @@ public sealed record StatementExpressionNode(ValueNode Value)
 
     public new LocationRange Location {
         get => Value.Location;
-        init => Value = Value with { Location = value };
+        init {
+            Value = Value with { Location = value };
+            base.Location = value;
+        }
     }
 
     [DebuggerHidden()]

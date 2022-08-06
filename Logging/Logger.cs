@@ -8,6 +8,14 @@ public static class Logger
 
     public static bool HasErrors => errorStack.Count != 0;
 
+    public static Dictionary<string, ISourceCodeProvider> providers = new();
+
+    public static void RegisterSourceProvider(ISourceCodeProvider prov) {
+        var success = providers.TryAdd(prov.Filename, prov);
+
+        Debug.Assert(success);
+    }
+
     public static void Log(string message, LocationRange location)
         => Console.WriteLine($"{location}: {message}");
 
@@ -254,59 +262,85 @@ public static class Logger
         //      - Underline the path and put a '@' prefix
         //      - Use the '-->' prefix
         //      - Put in bold
-        sb.AppendLine($"\t --> @{relPath}({location.firstLine}:{location.firstColumn})", TextFormat.Bold);
+
+        sb.PushTextFormat(TextFormat.Bold);
+        sb.Append($"\t --> @{relPath}({location.firstLine}:{location.firstColumn}");
+        if (!location.IsSingleLocation()) {
+            if (location.firstLine == location.lastLine)
+                sb.Append($" ~ {location.lastColumn}");
+            else
+                sb.Append($" ~ {location.lastLine}:{location.lastColumn}");
+        }
+        sb.AppendLine(")");
+        sb.PopTextFormat();
 
         sb.PushForeground(TextColor.BlueColor);
 
-        if (!File.Exists(location.filename)) {
-            string sourceCode;
-            if (error is IValued<Node> eNode) {
-                sourceCode = ASTHelper.PrintNode(eNode.Value);
-            } else if (error is IValued<Token> eToken) {
-                sourceCode = ASTHelper.PrintToken(eToken.Value);
-            } else if (error is IValued<string> eString) {
-                sourceCode = eString.Value;
-            } else {
-                sourceCode = "";
-            }
-
-            sb.AppendLine(
-                FormatTextAt(
-                    new LocationRange(
-                        firstLine: 1,
-                        lastLine: location.lastLine - location.firstLine + 1,
-                        firstColumn: 1,
-                        lastColumn: location.lastColumn - location.firstColumn + 1,
-                        filename: location.filename
-                    ),
-                    new SourceCode(sourceCode)
-                )
-            );
-
-            sb.Append("WARNING : This source code is approximated, because file " + location.filename + " could not be found");
-        } else {
-            sb.Append(FormatTextAt(location, new SourceCode(new Uri(fileInfo.FullName))));
-        }
+        sb.Append(FormatTextAt(location, error));
 
         sb.PopForeground();
 
         return sb;
     }
 
-    private static string FormatTextAt(LocationRange range) {
-        if (!File.Exists(range.filename)) return "<couldn't print source code>";
-
-        return FormatTextAt(range, new SourceCode(new Uri(range.filename)));
-    }
-
-    private static string FormatTextAt(LocationRange range, SourceCode text) {
-        if (range.LineLength == 1) {
-            if (range.ColumnLength == 1) return text.FormatTextAtPoint(range.GetFirstLocation());
-            else return text.FormatTextAtLine(range);
+    private static string FormatTextAt(LocationRange location, in ILocalized error) {
+        if (providers.TryGetValue(location.filename, out var sourceCodeProvider)) {
+            return FormatTextAt(location, sourceCodeProvider.Source);
         }
 
-        return text.FormatTextAtLines(range);
+        if (File.Exists(location.filename)) {
+            var src = new SourceCode(new Uri(location.filename));
+
+            RegisterSourceProvider(new SourceCodeWrapper(location.filename, src));
+
+            return FormatTextAt(location, src);
+        }
+
+        string sourceCode;
+
+        if (error is IValued<Node> eNode) {
+            sourceCode = ASTHelper.PrintNode(eNode.Value);
+        } else if (error is IValued<Token> eToken) {
+            sourceCode = ASTHelper.PrintToken(eToken.Value);
+        } else if (error is IValued<string> eString) {
+            sourceCode = eString.Value;
+        } else {
+            sourceCode = "";
+        }
+
+        return FormatTextAt(
+                new LocationRange(
+                    firstLine: 1,
+                    lastLine: location.lastLine - location.firstLine + 1,
+                    firstColumn: 1,
+                    lastColumn: location.lastColumn - location.firstColumn + 1,
+                    filename: location.filename
+                ),
+                new SourceCode(sourceCode)
+            ) + "\nWARNING : This source code is approximated, because no source code could be found for " + location.filename;
+    }
+
+    private static string FormatTextAt(LocationRange range, SourceCode source) {
+        if (range.LineLength == 1) {
+            if (range.ColumnLength == 1) return source.FormatTextAtPoint(range.GetFirstLocation());
+            else return source.FormatTextAtLine(range);
+        }
+
+        return source.FormatTextAtLines(range);
     }
 
     private static string GetCallerString(LotusError error) => Path.GetFileNameWithoutExtension(error.CallerPath) + '.' + error.Caller;
+
+    internal class SourceCodeWrapper : ISourceCodeProvider {
+        private string _filename;
+        public string Filename => _filename;
+
+        private SourceCode _src;
+        public SourceCode Source => _src;
+
+        public SourceCodeWrapper(string filename, SourceCode src) {
+            _filename = filename;
+            _src = src;
+        }
+    }
 }

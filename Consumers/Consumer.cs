@@ -21,7 +21,7 @@ public class Consumer<T> : IConsumer<T>
     protected void Init() {
         _data = Array.Empty<T>();
         _atStart = true;
-        internalPos = new Location(1, -1);
+        internalPos = new Location(1, 0);
         ConstantDefault = default(T)!;
     }
 
@@ -58,15 +58,9 @@ public class Consumer<T> : IConsumer<T>
     }
 
     public virtual bool Consume(out T item) {
-        if (!_atStart && Count <= 0) {
-            item = Default;
-            _currIdx++;
-            return false;
-        }
-
         item = Consume();
 
-        return true;
+        return !EqualityComparer<T>.Default.Equals(item, Default);
     }
 
     public virtual ref readonly T Consume() {

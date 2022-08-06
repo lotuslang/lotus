@@ -13,8 +13,8 @@ public sealed class StringConsumer : Consumer<char>
     private new void Init() {
         _data = Array.Empty<char>();
         _atStart = true;
-        pos = new Location(1, -1);
-        lastPos = new Location(0, -1);
+        pos = new Location(1, 0);
+        lastPos = new Location(1, 0);
     }
 
 #nullable disable
@@ -37,7 +37,7 @@ public sealed class StringConsumer : Consumer<char>
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
         _data = collection.ToArray();
 
-        pos = new Location(1, -1, fileName);
+        pos = new Location(1, 0, fileName);
     }
 
     public StringConsumer(Uri fileInfo) : this(File.ReadAllText(fileInfo.AbsolutePath), fileInfo.AbsolutePath)
@@ -46,7 +46,7 @@ public sealed class StringConsumer : Consumer<char>
     public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") : this() {
         _data = String.Join('\n', lines).ToCharArray();
 
-        pos = new Location(1, -1, fileName);
+        pos = new Location(1, 0, fileName);
     }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd(), fileName)

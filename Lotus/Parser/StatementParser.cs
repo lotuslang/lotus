@@ -84,22 +84,23 @@ public sealed class StatementParser : Parser<StatementNode>
     private void CheckSemicolon() {
         if (!Tokenizer.Consume(out var currToken) || currToken.Kind != TokenKind.semicolon) {
             var eMsg = Current.GetType() + "s must be terminated with semicolons ';'";
-            var eLoc = Current.Location.GetLastLocation();
             if (currToken.Kind == TokenKind.EOF) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     Message = eMsg,
-                    Location = eLoc
+                    Location = Current.Location.GetLastLocation()
                 });
             } else {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Message = eMsg,
                     Value = currToken,
-                    Location = eLoc
+                    Location = currToken.Location
                 });
             }
 
             _curr = Current with { IsValid = false };
-            Tokenizer.Reconsume();
+
+            if (Tokenizer.Peek().Kind != TokenKind.EOF)
+                Tokenizer.Reconsume();
         }
     }
 

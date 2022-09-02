@@ -41,7 +41,7 @@ public sealed class SourceCode
 
         // this was carefully crafted in the depth of desperation, please please careful !
         // ...and yes, 100 is kinda arbitrary, but it's to be safe about range
-        var n = Utilities.GetNumberOfDigits(lineNumber + 100) - Utilities.GetNumberOfDigits(lineNumber);
+        var n = Utils.GetNumberOfDigits(lineNumber + 100) - Utils.GetNumberOfDigits(lineNumber);
 
         if (n > 0) padding += new string(' ', n);
 
@@ -81,7 +81,7 @@ public sealed class SourceCode
         var output = FormatTextPreludeAt(firstLine);
 
         var padding = new string(' ',
-              Utilities.GetNumberOfDigits(lastLine + 100)   // the space the line number takes
+              Utils.GetNumberOfDigits(lastLine + 100)   // the space the line number takes
             + 3                                             // the space for " > "
             + (firstColumn - 1)                             // the space before the character's column
         );
@@ -112,7 +112,7 @@ public sealed class SourceCode
         var output = FormatTextPreludeAt(line);
 
         var padding = new string(' ',
-              Utilities.GetNumberOfDigits(line + 100)   // the space the line number takes
+              Utils.GetNumberOfDigits(line + 100)   // the space the line number takes
             + 3                                         // the space for " | "
             + (column - 1)                              // the space before the character's column
         );
@@ -148,7 +148,7 @@ public sealed class SourceCode
         output += actualLine + '\n';
 
         var padding = new string(' ',
-              Utilities.GetNumberOfDigits(line + 100)   // the space the line number takes
+              Utils.GetNumberOfDigits(line + 100)   // the space the line number takes
             + 3                                         // the space for " | "
             + (position.column - 1)                     // the space before the character's column
         );

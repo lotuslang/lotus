@@ -69,7 +69,7 @@ public sealed class StatementParser : Parser<StatementNode>
             _curr = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
-        if (checkSemicolon && Utilities.NeedsSemicolon(Current)) {
+        if (checkSemicolon && Utils.NeedsSemicolon(Current)) {
             CheckSemicolon();
 
             // consume trailing semicolons

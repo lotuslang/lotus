@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-public static class Utilities
+public static class Utils
 {
     public static readonly HashSet<string> keywords = new() {
         "var",
@@ -240,7 +240,7 @@ public static class Utilities
         if (accessToken == Token.NULL) {
             _accessLevel = defaultLvl;
         } else {
-            _accessLevel = Utilities.GetAccess(accessToken);
+            _accessLevel = Utils.GetAccess(accessToken);
 
             if ((_accessLevel & validLvls) == AccessLevel.Default) {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {

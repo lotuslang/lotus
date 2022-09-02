@@ -19,7 +19,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(ImportNode node)
         => Visit(node.FromStatement)
          + ASTHelper.PrintToken(node.Token)
-         + Utilities.Join(",", ASTHelper.PrintValue, node.Names);
+         + Utils.Join(",", ASTHelper.PrintValue, node.Names);
 
     public string Visit(NamespaceNode node)
         => ASTHelper.PrintToken(node.AccessToken) + ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Name);
@@ -32,7 +32,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + ASTHelper.PrintToken(node.Token)
          + ASTHelper.PrintTypeName(node.Name)
          + ASTHelper.PrintToken(node.Fields.OpeningToken)
-         + Utilities.Join("; ", coll: node.Fields.Items, convert:
+         + Utils.Join("; ", coll: node.Fields.Items, convert:
                 (field) => ASTHelper.PrintValue(field.Name)
                          + ": "
                          + ASTHelper.PrintValue(field.Type)

@@ -80,7 +80,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             //       supposed to be modded
 
             if (Current is IAccessible accCurrent) {
-                accCurrent.AccessLevel = Utilities.GetAccessAndValidate(
+                accCurrent.AccessLevel = Utils.GetAccessAndValidate(
                     accessKeyword,
                     accCurrent.DefaultAccessLevel,
                     accCurrent.ValidLevels

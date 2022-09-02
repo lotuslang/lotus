@@ -289,7 +289,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     }
 
     public GraphNode Visit(NameNode node)
-        => new GraphNode(node.GetHashCode(), Utilities.Join(".", (ident => ident.Representation), node.Parts))
+        => new GraphNode(node.GetHashCode(), Utils.Join(".", (ident => ident.Representation), node.Parts))
             .SetColor(Ident.color)
             .SetTooltip("name");
 

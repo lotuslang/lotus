@@ -35,7 +35,7 @@
         };
 
     public static string PrintTuple<T>(Tuple<T> tuple, string sep, Func<T, string> transform)
-        => PrintToken(tuple.OpeningToken) + Utilities.Join(sep, transform, tuple.Items) + PrintToken(tuple.ClosingToken);
+        => PrintToken(tuple.OpeningToken) + Utils.Join(sep, transform, tuple.Items) + PrintToken(tuple.ClosingToken);
 
     public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);
     public static string PrintStatement(StatementNode node) => StatementPrinter.Print(node);

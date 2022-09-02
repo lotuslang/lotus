@@ -42,7 +42,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
             return output;
         }
 
-        output += Utilities.Join(",", printParameter, node.ParamList.Items) + ASTHelper.PrintToken(node.ParamList.ClosingToken);
+        output += Utils.Join(",", printParameter, node.ParamList.Items) + ASTHelper.PrintToken(node.ParamList.ClosingToken);
 
         if (node.HasReturnType) output += ASTHelper.PrintToken(node.ColonToken) + ASTHelper.PrintValue(node.ReturnType);
 
@@ -80,7 +80,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
               + Print(node.Body);
 
     public string Print(Tuple<StatementNode> tuple)
-        => ASTHelper.PrintTuple(tuple, "", (stmt) => Print(stmt) + (Utilities.NeedsSemicolon(stmt) ? ";" : ""));
+        => ASTHelper.PrintTuple(tuple, "", (stmt) => Print(stmt) + (Utils.NeedsSemicolon(stmt) ? ";" : ""));
 
     public string Print(StatementNode node) => node.Accept(this);
 }

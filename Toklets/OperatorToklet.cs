@@ -122,7 +122,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             return new OperatorToken(currCharStr, Precedence.Unary, false, input.Position);
         }
 
-        Debug.Assert(false, "OperatorToklet was called on the wrong characters");
+        Debug.Assert(false, "OperatorToklet can't be called on '" + currCharStr + "'");
         throw null;
     }
 }

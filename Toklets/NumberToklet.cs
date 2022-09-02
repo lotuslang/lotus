@@ -7,8 +7,8 @@ public sealed class NumberToklet : IToklet<NumberToken>
     public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
 	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
         ((currChar, getInput) => {
-                return  Char.IsDigit(currChar)
-                    || (currChar == '.' && Char.IsDigit(getInput().Consume()));
+                return  Utils.IsAsciiDigit(currChar)
+                    || (currChar == '.' && Utils.IsAsciiDigit(getInput().Consume()));
             }
         );
 

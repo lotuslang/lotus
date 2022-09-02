@@ -7,8 +7,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
     public static LotusGrammar Instance => _instance;
 
     private LotusGrammar() : base() {
-        InitializeToklets();
-        InitializeTriviaToklets();
         InitializeExpressionKinds();
         InitializeExpressionParslets();
         InitializeStatementParslets();
@@ -16,26 +14,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
 
         base.Initialize(internalGrammar);
     }
-
-    private void InitializeToklets()
-        => internalGrammar
-            .RegisterToklet(NumberToklet.Instance)
-            .RegisterToklet(ComplexStringToklet.Instance)
-            .RegisterToklet(StringToklet.Instance)
-            .RegisterToklet(IdentToklet.Instance)
-            .RegisterToklet(OperatorToklet.Instance)
-            .RegisterToklet(Toklet.From(';', TokenKind.semicolon))
-            .RegisterToklet(Toklet.From("::"))
-            .RegisterToklet(Toklet.Default)
-            ;
-
-    private void InitializeTriviaToklets()
-        => internalGrammar
-            .RegisterTriviaToklet(CommentTriviaToklet.Instance)
-            .RegisterTriviaToklet(WhitespaceTriviaToklet.Instance)
-            .RegisterTriviaToklet(NewlineTriviaToklet.Instance)
-            .RegisterTriviaToklet(new TriviaToklet())
-            ;
 
     private void InitializeExpressionParslets() {
 

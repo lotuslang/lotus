@@ -1,4 +1,4 @@
-public class Tokenizer : IConsumer<Token>
+public partial class Tokenizer : IConsumer<Token>
 {
     protected Token _curr;
     public ref readonly Token Current => ref _curr;
@@ -123,7 +123,7 @@ public class Tokenizer : IConsumer<Token>
                 return ref _curr;
             }
 
-            _curr = Grammar.MatchToklet(_input).Consume(_input, this);
+            _curr = ConsumeTokenCore();
 
             if (leadingTrivia != null)
                 _curr.AddLeadingTrivia(leadingTrivia);
@@ -135,18 +135,38 @@ public class Tokenizer : IConsumer<Token>
                     _curr.AddTrailingTrivia(trailingTrivia);
             }
         } else {
-            _curr = Grammar.MatchToklet(_input).Consume(_input, this);
+            _curr = ConsumeTokenCore();
         }
 
         return ref _curr;
     }
 
     public TriviaToken? ConsumeTrivia() {
-        var triviaToklet = Grammar.MatchTriviaToklet(_input);
+        if (!_input.Consume(out char currChar))
+            return null;
 
-        if (triviaToklet is null) return null;
+        switch (currChar) {
+            case '/':
+                if (_input.Peek() is '/' or '*') {
+                    _input.Reconsume();
+                    return CommentTriviaToklet.Instance.Consume(_input, this);
+                }
 
-        return triviaToklet.Consume(_input, this);
+                _input.Reconsume();
+                return null;
+            case '\n':
+                _input.Reconsume();
+                return NewlineTriviaToklet.Instance.Consume(_input, this);
+            case ' ':
+                _input.Reconsume();
+                return WhitespaceTriviaToklet.Instance.Consume(_input, this);
+            default:
+                _input.Reconsume();
+                if (Char.IsWhiteSpace(currChar))
+                    return WhitespaceTriviaToklet.Instance.Consume(_input, this);
+                else
+                    return null;
+        }
     }
 
     public IConsumer<Token> Clone() => new Tokenizer(this);

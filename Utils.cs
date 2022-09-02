@@ -260,6 +260,8 @@ public static class Utils
             if (flag.HasFlag(value))
                 yield return value;
     }
+
+    public static bool IsAsciiDigit(in char c) => (uint)(c - '0') <= 9;
 }
 
 internal class DeterministicStringComparer : IEqualityComparer<string>

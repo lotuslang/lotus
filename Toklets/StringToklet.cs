@@ -5,7 +5,7 @@ public sealed class StringToklet : IToklet<StringToken>
     public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
 	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
         ((currChar, _) =>
-            currChar is '"' or '\"'
+            currChar is '"' or '\''
         );
 
     public StringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {

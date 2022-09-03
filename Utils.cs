@@ -48,61 +48,14 @@ public static class Utils
         return count;
     }
 
-    [Obsolete("Utilities.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
-    [DebuggerStepThrough]
-    public static bool IsName(ValueNode node)
-        => ASTHelper.IsName(node);
-
     [DebuggerStepThrough]
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         where TKey : notnull
         => new(dic);
 
     [DebuggerStepThrough]
-    public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
-        => new(list);
-
-    [DebuggerStepThrough]
     public static ReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> list)
-        => list.ToArray().AsReadOnly();
-
-    /// <summary>
-    /// Tries to find an element in the collection that matches the condition
-    /// </summary>
-    /// <param name="collection">The collection to search in</param>
-    /// <param name="match">The condition to search for</param>
-    /// <returns>Either the first element that matches ; or default(T)</returns>
-    [return: MaybeNull]
-    [DebuggerStepThrough]
-    public static T? Find<T>(this ICollection<T> collection, Predicate<T> match) {
-        if (match is null) {
-            throw new ArgumentNullException(nameof(match));
-        }
-
-        foreach (var item in collection) {
-            if (match(item)) return item;
-        }
-
-        return default(T);
-    }
-
-    /// <summary>
-    /// Checks whether the collection contains an element that matches the condition
-    /// </summary>
-    /// <param name="collection">The collection to search in</param>
-    /// <param name="match">The condition to check against for</param>
-    [DebuggerStepThrough]
-    public static bool Contains<T>(this ICollection<T> collection, Predicate<T> match) {
-        if (match is null) {
-            throw new ArgumentNullException(nameof(match));
-        }
-
-        foreach (var item in collection) {
-            if (match(item)) return true;
-        }
-
-        return false;
-    }
+        => new ReadOnlyCollection<T>(list.ToArray());
 
     [DebuggerStepThrough]
     public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
@@ -125,7 +78,7 @@ public static class Utils
         } else {
             var output = new System.Text.StringBuilder();
 
-            foreach (var item in coll) output.Append(convert(item) + separator);
+            foreach (var item in coll) output.Append(convert(item)).Append(separator);
 
             if (separator.Length != 0)
                 output = output.Remove(output.Length - separator.Length, separator.Length);
@@ -135,45 +88,6 @@ public static class Utils
     }
 
     [DebuggerStepThrough]
-	public static (List<T> valid, List<T> invalid) Split<T>(this IEnumerable<T> list, Predicate<T> match) {
-		var (valid, invalid) = (new List<T>(), new List<T>());
-
-		foreach (var item in list) {
-			if (match(item)) valid.Add(item);
-			else invalid.Add(item);
-		}
-
-		return (valid, invalid);
-	}
-
-    [DebuggerStepThrough]
-	public static (List<TValid> valid, List<TInvalid> invalid) SplitByType<TList, TValid, TInvalid>(this IEnumerable<TList> list)
-		where TInvalid : class, TList
-	{
-		var (valid, invalid) = (new List<TValid>(), new List<TInvalid>());
-
-		foreach (var item in list) {
-			if (item is TValid validItem) valid.Add(validItem);
-			else invalid.Add((item as TInvalid)!);
-		}
-
-		return (valid, invalid);
-	}
-
-    [DebuggerStepThrough]
-	public static (List<TMatch> valid, List<TOther> invalid) SplitByType<TMatch, TOther>(this IEnumerable<TOther> list) where TOther : class
-		=> SplitByType<TOther, TMatch, TOther>(list);
-
-	// the loops you have to jump through sometimes...
-    [DebuggerStepThrough]
-	public static IEnumerable<TMatch> WhereType<TMatch>(this IEnumerable list) {
-		foreach (var item in list) {
-			if (item is TMatch matched)
-                yield return matched;
-		}
-	}
-
-    [DebuggerStepThrough]
     public static GraphNode Apply(this GraphNode node, Func<GraphNode, GraphNode> transform) {
         foreach (var child in node.Children) {
             child.Apply(transform);
@@ -181,26 +95,6 @@ public static class Utils
 
         return transform(node);
     }
-
-    [DebuggerStepThrough]
-	public static Stack<T> Clone<T>(this Stack<T> original) {
-		var arr = new T[original.Count];
-		original.CopyTo(arr, 0);
-		Array.Reverse(arr);
-		return new Stack<T>(arr);
-	}
-
-    public static string ToExpectedString(IEnumerable<TokenKind> expected)
-        => '`' + String.Join("`, or `", expected) + '`';
-
-    public static string ToExpectedString(IEnumerable<Type> expected)
-        => '`' + String.Join("`, or `", expected.Select(type => type.Name)) + '`';
-
-    public static string ToExpectedString(IEnumerable expected)
-        => '\'' + String.Join("', or '", expected) + '\'';
-
-    public static Uri RelativeToPWD(this Uri uri)
-        => new Uri(System.IO.Directory.GetCurrentDirectory()).MakeRelativeUri(uri);
 
     public static string GetDisplayName(this Type type) {
         if (!type.IsGenericType)

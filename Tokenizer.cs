@@ -61,8 +61,6 @@ public partial class Tokenizer : IConsumer<Token>
 
     public Tokenizer(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
 
-    public Tokenizer(IEnumerable<string> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
-
     private Token _lastTok = Token.NULL;
     public void Reconsume() {
         Debug.Assert(!_reconsumeQueue.TryPeek(out var token) || !Object.ReferenceEquals(token, Current));

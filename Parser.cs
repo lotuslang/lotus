@@ -60,10 +60,6 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
         }
     }
 
-    public Parser(IEnumerable<Token> tokens, ReadOnlyGrammar grammar) : this(grammar) {
-        Tokenizer = new Consumer<Token>(tokens, Token.NULL, Position.filename);
-    }
-
     public Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
 
     public Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection, grammar), grammar) { }
@@ -90,7 +86,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     public abstract T Peek();
 
-    public abstract T[] Peek(int n);
+    public abstract ImmutableArray<T> Peek(int n);
 
     /// <summary>
     /// Consumes a StatementNode object and returns it.

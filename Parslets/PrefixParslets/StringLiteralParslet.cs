@@ -8,7 +8,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
         Debug.Assert(strToken is not null);
 
         if (strToken is ComplexStringToken complexString) {
-            var sections = ImmutableArray.CreateBuilder<ValueNode>(complexString.CodeSections.Count);
+            var sections = ImmutableArray.CreateBuilder<ValueNode>(complexString.CodeSections.Length);
 
             foreach (var section in complexString.CodeSections) {
                 var endPos = (section.LastOrDefault()?.Location ?? parser.Position).GetLastLocation();

@@ -4,10 +4,10 @@ public sealed record CommentTriviaToken : TriviaToken
 
     public ImmutableArray<CommentTriviaToken> InnerComments { get; init; }
 
-    public CommentTriviaToken(string rep, LocationRange location, IList<CommentTriviaToken>? inner = null)
+    public CommentTriviaToken(string rep, LocationRange location, ImmutableArray<CommentTriviaToken> inner = default)
         : base(rep, TriviaKind.comment, location)
     {
-        InnerComments = inner?.ToImmutableArray() ?? ImmutableArray<CommentTriviaToken>.Empty;
+        InnerComments = inner;
     }
 
     [DebuggerHidden()]

@@ -28,7 +28,7 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
             ) { IsValid = openingBracket.IsValid, LeadingTrivia = openingBracket.LeadingTrivia, TrailingTrivia = openingBracket.TrailingTrivia } ,
             indexTuple.Items,
             OperationType.ArrayAccess,
-            additionalTokens: indexTuple.ClosingToken
+            ImmutableArray.Create(indexTuple.ClosingToken)
         ) { IsValid = indexTuple.IsValid };
     }
 }

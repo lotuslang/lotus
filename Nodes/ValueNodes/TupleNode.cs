@@ -25,7 +25,7 @@ public sealed record TupleNode
     /// </summary>
     internal ParenthesizedValueNode AsParenthesized()
         => new(
-            Items.FirstOrDefault(ValueNode.NULL),
+            Items.IsDefaultOrEmpty ? ValueNode.NULL : Items[0],
             OpeningToken,
             ClosingToken
         ) { IsValid = IsValid };

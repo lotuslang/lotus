@@ -109,10 +109,10 @@ partial class Program
     static LotusTokenizer GetTokenizerForFile(FileInfo file)
         => new LotusTokenizer(GetConsumerForFile(file));
 
-    static int HandleParsing(LotusTokenizer tokenizer, out List<TopLevelNode> nodes) {
+    static int HandleParsing(LotusTokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);
 
-        nodes = parser.ToList();
+        nodes = parser.ToImmutableArray();
 
         if (Logger.HasErrors) {
             Logger.PrintAllErrors();
@@ -123,7 +123,7 @@ partial class Program
         return 0;
     }
 
-    static int HandleParsing(FileInfo file, out List<TopLevelNode> nodes)
+    static int HandleParsing(FileInfo file, out ImmutableArray<TopLevelNode> nodes)
         => HandleParsing(GetTokenizerForFile(file), out nodes);
 }
 #pragma warning restore

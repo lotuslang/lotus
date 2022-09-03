@@ -44,11 +44,4 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
         return new IfNode(condition, body, elseNode, ifToken) { IsValid = isValid };
     }
-
-    // TODO: Later
-    /*static ElseNode[] FlattenElseChain(ElseNode elseNode) {
-        if (!elseNode.HasIf || !elseNode.IfNode.HasElse) return new[] { elseNode };
-
-        return (new[] { elseNode }).Concat(FlattenElseChain(elseNode.IfNode.ElseNode)).ToArray();
-    }*/
 }

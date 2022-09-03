@@ -43,7 +43,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
         var isValid = true;
 
         if (startingToken.Representation != Start) {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) { // should we use InvalidCall instead ?
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                 Value = startingToken,
                 In = In,
                 Expected = Start
@@ -52,7 +52,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             isValid = false;
         }
 
-        var items = new List<TValue>();
+        var items = ImmutableArray.CreateBuilder<TValue>();
 
         while (parser.Tokenizer.Consume(out var token) && token != End) {
 
@@ -184,6 +184,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             isValid = false;
         }
 
-        return new Tuple<TValue>(items, startingToken, endingToken) { IsValid = isValid };
+        return new Tuple<TValue>(items.ToImmutable(), startingToken, endingToken) { IsValid = isValid };
     }
 }

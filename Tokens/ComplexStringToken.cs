@@ -1,10 +1,7 @@
-public sealed record ComplexStringToken(string Representation, List<Token[]> CodeSections, LocationRange Location)
+public sealed record ComplexStringToken(string Representation, ImmutableArray<ImmutableArray<Token>> CodeSections, LocationRange Location)
 : StringToken(Representation, Location)
 {
-    public new static readonly ComplexStringToken NULL = new("", new List<Token[]>(), LocationRange.NULL) { IsValid = false };
-
-    public void AddSection(Token[] section)
-        => CodeSections.Add(section);
+    public new static readonly ComplexStringToken NULL = new("", ImmutableArray<ImmutableArray<Token>>.Empty, LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

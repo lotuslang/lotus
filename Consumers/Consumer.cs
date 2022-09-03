@@ -2,10 +2,10 @@ public class Consumer<T> : IConsumer<T>
 {
     protected bool _atStart;
 
-    protected T[] _data;
+    protected ImmutableArray<T> _data;
     protected int _currIdx;
 
-    public virtual ref readonly T Current => ref _data[_currIdx];
+    public virtual ref readonly T Current => ref _data.ItemRef(_currIdx);
 
     public int Count => _data.Length - (_currIdx + 1);
 
@@ -19,7 +19,7 @@ public class Consumer<T> : IConsumer<T>
     public virtual LocationRange Position => (Current is ILocalized tLoc ? tLoc.Location : internalPos);
 
     protected void Init() {
-        _data = Array.Empty<T>();
+        _data = ImmutableArray<T>.Empty;
         _atStart = true;
         internalPos = new Location(1, 0);
         ConstantDefault = default(T)!;
@@ -31,10 +31,10 @@ public class Consumer<T> : IConsumer<T>
     }
 #nullable restore
 
-    public Consumer(IEnumerable<T> enumerable, T defaultValue, string filename) : this() {
+    public Consumer(ImmutableArray<T> enumerable, T defaultValue, string filename) : this() {
         ConstantDefault = defaultValue;
 
-        _data = enumerable.ToArray();
+        _data = enumerable;
 
         internalPos = internalPos with { filename = filename };
     }
@@ -52,7 +52,7 @@ public class Consumer<T> : IConsumer<T>
     public Consumer(IConsumer<T> consumer) : this() {
         ConstantDefault = consumer.Default;
 
-        _data = consumer.ToArray();
+        _data = consumer.ToImmutableArray();
 
         internalPos = internalPos with { filename = consumer.Position.filename };
     }
@@ -77,7 +77,7 @@ public class Consumer<T> : IConsumer<T>
 
         internalPos = internalPos with { column = internalPos.column + 1 };
 
-        return ref _data[_currIdx];
+        return ref _data.ItemRef(_currIdx);
     }
 
     public virtual void Reconsume() {

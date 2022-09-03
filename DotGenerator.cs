@@ -12,13 +12,13 @@ public sealed class Graph
     /// <value>A string that represents the name of this graph.</value>
     public ref readonly string Name => ref name;
 
-    private List<GraphNode> rootNodes;
+    private ImmutableArray<GraphNode>.Builder rootNodes;
 
     /// <summary>
     /// The nodes that are the roots of independent trees.
     /// </summary>
     /// <value>A List of GraphNode containing every root node.</value>
-    public ref readonly List<GraphNode> RootNodes => ref rootNodes;
+    public ImmutableArray<GraphNode> RootNodes => rootNodes.ToImmutable();
 
     private Dictionary<string, string> graphprops;
 
@@ -34,7 +34,7 @@ public sealed class Graph
 
     public Graph(string name) {
         this.name = name;
-        rootNodes = new List<GraphNode>();
+        rootNodes = ImmutableArray.CreateBuilder<GraphNode>();
         graphprops = new Dictionary<string, string>();
         nodeprops = new Dictionary<string, string>();
         edgeprops = new Dictionary<string, string>();
@@ -174,7 +174,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
     /// <value>A list of GraphNode this node is pointing to, (i.e. children).</value>
-    public List<GraphNode> Children { get; private set; }
+    public ImmutableArray<GraphNode>.Builder Children { get; private set; }
 
     public Dictionary<string, string> Properties { get; private set; }
 
@@ -186,7 +186,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         ID = id;
         Name = text;
         Properties = new Dictionary<string, string>();
-        Children = new List<GraphNode>();
+        Children = ImmutableArray.CreateBuilder<GraphNode>();
     }
 
     /// <summary>
@@ -241,11 +241,9 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
             strBuilder.Append(new string('\t', tabs) + ID + " -- " + child.ID);
 
-            // Register this child
-            registry.Add(child);
-
-            // Then append the representation of the child
-            strBuilder.Append(new string('\t', tabs) + child.ToText(registry, tabs + 1));
+            // If this child wasn't aready processed, then append its text
+            if (registry.Add(child))
+                strBuilder.Append(new string('\t', tabs) + child.ToText(registry, tabs + 1));
         }
 
         // Return the string builder

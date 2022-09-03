@@ -24,7 +24,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
             }
 
             return new Tuple<StatementNode>(
-                new[] { statement },
+                ImmutableArray.Create(statement),
                 Token.NULL,
                 Token.NULL
             ) {
@@ -49,7 +49,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
 
         var location = openingBracket.Location;
 
-        var statements = new List<StatementNode>();
+        var statements = ImmutableArray.CreateBuilder<StatementNode>();
 
         while (parser.Tokenizer.Peek() != "}") {
             statements.Add(parser.Consume());
@@ -91,6 +91,6 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
 
         parser.Tokenizer.Consume();
 
-        return new Tuple<StatementNode>(statements, openingBracket, closingBracket) { IsValid = isValid };
+        return new Tuple<StatementNode>(statements.ToImmutable(), openingBracket, closingBracket) { IsValid = isValid };
     }
 }

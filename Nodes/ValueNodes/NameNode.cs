@@ -16,13 +16,6 @@ public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts)
         IsValid = isValid;
     }
 
-    public OperationNode AsOperation()
-        => new OperationNode(
-            _opToken.Value,
-            Parts.Cast<ValueNode>().ToArray(),
-            OperationType.Access
-        ) { IsValid = IsValid };
-
     [DebuggerHidden()]
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]

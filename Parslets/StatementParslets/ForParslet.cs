@@ -6,7 +6,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
     public ForNode Parse(StatementParser parser, Token forToken) {
         Debug.Assert(forToken == "for");
 
-        var header = new List<StatementNode>();
+        var header = ImmutableArray.CreateBuilder<StatementNode>(3);
 
         var isValid = true;
         var hasEOF = false;
@@ -93,6 +93,8 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             });
 
             isValid = false;
+
+            header.Count = 3;
         } else if (!hasEOF && header.Count <= 2) {
             Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
                 Message = "Not enough statements (expected up to 3 statements, got "
@@ -100,6 +102,9 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 In = "a for-loop header",
                 Location = header[^1].Token.Location
             });
+
+            while (header.Count < 3)
+                header.Add(parser.Default);
         }
 
         // We have to change position cause default filename doesn't match current otherwise
@@ -108,7 +113,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         if (!hasEOF)
             body = parser.ConsumeStatementBlock();
 
-        return new ForNode(forToken, new Tuple<StatementNode>(header, openingParen, closingParen), body) { IsValid = isValid };
+        return new ForNode(forToken, new Tuple<StatementNode>(header.MoveToImmutable(), openingParen, closingParen), body) { IsValid = isValid };
     }
 
     private static StatementNode GetDefaultStatement(LocationRange pos)

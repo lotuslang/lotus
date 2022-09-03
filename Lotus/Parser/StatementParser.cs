@@ -31,16 +31,16 @@ public sealed class StatementParser : Parser<StatementNode>
     public override StatementNode Peek()
         => new StatementParser(this).Consume();
 
-    public override StatementNode[] Peek(int n) {
+    public override ImmutableArray<StatementNode> Peek(int n) {
         var parser = new StatementParser(this);
 
-        var output = new List<StatementNode>();
+        var output = ImmutableArray.CreateBuilder<StatementNode>(n);
 
         for (int i = 0; i < n; i++) {
             output.Add(parser.Consume());
         }
 
-        return output.ToArray();
+        return output.MoveToImmutable();
     }
 
     public override ref readonly StatementNode Consume()

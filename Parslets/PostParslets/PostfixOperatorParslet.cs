@@ -15,7 +15,7 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
 
         return new OperationNode(
             operatorToken,
-            new[] { left },
+            ImmutableArray.Create(left),
             _opType
         );
     }

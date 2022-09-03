@@ -26,7 +26,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
         var isValid = true;
 
-        var sections = new List<Token[]>();
+        var sections = ImmutableArray.CreateBuilder<ImmutableArray<Token>>();
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
@@ -45,11 +45,9 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             }
 
             if (currChar == '{') {
-                var tokenList = new List<Token>();
+                var tokenList = ImmutableArray.CreateBuilder<Token>();
 
                 while (tokenizer.Peek() != "}") {
-
-
                     if (!tokenizer.Consume(out var currToken)) {
                         Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                             In = "an interpolated string",
@@ -68,7 +66,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                     tokenList.Add(currToken);
                 }
 
-                sections.Add(tokenList.ToArray());
+                sections.Add(tokenList.ToImmutable());
 
                 output.Append("{" + (sections.Count - 1) + "}");
 
@@ -92,6 +90,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             }
         }
 
-        return new ComplexStringToken(output.ToString(), sections, new LocationRange(startPos, input.Position)) { IsValid = isValid };
+        return new ComplexStringToken(output.ToString(), sections.ToImmutable(), new LocationRange(startPos, input.Position)) { IsValid = isValid };
     }
 }

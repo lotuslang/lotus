@@ -43,7 +43,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
         if (currChar == '*') {
             var strBuilder = new StringBuilder("/*");
 
-            var inner = new List<CommentTriviaToken>();
+            var inner = ImmutableArray.CreateBuilder<CommentTriviaToken>();
 
             while (input.Consume(out currChar) && !(currChar == '*' && input.Peek() == '/')) {
                 if (currChar == '/' && input.Peek() == '*') {
@@ -53,7 +53,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 
                     inner.Add(Consume(input, tokenizer, isInner: true));
 
-                    strBuilder.Append(inner[^1].Representation);
+                    strBuilder.Append(inner.Last().Representation);
 
                     continue;
                 }
@@ -79,7 +79,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             return new CommentTriviaToken(
                 strBuilder.ToString(),
                 new LocationRange(startingPosition, input.Position),
-                inner: inner
+                inner: inner.ToImmutable()
             ) { IsValid = isValid, TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
         }
 

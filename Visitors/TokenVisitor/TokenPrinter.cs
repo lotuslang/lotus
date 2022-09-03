@@ -10,7 +10,7 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
 
     public string Visit(ComplexStringToken token) {
         // the capacity is just the minimum + a guess
-        var output = new StringBuilder("$\"", capacity: token.Representation.Length + (token.CodeSections.Count * 10));
+        var output = new StringBuilder("$\"", capacity: token.Representation.Length + (token.CodeSections.Length * 10));
 
         var str = token.Representation;
 

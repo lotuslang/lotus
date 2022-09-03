@@ -16,13 +16,13 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 	public override LocationRange Position => pos;
 
     private new void Init() {
-        _data = Array.Empty<char>();
+        _data = ImmutableArray<char>.Empty;
         _atStart = true;
         pos = new Location(1, 0);
         lastPos = new Location(1, 0);
 
         // _data will be fetched after init, so it's fine
-        _src = new Lazy<SourceCode>(() => new SourceCode(new string(_data)), isThreadSafe: false);
+        _src = new Lazy<SourceCode>(() => new SourceCode(new string(_data.AsSpan())), isThreadSafe: false);
     }
 
 #nullable disable
@@ -42,20 +42,20 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
         lastPos = consumer.lastPos;
     }
 
+    public StringConsumer(string str, string fileName = "<std>") : this() {
+        _data = str.ToImmutableArray();
+
+        pos = new Location(1, 0, fileName);
+    }
+
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
-        _data = collection.ToArray();
+        _data = collection.ToImmutableArray();
 
         pos = new Location(1, 0, fileName);
     }
 
     public StringConsumer(Uri fileInfo) : this(File.ReadAllText(fileInfo.AbsolutePath), fileInfo.AbsolutePath)
     { }
-
-    public StringConsumer(IEnumerable<string> lines, string fileName = "<std>") : this() {
-        _data = String.Join('\n', lines).ToCharArray();
-
-        pos = new Location(1, 0, fileName);
-    }
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd(), fileName)
     { }

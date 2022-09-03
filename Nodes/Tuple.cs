@@ -9,10 +9,10 @@ public sealed record Tuple<T> : ILocalized, IEnumerable<T>
     public Token OpeningToken { get; }
     public Token ClosingToken { get; }
 
-    public static readonly Tuple<T> NULL = new(Array.Empty<T>(), Token.NULL, Token.NULL) { IsValid = false };
+    public static readonly Tuple<T> NULL = new(ImmutableArray<T>.Empty, Token.NULL, Token.NULL) { IsValid = false };
 
-    public Tuple(IEnumerable<T> items, Token opening, Token closing) {
-        Items = items.ToImmutableArray();
+    public Tuple(ImmutableArray<T> items, Token opening, Token closing) {
+        Items = items;
         OpeningToken = opening;
         ClosingToken = closing;
         Location = new LocationRange(opening, closing);

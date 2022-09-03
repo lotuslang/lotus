@@ -16,9 +16,6 @@ public sealed class ExpressionParser : Parser<ValueNode>
 
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 
-    public ExpressionParser(IEnumerable<Token> tokens) : base(tokens, LotusGrammar.Instance)
-        => Init();
-
     public ExpressionParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
 
     public ExpressionParser(Uri file) : this(new LotusTokenizer(file)) { }
@@ -30,16 +27,16 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public override ValueNode Peek()
         => new ExpressionParser(this).Consume();
 
-    public override ValueNode[] Peek(int n) {
+    public override ImmutableArray<ValueNode> Peek(int n) {
         var parser = new ExpressionParser(this);
 
-        var output = new List<ValueNode>();
+        var output = ImmutableArray.CreateBuilder<ValueNode>(n);
 
         for (int i = 0; i < n; i++) {
             output.Add(parser.Consume());
         }
 
-        return output.ToArray();
+        return output.MoveToImmutable();
     }
 
     public override ref readonly ValueNode Consume()

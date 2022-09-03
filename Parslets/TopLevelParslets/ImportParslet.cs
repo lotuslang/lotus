@@ -51,7 +51,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             importKeyword = new Token(importToken.Representation, TokenKind.keyword, importToken.Location) { IsValid = false };
         }
 
-        var importList = new List<NameNode>();
+        var importList = ImmutableArray.CreateBuilder<NameNode>();
 
         do {
             // consume the import's name
@@ -90,6 +90,6 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         parser.Tokenizer.Reconsume();
 
-        return new ImportNode(importList.ToImmutableArray(), from, importKeyword) { IsValid = importIsValid };
+        return new ImportNode(importList.ToImmutable(), from, importKeyword) { IsValid = importIsValid };
     }
 }

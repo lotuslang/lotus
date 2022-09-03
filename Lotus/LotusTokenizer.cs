@@ -17,7 +17,4 @@ public sealed class LotusTokenizer : Tokenizer
 
     public LotusTokenizer(IEnumerable<char> collection) : this(new StringConsumer(collection))
     { }
-
-    public LotusTokenizer(IEnumerable<string> collection) : this(new StringConsumer(collection))
-    { }
 }

@@ -11,6 +11,6 @@ public sealed class PrefixOperatorParslet : IPrefixParslet<OperationNode>
 
         Debug.Assert(opToken is not null);
 
-        return new OperationNode(opToken, new[] { parser.Consume(Precedence.Unary) }, _opType);
+        return new OperationNode(opToken, ImmutableArray.Create(parser.Consume(Precedence.Unary)), _opType);
     }
 }

@@ -7,7 +7,7 @@
     <RootNamespace>Parsex</RootNamespace>
     <TargetCulture>InvariantCulture</TargetCulture>
     <Nullable>enable</Nullable>
-    <NoWarn>IDE0034,IDE0046,IDE0047,IDE0049,IDE0025,IDE0021,IDE1006,IDE0045,CA1050</NoWarn>
+    <WarningAsError>IDE0059</WarningAsError>
 
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>

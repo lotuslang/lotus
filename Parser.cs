@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 public abstract class Parser<T> : IConsumer<T> where T : Node
 {
     protected readonly Queue<T> reconsumeQueue;

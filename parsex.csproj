@@ -15,9 +15,10 @@
   <ItemGroup>
     <Using Include="System" />
     <Using Include="System.Linq" />
-    <Using Include="System.Collections.Generic" />
     <Using Include="System.Diagnostics" />
     <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
 
     <Using Remove="System.IO" />
     <Using Remove="System.Net.Http" />

@@ -26,9 +26,8 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
     }
 
 #nullable disable
-    private StringConsumer() : base() {
-        Init();
-    }
+    private StringConsumer() : base()
+        => Init();
 
     public StringConsumer(StringConsumer consumer) : this() {
 		_data = consumer._data;

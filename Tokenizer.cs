@@ -3,15 +3,11 @@ public partial class Tokenizer : IConsumer<Token>
     protected Token _curr;
     public ref readonly Token Current => ref _curr;
 
-    public Token Default {
-        get => Token.NULL with { Location = Position };
-    }
+    public Token Default => Token.NULL with { Location = Position };
 
     protected Queue<Token> _reconsumeQueue;
 
-    public LocationRange Position {
-        get => Current.Location;
-    }
+    public LocationRange Position => Current.Location;
 
     protected StringConsumer _input;
 
@@ -111,10 +107,8 @@ public partial class Tokenizer : IConsumer<Token>
 
         _input.Reconsume();
 
-        TriviaToken? leadingTrivia = null;
-
         if (!preserveTrivia && currChar != ',') {
-            leadingTrivia = ConsumeTrivia();
+            var leadingTrivia = ConsumeTrivia();
 
             if (_input.Count == 0) {
                 _curr = Default with { LeadingTrivia = leadingTrivia };

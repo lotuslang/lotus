@@ -62,8 +62,7 @@ internal sealed class MarkupChain : IEnumerable<Markup>
             var newPrev = node.Prev;
             node.Prev = head.Prev;
 
-            if (node.Next is null)
-                node.Next = head;
+            node.Next ??= head;
 
             head.Prev = newPrev;
         }

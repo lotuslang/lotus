@@ -3,7 +3,7 @@ internal abstract record TextColor
     public abstract int GetForegroundCode();
     public abstract int GetBackgroundCode();
 
-    public static readonly Reset ResetColor = new Reset();
+    public static readonly Reset ResetColor = new();
     public sealed record Reset : TextColor {
 
         internal Reset() {}
@@ -17,7 +17,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => 42;
     }
 
-    public static readonly Black BlackColor = new Black();
+    public static readonly Black BlackColor = new();
     public sealed record Black : TextColor {
 
         internal Black() {}
@@ -25,7 +25,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkBlue DarkBlueColor = new DarkBlue();
+    public static readonly DarkBlue DarkBlueColor = new();
     public sealed record DarkBlue : TextColor {
 
         internal DarkBlue() {}
@@ -33,7 +33,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkGreen DarkGreenColor = new DarkGreen();
+    public static readonly DarkGreen DarkGreenColor = new();
     public sealed record DarkGreen : TextColor {
 
         internal DarkGreen() {}
@@ -41,7 +41,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkCyan DarkCyanColor = new DarkCyan();
+    public static readonly DarkCyan DarkCyanColor = new();
     public sealed record DarkCyan : TextColor {
 
         internal DarkCyan() {}
@@ -49,7 +49,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkRed DarkRedColor = new DarkRed();
+    public static readonly DarkRed DarkRedColor = new();
     public sealed record DarkRed : TextColor {
 
         internal DarkRed() {}
@@ -57,7 +57,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkMagenta DarkMagentaColor = new DarkMagenta();
+    public static readonly DarkMagenta DarkMagentaColor = new();
     public sealed record DarkMagenta : TextColor {
 
         internal DarkMagenta() {}
@@ -65,7 +65,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkYellow DarkYellowColor = new DarkYellow();
+    public static readonly DarkYellow DarkYellowColor = new();
     public sealed record DarkYellow : TextColor {
 
         internal DarkYellow() {}
@@ -73,7 +73,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly DarkGray DarkGrayColor = new DarkGray();
+    public static readonly DarkGray DarkGrayColor = new();
     public sealed record DarkGray : TextColor {
 
         internal DarkGray() {}
@@ -81,7 +81,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Gray GrayColor = new Gray();
+    public static readonly Gray GrayColor = new();
     public sealed record Gray : TextColor {
 
         internal Gray() {}
@@ -89,7 +89,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Blue BlueColor = new Blue();
+    public static readonly Blue BlueColor = new();
     public sealed record Blue : TextColor {
 
         internal Blue() {}
@@ -97,7 +97,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Green GreenColor = new Green();
+    public static readonly Green GreenColor = new();
     public sealed record Green : TextColor {
 
         internal Green() {}
@@ -105,7 +105,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Cyan CyanColor = new Cyan();
+    public static readonly Cyan CyanColor = new();
     public sealed record Cyan : TextColor {
 
         internal Cyan() {}
@@ -113,7 +113,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Red RedColor = new Red();
+    public static readonly Red RedColor = new();
     public sealed record Red : TextColor {
 
         internal Red() {}
@@ -121,7 +121,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Magenta MagentaColor = new Magenta();
+    public static readonly Magenta MagentaColor = new();
     public sealed record Magenta : TextColor {
 
         internal Magenta() {}
@@ -129,7 +129,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly Yellow YellowColor = new Yellow();
+    public static readonly Yellow YellowColor = new();
     public sealed record Yellow : TextColor {
 
         internal Yellow() {}
@@ -137,7 +137,7 @@ internal abstract record TextColor
         public override int GetBackgroundCode() => GetForegroundCode() + 10;
     }
 
-    public static readonly White WhiteColor = new White();
+    public static readonly White WhiteColor = new();
     public sealed record White : TextColor {
 
         internal White() {}

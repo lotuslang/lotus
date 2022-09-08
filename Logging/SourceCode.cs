@@ -6,7 +6,7 @@ using System.IO;
 // It takes way longer than it looks to figure out, so please again : beware !
 public sealed class SourceCode
 {
-    public string[] RawLines { get; }
+    public ReadOnlyMemory<string> RawLines { get; }
 
     public SourceCode(Uri path) {
         RawLines = File.ReadAllLines(path.AbsolutePath);
@@ -17,20 +17,17 @@ public sealed class SourceCode
     }
 
     public SourceCode(string[] lines) {
-        RawLines = new string[lines.Length];
-
-        Array.Copy(lines, RawLines, lines.Length);
+        RawLines = lines.AsMemory();
     }
 
     public SourceCode(IEnumerable<string> lines) {
         RawLines = lines.ToArray();
     }
 
-    public string? GetRawLineAt(int lineNumber) {
-        if (lineNumber < 1 || RawLines.Length < lineNumber) return null;
-
-        return RawLines[lineNumber - 1];
-    }
+    public string? GetRawLineAt(int lineNumber)
+        => lineNumber < 1 || RawLines.Length < lineNumber
+                ? null
+                : RawLines.Span[lineNumber - 1];
 
     public string GetPrettyLineAt(int lineNumber, string separator = "|") {
         var lineText = GetRawLineAt(lineNumber);
@@ -133,7 +130,7 @@ public sealed class SourceCode
     }
 
     public string FormatTextAtPoint(Location position) {
-        var (line, column, _) = position;
+        var (line, _, _) = position;
 
         var output = FormatTextPreludeAt(line);
 

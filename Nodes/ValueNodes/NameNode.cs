@@ -8,7 +8,7 @@ public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts)
 {
     public new static readonly NameNode NULL = IdentNode.NULL;
 
-    private Lazy<OperatorToken> _opToken = new Lazy<OperatorToken>(
+    private readonly Lazy<OperatorToken> _opToken = new(
         () => Token as OperatorToken ?? new OperatorToken(Token.Representation, Precedence.Access, true, Token.Location)
     );
 

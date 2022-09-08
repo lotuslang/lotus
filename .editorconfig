@@ -15,6 +15,9 @@ tab_width = 4
 end_of_line = lf
 insert_final_newline = false
 
+# Encoding
+charset = utf-8
+
 #### .NET Coding Conventions ####
 
 # Organize usings
@@ -50,7 +53,7 @@ dotnet_style_object_initializer = true:suggestion
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_prefer_auto_properties = true:silent
 dotnet_style_prefer_compound_assignment = true:suggestion
-dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = when_on_single_line:suggestion
 dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:silent
 dotnet_style_prefer_inferred_tuple_names = true:silent
@@ -76,7 +79,7 @@ csharp_style_var_when_type_is_apparent = true:suggestion
 
 # Expression-bodied members
 csharp_style_expression_bodied_accessors = true:suggestion
-csharp_style_expression_bodied_constructors = when_on_single_line:suggestion
+csharp_style_expression_bodied_constructors = false #when_on_single_line:suggestion
 csharp_style_expression_bodied_indexers = true:suggestion
 csharp_style_expression_bodied_lambdas = true:suggestion
 csharp_style_expression_bodied_local_functions = false:silent
@@ -115,6 +118,8 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:suggestion
+csharp_blank_lines_between_using_groups = true:suggestion
+dotnet_diagnostic.CS8019.severity = suggestion # CS8019: Unnecessary using directive
 
 #### C# Formatting Rules ####
 

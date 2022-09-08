@@ -137,7 +137,6 @@ public class ReadOnlyGrammar
     }
 
     public ExpressionKind GetExpressionKind(Token token) {
-
         if (token == Token.NULL) return ExpressionKind.NotAnExpr;
 
         // fundamental expression kinds

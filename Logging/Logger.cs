@@ -103,8 +103,10 @@ public static class Logger
     }
 
     private static string TerminalCompliantStringOf(MarkupBuilder sb) {
-        if (Environment.GetEnvironmentVariable("NO_COLOR") is not null and not ""
-        ||  Console.IsOutputRedirected)
+        // don't apply any formatting if stdout is redirected or use asked
+        // for NO_COLOR
+        if (Console.IsOutputRedirected
+        ||  Environment.GetEnvironmentVariable("NO_COLOR") is not null and not "")
             return sb.ToString();
 
         return sb.Render();
@@ -322,8 +324,10 @@ public static class Logger
 
     private static string FormatTextAt(LocationRange range, SourceCode source) {
         if (range.LineLength == 1) {
-            if (range.ColumnLength == 1) return source.FormatTextAtPoint(range.GetFirstLocation());
-            else return source.FormatTextAtLine(range);
+            if (range.ColumnLength == 1)
+                return source.FormatTextAtPoint(range.GetFirstLocation());
+            else
+                return source.FormatTextAtLine(range);
         }
 
         return source.FormatTextAtLines(range);
@@ -332,10 +336,10 @@ public static class Logger
     private static string GetCallerString(LotusError error) => Path.GetFileNameWithoutExtension(error.CallerPath) + '.' + error.Caller;
 
     internal class SourceCodeWrapper : ISourceCodeProvider {
-        private string _filename;
+        private readonly string _filename;
         public string Filename => _filename;
 
-        private SourceCode _src;
+        private readonly SourceCode _src;
         public SourceCode Source => _src;
 
         public SourceCodeWrapper(string filename, SourceCode src) {

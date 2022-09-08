@@ -6,7 +6,7 @@ public sealed record TupleNode
 {
     public new static readonly TupleNode NULL = new(Tuple<ValueNode>.NULL);
 
-    private Tuple<ValueNode> _internalTuple;
+    private readonly Tuple<ValueNode> _internalTuple;
 
     public ImmutableArray<ValueNode> Items => _internalTuple.Items;
     public Token OpeningToken => _internalTuple.OpeningToken;

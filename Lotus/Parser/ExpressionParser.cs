@@ -4,9 +4,8 @@ public sealed class ExpressionParser : Parser<ValueNode>
 
     public override ValueNode Default => ConstantDefault with { Location = Position };
 
-    public void Init() {
-        _curr = ConstantDefault with { Location = Tokenizer.Position };
-    }
+    public void Init()
+        => _curr = ConstantDefault with { Location = Tokenizer.Position };
 
     public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
         => Init();
@@ -111,7 +110,9 @@ public sealed class ExpressionParser : Parser<ValueNode>
         return left;
     }
 
-    private static ValueTupleParslet<ValueNode> _defaultTupleParslet = new(static (parser) => parser.Consume());
+    private static readonly ValueTupleParslet<ValueNode> _defaultTupleParslet
+        = new(static (parser) => parser.Consume());
+
     public Tuple<ValueNode> ConsumeTuple(uint expectedItemCount = 0) {
         var baseTuple = _defaultTupleParslet.Parse(this);
 

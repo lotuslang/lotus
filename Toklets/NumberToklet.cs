@@ -6,10 +6,9 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
     public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
 	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
-        ((currChar, getInput) => {
-                return  Utils.IsAsciiDigit(currChar)
-                    || (currChar == '.' && Utils.IsAsciiDigit(getInput().Consume()));
-            }
+        ((currChar, getInput)
+            => Utils.IsAsciiDigit(currChar)
+            || (currChar == '.' && Utils.IsAsciiDigit(getInput().Consume()))
         );
 
     public NumberToken Consume(IConsumer<char> input, Tokenizer _) {

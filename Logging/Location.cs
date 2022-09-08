@@ -1,3 +1,4 @@
+#pragma warning disable IDE1006
 [DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({line}:{column})")]
 public sealed record Location(int line, int column, string filename = "<std>") : ILocalized
 {

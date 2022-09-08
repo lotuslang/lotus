@@ -4,9 +4,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     public IConsumer<Token> Tokenizer { get; }
 
-    public LocationRange Position {
-        get => Current.Location;
-    }
+    public LocationRange Position => Current.Location;
 
     protected T _curr;
     /// <summary>

@@ -14,7 +14,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
 {
     [MemberNotNullWhen(true, nameof(simpleValueParser))]
     [MemberNotNullWhen(false, nameof(valueParser))]
-    private bool isSimpleParser { get; }
+    private bool IsSimpleParser { get; }
 
     private readonly Func<TParser, IEnumerable<TValue>>? valueParser;
     private readonly Func<TParser, TValue>? simpleValueParser;
@@ -26,12 +26,12 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
     public string In { get; init; } = "a " + typeof(TValue).Name + " list";
 
     public TupleParslet(Func<TParser, IEnumerable<TValue>> valParser) {
-        isSimpleParser = false;
+        IsSimpleParser = false;
         valueParser = valParser;
     }
 
     public TupleParslet(Func<TParser, TValue> valParser) {
-        isSimpleParser = true;
+        IsSimpleParser = true;
         simpleValueParser = valParser;
     }
 
@@ -56,7 +56,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
 
             parser.Tokenizer.Reconsume();
 
-            if (isSimpleParser)
+            if (IsSimpleParser)
                 items.Add(simpleValueParser(parser));
             else
                 items.AddRange(valueParser(parser));

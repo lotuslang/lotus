@@ -119,15 +119,11 @@ public sealed class Result<T>
         if (!isOk) act();
     }
 
-    public T Rescue(Func<T> gen) {
-        if (isOk) return t!;
-        else      return gen();
-    }
+    public T Rescue(Func<T> gen)
+        => isOk ? t! : gen();
 
-    public T Rescue(T val) {
-        if (isOk) return t!;
-        else      return val;
-    }
+    public T Rescue(T val)
+        => isOk ? t! : val;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Match(Action<T> f, Action g) {

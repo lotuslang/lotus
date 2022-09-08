@@ -6,12 +6,8 @@ public abstract class UnexpectedError : LotusError, ILocalized, IContextualized
     protected LocationRange? loc = null;
 
     public virtual LocationRange Location {
-        get {
-            return loc ?? LocationRange.NULL;
-        }
-        init {
-            loc = value;
-        }
+        get => loc ?? LocationRange.NULL;
+        init => loc = value;
     }
 
     public virtual string? In { get; init; }
@@ -29,12 +25,8 @@ public class UnexpectedError<T> : UnexpectedError, IValued<T>
     public T Value { get; init; }
 
     public override LocationRange Location {
-        get {
-            return loc ?? (Value as ILocalized)?.Location ?? LocationRange.NULL;
-        }
-        init {
-            loc = value;
-        }
+        get => loc ?? (Value as ILocalized)?.Location ?? LocationRange.NULL;
+        init => loc = value;
     }
 
 #pragma warning disable CS8618

@@ -128,12 +128,10 @@ public static class Utils
         AccessLevel defaultLvl,
         AccessLevel validLvls
     ) {
-        var _accessLevel = AccessLevel.Default;
+        var _accessLevel = defaultLvl;
 
-        if (accessToken == Token.NULL) {
-            _accessLevel = defaultLvl;
-        } else {
-            _accessLevel = Utils.GetAccess(accessToken);
+        if (accessToken != Token.NULL) {
+            _accessLevel = GetAccess(accessToken);
 
             if ((_accessLevel & validLvls) == AccessLevel.Default) {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
@@ -149,7 +147,7 @@ public static class Utils
     }
 
     public static IEnumerable<TEnum> GetMatchingValues<TEnum>(this TEnum flag) where TEnum : struct, Enum {
-        foreach (TEnum value in Enum.GetValues<TEnum>())
+        foreach (var value in Enum.GetValues<TEnum>())
             if (flag.HasFlag(value))
                 yield return value;
     }

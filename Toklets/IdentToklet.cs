@@ -36,7 +36,7 @@ public sealed class IdentToklet : IToklet<Token>
         input.Reconsume();
 
         if (outputStr is "true" or "false") {
-            return new BoolToken(outputStr, outputStr == "true" ? true : false, new LocationRange(startPos, input.Position));
+            return new BoolToken(outputStr, outputStr == "true", new LocationRange(startPos, input.Position));
         }
 
         if (Utils.keywords.Contains(outputStr)) {

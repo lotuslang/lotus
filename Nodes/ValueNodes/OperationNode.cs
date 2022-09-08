@@ -6,19 +6,18 @@ public sealed record OperationNode : ValueNode
 
     public new OperatorToken Token { get => (base.Token as OperatorToken)!; init => base.Token = value; }
 
-    private ImmutableArray<ValueNode> operands = ImmutableArray<ValueNode>.Empty;
+    private readonly ImmutableArray<ValueNode> operands = ImmutableArray<ValueNode>.Empty;
     public ref readonly ImmutableArray<ValueNode> Operands => ref operands;
 
     public OperationType OperationType { get; init; }
 
-    public OperationKind OperationKind {
-        get => Operands.Length switch {
+    public OperationKind OperationKind
+    =>  Operands.Length switch {
             1 => OperationKind.Unary,
             2 => OperationKind.Binary,
             3 => OperationKind.Ternary,
             _ => OperationKind.Unknown
         };
-    }
 
     public OperationNode(OperatorToken token, ImmutableArray<ValueNode> operands, OperationType opType) : this(token, operands, opType, ImmutableArray<Token>.Empty) {}
 

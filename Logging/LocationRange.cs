@@ -1,3 +1,4 @@
+#pragma warning disable IDE1006
 [DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})")]
 public sealed record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>, ILocalized
 {
@@ -64,12 +65,10 @@ public sealed record LocationRange(int firstLine, int lastLine, int firstColumn,
 
     public Location GetLastLocation() => new(lastLine, lastColumn, filename);
 
-    public override string ToString() {
-        if (IsSingleLocation())
-            return GetFirstLocation().ToString();
-        else
-            return $"{filename}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";
-    }
+    public override string ToString()
+        => IsSingleLocation()
+                ? GetFirstLocation().ToString()
+                : $"{filename}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";
 
     public int CompareTo(LocationRange? other) {
         if (other is null) return -1;

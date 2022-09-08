@@ -1,12 +1,11 @@
 using System.IO;
-using System.Reflection;
 using System.Globalization;
 
 using System.CommandLine;
 
 partial class Program
 {
-    static RootCommand _cli;
+    static readonly RootCommand _cli;
     static int Main(string[] args)
         => _cli.Invoke(args);
 
@@ -14,7 +13,7 @@ partial class Program
         // Lil hack for our visual studio (win and mac) users, whose IDE thinks it's a rebel
         // because it doesn't use the same working directory as literally every other
         // major IDE + the official fucking CLI. Used to love vs 2019, but honestly
-        // I think I'm switching to vs code for most things and not loooking back.
+        // I think I'm switching to vs code for most things and not looking back.
 #if VS
         Directory.SetCurrentDirectory(
             Directory.GetParent(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
@@ -107,7 +106,7 @@ partial class Program
     }
 
     static LotusTokenizer GetTokenizerForFile(FileInfo file)
-        => new LotusTokenizer(GetConsumerForFile(file));
+        => new(GetConsumerForFile(file));
 
     static int HandleParsing(LotusTokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);

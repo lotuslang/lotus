@@ -7,10 +7,10 @@ internal abstract record Markup
     public sealed record TextFormatMarker(TextFormat Format) : Markup
     {
         public static readonly TextFormatMarker None =
-            new TextFormatMarker(TextFormat.None);
+            new(TextFormat.None);
 
         public static readonly TextFormatMarker Reset =
-            new TextFormatMarker(TextFormat.Reset);
+            new(TextFormat.Reset);
 
         public override string ToString()
             => MarkupUtils.ToString(Format);
@@ -24,9 +24,9 @@ internal abstract record Markup
     public sealed record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker ResetBackground =
-            new ColorMarker(TextColor.ResetColor, true);
+            new(TextColor.ResetColor, true);
         public static readonly ColorMarker ResetForeground =
-            new ColorMarker(TextColor.ResetColor, false);
+            new(TextColor.ResetColor, false);
 
         public override string ToString()
             => "\x1b[" + (IsBackground ? Color.GetBGString() : Color.GetFGString()) + 'm';
@@ -40,11 +40,13 @@ internal abstract record Markup
     public sealed record StyleMarker(Style Style) : Markup
     {
         public static readonly StyleMarker Reset =
-            new StyleMarker(
+            new(
                 new Style(
                     TextColor.ResetColor,
                     TextColor.ResetColor,
-                    TextFormat.Reset));
+                    TextFormat.Reset
+                )
+            );
 
         public override string ToString()
             => Style.ToString();

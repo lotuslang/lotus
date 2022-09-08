@@ -3,7 +3,7 @@ public sealed record NumberToken : Token
 {
     public new static readonly NumberToken NULL = new("", Double.NaN, LocationRange.NULL) { IsValid = false };
 
-    private double _val;
+    private readonly double _val;
 
     public ref readonly double Value => ref _val;
 

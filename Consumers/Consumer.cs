@@ -26,9 +26,8 @@ public class Consumer<T> : IConsumer<T>
     }
 
 #nullable disable
-    protected Consumer() {
-        Init();
-    }
+    protected Consumer()
+        => Init();
 #nullable restore
 
     public Consumer(ImmutableArray<T> enumerable, T defaultValue, string filename) : this() {
@@ -88,9 +87,8 @@ public class Consumer<T> : IConsumer<T>
     }
 
 
-    public virtual T Peek() {
-        return Count <= 0 ? ConstantDefault : _data[_atStart ? _currIdx : _currIdx + 1];
-    }
+    public virtual T Peek()
+        => Count <= 0 ? ConstantDefault : _data[_atStart ? _currIdx : _currIdx + 1];
 
     public virtual Consumer<T> Clone() => new(this);
 

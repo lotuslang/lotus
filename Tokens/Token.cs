@@ -112,7 +112,7 @@ public record Token : ILocalized
     public static implicit operator ReadOnlySpan<char>(Token token)
         => token._repr;
 
-    internal Token ShallowClone() => new Token(this);
+    internal Token ShallowClone() => new(this);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

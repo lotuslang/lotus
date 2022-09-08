@@ -16,11 +16,8 @@ public interface IStatementVisitor<T>
     T Visit(ReturnNode node) => Default(node);
     T Visit(WhileNode node) => Default(node);
 
-    T Visit(StatementExpressionNode node) {
-        if (this is IValueVisitor<T> thisValVisitor) {
-            return node.Value.Accept(thisValVisitor);
-        } else {
-            return Visit(node as StatementNode);
-        }
-    }
+    T Visit(StatementExpressionNode node)
+        => this is IValueVisitor<T> thisValVisitor
+                ? node.Value.Accept(thisValVisitor)
+                : Visit(node as StatementNode);
 }

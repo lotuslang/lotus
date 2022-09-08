@@ -3,7 +3,7 @@ public sealed record BoolToken : Token
 {
     public new static readonly BoolToken NULL = new("", false, LocationRange.NULL) { IsValid = false };
 
-    private bool _val;
+    private readonly bool _val;
 
     public ref readonly bool Value => ref _val;
 

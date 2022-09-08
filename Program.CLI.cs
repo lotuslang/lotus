@@ -5,7 +5,7 @@ using System.CommandLine;
 
 partial class Program
 {
-    static FileInfo _sourceCodeFile;
+    static readonly FileInfo _sourceCodeFile;
 
     static RootCommand BuildRootCommand() {
         var forceOption = new Option<bool>("--force", "Ignore compilation errors before executing commands");

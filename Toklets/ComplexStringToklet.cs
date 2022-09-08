@@ -3,11 +3,8 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
     public static readonly ComplexStringToklet Instance = new();
 
     public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
-	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
-        ((currChar, getInput) => {
-                return currChar == '$' && getInput().Consume() is '\'' or '"';
-            }
-        );
+	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition
+        = (currChar, getInput) => currChar == '$' && getInput().Consume() is '\'' or '"';
 
     public ComplexStringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
 

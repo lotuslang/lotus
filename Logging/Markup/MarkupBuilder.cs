@@ -2,7 +2,7 @@ using System.Text;
 
 internal sealed class MarkupBuilder
 {
-    private MarkupChain _list;
+    private readonly MarkupChain _list;
 
     private static readonly Markup.StyleMarker STYLE_POP = Markup.StyleMarker.Reset;
     private static readonly Markup.ColorMarker FGCOLOR_POP = Markup.ColorMarker.ResetForeground;

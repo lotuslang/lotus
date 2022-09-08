@@ -4,7 +4,7 @@ using System.Collections;
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
 public sealed class Graph
 {
-    private string name;
+    private readonly string name;
 
     /// <summary>
     /// The name of this graph.
@@ -12,7 +12,7 @@ public sealed class Graph
     /// <value>A string that represents the name of this graph.</value>
     public ref readonly string Name => ref name;
 
-    private ImmutableArray<GraphNode>.Builder rootNodes;
+    private readonly ImmutableArray<GraphNode>.Builder rootNodes;
 
     /// <summary>
     /// The nodes that are the roots of independent trees.
@@ -20,15 +20,15 @@ public sealed class Graph
     /// <value>A List of GraphNode containing every root node.</value>
     public ImmutableArray<GraphNode> RootNodes => rootNodes.ToImmutable();
 
-    private Dictionary<string, string> graphprops;
+    private readonly Dictionary<string, string> graphprops;
 
     public ref readonly Dictionary<string, string> GraphProps => ref graphprops;
 
-    private Dictionary<string, string> nodeprops;
+    private readonly Dictionary<string, string> nodeprops;
 
     public ref readonly Dictionary<string, string> NodeProps => ref nodeprops;
 
-    private Dictionary<string, string> edgeprops;
+    private readonly Dictionary<string, string> edgeprops;
 
     public ref readonly Dictionary<string, string> EdgeProps => ref edgeprops;
 
@@ -64,7 +64,6 @@ public sealed class Graph
         }
 
         if (nodeprops.Count != 0) {
-
             strBuilder.AppendLine("\tnode[");
 
             foreach (var property in nodeprops) {
@@ -75,7 +74,6 @@ public sealed class Graph
         }
 
         if (edgeprops.Count != 0) {
-
             strBuilder.AppendLine("\tedge [");
 
             foreach (var property in edgeprops) {
@@ -278,7 +276,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     private sealed class EqComparer : EqualityComparer<GraphNode>
     {
-        private static EqComparer _instance = new();
+        private static readonly EqComparer _instance = new();
         public static EqComparer Instance => _instance;
 
         private EqComparer() { }

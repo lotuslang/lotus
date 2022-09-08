@@ -27,15 +27,13 @@ public sealed class Union<T, U>
 
     public bool Is<V>() {
         switch (tag) {
-            case 0: return t! is V;
-            case 1: return u! is V;
+            case 0: return t is V;
+            case 1: return u is V;
             default: throw new Exception("Unrecognized tag value: " + tag);
         }
     }
 
-    public bool IsNull() {
-        return (t is null) || (u is null);
-    }
+    public bool IsNull() => (t is null) && (u is null);
 
     public static implicit operator Union<T, U>(T t) => new(t);
     public static implicit operator Union<T, U>(U u) => new(u);
@@ -85,6 +83,8 @@ public class Union<T, U, V>
         }
     }
 
+    public bool IsNull() => t is null && u is null && v is null;
+
     public static implicit operator Union<T, U, V>(T t) => new(t);
     public static implicit operator Union<T, U, V>(U u) => new(u);
     public static implicit operator Union<T, U, V>(V v) => new(v);
@@ -103,7 +103,7 @@ public sealed class Result<T>
 
     public ref readonly T? Value => ref t;
 
-    private bool isOk = false;
+    private readonly bool isOk = false;
 
     private Result() { }
 
@@ -137,9 +137,8 @@ public sealed class Result<T>
             g();
     }
 
-    public TResult Match<TResult>(Func<T, TResult> f, Func<TResult> g) {
-        return isOk ? f(t!) : g();
-    }
+    public TResult Match<TResult>(Func<T, TResult> f, Func<TResult> g)
+        => isOk ? f(t!) : g();
 
     [System.Diagnostics.CodeAnalysis.MemberNotNullWhen(true, nameof(Value))]
     public ref readonly bool IsOk() => ref isOk;

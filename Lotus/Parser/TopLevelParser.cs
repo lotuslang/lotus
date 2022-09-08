@@ -143,7 +143,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             );
         }
 
-        return new TypeDecName(typeIdent, parent, colonToken);
+        return new TypeDecName(typeIdent, parent, colonToken) { IsValid = isValid };
     }
 
     public override TopLevelParser Clone() => new(this);

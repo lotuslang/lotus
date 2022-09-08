@@ -47,8 +47,6 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
             parser.Tokenizer.Reconsume();
         }
 
-        var location = openingBracket.Location;
-
         var statements = ImmutableArray.CreateBuilder<StatementNode>();
 
         while (parser.Tokenizer.Peek() != "}") {

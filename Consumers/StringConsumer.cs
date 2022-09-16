@@ -44,13 +44,19 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
     public StringConsumer(string str, string fileName = "<std>") : this() {
         _data = str.ToImmutableArray();
 
-        pos = new Location(1, 0, fileName);
+        pos = pos with { filename = fileName };
+    }
+
+    public StringConsumer(IConsumer<char> consumer, string fileName = "<std>") : this() {
+        _data = consumer.ToImmutableArray();
+
+        pos = pos with { filename = fileName };
     }
 
     public StringConsumer(IEnumerable<char> collection, string fileName = "<std>") : this() {
         _data = collection.ToImmutableArray();
 
-        pos = new Location(1, 0, fileName);
+        pos = pos with { filename = fileName };
     }
 
     public StringConsumer(Uri fileInfo) : this(File.ReadAllText(fileInfo.AbsolutePath), fileInfo.AbsolutePath)

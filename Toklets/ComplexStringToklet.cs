@@ -42,11 +42,13 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             if (currChar == '{') {
                 var tokenList = ImmutableArray.CreateBuilder<Token>();
 
-                while (tokenizer.Peek() != "}") {
+                var unmatchedBrackets = 1; // count the opening bracket as currently unmatched
+
+                while (unmatchedBrackets != 0) { // until we match the opening bracket
                     if (!tokenizer.Consume(out var currToken)) {
                         Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                             In = "an interpolated string",
-                            Expected = "} followed by a string delimiter like this :\n\t"
+                            Expected = "} followed by a string delimiter like this: "
                                      + endingDelimiter
                                      + output.ToString()
                                      + endingDelimiter,
@@ -58,8 +60,21 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
                         break;
                     }
 
-                    tokenList.Add(currToken);
+                    switch (currToken.Representation) {
+                        case "{":
+                            unmatchedBrackets++;
+                            break;
+                        case "}":
+                            unmatchedBrackets--;
+                            Debug.Assert(unmatchedBrackets >= 0);
+                            break;
+                    }
+
+                    if (unmatchedBrackets != 0)
+                        tokenList.Add(currToken);
                 }
+
+                tokenizer.Reconsume();
 
                 sections.Add(tokenList.ToImmutable());
 
@@ -75,7 +90,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
             if (!input.Consume(out currChar)) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                     In = "an interpolated string",
-                    Expected = "a string delimiter like this : " + endingDelimiter + output.ToString() + endingDelimiter,
+                    Expected = "a string delimiter like this: " + endingDelimiter + output.ToString() + endingDelimiter,
                     Location = new LocationRange(startPos, tokenizer.Position)
                 });
 

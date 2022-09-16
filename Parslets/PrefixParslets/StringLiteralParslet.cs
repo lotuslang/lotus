@@ -34,18 +34,18 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
                         Value = sectionConsumer.Consume(),
                         Location = location,
                         Message = "Too many tokens in interpolated string's code section."
-                                + " Code sections should only contain a *single value* each.",
-                        ExtraNotes =
-                                 " This probably means that you forgot a closing `}`,"
-                                +" yet a following *valid* code section (the `{...}`"
-                                +" parts of an interpolated string) \"closed\" the malformed one.\n"
-                                +" If this isn't the case, then you probably wrote a statement instead of a value,"
-                                +" which isn't allowed"
+                                + " Sections should only contain ONE expression each.",
+                        ExtraNotes
+                                = "This probably means that you forgot a closing `}`,"
+                                + " yet a following *valid* code section (the `{...}`"
+                                + " parts of an interpolated string) \"closed\" the malformed one.\n"
+                                + " If this isn't the case, then you probably wrote a statement instead of a value,"
+                                + " which isn't allowed"
                     });
                 }
             }
 
-            return new ComplexStringNode(complexString, sections.MoveToImmutable()); ;
+            return new ComplexStringNode(complexString, sections.MoveToImmutable());
         }
 
         return new StringNode(strToken);

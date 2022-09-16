@@ -1,11 +1,11 @@
-public abstract class LotusError : Exception
+public abstract class LotusError
 {
     public string Caller { get; }
     public string CallerPath { get; }
 
     public ErrorArea Area { get; }
 
-    public new string? Message { get; init; }
+    public string? Message { get; init; }
 
     public string? ExtraNotes { get; init; }
 

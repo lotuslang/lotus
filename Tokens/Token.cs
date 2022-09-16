@@ -11,7 +11,7 @@ public record Token : ILocalized
 
     public LocationRange Location { get; init; }
 
-    public bool IsValid { get; set; }
+    public bool IsValid { get; set; } = true;
 
     public Token(string repr, TokenKind kind, LocationRange location) {
         _repr = repr;

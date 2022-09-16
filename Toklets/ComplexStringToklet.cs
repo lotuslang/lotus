@@ -7,7 +7,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
         = (currChar, getInput) => currChar == '$' && getInput().Consume() is '\'' or '"';
 
     public ComplexStringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
-
         // consume the '$' in front
         input.Consume();
 
@@ -27,7 +26,6 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
-
             if (currChar == '\n') {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                     In = "an interpolated string",
@@ -65,7 +63,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
                 sections.Add(tokenList.ToImmutable());
 
-                output.Append("{" + (sections.Count - 1) + "}");
+                output.Append('{').Append(sections.Count - 1).Append('}');
 
                 if (tokenizer.Consume(preserveTrivia: true).TrailingTrivia != null) {
                     output.Append(tokenizer.Current.TrailingTrivia!.Representation);

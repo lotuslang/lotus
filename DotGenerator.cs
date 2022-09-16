@@ -20,24 +20,24 @@ public sealed class Graph
     /// <value>A List of GraphNode containing every root node.</value>
     public ImmutableArray<GraphNode> RootNodes => rootNodes.ToImmutable();
 
-    private readonly Dictionary<string, string> graphprops;
+    private readonly Dictionary<string, string> graphProps;
 
-    public ref readonly Dictionary<string, string> GraphProps => ref graphprops;
+    public ref readonly Dictionary<string, string> GraphProps => ref graphProps;
 
-    private readonly Dictionary<string, string> nodeprops;
+    private readonly Dictionary<string, string> nodeProps;
 
-    public ref readonly Dictionary<string, string> NodeProps => ref nodeprops;
+    public ref readonly Dictionary<string, string> NodeProps => ref nodeProps;
 
-    private readonly Dictionary<string, string> edgeprops;
+    private readonly Dictionary<string, string> edgeProps;
 
-    public ref readonly Dictionary<string, string> EdgeProps => ref edgeprops;
+    public ref readonly Dictionary<string, string> EdgeProps => ref edgeProps;
 
     public Graph(string name) {
         this.name = name;
         rootNodes = ImmutableArray.CreateBuilder<GraphNode>();
-        graphprops = new Dictionary<string, string>();
-        nodeprops = new Dictionary<string, string>();
-        edgeprops = new Dictionary<string, string>();
+        graphProps = new Dictionary<string, string>();
+        nodeProps = new Dictionary<string, string>();
+        edgeProps = new Dictionary<string, string>();
     }
 
     /// <summary>
@@ -56,28 +56,28 @@ public sealed class Graph
         var strBuilder = new StringBuilder();
 
         // Append the keyword 'digraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
-        strBuilder.AppendLine("graph " + name);
+        strBuilder.Append("graph ").AppendLine(name);
         strBuilder.AppendLine("{");
 
-        foreach (var property in graphprops) {
-            strBuilder.AppendLine($"\t{property.Key}=\"{property.Value}\"");
+        foreach (var property in graphProps) {
+            strBuilder.Append('\t').Append(property.Key).Append("=\"").Append(property.Value).AppendLine("\"");
         }
 
-        if (nodeprops.Count != 0) {
+        if (nodeProps.Count != 0) {
             strBuilder.AppendLine("\tnode[");
 
-            foreach (var property in nodeprops) {
-                strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
+            foreach (var property in nodeProps) {
+                strBuilder.Append("\t\t").Append(property.Key).Append("=\"").Append(property.Value).AppendLine("\"");
             }
 
             strBuilder.AppendLine("\t]\n");
         }
 
-        if (edgeprops.Count != 0) {
+        if (edgeProps.Count != 0) {
             strBuilder.AppendLine("\tedge [");
 
-            foreach (var property in edgeprops) {
-                strBuilder.AppendLine($"\t\t{property.Key}=\"{property.Value}\"");
+            foreach (var property in edgeProps) {
+                strBuilder.Append("\t\t").Append(property.Key).Append("=\"").Append(property.Value).AppendLine("\"");
             }
 
             strBuilder.AppendLine("\t]");
@@ -94,11 +94,11 @@ public sealed class Graph
             registry.Add(node);
 
             // Append the 'dot' representation of this root node to the graph's representation
-            strBuilder.AppendLine("\t" + node.ToText(registry));
+            strBuilder.Append('\t').AppendLine(node.ToText(registry));
         }
 
         // Close the graph by a closing curly bracket on a new line
-        strBuilder.AppendLine("\n}\n//" + GetHashCode());
+        strBuilder.Append("\n}\n//").Append(GetHashCode()).AppendLine();
 
         // Return the string builder
         return strBuilder.ToString();
@@ -107,28 +107,19 @@ public sealed class Graph
     public void AddGraphProp(string property, string value) {
         if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
             return;
-        if (graphprops.ContainsKey(property))
-            graphprops[property] = value;
-        else
-            graphprops.Add(property, value);
+        graphProps[property] = value;
     }
 
     public void AddNodeProp(string property, string value) {
         if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
             return;
-        if (nodeprops.ContainsKey(property))
-            nodeprops[property] = value;
-        else
-            nodeprops.Add(property, value);
+        nodeProps[property] = value;
     }
 
     public void AddEdgeProp(string property, string value) {
         if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
             return;
-        if (edgeprops.ContainsKey(property))
-            edgeprops[property] = value;
-        else
-            edgeprops.Add(property, value);
+        edgeProps[property] = value;
     }
 
     public override int GetHashCode() => GetHashCode(true);
@@ -160,7 +151,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// The unique identifier for this node.
     /// </summary>
     /// <value>A string representing the ID of this node.</value>
-    public string ID { get; private set; }
+    public string ID { get; }
 
     /// <summary>
     /// The name of this node.
@@ -172,9 +163,9 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
     /// <value>A list of GraphNode this node is pointing to, (i.e. children).</value>
-    public ImmutableArray<GraphNode>.Builder Children { get; private set; }
+    public ImmutableArray<GraphNode>.Builder Children { get; }
 
-    public Dictionary<string, string> Properties { get; private set; }
+    public Dictionary<string, string> Properties { get; }
 
     public GraphNode(string name) : this(new Random().Next(), name) { }
 
@@ -224,10 +215,10 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.Append($"\n" + new string('\t', tabs - 1) + ID + " [label=\"" + Name + '"');
+        strBuilder.AppendLine().Append(new string('\t', tabs - 1)).Append(ID).Append(" [label=\"").Append(Name).Append('"');
 
         foreach (var property in Properties) {
-            strBuilder.Append("," + property.Key + "=\"" + property.Value + "\"");
+            strBuilder.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('\"');
         }
 
         strBuilder.AppendLine("]");
@@ -236,12 +227,11 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
         // For each node that is a children of this object
         foreach (var child in Children) {
-
-            strBuilder.Append(new string('\t', tabs) + ID + " -- " + child.ID);
+            strBuilder.Append(new string('\t', tabs)).Append(ID).Append(" -- ").Append(child.ID);
 
             // If this child wasn't aready processed, then append its text
             if (registry.Add(child))
-                strBuilder.Append(new string('\t', tabs) + child.ToText(registry, tabs + 1));
+                strBuilder.Append(new string('\t', tabs)).Append(child.ToText(registry, tabs + 1));
         }
 
         // Return the string builder
@@ -276,8 +266,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     private sealed class EqComparer : EqualityComparer<GraphNode>
     {
-        private static readonly EqComparer _instance = new();
-        public static EqComparer Instance => _instance;
+        public static EqComparer Instance { get; } = new();
 
         private EqComparer() { }
 

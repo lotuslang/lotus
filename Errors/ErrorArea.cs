@@ -1,5 +1,6 @@
 [Flags]
 public enum ErrorArea {
+    Unknown = 0,
     Tokenizer = 1,
     Parser = 2,
     ASTHelper = 4,

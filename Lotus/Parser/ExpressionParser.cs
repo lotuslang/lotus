@@ -4,14 +4,14 @@ public sealed class ExpressionParser : Parser<ValueNode>
 
     public override ValueNode Default => ConstantDefault with { Location = Position };
 
-    public void Init()
+    public void SetCurrentToDefault()
         => _curr = ConstantDefault with { Location = Tokenizer.Position };
 
     public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
-        => Init();
+        => SetCurrentToDefault();
 
     public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
-        => Init();
+        => SetCurrentToDefault();
 
     public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
 
@@ -20,7 +20,7 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public ExpressionParser(Uri file) : this(new LotusTokenizer(file)) { }
 
     public ExpressionParser(Parser<ValueNode> parser) : base(parser)
-        => Init();
+        => SetCurrentToDefault();
 
     public override ValueNode Peek()
         => new ExpressionParser(this).Consume();

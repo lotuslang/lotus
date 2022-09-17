@@ -6,16 +6,16 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 
     public string Filename => pos.filename;
 
-    private Lazy<SourceCode> _src;
+    private readonly Lazy<SourceCode> _src;
     public SourceCode Source => _src.Value;
 
-    private new Location lastPos;
+    private Location lastPos;
 
     private Location pos; // we keep it because it's more convenient and makes sense since a character always has an atomic location
 
 	public override LocationRange Position => pos;
 
-    private new void Init() {
+    private StringConsumer() {
         _data = ImmutableArray<char>.Empty;
         _atStart = true;
         pos = new Location(1, 0);
@@ -24,10 +24,6 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
         // _data will be fetched after init, so it's fine
         _src = new Lazy<SourceCode>(() => new SourceCode(new string(_data.AsSpan())), isThreadSafe: false);
     }
-
-#nullable disable
-    private StringConsumer() : base()
-        => Init();
 
     public StringConsumer(StringConsumer consumer) : this() {
 		_data = consumer._data;
@@ -64,7 +60,6 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 
     public StringConsumer(StreamReader stream, string fileName = "<std>") : this(stream.ReadToEnd(), fileName)
     { }
-#nullable restore
 
     public override void Reconsume() {
         base.Reconsume();

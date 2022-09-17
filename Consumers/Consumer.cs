@@ -13,22 +13,16 @@ public class Consumer<T> : IConsumer<T>
 
     public T Default => ConstantDefault;
 
-    protected Location lastPos;
     protected Location internalPos;
 
     public virtual LocationRange Position => Current is ILocalized tLoc ? tLoc.Location : internalPos;
 
-    protected void Init() {
+    protected Consumer() {
         _data = ImmutableArray<T>.Empty;
         _atStart = true;
         internalPos = new Location(1, 0);
         ConstantDefault = default(T)!;
     }
-
-#nullable disable
-    protected Consumer()
-        => Init();
-#nullable restore
 
     public Consumer(ImmutableArray<T> enumerable, T defaultValue, string filename) : this() {
         ConstantDefault = defaultValue;

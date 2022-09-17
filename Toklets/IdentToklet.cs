@@ -37,7 +37,7 @@ public sealed class IdentToklet : IToklet<Token>
             return new BoolToken(outputStr, outputStr == "true", new LocationRange(startPos, input.Position));
         }
 
-        if (Utils.keywords.Contains(outputStr)) {
+        if (Resources.keywords.Contains(outputStr)) {
             return new Token(outputStr, TokenKind.keyword, new LocationRange(startPos, input.Position));
         }
 

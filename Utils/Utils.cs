@@ -2,42 +2,6 @@ using System.Collections.ObjectModel;
 
 public static class Utils
 {
-    public static readonly HashSet<string> keywords = new() {
-        "var",
-        "new",
-        "func",
-        "return",
-        "for",
-        "while",
-        "foreach",
-        "in",
-        "if",
-        "else",
-        "from",
-        "continue",
-        "break",
-
-        "public",
-        "internal",
-        "protected",
-        "private",
-
-        "import",
-        "using",
-        "namespace",
-        "enum",
-        "struct",
-    };
-
-    public static readonly HashSet<string> internalFunctions = new() {
-        "print",
-    };
-
-    public static bool IsOneLiner(this Tuple<StatementNode> block)
-        => block.Count == 1
-        && block.OpeningToken == Token.NULL
-        && block.ClosingToken == Token.NULL;
-
     public static int GetNumberOfDigits(int i) {
         int count = 0;
 
@@ -63,7 +27,7 @@ public static class Utils
             return "";
         } else if (count == 1) {
             return convert(coll.First());
-        } else if (count < 10) {
+        } else if (count < 20) {
             var output = "";
 
             foreach (var item in coll) output += convert(item) + separator;
@@ -152,27 +116,4 @@ public static class Utils
     }
 
     public static bool IsAsciiDigit(in char c) => (uint)(c - '0') <= 9;
-}
-
-internal class DeterministicStringComparer : IEqualityComparer<string>
-{
-    public static readonly DeterministicStringComparer Instance = new();
-
-    public bool Equals(string? s1, string? s2) => GetHashCode(s1!) == GetHashCode(s2!);
-
-    public int GetHashCode(string str) {
-        unchecked {
-            int hash1 = 5381;
-            int hash2 = hash1;
-
-            for (int i = 0; i < str.Length && str[i] != '\0'; i += 2) {
-                hash1 = ((hash1 << 5) + hash1) ^ str[i];
-                if (i == str.Length - 1 || str[i + 1] == '\0')
-                    break;
-                hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
-            }
-
-            return hash1 + (hash2 * 1566083941);
-        }
-    }
 }

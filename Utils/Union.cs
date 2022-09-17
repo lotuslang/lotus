@@ -42,7 +42,7 @@ public sealed class Union<T, U>
     public static explicit operator U(Union<T, U> union) => union.u!;
 
     public override string ToString()
-        => Match(t => t!.ToString(), u => u!.ToString())!;
+        => Match(t => t?.ToString(), u => u?.ToString())!;
 }
 
 public class Union<T, U, V>
@@ -88,7 +88,7 @@ public class Union<T, U, V>
     public static implicit operator Union<T, U, V>(V v) => new(v);
 
     public override string ToString()
-        => Match(t => t!.ToString(), u => u!.ToString(), v => v!.ToString())!;
+        => Match(t => t?.ToString(), u => u?.ToString(), v => v?.ToString())!;
 }
 
 public sealed class None {
@@ -134,7 +134,7 @@ public sealed class Result<T>
     public TResult Match<TResult>(Func<T, TResult> f, Func<TResult> g)
         => isOk ? f(t!) : g();
 
-    [System.Diagnostics.CodeAnalysis.MemberNotNullWhen(true, nameof(Value))]
+    [MemberNotNullWhen(true, nameof(Value))]
     public ref readonly bool IsOk() => ref isOk;
 
     public Union<T, None> AsUnion() => (Union<T, None>)this;

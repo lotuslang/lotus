@@ -95,9 +95,11 @@ public class ReadOnlyGrammar
         ) { }
 
     /// <summary>
-    /// Should only be called right after the (potentially derived) class' initialization
+    /// Initializes this grammar with the parslets/toklets/kinds specified
     /// </summary>
-    /// <param name="grammar"></param>
+    /// <remarks>
+    /// Should only be called right after the (potentially derived) class initialization
+    /// </remarks>
     protected void Initialize(ReadOnlyGrammar grammar)
         => Initialize(
                 grammar.prefixParslets,
@@ -111,9 +113,11 @@ public class ReadOnlyGrammar
         );
 
     /// <summary>
-    /// Should only be called right after the (potentially derived) class initialization
+    /// Initializes this grammar with the parslets/toklets/kinds specified
     /// </summary>
-    /// <param name="grammar"></param>
+    /// <remarks>
+    /// Should only be called right after the (potentially derived) class initialization
+    /// </remarks>
     protected void Initialize(
         IDictionary<ExpressionKind, IPrefixParslet<ValueNode>>? prefixParslets = null,
         IDictionary<ExpressionKind, IInfixParslet<ValueNode>>? infixParslets = null,

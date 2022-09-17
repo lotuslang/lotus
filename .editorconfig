@@ -20,6 +20,8 @@ charset = utf-8
 
 #### .NET Coding Conventions ####
 
+dotnet_diagnostic.RCS1228.severity = error # RCS1228: Unused element in documentation comment
+
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
@@ -63,6 +65,7 @@ dotnet_style_prefer_simplified_interpolation = true:suggestion
 
 # Field preferences
 dotnet_style_readonly_field = true:suggestion
+dotnet_diagnostic.RCS1129.severity = none
 
 # Parameter preferences
 dotnet_code_quality_unused_parameters = all:suggestion

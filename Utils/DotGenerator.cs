@@ -128,7 +128,7 @@ public sealed class Graph
         var code = new DeterministicHashCode();
 
         foreach (var node in rootNodes) {
-            code.Add(node, GraphNode.EqualityComparer);
+            code.Add(node, GraphNode.StructuralComparer);
         }
 
         if (includeProps) {
@@ -151,7 +151,8 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// The unique identifier for this node.
     /// </summary>
     /// <value>A string representing the ID of this node.</value>
-    public string ID { get; }
+    public int ID { get; }
+    private readonly string _stringID;
 
     /// <summary>
     /// The name of this node.
@@ -169,10 +170,9 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     public GraphNode(string name) : this(new Random().Next(), name) { }
 
-    public GraphNode(int id, string text) : this(id.ToString(), text) { }
-
-    public GraphNode(string id, string text) {
+    public GraphNode(int id, string text) {
         ID = id;
+        _stringID = ID.ToString();
         Name = text;
         Properties = new Dictionary<string, string>();
         Children = ImmutableArray.CreateBuilder<GraphNode>();
@@ -215,7 +215,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         var strBuilder = new StringBuilder();
 
         // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.AppendLine().Append(new string('\t', tabs - 1)).Append(ID).Append(" [label=\"").Append(Name).Append('"');
+        strBuilder.AppendLine().Append(new string('\t', tabs - 1)).Append(_stringID).Append(" [label=\"").Append(Name).Append('"');
 
         foreach (var property in Properties) {
             strBuilder.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('\"');
@@ -227,7 +227,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
         // For each node that is a children of this object
         foreach (var child in Children) {
-            strBuilder.Append(new string('\t', tabs)).Append(ID).Append(" -- ").Append(child.ID);
+            strBuilder.Append(new string('\t', tabs)).Append(_stringID).Append(" -- ").Append(child._stringID);
 
             // If this child wasn't aready processed, then append its text
             if (registry.Add(child))
@@ -238,17 +238,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         return strBuilder.AppendLine().ToString();
     }
 
-    public override int GetHashCode() {
-        var code = new DeterministicHashCode();
-
-        code.Add(Name, DeterministicStringComparer.Instance);
-
-        foreach (var node in Children) {
-            code.Add(node, EqualityComparer);
-        }
-
-        return code.ToHashCode();
-    }
+    public override int GetHashCode() => ID;
 
     public IEnumerator<GraphNode> GetEnumerator()
         => Children.GetEnumerator();
@@ -260,9 +250,10 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         => Equals(obj as GraphNode);
 
     public bool Equals(GraphNode? node)
-        => EqualityComparer.Equals(this, node);
+        => StructuralComparer.Equals(this, node);
 
-    public static IEqualityComparer<GraphNode> EqualityComparer => EqComparer.Instance;
+    public static IEqualityComparer<GraphNode> IDComparer => EqualityComparer<GraphNode>.Default;
+    public static IEqualityComparer<GraphNode> StructuralComparer => EqComparer.Instance;
 
     private sealed class EqComparer : EqualityComparer<GraphNode>
     {
@@ -271,9 +262,21 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         private EqComparer() { }
 
         public override bool Equals(GraphNode? n1, GraphNode? n2)
-            => n1?.GetHashCode() == n2?.GetHashCode();
+            => n1 is null
+                ? n2 is null
+                : n2 is not null && GetHashCode(n1) == GetHashCode(n2);
 
-        public override int GetHashCode(GraphNode n) => n.GetHashCode();
+        public override int GetHashCode(GraphNode n) {
+            var code = new DeterministicHashCode();
+
+            code.Add(n.Name, DeterministicStringComparer.Instance);
+
+            foreach (var node in n.Children) {
+                code.Add(node, StructuralComparer);
+            }
+
+            return code.ToHashCode();
+        }
     }
 }
 

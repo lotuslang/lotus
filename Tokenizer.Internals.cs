@@ -137,9 +137,8 @@ public partial class Tokenizer : IConsumer<Token>
         return OperatorToklet.Instance.Consume(_input, this);
     }
 
-    private Token ConsumeSemicolonToken() {
-        return new Token(";", TokenKind.semicolon, _input.Position);
-    }
+    private Token ConsumeSemicolonToken()
+        => new(";", TokenKind.semicolon, _input.Position);
 
     private Token ConsumeDoubleColonToken() {
         Debug.Assert(_input.Consume() == ':');
@@ -147,11 +146,9 @@ public partial class Tokenizer : IConsumer<Token>
         return new Token("::", TokenKind.delimiter, _input.Position);
     }
 
-    private Token ConsumeDelimToken(in char c) {
-        return new Token(c.ToString(), TokenKind.delimiter, _input.Position);
-    }
+    private Token ConsumeDelimToken(in char c)
+        => new(c.ToString(), TokenKind.delimiter, _input.Position);
 
-    private Token ConsumeEOFToken(in char c) {
-        return new Token(c.ToString(), TokenKind.EOF, _input.Position) { IsValid = false };
-    }
+    private Token ConsumeEOFToken(in char c)
+        => new(c.ToString(), TokenKind.EOF, _input.Position) { IsValid = false };
 }

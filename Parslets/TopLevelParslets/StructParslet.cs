@@ -78,12 +78,10 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
     public StructNode Parse(TopLevelParser parser, Token structToken) {
         Debug.Assert(structToken == "struct");
 
-        var isValid = true;
-
         var name = parser.ConsumeTypeDeclarationName();
 
         var fields = _fieldsParslet.Parse(parser.ExpressionParser);
 
-        return new StructNode(structToken, name, fields) { IsValid = isValid };
+        return new StructNode(structToken, name, fields) { IsValid = name.IsValid && fields.IsValid };
     }
 }

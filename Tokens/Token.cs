@@ -55,7 +55,6 @@ public record Token : ILocalized
     }
 
     public bool HasTrivia(TriviaKind kind, out TriviaToken? trivia) {
-
         if (LeadingTrivia is not null) {
             if (LeadingTrivia.Kind == kind) {
                 trivia = LeadingTrivia;

@@ -27,6 +27,6 @@ public sealed record Tuple<T> : ILocalized, IEnumerable<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ImmutableArray<T>.Enumerator GetEnumerator() => Items.GetEnumerator();
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() => (Items as IEnumerable<T>).GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => (Items as IEnumerable).GetEnumerator();
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IEnumerable<T>)Items).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Items).GetEnumerator();
 }

@@ -9,7 +9,6 @@ public sealed class StringToklet : IToklet<StringToken>
         );
 
     public StringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
-
         var endingDelimiter = input.Consume();
 
         var startPos = input.Position;
@@ -24,7 +23,6 @@ public sealed class StringToklet : IToklet<StringToken>
 
         // while the current character is not the ending delimiter
         while (currChar != endingDelimiter) {
-
             if (currChar == '\n') {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                     In = "a string",

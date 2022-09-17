@@ -11,24 +11,22 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
         );
 
     private CommentTriviaToken Consume(IConsumer<char> input, Tokenizer tokenizer, bool isInner) {
-
         var startingPosition = input.Position;
 
         var isValid = true;
 
         var currChar = input.Consume();
 
-        Debug.Assert(currChar == '/');
+        Debug.Assert(currChar is '/');
 
         currChar = input.Consume();
 
         Debug.Assert(currChar is '/' or '*');
 
-        if (currChar == '/') {
-
+        if (currChar is '/') {
             var strBuilder = new StringBuilder("//");
 
-            while (input.Consume(out currChar) && currChar != '\n') {
+            while (input.Consume(out currChar) && currChar is not '\n') {
                 strBuilder.Append(currChar);
             }
 
@@ -40,14 +38,13 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             ) { IsValid = true, TrailingTrivia = tokenizer.ConsumeTrivia() };
         }
 
-        if (currChar == '*') {
+        if (currChar is '*') {
             var strBuilder = new StringBuilder("/*");
 
             var inner = ImmutableArray.CreateBuilder<CommentTriviaToken>();
 
-            while (input.Consume(out currChar) && !(currChar == '*' && input.Peek() == '/')) {
-                if (currChar == '/' && input.Peek() == '*') {
-
+            while (input.Consume(out currChar) && !(currChar is '*' && input.Peek() is '/')) {
+                if (currChar is '/' && input.Peek() is '*') {
                     // reconsume the '/'
                     input.Reconsume();
 
@@ -83,7 +80,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             ) { IsValid = isValid, TrailingTrivia = isInner ? null : tokenizer.ConsumeTrivia() };
         }
 
-        Debug.Assert(false, "wtf even happened??");
+        Debug.Fail("wtf even happened??");
         throw null;
     }
 

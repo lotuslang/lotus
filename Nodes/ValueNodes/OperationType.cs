@@ -26,5 +26,4 @@ public enum OperationType {
     Assign, // a = b
     ArrayAccess, // a[b]
     Conditional, // a ? b : c
-
 }

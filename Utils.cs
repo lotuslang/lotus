@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.ObjectModel;
 
 public static class Utils
@@ -54,7 +53,7 @@ public static class Utils
 
     [DebuggerStepThrough]
     public static ReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> list)
-        => new ReadOnlyCollection<T>(list.ToArray());
+        => new(list.ToArray());
 
     [DebuggerStepThrough]
     public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
@@ -64,11 +63,10 @@ public static class Utils
             return "";
         } else if (count == 1) {
             return convert(coll.First());
-        } else if (count < 20) {
+        } else if (count < 10) {
             var output = "";
 
             foreach (var item in coll) output += convert(item) + separator;
-
 
             if (separator.Length != 0)
                 output = output.Remove(output.Length - separator.Length);
@@ -147,9 +145,10 @@ public static class Utils
     }
 
     public static IEnumerable<TEnum> GetMatchingValues<TEnum>(this TEnum flag) where TEnum : struct, Enum {
-        foreach (var value in Enum.GetValues<TEnum>())
+        foreach (var value in Enum.GetValues<TEnum>()) {
             if (flag.HasFlag(value))
                 yield return value;
+        }
     }
 
     public static bool IsAsciiDigit(in char c) => (uint)(c - '0') <= 9;

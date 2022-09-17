@@ -2,9 +2,7 @@ public sealed class LotusGrammar : ReadOnlyGrammar
 {
     private readonly Grammar internalGrammar = new();
 
-    private static readonly LotusGrammar _instance = new();
-
-    public static LotusGrammar Instance => _instance;
+    public static LotusGrammar Instance { get; } = new();
 
     private LotusGrammar() : base() {
         InitializeExpressionKinds();
@@ -16,7 +14,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
     }
 
     private void InitializeExpressionParslets() {
-
         // values
         internalGrammar
             .RegisterPrefix(ExpressionKind.Number, NumberLiteralParslet.Instance)
@@ -77,7 +74,6 @@ public sealed class LotusGrammar : ReadOnlyGrammar
     }
 
     private void InitializeExpressionKinds() {
-
         // Maths operators
         internalGrammar
             .RegisterExpressionKind("+", ExpressionKind.Plus)

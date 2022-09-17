@@ -1,7 +1,6 @@
 public sealed record TypeDecName(IdentNode TypeName, NameNode Parent, Token ColonToken)
 {
-    private readonly bool _hasParent = Parent != NameNode.NULL;
-    public bool HasParent => _hasParent;
+    public bool HasParent => Parent != NameNode.NULL;
 
     public bool IsValid { get; set; }
 

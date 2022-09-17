@@ -23,7 +23,6 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // while the current character is a digit
         while (Char.IsDigit(currChar)) {
-
             // add it to the value of output
             numberSB.Append(currChar);
 
@@ -43,7 +42,6 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // while the current character is a digit
         while (Char.IsDigit(currChar)) {
-
             // add it to the value of output
             numberSB.Append(currChar);
 
@@ -53,17 +51,14 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
         // if the character is an 'e' or an 'E'
         if (currChar is 'e' or 'E') {
-
             // add the e/E to the output
             numberSB.Append(currChar);
 
             // consume a character
             currChar = input.Consume();
 
-
             // if the character is a '+' or a '-'
             if (currChar is '+' or '-') {
-
                 // add it to the value of output
                 numberSB.Append(currChar);
 
@@ -73,7 +68,6 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
             // while the current character is a digit
             while (Char.IsDigit(currChar)) {
-
                 // add it to the value of output
                 numberSB.Append(currChar);
 

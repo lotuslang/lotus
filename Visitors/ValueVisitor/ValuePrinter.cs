@@ -85,5 +85,4 @@ internal sealed class ValuePrinter : IValueVisitor<string>
          + ASTHelper.PrintToken(tuple.ClosingToken);
 
     public string Print(ValueNode node) => node.Accept(this);
-
 }

@@ -3,7 +3,6 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
     public static readonly ObjectCreationParslet Instance = new();
 
     public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
-
         Debug.Assert(newToken == "new");
 
         var isValid = true;

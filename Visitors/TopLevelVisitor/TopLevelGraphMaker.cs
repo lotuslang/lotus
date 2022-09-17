@@ -20,7 +20,6 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     protected readonly (string tooltip, string color) TopLevel = (nameof(TopLevelNode), "black");
 
-
     public GraphNode Default(TopLevelNode node)
         =>  new GraphNode(node.GetHashCode(), node.Token.Representation)
                 .SetColor(TopLevel.color)

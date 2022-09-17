@@ -22,7 +22,6 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public ExpressionParser(Parser<ValueNode> parser) : base(parser)
         => Init();
 
-
     public override ValueNode Peek()
         => new ExpressionParser(this).Consume();
 
@@ -53,7 +52,6 @@ public sealed class ExpressionParser : Parser<ValueNode>
         var token = Tokenizer.Consume();
 
         if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
-
             string? notes = null;
 
             if (token.Kind == TokenKind.EOF) {
@@ -126,7 +124,7 @@ public sealed class ExpressionParser : Parser<ValueNode>
                 Location = items.LastOrDefault()?.Location ?? Position,
                 Message = (items.Length > expectedItemCount ? "There were too many" : "There weren't enough")
                          + "values in this tuple.",
-                Expected = expectedItemCount + $" values, but got " + items.Length
+                Expected = expectedItemCount + " values, but got " + items.Length
             });
 
             baseTuple.IsValid = false;

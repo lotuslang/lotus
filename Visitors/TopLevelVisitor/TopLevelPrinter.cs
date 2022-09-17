@@ -32,13 +32,15 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + ASTHelper.PrintToken(node.Token)
          + ASTHelper.PrintTypeName(node.Name)
          + ASTHelper.PrintToken(node.Fields.OpeningToken)
-         + Utils.Join("; ", coll: node.Fields.Items, convert:
+         + Utils.Join(
+                "; ",
                 (field) => ASTHelper.PrintValue(field.Name)
                          + ": "
                          + ASTHelper.PrintValue(field.Type)
                          + ASTHelper.PrintToken(field.EqualSign)
-                         + ASTHelper.PrintValue(field.DefaultValue)
-           )
+                         + ASTHelper.PrintValue(field.DefaultValue),
+                node.Fields.Items
+            )
          + (node.Fields.Count != 0 ? ";" : "")
          + ASTHelper.PrintToken(node.Fields.ClosingToken);
 

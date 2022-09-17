@@ -15,19 +15,14 @@ internal sealed class MarkupChain : IEnumerable<Markup>
         }
     }
 
-    private MarkupNode? head;
+    public MarkupNode? First { get; private set; }
 
-    public MarkupNode? First {
-        get => head;
-        private set => head = value;
-    }
-
-    public MarkupNode? Last => head?.Prev;
+    public MarkupNode? Last => First?.Prev;
 
     public MarkupChain() {}
 
     public MarkupChain(MarkupChain chain) : this() {
-        head = chain.head;
+        First = chain.First;
     }
 
     public MarkupChain(IEnumerable<Markup> markups) : this() {
@@ -38,39 +33,38 @@ internal sealed class MarkupChain : IEnumerable<Markup>
     public void AddLast(Markup mk) {
         var node = new MarkupNode(mk);
 
-        if (head is null) {
-            head = node;
-            head.Next = head.Prev = head;
+        if (First is null) {
+            First = node;
+            First.Next = First.Prev = First;
         } else {
-            node.Prev = head.Prev;
-            node.Next = head;
-            head.Prev!.Next = node;
-            head.Prev = node;
+            node.Prev = First.Prev;
+            node.Next = First;
+            First.Prev!.Next = node;
+            First.Prev = node;
         }
     }
 
     public void AddLast(MarkupNode node) {
-        if (head is null) {
-            head = node;
+        if (First is null) {
+            First = node;
         } else {
-            head.Prev!.Next = node;
+            First.Prev!.Next = node;
 
             if (node.Prev is not null)
-                node.Prev.Next = head;
-
+                node.Prev.Next = First;
 
             var newPrev = node.Prev;
-            node.Prev = head.Prev;
+            node.Prev = First.Prev;
 
-            node.Next ??= head;
+            node.Next ??= First;
 
-            head.Prev = newPrev;
+            First.Prev = newPrev;
         }
     }
 
     public void AddLast(MarkupChain chain) {
-        if (chain.head is not null)
-            AddLast(chain.head);
+        if (chain.First is not null)
+            AddLast(chain.First);
     }
 
     public IEnumerator<Markup> GetEnumerator() => new Enumerator(this);
@@ -89,9 +83,8 @@ internal sealed class MarkupChain : IEnumerable<Markup>
 
         public Enumerator(MarkupChain chain) {
             this.chain = chain;
-            _nextNode = chain.head;
+            _nextNode = chain.First;
         }
-
 
         public bool MoveNext() {
             if (_nextNode is null) {
@@ -102,13 +95,13 @@ internal sealed class MarkupChain : IEnumerable<Markup>
             _item = _nextNode.Value;
             _nextNode = _nextNode!.Next;
 
-            if (_nextNode == chain.head)
+            if (_nextNode == chain.First)
                 _nextNode = null;
 
             return true;
         }
 
-        public void Reset() => _nextNode = chain.head;
+        public void Reset() => _nextNode = chain.First;
         // suggested by roslyn, don't know either :shrug:
         public void Dispose() => GC.SuppressFinalize(this);
     }

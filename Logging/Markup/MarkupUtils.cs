@@ -63,7 +63,6 @@ internal static class MarkupUtils
         }
 
         return output;
-
     }
 
     public static string ToString(this TextFormat? format)

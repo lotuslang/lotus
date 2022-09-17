@@ -41,8 +41,6 @@ public sealed class Union<T, U>
     public static explicit operator T(Union<T, U> union) => union.t!;
     public static explicit operator U(Union<T, U> union) => union.u!;
 
-
-
     public override string ToString()
         => Match(t => t!.ToString(), u => u!.ToString())!;
 }
@@ -67,7 +65,7 @@ public class Union<T, U, V>
         }
     }
 
-    public void Match<TResult>(Action<T> f, Action<U> g, Action<V> h) {
+    public void Match(Action<T> f, Action<U> g, Action<V> h) {
         switch (tag) {
             case 0:
                 f(t!);

@@ -10,7 +10,6 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
         };
 
     public EnumNode Parse(TopLevelParser parser, Token enumToken) {
-
         /*
         *   Enums, just like a lot of top-lvl stuff comes in all shapes
         *   and sizes, so parsing them is gonna require a bit of caution

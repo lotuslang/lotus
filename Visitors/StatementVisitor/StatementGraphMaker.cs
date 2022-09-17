@@ -29,8 +29,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     protected readonly (string tooltip, string color) While = ("(do-)while loop", "pink");
     protected readonly (string tooltip, string color) WhileCondition = ("loop condition", "");
 
-
-
     protected readonly (string tooltip, string color) ArrayLiteral = ("array literal", "teal");
 
     protected readonly (string tooltip, string color) Bool = ("bool literal", "");
@@ -59,7 +57,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     protected readonly (string tooltip, string color) SimpleBlock = ("body", "darkviolet");
 
-
     protected GraphNode BaseDefault(StatementNode node)
         => new GraphNode(node.GetHashCode(), node.Token.Representation)
             .SetColor(Statement.color)
@@ -79,7 +76,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public GraphNode Visit(StatementNode node)
         => Default(node);
-
 
     public GraphNode Visit(BreakNode node)
         => Default(node)
@@ -152,7 +148,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                                         .SetTooltip(FuncDecParameters.tooltip);
 
             foreach (var parameter in node.ParamList.Items) { // FIXME: Write tooltips
-
                 var paramNameNode = ToGraphNode(parameter.Name);
 
                 paramNameNode.Add(ToGraphNode(parameter.Type));
@@ -216,7 +211,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     public GraphNode Visit(StatementExpressionNode node)
         => ToGraphNode(node.Value);
 
-
     public GraphNode Visit(WhileNode node)
         => new GraphNode(node.GetHashCode(), node.IsDoLoop ? "do-while" : "while") {
                 new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
@@ -226,8 +220,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                 ToGraphNode(node.Body)
             }.SetColor(While.color)
              .SetTooltip(node.IsDoLoop ? "do-while loop" : "while loop");
-
-
 
     public GraphNode Visit(ValueNode node)
         => new GraphNode(node.GetHashCode(), node.Token.Representation)
@@ -289,7 +281,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     }
 
     public GraphNode Visit(NameNode node)
-        => new GraphNode(node.GetHashCode(), Utils.Join(".", (ident => ident.Representation), node.Parts))
+        => new GraphNode(node.GetHashCode(), Utils.Join(".", ident => ident.Representation, node.Parts))
             .SetColor(Ident.color)
             .SetTooltip("name");
 
@@ -369,7 +361,6 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                 .SetColor(SimpleBlock.color);
 
     public GraphNode ToGraphNode<TVal>(Tuple<TVal> tuple) where TVal : Node {
-
         var root = new GraphNode(tuple.GetHashCode(), "tuple")
             .SetColor(Tuple.color)
             .SetTooltip(Tuple.tooltip);

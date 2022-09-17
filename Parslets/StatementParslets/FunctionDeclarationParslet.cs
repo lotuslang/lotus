@@ -180,7 +180,6 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
             // if there's less than 2 names (illegal)
             if (typeNameArray.Operands.Length < 2) { // FIXME: We should really make an error type for wrong-numbered things
-
                 var errorLoc = paramType.Location;
 
                 if (typeNameArray.Operands.Length == 0) {

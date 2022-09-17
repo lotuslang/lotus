@@ -46,29 +46,29 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     //public Parser(Tokenizer tokenizer) : this(tokenizer as IConsumer<Token>) { }
 
-    public Parser(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+    protected Parser(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(grammar) {
         Tokenizer = tokenConsumer;
     }
 
-    public Parser(IConsumer<T> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+    protected Parser(IConsumer<T> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
         foreach (var node in nodeConsumer) {
             reconsumeQueue.Enqueue(node);
         }
     }
 
-    public Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
+    protected Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
 
-    public Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection, grammar), grammar) { }
+    protected Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection, grammar), grammar) { }
 
-    public Parser(Uri file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
+    protected Parser(Uri file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
 
-    public Parser(Parser<T> parser) : this(parser.Grammar) {
+    protected Parser(Parser<T> parser) : this(parser.Grammar) {
         reconsumeQueue = parser.reconsumeQueue;
         Tokenizer = parser.Tokenizer;
         _curr = parser.Current;
     }
 
-    public Parser(Parser<T> parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
+    protected Parser(Parser<T> parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
         reconsumeQueue = parser.reconsumeQueue;
         _curr = parser.Current;
     }
@@ -128,9 +128,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     public TNode Consume<TNode>(TNode defaultVal, Action<T> errorHandler) where TNode : T {
         if (!TryConsume<TNode>(out var output, out var val)) {
-            if (!val.IsValid)
+            if (!val.IsValid) {
                 // if it's not valid, it probably already emitted an error
                 Logger.errorStack.Pop();
+            }
 
             errorHandler(val);
         }

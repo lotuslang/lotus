@@ -245,9 +245,8 @@ public static class Logger
         return sb;
     }
 
-    internal static MarkupBuilder FormatContextualized(IContextualized error) {
-        return new MarkupBuilder("Error happened in " + error.In);
-    }
+    internal static MarkupBuilder FormatContextualized(IContextualized error)
+        => new("Error happened in " + error.In);
 
     internal static MarkupBuilder FormatLocalized(ILocalized error) {
         var sb = new MarkupBuilder();
@@ -336,15 +335,12 @@ public static class Logger
     private static string GetCallerString(LotusError error) => Path.GetFileNameWithoutExtension(error.CallerPath) + '.' + error.Caller;
 
     internal class SourceCodeWrapper : ISourceCodeProvider {
-        private readonly string _filename;
-        public string Filename => _filename;
-
-        private readonly SourceCode _src;
-        public SourceCode Source => _src;
+        public string Filename { get; }
+        public SourceCode Source { get; }
 
         public SourceCodeWrapper(string filename, SourceCode src) {
-            _filename = filename;
-            _src = src;
+            Filename = filename;
+            Source = src;
         }
     }
 }

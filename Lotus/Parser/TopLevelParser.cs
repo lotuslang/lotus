@@ -105,7 +105,6 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     }
 
     public TypeDecName ConsumeTypeDeclarationName() {
-
         var typeName = ExpressionParser.Consume<NameNode>(IdentNode.NULL, @as: "the name of a type");
 
         var parent = NameNode.NULL;

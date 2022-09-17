@@ -5,12 +5,11 @@ public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, V
     public ValueTupleParslet(Func<ExpressionParser, TValue> valParser) : base(valParser) {}
 }
 
-
 public enum TupleEndingDelimBehaviour { Reject, Accept, Force }
 
 public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TValue>>
-    where TPNode : Node
     where TParser : Parser<TPNode>
+    where TPNode : Node
 {
     [MemberNotNullWhen(true, nameof(simpleValueParser))]
     [MemberNotNullWhen(false, nameof(valueParser))]
@@ -53,7 +52,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
         var items = ImmutableArray.CreateBuilder<TValue>();
 
         while (parser.Tokenizer.Consume(out var token) && token != End) {
-
             parser.Tokenizer.Reconsume();
 
             if (IsSimpleParser)
@@ -62,7 +60,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                 items.AddRange(valueParser(parser));
 
             if (parser.Tokenizer.Consume() != Delim) {
-
                 if (parser.Tokenizer.Current == End) {
                     if (EndingDelimBehaviour is TupleEndingDelimBehaviour.Force) {
                         Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
@@ -107,7 +104,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     Message = "Did you forget '" + End + "' or '" + Delim + "' in this " + typeof(TValue).Name + " list ?"
                 });
 
-
                 // if it's an identifier, we should reconsume it so the error doesn't run over
                 if (parser.Tokenizer.Current.Kind == TokenKind.identifier) {
                     isValid = false;
@@ -121,7 +117,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     isValid = false;
                     parser.Tokenizer.Consume();
                 }
-
 
                 //parser.Tokenizer.Reconsume();
 
@@ -172,7 +167,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             } else {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     In = In,
-                    Expected = "an ending delimeter '" + End + "'",
+                    Expected = "an ending delimiter '" + End + "'",
                     Location = (items.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
                 });
             }

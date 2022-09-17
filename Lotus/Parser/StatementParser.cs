@@ -103,7 +103,6 @@ public sealed class StatementParser : Parser<StatementNode>
         }
     }
 
-
     public Tuple<StatementNode> ConsumeStatementBlock(bool areOneLinersAllowed = true)
         => (areOneLinersAllowed
             ? StatementBlockParslet.Default

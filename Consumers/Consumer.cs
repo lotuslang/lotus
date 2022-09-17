@@ -16,7 +16,7 @@ public class Consumer<T> : IConsumer<T>
     protected Location lastPos;
     protected Location internalPos;
 
-    public virtual LocationRange Position => (Current is ILocalized tLoc ? tLoc.Location : internalPos);
+    public virtual LocationRange Position => Current is ILocalized tLoc ? tLoc.Location : internalPos;
 
     protected void Init() {
         _data = ImmutableArray<T>.Empty;
@@ -86,7 +86,6 @@ public class Consumer<T> : IConsumer<T>
             _currIdx--;
     }
 
-
     public virtual T Peek()
         => Count <= 0 ? ConstantDefault : _data[_atStart ? _currIdx : _currIdx + 1];
 
@@ -109,7 +108,6 @@ public class Consumer<T> : IConsumer<T>
             _current = consumer.Default;
             originalConsumer = consumer.Clone();
         }
-
 
         public bool MoveNext() {
             if (!consumer.Consume(out _current)) {

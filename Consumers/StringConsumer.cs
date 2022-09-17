@@ -66,7 +66,6 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
     }
 
     public override ref readonly char Consume() {
-
         // If we are instructed to reconsume the last char, then dequeue a char from the reconsumeQueue and return it
         lastPos = pos;
 

@@ -24,7 +24,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
         );
 
     public OperatorToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
-
         var currChar = input.Consume();
         var currCharStr = currChar.ToString();
 
@@ -58,7 +57,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
         // this part is for cases that aren't simple and/or wouldn't look good in a switch expression
 
         if (currChar is '+' or '-') {
-
             if (input.Peek() == currChar) {
                 return new OperatorToken(currChar +""+ input.Consume(), Precedence.Unary, false, new LocationRange(currPos, input.Position));
             }
@@ -77,9 +75,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             return new OperatorToken(currCharStr, Precedence.Power, false, input.Position);
         }
 
-
         if (currChar == '=') {
-
             // Equality comparison operator a == b
             if (input.Peek() == '=') {
                 return new OperatorToken(currCharStr + input.Consume(), Precedence.Equal, true, new LocationRange(currPos, input.Position));
@@ -90,7 +86,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
         }
 
         if (currChar == '>') {
-
             // Greater-than-or-equal comparison operator a >= b
             if (input.Peek() == '=') {
                 return new OperatorToken(currCharStr + input.Consume(), Precedence.GreaterThanOrEqual, true, new LocationRange(currPos, input.Position));
@@ -101,7 +96,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
         }
 
         if (currChar == '<') {
-
             // Less-than-or-equal comparison operator a <= b
             if (input.Peek() == '=') {
                 return new OperatorToken(currCharStr + input.Consume(), Precedence.LessThanOrEqual, true, new LocationRange(currPos, input.Position));
@@ -112,7 +106,6 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
         }
 
         if (currChar == '!') {
-
             // Not-equal comparison operator a != b
             if (input.Peek() == '=') {
                 return new OperatorToken(currCharStr + input.Consume(), Precedence.NotEqual, true, new LocationRange(currPos, input.Position));
@@ -122,7 +115,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
             return new OperatorToken(currCharStr, Precedence.Unary, false, input.Position);
         }
 
-        Debug.Assert(false, "OperatorToklet can't be called on '" + currCharStr + "'");
+        Debug.Fail("OperatorToklet can't be called on '" + currCharStr + "'");
         throw null;
     }
 }

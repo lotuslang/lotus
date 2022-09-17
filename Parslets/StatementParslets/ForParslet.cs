@@ -34,7 +34,6 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         // no we can't use Parser.ConsumeCommaSeparatedList because here we can have empty "values"
         while (parser.Tokenizer.Consume(out var token) && token != ")") {
-
             if (token == ",") {
                 token = parser.Tokenizer.Consume();
 

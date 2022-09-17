@@ -40,11 +40,10 @@ partial class Program
         var silentVerb = new Command("silent", "Don't print anything to stdout (errors go to stderr)");
         silentVerb.AddArgument(fileArgument);
         silentVerb.SetHandler(
-            (file, force) => Task.FromResult(HandleParsing(file, out _)),
+            (file, _) => Task.FromResult(HandleParsing(file, out var _)),
             fileArgument,
             forceOption
         );
-
 
         /*
         *   parsex print [file.txt]
@@ -53,7 +52,6 @@ partial class Program
         var printVerb = new Command("print", "Reconstruct the source file from the AST and print it");
         printVerb.AddArgument(fileArgument);
         printVerb.SetHandler(PrintHandler, fileArgument, forceOption);
-
 
         /*
         *   parsex hash [file.txt]
@@ -73,7 +71,6 @@ partial class Program
         );
 
         hashVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.GetHashCode())));
-
 
         /*
         *   parsex graph [file.txt]
@@ -128,7 +125,7 @@ partial class Program
             var g = MakeGraph(
                 file,
                 Enumerable.OfType<TopLevelStatementNode>, // filter
-                (n => ASTHelper.ShowConstants(n)), // transform
+                n => ASTHelper.ShowConstants(n), // transform
                 force,
                 out int exitCode
             );

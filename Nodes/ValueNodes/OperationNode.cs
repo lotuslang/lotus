@@ -30,11 +30,10 @@ public sealed record OperationNode : ValueNode
         this.operands = operands;
 
         Location = OperationKind switch {
-            OperationKind.Unary => new LocationRange(token.Location, operands.First().Location),
-            OperationKind.Binary or OperationKind.Ternary => new LocationRange(operands.First().Location, operands.Last().Location),
+            OperationKind.Unary => new LocationRange(token.Location, operands[0].Location),
+            OperationKind.Binary or OperationKind.Ternary => new LocationRange(operands[0].Location, operands[^1].Location),
             _ => Token.Location
         };
-
     }
 
     [DebuggerHidden()]

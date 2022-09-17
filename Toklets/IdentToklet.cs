@@ -11,7 +11,6 @@ public sealed class IdentToklet : IToklet<Token>
         );
 
     public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
-
         // consume a character
         var currChar = input.Consume();
 
@@ -22,16 +21,15 @@ public sealed class IdentToklet : IToklet<Token>
 
         var startPos = input.Position;
 
-        // while the current character is a letter, a digit, or a low line
+        // while the current character is a letter, a digit, or an underscore
         while (input.Consume(out currChar) && (Char.IsLetterOrDigit(currChar) || currChar is '_')) {
-
             // add it to the value of output
             output.Append(currChar);
         }
 
         var outputStr = output.ToString();
 
-        // reconsume the last token (which is not a letter, a digit, or a low line,
+        // reconsume the last token (which is not a letter, a digit, or an underscore,
         // since our while loop has exited) to make sure it is processed by the tokenizer afterwards
         input.Reconsume();
 

@@ -19,7 +19,6 @@ public sealed record TupleNode
     public TupleNode(ImmutableArray<ValueNode> items, Token openingToken, Token closingToken)
         : this(new Tuple<ValueNode>(items, openingToken, closingToken)) { }
 
-
     /// <summary>
     /// <strong>TRUNCATES</strong> the tuple to the first element and turns it into a paren expression.
     /// </summary>
@@ -39,8 +38,8 @@ public sealed record TupleNode
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ImmutableArray<ValueNode>.Enumerator GetEnumerator() => _internalTuple.GetEnumerator();
 
-    IEnumerator<ValueNode> IEnumerable<ValueNode>.GetEnumerator() => (_internalTuple as IEnumerable<ValueNode>).GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => (_internalTuple as IEnumerable).GetEnumerator();
+    IEnumerator<ValueNode> IEnumerable<ValueNode>.GetEnumerator() => ((IEnumerable<ValueNode>)_internalTuple).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_internalTuple).GetEnumerator();
 
     public static explicit operator Tuple<ValueNode>(TupleNode node) => node._internalTuple;
 }

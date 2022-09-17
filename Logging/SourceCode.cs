@@ -91,7 +91,7 @@ public sealed class SourceCode
                 separator: ">"
             );
 
-            if (actualLine == "") {
+            if (actualLine?.Length == 0) {
                 output += "EOF";
 
                 return output;
@@ -116,7 +116,7 @@ public sealed class SourceCode
 
         var actualLine = GetPrettyLineAt(line);
 
-        if (actualLine == "") {
+        if (actualLine?.Length == 0) {
             output += "EOF";
 
             return output;
@@ -136,7 +136,7 @@ public sealed class SourceCode
 
         var actualLine = GetPrettyLineAt(line);
 
-        if (actualLine == "") {
+        if (actualLine?.Length == 0) {
             output += "EOF";
 
             return output;
@@ -154,5 +154,4 @@ public sealed class SourceCode
 
         return output + FormatTextEpilogueAt(line);
     }
-
 }

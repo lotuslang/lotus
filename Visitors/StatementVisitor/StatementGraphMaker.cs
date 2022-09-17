@@ -89,7 +89,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public GraphNode Visit(DeclarationNode node)
         => new GraphNode(node.GetHashCode(), "var") {
-               ASTHelper.ToGraphNode(node.Name)
+               ASTUtils.ToGraphNode(node.Name)
                     .SetColor(DeclarationName.color)
                     .SetTooltip(DeclarationName.tooltip),
                ToGraphNode(node.Value)
@@ -366,7 +366,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
             .SetTooltip(Tuple.tooltip);
 
         foreach (var node in tuple.Items)
-            root.Add(ASTHelper.ToGraphNode(node));
+            root.Add(ASTUtils.ToGraphNode(node));
 
         return root;
     }

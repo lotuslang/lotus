@@ -1,4 +1,4 @@
-﻿internal static class ASTHelper
+﻿internal static class ASTUtils
 {
     [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
     public static readonly NameChecker NameChecker = new();

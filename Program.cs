@@ -55,7 +55,7 @@ partial class Program
             AddGraphPrelude(g, file);
 
             foreach (var node in tlNodes) {
-                g.AddNode(ASTHelper.ToGraphNode(node));
+                g.AddNode(ASTUtils.ToGraphNode(node));
             }
         }
 

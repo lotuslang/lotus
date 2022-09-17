@@ -10,10 +10,10 @@ internal sealed class ConstantVisualizer : StatementGraphMaker
     }
 
     public override GraphNode Default(ValueNode node)
-        => BaseDefault(node).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
+        => BaseDefault(node).SetColor(ASTUtils.IsContant(node) ? ConstantColor : NonConstantColor);
 
     public override GraphNode ToGraphNode(ValueNode node)
-        => node.Accept(this).SetColor(ASTHelper.IsContant(node) ? ConstantColor : NonConstantColor);
+        => node.Accept(this).SetColor(ASTUtils.IsContant(node) ? ConstantColor : NonConstantColor);
 
     public GraphNode ShowConstants(StatementNode node) => node.Accept(this);
     public GraphNode ShowConstants(ValueNode node) => node.Accept(this);

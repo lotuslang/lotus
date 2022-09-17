@@ -162,7 +162,7 @@ public static class Logger
                 sb.Append(token.Kind);
 
                 if (token.Kind is not TokenKind.EOF) {
-                    sb.Append(" '" + ASTHelper.PrintToken(token).Trim() + "'");
+                    sb.Append(" '" + ASTUtils.PrintToken(token).Trim() + "'");
                 }
 
                 break;
@@ -206,7 +206,7 @@ public static class Logger
                 sb.Append(
                       (node is OperationNode opNode ? opNode.OperationType + " (" + opNode.Token + ')': node.GetType().Name)
                     + " '"
-                    + (node.Location.LineLength < 100 ? ASTHelper.PrintNode(node).Trim() : "")
+                    + (node.Location.LineLength < 100 ? ASTUtils.PrintNode(node).Trim() : "")
                     + "'"
                 );
                 break;
@@ -300,9 +300,9 @@ public static class Logger
         string sourceCode;
 
         if (error is IValued<Node> eNode) {
-            sourceCode = ASTHelper.PrintNode(eNode.Value);
+            sourceCode = ASTUtils.PrintNode(eNode.Value);
         } else if (error is IValued<Token> eToken) {
-            sourceCode = ASTHelper.PrintToken(eToken.Value);
+            sourceCode = ASTUtils.PrintToken(eToken.Value);
         } else if (error is IValued<string> eString) {
             sourceCode = eString.Value;
         } else {

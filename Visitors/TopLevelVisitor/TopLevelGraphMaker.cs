@@ -26,18 +26,18 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
                 .SetTooltip(TopLevel.tooltip);
 
     public GraphNode Visit(TopLevelStatementNode node)
-        => ASTHelper.ToGraphNode(node.Statement);
+        => ASTUtils.ToGraphNode(node.Statement);
 
     public GraphNode Visit(FromNode node)
         => new GraphNode(node.GetHashCode(), "from") {
-               ASTHelper.UnionToGraphNode(node.OriginName)
+               ASTUtils.UnionToGraphNode(node.OriginName)
                    .SetTooltip("origin name")
            }.SetColor(From.color)
             .SetTooltip(From.tooltip);
 
     public GraphNode Visit(ImportNode node) {
         var root = new GraphNode(node.GetHashCode(), "import") {
-            ASTHelper.ToGraphNode(node.FromStatement)
+            ASTUtils.ToGraphNode(node.FromStatement)
         }.SetColor(Import.color)
          .SetTooltip(Import.tooltip);
 
@@ -46,7 +46,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             .SetTooltip(ImportNames.tooltip);
 
         foreach (var import in node.Names) {
-            importsNode.Add(ASTHelper.ToGraphNode(import));
+            importsNode.Add(ASTUtils.ToGraphNode(import));
         }
 
         root.Add(importsNode);
@@ -55,7 +55,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(EnumNode node) {
-        var root = new GraphNode(node.GetHashCode(), "enum " + ASTHelper.PrintTypeName(node.Name))
+        var root = new GraphNode(node.GetHashCode(), "enum " + ASTUtils.PrintTypeName(node.Name))
             .SetColor(Enum.color)
             .SetTooltip(Enum.tooltip);
 
@@ -67,7 +67,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
                 )
                 .SetColor(EnumParent.color)
                 .SetTooltip(EnumParent.tooltip)
-                .Add(ASTHelper.ToGraphNode(node.Name.Parent))
+                .Add(ASTUtils.ToGraphNode(node.Name.Parent))
             );
         }
 
@@ -76,7 +76,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             .SetTooltip(EnumValues.tooltip);
 
         foreach (var val in node.Values) {
-            valuesNode.Add(ASTHelper.ToGraphNode(val));
+            valuesNode.Add(ASTUtils.ToGraphNode(val));
         }
 
         root.Add(valuesNode);
@@ -86,13 +86,13 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     public GraphNode Visit(NamespaceNode node)
         => new GraphNode(node.GetHashCode(), "namespace") {
-                ASTHelper.ToGraphNode(node.Name).SetTooltip("namespace name")
+                ASTUtils.ToGraphNode(node.Name).SetTooltip("namespace name")
             }.SetColor(Namespace.color)
              .SetTooltip(Namespace.tooltip);
 
     public GraphNode Visit(UsingNode node)
         => new GraphNode(node.GetHashCode(), "using") {
-                ASTHelper.UnionToGraphNode(node.Name)
+                ASTUtils.UnionToGraphNode(node.Name)
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
 
@@ -106,12 +106,12 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             .SetTooltip(StructFields.tooltip);
 
         foreach (var field in node.Fields) {
-            var fieldNode = ASTHelper.ToGraphNode(field.Name);
+            var fieldNode = ASTUtils.ToGraphNode(field.Name);
 
-            fieldNode.Add(ASTHelper.ToGraphNode(field.Type));
+            fieldNode.Add(ASTUtils.ToGraphNode(field.Type));
 
             if (field.HasDefaultValue) {
-                fieldNode.Add(ASTHelper.ToGraphNode(field.DefaultValue));
+                fieldNode.Add(ASTUtils.ToGraphNode(field.DefaultValue));
             }
 
             fields.Add(fieldNode);
@@ -123,14 +123,14 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(TypeDecName typeDec) {
-        var root = ASTHelper.ToGraphNode(typeDec.TypeName)
+        var root = ASTUtils.ToGraphNode(typeDec.TypeName)
                     .SetColor("")
                     .SetTooltip("type name");
 
         if (typeDec.HasParent) {
             root.Add(
                 new GraphNode(DeterministicHashCode.Combine(typeDec.Parent, "parent"), "parent") {
-                    ASTHelper.ToGraphNode(typeDec.Parent as ValueNode)
+                    ASTUtils.ToGraphNode(typeDec.Parent as ValueNode)
                 }
             );
         }

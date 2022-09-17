@@ -125,7 +125,7 @@ partial class Program
             var g = MakeGraph(
                 file,
                 Enumerable.OfType<TopLevelStatementNode>, // filter
-                n => ASTHelper.ShowConstants(n), // transform
+                n => ASTUtils.ShowConstants(n), // transform
                 force,
                 out int exitCode
             );
@@ -147,12 +147,12 @@ partial class Program
         }
 
         foreach (var node in tlNodes) {
-            Console.Write(ASTHelper.PrintTopLevel(node));
+            Console.Write(ASTUtils.PrintTopLevel(node));
         }
 
         string s;
 
-        if ((s = ASTHelper.PrintToken(tokenizer.Current)).Length >= 2) {
+        if ((s = ASTUtils.PrintToken(tokenizer.Current)).Length >= 2) {
             // print the last (EOF) token, which is not consumed by the parser
             Console.WriteLine(s[..^2]);
         }

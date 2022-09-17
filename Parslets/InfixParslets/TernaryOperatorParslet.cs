@@ -30,11 +30,11 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
                 In = "a ternary operator",
                 Expected = "a colon ':'",
                 ExtraNotes = "To separate the two branches, you have to use a colon ':'\n\t"
-                            +ASTHelper.PrintValue(condition)
-                            +ASTHelper.PrintToken(questionMarkToken)
-                            +ASTHelper.PrintValue(firstValue)
+                            +ASTUtils.PrintValue(condition)
+                            +ASTUtils.PrintToken(questionMarkToken)
+                            +ASTUtils.PrintValue(firstValue)
                             +": " // no space because previous trivia token probably takes care of it
-                            +ASTHelper.PrintValue(secondValue)
+                            +ASTUtils.PrintValue(secondValue)
             });
         }
 

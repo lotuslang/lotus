@@ -1,50 +1,50 @@
 internal sealed class StatementPrinter : IStatementVisitor<string>
 {
     public string Default(StatementNode node)
-        => ASTHelper.PrintToken(node.Token);
+        => ASTUtils.PrintToken(node.Token);
 
     public string Visit(DeclarationNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintToken(node.Name)
-         + ASTHelper.PrintToken(node.EqualToken)
-         + ASTHelper.PrintValue(node.Value);
+        => ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintToken(node.Name)
+         + ASTUtils.PrintToken(node.EqualToken)
+         + ASTUtils.PrintValue(node.Value);
 
     public string Visit(ElseNode node)
-        => ASTHelper.PrintToken(node.Token)
+        => ASTUtils.PrintToken(node.Token)
          + node.BlockOrIfNode.Match(Print, Print);
 
     public string Visit(ForeachNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintToken(node.OpeningParen)
-         + ASTHelper.PrintValue(node.ItemName)
-         + ASTHelper.PrintToken(node.InToken)
-         + ASTHelper.PrintValue(node.CollectionRef)
-         + ASTHelper.PrintToken(node.ClosingParen)
+        => ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintToken(node.OpeningParen)
+         + ASTUtils.PrintValue(node.ItemName)
+         + ASTUtils.PrintToken(node.InToken)
+         + ASTUtils.PrintValue(node.CollectionRef)
+         + ASTUtils.PrintToken(node.ClosingParen)
          + Print(node.Body);
 
     public string Visit(ForNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintTuple(node.Header, ",", Print)
+        => ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintTuple(node.Header, ",", Print)
          + Print(node.Body);
 
     public string Visit(FunctionDeclarationNode node) {
-        var output = ASTHelper.PrintToken(node.Token) + ASTHelper.PrintToken(node.FuncName) + ASTHelper.PrintToken(node.ParamList.OpeningToken);
+        var output = ASTUtils.PrintToken(node.Token) + ASTUtils.PrintToken(node.FuncName) + ASTUtils.PrintToken(node.ParamList.OpeningToken);
 
         static string printParameter(FunctionParameter param) {
             var output = "";
 
-            if (param.Type != ValueNode.NULL) output += ASTHelper.PrintValue(param.Type);
+            if (param.Type != ValueNode.NULL) output += ASTUtils.PrintValue(param.Type);
 
-            output += ASTHelper.PrintValue(param.Name);
+            output += ASTUtils.PrintValue(param.Name);
 
-            if (param.HasDefaultValue) output += ASTHelper.PrintToken(param.EqualSign) + ASTHelper.PrintValue(param.DefaultValue);
+            if (param.HasDefaultValue) output += ASTUtils.PrintToken(param.EqualSign) + ASTUtils.PrintValue(param.DefaultValue);
 
             return output;
         }
 
-        output += Utils.Join(",", printParameter, node.ParamList.Items) + ASTHelper.PrintToken(node.ParamList.ClosingToken);
+        output += Utils.Join(",", printParameter, node.ParamList.Items) + ASTUtils.PrintToken(node.ParamList.ClosingToken);
 
-        if (node.HasReturnType) output += ASTHelper.PrintToken(node.ColonToken) + ASTHelper.PrintValue(node.ReturnType);
+        if (node.HasReturnType) output += ASTUtils.PrintToken(node.ColonToken) + ASTUtils.PrintValue(node.ReturnType);
 
         output += Print(node.Body);
 
@@ -52,35 +52,35 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
     }
 
     public string Visit(IfNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintValue(node.Condition)
+        => ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintValue(node.Condition)
          + Print(node.Body)
          + (node.HasElse ? Print(node.ElseNode!) : "");
 
     public string Visit(PrintNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Value);
+        => ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Value);
 
     public string Visit(ReturnNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + (node.IsReturningValue ? ASTHelper.PrintValue(node.Value) : "");
+        => ASTUtils.PrintToken(node.Token)
+         + (node.IsReturningValue ? ASTUtils.PrintValue(node.Value) : "");
 
     public string Visit(StatementExpressionNode node)
-        => ASTHelper.PrintValue(node.Value);
+        => ASTUtils.PrintValue(node.Value);
 
     public string Visit(WhileNode node)
         => node.IsDoLoop ?
         // if it's a do loop
-            ASTHelper.PrintToken(node.DoToken!)
+            ASTUtils.PrintToken(node.DoToken!)
               + Print(node.Body)
-              + ASTHelper.PrintToken(node.Token)
-              + ASTHelper.PrintValue(node.Condition)
+              + ASTUtils.PrintToken(node.Token)
+              + ASTUtils.PrintValue(node.Condition)
         // else if it's a normal while loop
-        :   ASTHelper.PrintToken(node.Token)
-              + ASTHelper.PrintValue(node.Condition)
+        :   ASTUtils.PrintToken(node.Token)
+              + ASTUtils.PrintValue(node.Condition)
               + Print(node.Body);
 
     public string Print(Tuple<StatementNode> tuple)
-        => ASTHelper.PrintTuple(tuple, "", (stmt) => Print(stmt) + (Utils.NeedsSemicolon(stmt) ? ";" : ""));
+        => ASTUtils.PrintTuple(tuple, "", (stmt) => Print(stmt) + (Utils.NeedsSemicolon(stmt) ? ";" : ""));
 
     public string Print(StatementNode node) => node.Accept(this);
 }

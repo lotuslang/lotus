@@ -1,55 +1,55 @@
 internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
 {
     public string Default(TopLevelNode node)
-        => ASTHelper.PrintToken(node.Token);
+        => ASTUtils.PrintToken(node.Token);
 
     public string Visit(FromNode node)
-        => ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintUnion(node.OriginName);
+        => ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintUnion(node.OriginName);
 
     public string Visit(TopLevelStatementNode node)
-        => ASTHelper.PrintStatement(node.Statement);
+        => ASTUtils.PrintStatement(node.Statement);
 
     public string Visit(EnumNode node)
-        => ASTHelper.PrintToken(node.AccessToken)
-         + ASTHelper.PrintToken(node.EnumToken)
+        => ASTUtils.PrintToken(node.AccessToken)
+         + ASTUtils.PrintToken(node.EnumToken)
          + Print(node.Name)
-         + ASTHelper.PrintTuple(node.Values, ",", ASTHelper.PrintValue);
+         + ASTUtils.PrintTuple(node.Values, ",", ASTUtils.PrintValue);
 
     public string Visit(ImportNode node)
         => Visit(node.FromStatement)
-         + ASTHelper.PrintToken(node.Token)
-         + Utils.Join(",", ASTHelper.PrintValue, node.Names);
+         + ASTUtils.PrintToken(node.Token)
+         + Utils.Join(",", ASTUtils.PrintValue, node.Names);
 
     public string Visit(NamespaceNode node)
-        => ASTHelper.PrintToken(node.AccessToken) + ASTHelper.PrintToken(node.Token) + ASTHelper.PrintValue(node.Name);
+        => ASTUtils.PrintToken(node.AccessToken) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
 
     public string Visit(UsingNode node)
-        => ASTHelper.PrintToken(node.Token) + ASTHelper.PrintUnion(node.Name);
+        => ASTUtils.PrintToken(node.Token) + ASTUtils.PrintUnion(node.Name);
 
     public string Visit(StructNode node)
-        => ASTHelper.PrintToken(node.AccessToken)
-         + ASTHelper.PrintToken(node.Token)
-         + ASTHelper.PrintTypeName(node.Name)
-         + ASTHelper.PrintToken(node.Fields.OpeningToken)
+        => ASTUtils.PrintToken(node.AccessToken)
+         + ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintTypeName(node.Name)
+         + ASTUtils.PrintToken(node.Fields.OpeningToken)
          + Utils.Join(
                 "; ",
-                (field) => ASTHelper.PrintValue(field.Name)
+                (field) => ASTUtils.PrintValue(field.Name)
                          + ": "
-                         + ASTHelper.PrintValue(field.Type)
-                         + ASTHelper.PrintToken(field.EqualSign)
-                         + ASTHelper.PrintValue(field.DefaultValue),
+                         + ASTUtils.PrintValue(field.Type)
+                         + ASTUtils.PrintToken(field.EqualSign)
+                         + ASTUtils.PrintValue(field.DefaultValue),
                 node.Fields.Items
             )
          + (node.Fields.Count != 0 ? ";" : "")
-         + ASTHelper.PrintToken(node.Fields.ClosingToken);
+         + ASTUtils.PrintToken(node.Fields.ClosingToken);
 
     public string Visit(TypeDecName typeDec)
         => !typeDec.HasParent
-                ? ASTHelper.PrintValue(typeDec.TypeName)
-                : ASTHelper.PrintValue(typeDec.Parent)
-                    + ASTHelper.PrintToken(typeDec.ColonToken)
-                    + ASTHelper.PrintValue(typeDec.TypeName);
+                ? ASTUtils.PrintValue(typeDec.TypeName)
+                : ASTUtils.PrintValue(typeDec.Parent)
+                    + ASTUtils.PrintToken(typeDec.ColonToken)
+                    + ASTUtils.PrintValue(typeDec.TypeName);
 
     public string Print(TypeDecName typeDec) => Visit(typeDec);
     public string Print(TopLevelNode node) => node.Accept(this);

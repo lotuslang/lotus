@@ -69,7 +69,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
                         Value = parser.ExpressionParser.Current,
                         ExtraNotes = "Wildcards ('*') are not allowed in import statements. Consider writing a `using` statement instead. "
                                 + "For example, you could write : 'using "
-                                + ASTHelper.PrintUnion(from.OriginName)
+                                + ASTUtils.PrintUnion(from.OriginName)
                                 + "' "
                                 + "at the top of your file.",
                     });

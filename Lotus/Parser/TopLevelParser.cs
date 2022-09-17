@@ -10,7 +10,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
     private void Init() {
         StatementParser = new StatementParser(Tokenizer);
-        _curr = ConstantDefault;
+        _curr = ConstantDefault with { Location = Tokenizer.Position };
     }
 
 #nullable disable

@@ -34,7 +34,7 @@ partial class Program
         }
 
         /*
-        *   parsex silent [file.txt]
+        *   lotus silent [file.txt]
         */
 
         var silentVerb = new Command("silent", "Don't print anything to stdout (errors go to stderr)");
@@ -46,7 +46,7 @@ partial class Program
         );
 
         /*
-        *   parsex print [file.txt]
+        *   lotus print [file.txt]
         */
 
         var printVerb = new Command("print", "Reconstruct the source file from the AST and print it");
@@ -54,8 +54,8 @@ partial class Program
         printVerb.SetHandler(PrintHandler, fileArgument, forceOption);
 
         /*
-        *   parsex hash [file.txt]
-        *   parsex hash const [file.txt]
+        *   lotus hash [file.txt]
+        *   lotus hash const [file.txt]
         */
 
         var hashVerb = new Command("hash", "Print the hash of the AST graph") {
@@ -73,8 +73,8 @@ partial class Program
         hashVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.GetHashCode())));
 
         /*
-        *   parsex graph [file.txt]
-        *   parsex graph const [file.txt]
+        *   lotus graph [file.txt]
+        *   lotus graph const [file.txt]
         */
 
         var graphVerb = new Command("graph", "Print graphviz code for the AST graph") {
@@ -92,7 +92,7 @@ partial class Program
         graphVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.ToText())));
 
         /*
-        *   parsex [--force] {silent, print, hash, graph}
+        *   lotus [--force] {silent, print, hash, graph}
         */
 
         var rootCommand = new RootCommand("A lotus parser/typechecker") {

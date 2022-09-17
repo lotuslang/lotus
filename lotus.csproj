@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <LangVersion>latest</LangVersion>
     <TargetFramework>net6</TargetFramework>
-    <RootNamespace>Parsex</RootNamespace>
+    <RootNamespace>Lotus</RootNamespace>
     <TargetCulture>InvariantCulture</TargetCulture>
     <Nullable>enable</Nullable>
     <WarningAsError>IDE0059</WarningAsError>

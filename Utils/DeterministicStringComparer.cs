@@ -2,7 +2,10 @@ internal class DeterministicStringComparer : IEqualityComparer<string>
 {
     public static readonly DeterministicStringComparer Instance = new();
 
-    public bool Equals(string? s1, string? s2) => GetHashCode(s1!) == GetHashCode(s2!);
+    public bool Equals(string? s1, string? s2)
+        => s1 is null
+            ? s2 is null
+            : s2 is not null && GetHashCode(s1) == GetHashCode(s2);
 
     public int GetHashCode(string str) {
         unchecked {

@@ -1,3 +1,5 @@
+namespace Lotus.Text;
+
 internal abstract record Markup
 {
     internal abstract string DbgString();

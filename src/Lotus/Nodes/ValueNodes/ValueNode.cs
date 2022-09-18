@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public abstract record ValueNode(Token Token, LocationRange Location)
 : Node(Token, Location)
 {

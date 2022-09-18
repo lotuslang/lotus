@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record FunctionCallNode(Tuple<ValueNode> ArgList, ValueNode Name)
 : ValueNode(Name.Token, new LocationRange(Name.Location, ArgList.Location))
 {

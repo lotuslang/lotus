@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public interface IPrefixParslet<out T> : IParslet<ExpressionParser, Token, T>
 where T : ValueNode
 {}

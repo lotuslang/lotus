@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 {
     public static readonly UsingParslet Instance = new();

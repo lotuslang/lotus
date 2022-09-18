@@ -1,5 +1,7 @@
 using System.Text;
 
+namespace Lotus.Syntax;
+
 public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
 {
     public static readonly CommentTriviaToklet Instance = new();

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class IdentifierParslet : IPrefixParslet<IdentNode>
 {
     public static readonly IdentifierParslet Instance = new();

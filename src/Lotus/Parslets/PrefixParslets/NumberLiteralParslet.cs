@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class NumberLiteralParslet : IPrefixParslet<NumberNode>
 {
     public static readonly NumberLiteralParslet Instance = new();

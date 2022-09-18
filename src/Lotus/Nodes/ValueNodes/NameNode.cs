@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts)
 : ValueNode(
     Token,

@@ -1,5 +1,7 @@
 using System.Text;
 
+namespace Lotus.Text;
+
 internal sealed class MarkupBuilder
 {
     private readonly MarkupChain _list;

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record TopLevelStatementNode(StatementNode Statement)
 : TopLevelNode(Statement.Token, Statement.Location, Statement.IsValid)
 {

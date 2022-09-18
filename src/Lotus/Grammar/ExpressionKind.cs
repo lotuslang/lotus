@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public enum ExpressionKind {
     NotAnExpr,
     Number,

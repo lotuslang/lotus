@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record FromNode(Union<StringNode, NameNode> OriginName, Token Token)
 : TopLevelNode(Token)
 {

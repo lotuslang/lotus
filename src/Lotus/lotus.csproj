@@ -21,6 +21,11 @@
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
 
+    <Using Include="Lotus" />
+    <Using Include="Lotus.Text" />
+    <Using Include="Lotus.Error" />
+    <Using Include="Lotus.Utils" />
+
     <Using Remove="System.IO" />
     <Using Remove="System.Net.Http" />
     <Using Remove="System.Threading.Tasks" />

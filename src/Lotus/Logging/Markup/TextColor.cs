@@ -1,3 +1,5 @@
+namespace Lotus.Text;
+
 internal abstract record TextColor
 {
     public abstract int GetForegroundCode();

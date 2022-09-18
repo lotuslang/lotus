@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public abstract record Parameter(NameNode Type, IdentNode Name) : ILocalized {
     public LocationRange Location { get; } = new(Type.Location, Name.Location);
 

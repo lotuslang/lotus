@@ -1,5 +1,9 @@
 using System.IO;
 
+using Lotus.Utils;
+
+namespace Lotus.Text;
+
 // !! WARNING !!
 // I had to invoke dark powers to write the following functions, hopefully without bugs, so edit
 // with *extreme* care.
@@ -38,7 +42,7 @@ public sealed class SourceCode
 
         // this was carefully crafted in the depth of desperation, please please careful !
         // ...and yes, 100 is kinda arbitrary, but it's to be safe about range
-        var n = Utils.GetNumberOfDigits(lineNumber + 100) - Utils.GetNumberOfDigits(lineNumber);
+        var n = MiscUtils.GetNumberOfDigits(lineNumber + 100) - MiscUtils.GetNumberOfDigits(lineNumber);
 
         if (n > 0) padding += new string(' ', n);
 
@@ -78,7 +82,7 @@ public sealed class SourceCode
         var output = FormatTextPreludeAt(firstLine);
 
         var padding = new string(' ',
-              Utils.GetNumberOfDigits(lastLine + 100)   // the space the line number takes
+              MiscUtils.GetNumberOfDigits(lastLine + 100)   // the space the line number takes
             + 3                                             // the space for " > "
             + (firstColumn - 1)                             // the space before the character's column
         );
@@ -109,7 +113,7 @@ public sealed class SourceCode
         var output = FormatTextPreludeAt(line);
 
         var padding = new string(' ',
-              Utils.GetNumberOfDigits(line + 100)   // the space the line number takes
+              MiscUtils.GetNumberOfDigits(line + 100)   // the space the line number takes
             + 3                                         // the space for " | "
             + (column - 1)                              // the space before the character's column
         );
@@ -145,7 +149,7 @@ public sealed class SourceCode
         output += actualLine + '\n';
 
         var padding = new string(' ',
-              Utils.GetNumberOfDigits(line + 100)   // the space the line number takes
+              MiscUtils.GetNumberOfDigits(line + 100)   // the space the line number takes
             + 3                                         // the space for " | "
             + (position.column - 1)                     // the space before the character's column
         );

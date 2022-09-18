@@ -1,5 +1,7 @@
 using System.Collections;
 
+namespace Lotus.Text;
+
 internal sealed class MarkupChain : IEnumerable<Markup>
 {
     [DebuggerDisplay("{Prev?.Value.DbgString() ?? \"\"} < {Value.DbgString()} > {Next?.Value.DbgString() ?? \"\"}")]

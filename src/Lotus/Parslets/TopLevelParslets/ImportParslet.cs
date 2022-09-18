@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
     public static readonly ImportParslet Instance = new();

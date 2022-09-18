@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record CommentTriviaToken : TriviaToken
 {
     public new static readonly CommentTriviaToken NULL = new("", LocationRange.NULL) { IsValid = false };

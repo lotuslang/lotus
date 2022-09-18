@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record IdentToken(string Representation, LocationRange Location)
 : Token(Representation, TokenKind.identifier, Location)
 {

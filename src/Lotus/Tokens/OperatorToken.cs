@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 [DebuggerDisplay("{Location} {Precedence}({(int)Precedence}) : {Representation}")]
 public sealed record OperatorToken(string Representation, Precedence Precedence, bool IsLeftAssociative, LocationRange Location)
 : Token(Representation, TokenKind.@operator, Location)

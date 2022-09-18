@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 {
     public static readonly DoWhileParslet Instance = new();

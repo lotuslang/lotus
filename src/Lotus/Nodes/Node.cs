@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 [DebuggerDisplay("[{GetType().Name}]: {Token.Representation}")]
 public abstract record Node : ILocalized
 {

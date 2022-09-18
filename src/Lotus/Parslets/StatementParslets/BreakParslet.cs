@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class BreakParslet : IStatementParslet<BreakNode>
 {
     public static readonly BreakParslet Instance = new();

@@ -1,3 +1,5 @@
+namespace Lotus.Text;
+
 [Flags]
 internal enum TextFormat {
     None = 0,

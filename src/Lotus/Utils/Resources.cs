@@ -1,3 +1,6 @@
+namespace Lotus.Syntax;
+
+// TODO: merge this with LotusGrammar for querying info about the language
 internal static class Resources
 {
     public static readonly HashSet<string> keywords = new() {

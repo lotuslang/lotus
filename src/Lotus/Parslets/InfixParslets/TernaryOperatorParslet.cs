@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence => Precedence.Ternary;

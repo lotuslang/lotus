@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public enum OperationType {
     Unknown = 0,
     Positive, // +a

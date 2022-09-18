@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record IfNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,

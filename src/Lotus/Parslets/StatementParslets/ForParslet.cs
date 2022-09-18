@@ -1,3 +1,4 @@
+namespace Lotus.Syntax;
 
 public sealed class ForParslet : IStatementParslet<ForNode>
 {

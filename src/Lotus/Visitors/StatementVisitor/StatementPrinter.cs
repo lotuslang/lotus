@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal sealed class StatementPrinter : IStatementVisitor<string>
 {
     public string Default(StatementNode node)
@@ -42,7 +44,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
             return output;
         }
 
-        output += Utils.Join(",", printParameter, node.ParamList.Items) + ASTUtils.PrintToken(node.ParamList.ClosingToken);
+        output += MiscUtils.Join(",", printParameter, node.ParamList.Items) + ASTUtils.PrintToken(node.ParamList.ClosingToken);
 
         if (node.HasReturnType) output += ASTUtils.PrintToken(node.ColonToken) + ASTUtils.PrintValue(node.ReturnType);
 
@@ -80,7 +82,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
               + Print(node.Body);
 
     public string Print(Tuple<StatementNode> tuple)
-        => ASTUtils.PrintTuple(tuple, "", (stmt) => Print(stmt) + (Utils.NeedsSemicolon(stmt) ? ";" : ""));
+        => ASTUtils.PrintTuple(tuple, "", (stmt) => Print(stmt) + (MiscUtils.NeedsSemicolon(stmt) ? ";" : ""));
 
     public string Print(StatementNode node) => node.Accept(this);
 }

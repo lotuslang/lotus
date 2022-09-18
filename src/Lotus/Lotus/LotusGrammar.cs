@@ -1,3 +1,6 @@
+using Lotus.Syntax;
+
+namespace Lotus;
 
 public sealed class LotusGrammar : ReadOnlyGrammar
 {

@@ -3,6 +3,11 @@ using System.Threading.Tasks;
 
 using System.CommandLine;
 
+using Lotus;
+using Lotus.Text;
+using Lotus.Utils;
+using Lotus.Syntax;
+
 partial class Program
 {
     static readonly FileInfo _sourceCodeFile;

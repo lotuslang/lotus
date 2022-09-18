@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ImportNode(ImmutableArray<NameNode> Names, FromNode FromStatement, Token Token)
 : TopLevelNode(
     Token,

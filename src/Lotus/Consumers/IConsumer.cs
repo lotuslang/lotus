@@ -1,3 +1,7 @@
+using Lotus.Text;
+
+namespace Lotus;
+
 public interface IConsumer<T>
 {
     /// <summary>

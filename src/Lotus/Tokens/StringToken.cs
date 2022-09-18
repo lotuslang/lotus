@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public record StringToken(string Representation, LocationRange Location)
 : Token(Representation, TokenKind.@string, Location)
 {

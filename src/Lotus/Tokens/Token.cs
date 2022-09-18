@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 [DebuggerDisplay("<{_kind}> {_repr} @ {Location}")]
 public record Token : ILocalized
 {

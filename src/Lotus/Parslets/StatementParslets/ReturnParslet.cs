@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 {
     public static readonly ReturnParslet Instance = new();

@@ -1,5 +1,7 @@
 using System.Text;
 
+namespace Lotus.Syntax;
+
 public sealed class NumberToklet : IToklet<NumberToken>
 {
     public static readonly NumberToklet Instance = new();
@@ -7,8 +9,8 @@ public sealed class NumberToklet : IToklet<NumberToken>
     public ref readonly Func<char, Func<IConsumer<char>>, bool> Condition => ref _condition;
 	private static readonly Func<char, Func<IConsumer<char>>, bool> _condition =
         ((currChar, getInput)
-            => Utils.IsAsciiDigit(currChar)
-            || (currChar == '.' && Utils.IsAsciiDigit(getInput().Consume()))
+            => MiscUtils.IsAsciiDigit(currChar)
+            || (currChar == '.' && MiscUtils.IsAsciiDigit(getInput().Consume()))
         );
 
     public NumberToken Consume(IConsumer<char> input, Tokenizer __) {

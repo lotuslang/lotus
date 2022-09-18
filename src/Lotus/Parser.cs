@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public abstract class Parser<T> : IConsumer<T> where T : Node
 {
     protected readonly Queue<T> reconsumeQueue;

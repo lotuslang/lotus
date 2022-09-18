@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public partial class Tokenizer : IConsumer<Token>
 {
     protected Token _curr;

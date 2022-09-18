@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public abstract record StatementNode(Token Token, LocationRange Location)
 : Node(Token, Location)
 {

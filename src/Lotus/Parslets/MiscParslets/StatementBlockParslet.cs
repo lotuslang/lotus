@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<StatementNode>> {
     private readonly bool areOneLinersAllowed;
 

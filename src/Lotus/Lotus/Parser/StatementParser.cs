@@ -1,3 +1,9 @@
+using Lotus.Text;
+using Lotus.Error;
+using Lotus.Utils;
+
+namespace Lotus.Syntax;
+
 public sealed class StatementParser : Parser<StatementNode>
 {
     public ExpressionParser ExpressionParser { get; private set; }
@@ -69,7 +75,7 @@ public sealed class StatementParser : Parser<StatementNode>
             _curr = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
-        if (checkSemicolon && Utils.NeedsSemicolon(Current)) {
+        if (checkSemicolon && MiscUtils.NeedsSemicolon(Current)) {
             CheckSemicolon();
 
             // consume trailing semicolons

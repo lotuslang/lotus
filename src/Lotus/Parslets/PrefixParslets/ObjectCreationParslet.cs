@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 {
     public static readonly ObjectCreationParslet Instance = new();

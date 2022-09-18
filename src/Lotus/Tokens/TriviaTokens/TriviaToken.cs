@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public record TriviaToken : Token
 {
     public new TriviaKind Kind { get; init; }

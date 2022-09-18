@@ -1,3 +1,7 @@
+using Lotus.Semantic;
+
+namespace Lotus.Syntax;
+
 public sealed record NamespaceNode(NameNode Name, Token Token)
 : TopLevelNode(Token, new LocationRange(Token.Location, Name.Location)), IAccessible
 {

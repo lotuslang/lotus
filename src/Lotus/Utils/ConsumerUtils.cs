@@ -1,3 +1,5 @@
+namespace Lotus.Text;
+
 internal static class ConsumerUtils
 {
     public static ConsumerEnumerator<T> GetEnumerator<T>(this IConsumer<T> consumer) => new(consumer);

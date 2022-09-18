@@ -1,5 +1,11 @@
 using System.IO;
 
+using Lotus.Text;
+using Lotus.Syntax;
+using Lotus.Utils;
+
+namespace Lotus.Error;
+
 public static class Logger
 {
     public static Stack<LotusError> errorStack = new();

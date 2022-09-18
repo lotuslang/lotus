@@ -1,5 +1,9 @@
 using System.Runtime.CompilerServices;
 
+using Lotus.Text;
+
+namespace Lotus.Error;
+
 internal class InternalError : LotusError, ILocalized, IContextualized
 {
     public LocationRange Location { get; init; } = LocationRange.NULL;

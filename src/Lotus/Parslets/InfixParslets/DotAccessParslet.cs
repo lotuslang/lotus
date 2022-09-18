@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class DotAccessParslet : IInfixParslet<ValueNode>
 {
     public Precedence Precedence => Precedence.Access;

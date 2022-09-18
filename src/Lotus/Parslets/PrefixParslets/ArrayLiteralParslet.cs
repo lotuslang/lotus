@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ArrayLiteralParslet : IPrefixParslet<TupleNode>
 {
     public static readonly ArrayLiteralParslet Instance = new();

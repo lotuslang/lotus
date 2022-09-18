@@ -1,3 +1,8 @@
+using Lotus.Text;
+using Lotus.Syntax;
+
+namespace Lotus;
+
 public sealed class LotusTokenizer : Tokenizer
 {
     public LotusTokenizer(StringConsumer stringConsumer) : base(stringConsumer, LotusGrammar.Instance)

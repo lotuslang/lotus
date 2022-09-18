@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence => Precedence.ArrayAccess;

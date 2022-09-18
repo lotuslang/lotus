@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 /// <summary>
 /// Represents a variable declaration statement (var a = b)
 /// </summary>

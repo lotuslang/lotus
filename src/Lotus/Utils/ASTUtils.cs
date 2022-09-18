@@ -1,4 +1,8 @@
-﻿public static class ASTUtils
+﻿using Lotus.Syntax.Visitors;
+
+namespace Lotus.Syntax;
+
+public static class ASTUtils
 {
     [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
     internal static readonly NameChecker NameChecker = new();
@@ -35,7 +39,7 @@
         };
 
     public static string PrintTuple<T>(Tuple<T> tuple, string sep, Func<T, string> transform)
-        => PrintToken(tuple.OpeningToken) + Utils.Join(sep, transform, tuple.Items) + PrintToken(tuple.ClosingToken);
+        => PrintToken(tuple.OpeningToken) + MiscUtils.Join(sep, transform, tuple.Items) + PrintToken(tuple.ClosingToken);
 
     public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);
     public static string PrintStatement(StatementNode node) => StatementPrinter.Print(node);

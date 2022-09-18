@@ -1,3 +1,5 @@
+namespace Lotus.Text;
+
 [DebuggerStepThrough]
 [DebuggerDisplay("{DbgString()}")]
 internal sealed record Style(

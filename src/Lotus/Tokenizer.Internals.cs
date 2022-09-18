@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public partial class Tokenizer : IConsumer<Token>
 {
     private Token ConsumeTokenCore() {
@@ -17,7 +19,7 @@ public partial class Tokenizer : IConsumer<Token>
             case '9':
                 return ConsumeNumberToken();
             case '.':
-                if (Utils.IsAsciiDigit(_input.Peek()))
+                if (MiscUtils.IsAsciiDigit(_input.Peek()))
                     return ConsumeNumberToken();
                 else
                     return ConsumeOperatorToken();

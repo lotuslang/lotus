@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 {
     public static readonly ForeachParslet Instance = new();

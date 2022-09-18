@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
 {
     public static readonly LeftParenParslet Instance = new();

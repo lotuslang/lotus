@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class BoolLiteralParslet : IPrefixParslet<BoolNode>
 {
     public static readonly BoolLiteralParslet Instance = new();

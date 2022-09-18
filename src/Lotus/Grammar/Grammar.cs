@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public class Grammar : ReadOnlyGrammar
 {
     // Parameters default to an empty dictionary if null or unspecified

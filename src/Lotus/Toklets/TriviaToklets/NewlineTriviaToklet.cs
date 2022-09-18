@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class NewlineTriviaToklet : ITriviaToklet<NewlineTriviaToken>
 {
     public static readonly NewlineTriviaToklet Instance = new();

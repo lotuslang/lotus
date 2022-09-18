@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public interface ITopLevelVisitor<T>
 {
     T Default(TopLevelNode node);

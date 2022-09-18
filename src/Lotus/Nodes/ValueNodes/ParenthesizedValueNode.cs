@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ParenthesizedValueNode(ValueNode Value, Token Token, Token ClosingToken)
 : ValueNode(Token, new LocationRange(Token, ClosingToken))
 {

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class OperatorToklet : IToklet<OperatorToken>
 {
     public static readonly OperatorToklet Instance = new();

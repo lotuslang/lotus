@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 /// <summary>
 /// Represents a foreach loop statement (foreach (item in collection) { })
 /// </summary>

@@ -1,3 +1,5 @@
+namespace Lotus.Error;
+
 [Flags]
 public enum ErrorArea {
     Unknown = 0,
@@ -13,6 +15,6 @@ internal static class ErrorAreaExtension
         => area switch {
             ErrorArea.TypeChecker => "Type checking",
             ErrorArea.ASTHelper   => "AST Utilities",
-            _ => System.Enum.GetName(area) ?? "unknown"
+            _ => Enum.GetName(area) ?? "unknown"
         };
 }

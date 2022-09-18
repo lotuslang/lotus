@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record PrintNode(Token Token, ValueNode Value)
 : StatementNode(Token, new LocationRange(Token, Value))
 {

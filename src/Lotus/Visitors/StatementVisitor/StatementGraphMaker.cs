@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor<GraphNode>
 {
     protected readonly (string tooltip, string color) Break = ("break keyword", "");
@@ -281,7 +283,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     }
 
     public GraphNode Visit(NameNode node)
-        => new GraphNode(node.GetHashCode(), Utils.Join(".", ident => ident.Representation, node.Parts))
+        => new GraphNode(node.GetHashCode(), MiscUtils.Join(".", ident => ident.Representation, node.Parts))
             .SetColor(Ident.color)
             .SetTooltip("name");
 

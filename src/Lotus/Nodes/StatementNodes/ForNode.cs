@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 /// <summary>
 /// Represents a for-loop statement
 /// </summary>

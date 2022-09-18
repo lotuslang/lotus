@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public interface IValueVisitor<T>
 {
     T Default(ValueNode node);

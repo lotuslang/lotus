@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record FullNameNode(OperatorToken DotToken, ImmutableArray<IdentToken> Parts)
 : NameNode(DotToken, Parts)
 {

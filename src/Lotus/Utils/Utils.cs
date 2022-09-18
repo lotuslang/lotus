@@ -1,6 +1,12 @@
 using System.Collections.ObjectModel;
 
-public static class Utils
+using Lotus.Error;
+using Lotus.Syntax;
+using Lotus.Semantic;
+
+namespace Lotus.Utils;
+
+public static class MiscUtils
 {
     public static int GetNumberOfDigits(int i) {
         int count = 0;
@@ -76,6 +82,7 @@ public static class Utils
             _ => AccessLevel.Default,
         };
 
+    // TODO: move to LotusGrammar & co
     public static AccessLevel GetAccessAndValidate(
         Token accessToken,
         AccessLevel defaultLvl,

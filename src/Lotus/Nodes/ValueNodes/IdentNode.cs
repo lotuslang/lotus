@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record IdentNode(IdentToken Token) : NameNode(Token, ImmutableArray.Create(Token), Token.IsValid)
 {
     public new static readonly IdentNode NULL = new(IdentToken.NULL);

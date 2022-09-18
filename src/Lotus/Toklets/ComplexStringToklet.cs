@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 {
     public static readonly ComplexStringToklet Instance = new();

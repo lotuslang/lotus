@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
 {
     public Precedence Precedence => Precedence.Unary;

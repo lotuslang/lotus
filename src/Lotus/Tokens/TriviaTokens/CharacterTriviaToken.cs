@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record CharacterTriviaToken(char Character, LocationRange Location)
 : TriviaToken(Character.ToString(), TriviaKind.character, Location)
 {

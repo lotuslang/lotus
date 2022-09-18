@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public record WhitespaceTriviaToken(char WhitespaceChar, int WhitespaceCount, LocationRange Location)
 : TriviaToken(new string(WhitespaceChar, WhitespaceCount), TriviaKind.whitespace, Location)
 {

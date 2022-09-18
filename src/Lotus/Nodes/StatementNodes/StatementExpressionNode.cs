@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record StatementExpressionNode(ValueNode Value)
 : StatementNode(Value.Token, Value.Location, Value.IsValid)
 {

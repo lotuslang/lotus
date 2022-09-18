@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class IfParslet : IStatementParslet<IfNode>
 {
     public static readonly IfParslet Instance = new();

@@ -1,3 +1,7 @@
+using Lotus.Error;
+
+namespace Lotus.Text;
+
 public class Consumer<T> : IConsumer<T>
 {
     protected bool _atStart;

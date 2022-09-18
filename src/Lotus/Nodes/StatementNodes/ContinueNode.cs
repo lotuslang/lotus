@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ContinueNode(Token Token) : StatementNode(Token)
 {
     public new static readonly ContinueNode NULL = new(Token.NULL) { IsValid = false };

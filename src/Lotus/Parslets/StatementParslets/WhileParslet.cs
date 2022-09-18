@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class WhileParslet : IStatementParslet<WhileNode>
 {
     public static readonly WhileParslet Instance = new();

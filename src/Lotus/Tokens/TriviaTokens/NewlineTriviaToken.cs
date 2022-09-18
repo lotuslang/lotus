@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record NewlineTriviaToken : WhitespaceTriviaToken
 {
     public new static readonly NewlineTriviaToken NULL = new(0, LocationRange.NULL) { IsValid = false };

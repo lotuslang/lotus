@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record WhileNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,

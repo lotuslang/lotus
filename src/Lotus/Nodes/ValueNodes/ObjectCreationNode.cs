@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ObjectCreationNode(FunctionCallNode Invocation, Token Token)
 : ValueNode(Token, new LocationRange(Token.Location, Invocation.Location))
 {

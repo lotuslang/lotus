@@ -1,3 +1,7 @@
+using Lotus.Semantic;
+
+namespace Lotus.Syntax;
+
 public sealed class TopLevelParser : Parser<TopLevelNode>
 {
     public StatementParser StatementParser { get; private set; }
@@ -80,7 +84,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             //       supposed to be modded
 
             if (Current is IAccessible accCurrent) {
-                accCurrent.AccessLevel = Utils.GetAccessAndValidate(
+                accCurrent.AccessLevel = MiscUtils.GetAccessAndValidate(
                     accessKeyword,
                     accCurrent.DefaultAccessLevel,
                     accCurrent.ValidLevels

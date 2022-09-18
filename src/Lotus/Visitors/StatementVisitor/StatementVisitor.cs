@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public interface IStatementVisitor<T>
 {
     T Default(StatementNode node);

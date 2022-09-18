@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
 {
     public static readonly DeclarationParslet Instance = new();

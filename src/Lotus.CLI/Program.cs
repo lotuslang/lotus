@@ -3,6 +3,12 @@ using System.Globalization;
 
 using System.CommandLine;
 
+using Lotus;
+using Lotus.Text;
+using Lotus.Error;
+using Lotus.Utils;
+using Lotus.Syntax;
+
 partial class Program
 {
     static readonly RootCommand _cli;

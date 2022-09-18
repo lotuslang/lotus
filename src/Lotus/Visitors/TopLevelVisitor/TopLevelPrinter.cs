@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
 {
     public string Default(TopLevelNode node)
@@ -19,7 +21,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(ImportNode node)
         => Visit(node.FromStatement)
          + ASTUtils.PrintToken(node.Token)
-         + Utils.Join(",", ASTUtils.PrintValue, node.Names);
+         + MiscUtils.Join(",", ASTUtils.PrintValue, node.Names);
 
     public string Visit(NamespaceNode node)
         => ASTUtils.PrintToken(node.AccessToken) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
@@ -32,7 +34,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + ASTUtils.PrintToken(node.Token)
          + ASTUtils.PrintTypeName(node.Name)
          + ASTUtils.PrintToken(node.Fields.OpeningToken)
-         + Utils.Join(
+         + MiscUtils.Join(
                 "; ",
                 (field) => ASTUtils.PrintValue(field.Name)
                          + ": "

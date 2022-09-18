@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class PrefixOperatorParslet : IPrefixParslet<OperationNode>
 {
     private readonly OperationType _opType;

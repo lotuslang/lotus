@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ContinueParslet : IStatementParslet<ContinueNode>
 {
     public static readonly ContinueParslet Instance = new();

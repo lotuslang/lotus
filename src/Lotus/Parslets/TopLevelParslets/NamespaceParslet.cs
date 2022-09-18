@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class NamespaceParslet : ITopLevelParslet<NamespaceNode>
 {
     public static readonly NamespaceParslet Instance = new();

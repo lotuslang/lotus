@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 internal static class NodeUtils
 {
     public static bool IsOneLiner(this Tuple<StatementNode> block)

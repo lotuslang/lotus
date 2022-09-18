@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal sealed class ConstantChecker : IValueVisitor<bool>
 {
     public bool Default(ValueNode node)

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record TypeDecName(IdentNode TypeName, NameNode Parent, Token ColonToken)
 {
     public bool HasParent => Parent != NameNode.NULL;

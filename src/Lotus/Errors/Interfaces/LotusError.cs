@@ -1,3 +1,5 @@
+namespace Lotus.Error;
+
 public abstract class LotusError
 {
     public string Caller { get; }

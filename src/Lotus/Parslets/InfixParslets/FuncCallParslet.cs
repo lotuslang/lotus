@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
 {
     public Precedence Precedence => Precedence.FuncCall;

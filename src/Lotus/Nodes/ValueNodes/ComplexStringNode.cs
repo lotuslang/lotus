@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ComplexStringNode : StringNode
 {
     public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, ImmutableArray<ValueNode>.Empty) { IsValid = false };

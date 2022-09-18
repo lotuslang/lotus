@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, ValueNode, TValue>
 {
     public ValueTupleParslet(Func<ExpressionParser, IEnumerable<TValue>> valParser) : base(valParser) {}

@@ -1,6 +1,8 @@
 using System.Text;
 using System.Collections;
 
+namespace Lotus.Utils;
+
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
 public sealed class Graph
 {

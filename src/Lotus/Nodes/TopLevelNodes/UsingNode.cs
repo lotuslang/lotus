@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record UsingNode(Union<StringNode, NameNode> Name, Token Token)
 : TopLevelNode(Token, new LocationRange(Token.Location, Name.Match(s => s.Location, n => n.Location)))
 {

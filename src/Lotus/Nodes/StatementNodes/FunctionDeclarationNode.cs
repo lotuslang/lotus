@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record FunctionDeclarationNode(
     Tuple<StatementNode> Body,
     Tuple<FunctionParameter> ParamList,

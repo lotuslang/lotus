@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class StructParslet : ITopLevelParslet<StructNode>
 {
     public static readonly StructParslet Instance = new();

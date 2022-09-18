@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal sealed class ConstantVisualizer : StatementGraphMaker
 {
     private string ConstantColor { get; }

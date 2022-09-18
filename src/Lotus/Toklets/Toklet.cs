@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public abstract class Toklet : IToklet<Token>
 {
     public static readonly Toklet Default = new Generic();

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 {
     protected readonly (string tooltip, string color) From = ("from statement", "navy");

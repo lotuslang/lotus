@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 
+namespace Lotus.Utils;
+
 public sealed class Union<T, U>
 {
     private readonly T? t;

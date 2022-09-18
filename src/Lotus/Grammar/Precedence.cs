@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 /*
 
 Here's a beautiful ASCII table for operator precedence

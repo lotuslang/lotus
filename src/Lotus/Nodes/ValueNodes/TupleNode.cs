@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
+namespace Lotus.Syntax;
+
 public sealed record TupleNode
 : ValueNode, IEnumerable<ValueNode>
 {

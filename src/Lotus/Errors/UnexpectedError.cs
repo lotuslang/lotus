@@ -1,5 +1,10 @@
 using System.Runtime.CompilerServices;
 
+using Lotus.Text;
+using Lotus.Utils;
+
+namespace Lotus.Error;
+
 public abstract class UnexpectedError : LotusError, ILocalized, IContextualized
 {
     // This is specifically null so that it's faster to check for

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 internal sealed class ValuePrinter : IValueVisitor<string>
 {
     public string Default(ValueNode node)
@@ -49,7 +51,7 @@ internal sealed class ValuePrinter : IValueVisitor<string>
             case OperationType.ArrayAccess:
                 return Print(node.Operands[0]) // name of the array
                      + ASTUtils.PrintToken(node.Token) // '['
-                     + Utils.Join(",", Print, node.Operands.Skip(1)) // indices
+                     + MiscUtils.Join(",", Print, node.Operands.Skip(1)) // indices
                      + ASTUtils.PrintToken(node.AdditionalTokens[0]); // ']'
             case OperationType.Conditional:
                 return Print(node.Operands[0])
@@ -61,7 +63,7 @@ internal sealed class ValuePrinter : IValueVisitor<string>
                 return ASTUtils.PrintToken(node.Token)
                      + (node.Operands.Length == 0
                         ?   ""
-                        :   "(" + Utils.Join(",", Print, node.Operands) + ")"
+                        :   "(" + MiscUtils.Join(",", Print, node.Operands) + ")"
                     );
             default:
                 throw new Exception("Oho, someone forgot to implement a printer for an operation type...");
@@ -77,11 +79,11 @@ internal sealed class ValuePrinter : IValueVisitor<string>
          + ASTUtils.PrintToken(node.ClosingToken);
 
     public string Visit(NameNode name)
-        => Utils.Join(".", ASTUtils.PrintToken, name.Parts);
+        => MiscUtils.Join(".", ASTUtils.PrintToken, name.Parts);
 
     public string Print<TVal>(Tuple<TVal> tuple) where TVal : ValueNode
         => ASTUtils.PrintToken(tuple.OpeningToken)
-         + Utils.Join(",", Print, tuple.Items)
+         + MiscUtils.Join(",", Print, tuple.Items)
          + ASTUtils.PrintToken(tuple.ClosingToken);
 
     public string Print(ValueNode node) => node.Accept(this);

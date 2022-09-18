@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ElseNode(Union<Tuple<StatementNode>, IfNode> BlockOrIfNode, Token Token)
 : StatementNode(Token, new LocationRange(Token.Location, BlockOrIfNode.Match(b => b.Location, n => n.Location)))
 {

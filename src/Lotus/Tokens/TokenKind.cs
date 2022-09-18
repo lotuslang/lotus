@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public enum TokenKind {
     EOF = 0,
     delimiter,

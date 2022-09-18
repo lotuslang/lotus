@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record OperationNode : ValueNode
 {
     public new static readonly OperationNode NULL = new(OperatorToken.NULL, ImmutableArray<ValueNode>.Empty, OperationType.Unknown) { IsValid = false };

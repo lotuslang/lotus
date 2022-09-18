@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public record StringNode(StringToken Token)
 : ValueNode(Token, Token.IsValid)
 {

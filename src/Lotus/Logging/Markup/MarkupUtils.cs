@@ -1,3 +1,5 @@
+namespace Lotus.Text;
+
 internal static class MarkupUtils
 {
     public static string GetFGString(this TextColor color) {

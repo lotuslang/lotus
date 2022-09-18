@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 {
     public static readonly EnumParslet Instance = new();

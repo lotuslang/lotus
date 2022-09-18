@@ -1,3 +1,7 @@
+using Lotus.Semantic;
+
+namespace Lotus.Syntax;
+
 public sealed record StructNode(
     Token Token,
     TypeDecName Name,

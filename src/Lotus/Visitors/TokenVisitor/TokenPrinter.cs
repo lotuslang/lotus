@@ -1,5 +1,7 @@
 using System.Text;
 
+namespace Lotus.Syntax.Visitors;
+
 internal sealed class TokenPrinter : ITokenVisitor<string>
 {
     public string Visit(NumberToken token)

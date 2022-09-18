@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class WhitespaceTriviaToklet : ITriviaToklet<WhitespaceTriviaToken>
 {
     public static readonly WhitespaceTriviaToklet Instance = new();

@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 [DebuggerDisplay("{Location} {Kind} : {val}")]
 public sealed record BoolToken : Token
 {

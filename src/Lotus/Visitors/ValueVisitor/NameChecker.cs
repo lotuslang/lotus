@@ -1,3 +1,5 @@
+namespace Lotus.Syntax.Visitors;
+
 [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
 internal sealed class NameChecker : IValueVisitor<bool>
 {

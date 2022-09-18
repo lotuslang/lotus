@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record BreakNode(Token Token) : StatementNode(Token)
 {
     public new static readonly BreakNode NULL = new(Token.NULL) { IsValid = false };

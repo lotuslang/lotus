@@ -1,5 +1,9 @@
 using System.Runtime.CompilerServices;
 
+using Lotus.Syntax;
+
+namespace Lotus.Error;
+
 public class NotANameError : UnexpectedError, IValued<ValueNode>
 {
     private ValueNode _val;

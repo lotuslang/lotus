@@ -1,5 +1,7 @@
 using System.IO;
 
+namespace Lotus.Text;
+
 public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 {
     public readonly static char EOF = '\u0003';

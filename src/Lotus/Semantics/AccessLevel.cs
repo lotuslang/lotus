@@ -1,3 +1,5 @@
+namespace Lotus.Semantic;
+
 /// <summary>
 /// Whether the member/type is public, private, protected, internal, or public.
 /// </summary>

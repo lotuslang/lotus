@@ -1,5 +1,9 @@
 using System.Runtime.CompilerServices;
 
+using Lotus.Syntax;
+
+namespace Lotus.Error;
+
 public class UnexpectedEOFError : UnexpectedError<Token>, ILocalized
 {
     public new LocationRange Location { get; init; } = LocationRange.NULL;

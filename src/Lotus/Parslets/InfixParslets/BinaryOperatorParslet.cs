@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
 {
     public Precedence Precedence { get; }

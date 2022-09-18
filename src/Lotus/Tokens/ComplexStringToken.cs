@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ComplexStringToken(string Representation, ImmutableArray<ImmutableArray<Token>> CodeSections, LocationRange Location)
 : StringToken(Representation, Location)
 {

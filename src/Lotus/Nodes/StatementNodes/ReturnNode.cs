@@ -1,3 +1,5 @@
+namespace Lotus.Syntax;
+
 public sealed record ReturnNode(ValueNode Value, Token Token)
 : StatementNode(
     Token,

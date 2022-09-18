@@ -1,5 +1,9 @@
 using System.Collections.ObjectModel;
 
+using Lotus.Utils;
+
+namespace Lotus.Syntax;
+
 public class ReadOnlyGrammar
 {
     protected IDictionary<ExpressionKind, IPrefixParslet<ValueNode>> prefixParslets;

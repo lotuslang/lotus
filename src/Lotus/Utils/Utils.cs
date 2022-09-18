@@ -1,6 +1,4 @@
 using System.Collections.ObjectModel;
-
-using Lotus.Error;
 using Lotus.Syntax;
 using Lotus.Semantic;
 

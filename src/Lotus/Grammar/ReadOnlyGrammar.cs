@@ -1,7 +1,5 @@
 using System.Collections.ObjectModel;
 
-using Lotus.Utils;
-
 namespace Lotus.Syntax;
 
 public class ReadOnlyGrammar

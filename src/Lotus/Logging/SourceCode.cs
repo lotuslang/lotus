@@ -1,7 +1,5 @@
 using System.IO;
 
-using Lotus.Utils;
-
 namespace Lotus.Text;
 
 // !! WARNING !!

@@ -1,5 +1,3 @@
-using Lotus.Error;
-
 namespace Lotus.Text;
 
 #pragma warning disable IDE1006

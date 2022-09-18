@@ -1,7 +1,5 @@
 using System.Runtime.CompilerServices;
 
-using Lotus.Text;
-
 namespace Lotus.Error;
 
 public class InvalidCallError : LotusError, ILocalized

@@ -1,4 +1,3 @@
-using Lotus.Text;
 using Lotus.Syntax;
 
 namespace Lotus;

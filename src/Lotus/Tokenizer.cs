@@ -1,63 +1,51 @@
 namespace Lotus.Syntax;
 
-public partial class Tokenizer : IConsumer<Token>
+public sealed partial class Tokenizer : IConsumer<Token>
 {
-    protected Token _curr;
+    private Token _curr;
     public ref readonly Token Current => ref _curr;
 
     public Token Default => Token.NULL with { Location = Position };
 
-    protected Queue<Token> _reconsumeQueue;
+    private readonly Queue<Token> _reconsumeQueue;
 
     public LocationRange Position => Current.Location;
 
-    protected StringConsumer _input;
+    private readonly StringConsumer _input;
 
-    public ReadOnlyGrammar Grammar { get; protected set; }
-
-    protected Tokenizer() {
+    private Tokenizer() {
         _reconsumeQueue = new Queue<Token>();
 
         _input = new StringConsumer(Array.Empty<char>());
 
         _curr = Token.NULL;
-
-        Grammar = new ReadOnlyGrammar();
     }
 
-    protected Tokenizer(ReadOnlyGrammar grammar) : this() {
-        Debug.Assert(grammar is not null);
-
-        Grammar = grammar;
-    }
-
-    public Tokenizer(StringConsumer stringConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+    public Tokenizer(StringConsumer stringConsumer) : this() {
         _input = stringConsumer.Clone();
     }
 
-    public Tokenizer(IConsumer<char> consumer, ReadOnlyGrammar grammar) : this(grammar) {
+    public Tokenizer(IConsumer<char> consumer) : this() {
         _input = new StringConsumer(consumer);
     }
 
-    public Tokenizer(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(new StringConsumer(""), grammar) {
+    public Tokenizer(IConsumer<Token> tokenConsumer) : this(new StringConsumer("")) {
         var cloned = tokenConsumer.Clone();
         while (cloned.Consume(out _)) {
             _reconsumeQueue.Enqueue(tokenConsumer.Current);
         }
     }
 
-    public Tokenizer(Tokenizer tokenizer) : this(tokenizer, tokenizer.Grammar) { }
-
-    public Tokenizer(Tokenizer tokenizer, ReadOnlyGrammar grammar) : this(tokenizer._input, grammar) {
+    public Tokenizer(Tokenizer tokenizer) : this(tokenizer._input) {
         _reconsumeQueue = new Queue<Token>(tokenizer._reconsumeQueue);
 
         _curr = tokenizer._curr;
         _lastTok = tokenizer._lastTok;
     }
 
-    public Tokenizer(Uri fileInfo, ReadOnlyGrammar grammar) : this(new StringConsumer(fileInfo), grammar) { }
+    public Tokenizer(Uri fileInfo) : this(new StringConsumer(fileInfo)) { }
 
-    public Tokenizer(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new StringConsumer(collection), grammar) { }
+    public Tokenizer(IEnumerable<char> collection) : this(new StringConsumer(collection)) { }
 
     private Token _lastTok = Token.NULL;
     public void Reconsume() {

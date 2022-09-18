@@ -15,11 +15,11 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
         => SetCurrentToDefault();
 
-    public ExpressionParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
+    public ExpressionParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
-    public ExpressionParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
+    public ExpressionParser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
 
-    public ExpressionParser(Uri file) : this(new LotusTokenizer(file)) { }
+    public ExpressionParser(Uri file) : this(new Tokenizer(file)) { }
 
     public ExpressionParser(Parser<ValueNode> parser) : base(parser)
         => SetCurrentToDefault();

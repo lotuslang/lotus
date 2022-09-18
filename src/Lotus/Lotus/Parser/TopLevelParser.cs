@@ -24,11 +24,11 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
         => Init();
 
-    public TopLevelParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
+    public TopLevelParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
-    public TopLevelParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
+    public TopLevelParser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
 
-    public TopLevelParser(Uri file) : this(new LotusTokenizer(file)) { }
+    public TopLevelParser(Uri file) : this(new Tokenizer(file)) { }
 
     public TopLevelParser(Parser<TopLevelNode> parser) : base(parser, LotusGrammar.Instance)
         => Init();

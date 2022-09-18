@@ -111,10 +111,10 @@ partial class Program
         return consumer;
     }
 
-    static LotusTokenizer GetTokenizerForFile(FileInfo file)
+    static Tokenizer GetTokenizerForFile(FileInfo file)
         => new(GetConsumerForFile(file));
 
-    static int HandleParsing(LotusTokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
+    static int HandleParsing(Tokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);
 
         var nodesBuilder = ImmutableArray.CreateBuilder<TopLevelNode>();

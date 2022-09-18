@@ -20,11 +20,11 @@ public sealed class StatementParser : Parser<StatementNode>
     public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
         => Init();
 
-    public StatementParser(StringConsumer consumer) : this(new LotusTokenizer(consumer)) { }
+    public StatementParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
-    public StatementParser(IEnumerable<char> collection) : this(new LotusTokenizer(collection)) { }
+    public StatementParser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
 
-    public StatementParser(Uri file) : this(new LotusTokenizer(file)) { }
+    public StatementParser(Uri file) : this(new Tokenizer(file)) { }
 
     public StatementParser(Parser<StatementNode> parser) : base(parser)
         => Init();

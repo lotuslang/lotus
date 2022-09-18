@@ -58,11 +58,11 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
         }
     }
 
-    protected Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer, grammar), grammar) { }
+    protected Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer), grammar) { }
 
-    protected Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection, grammar), grammar) { }
+    protected Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection), grammar) { }
 
-    protected Parser(Uri file, ReadOnlyGrammar grammar) : this(new Tokenizer(file, grammar), grammar) { }
+    protected Parser(Uri file, ReadOnlyGrammar grammar) : this(new Tokenizer(file), grammar) { }
 
     protected Parser(Parser<T> parser) : this(parser.Grammar) {
         reconsumeQueue = parser.reconsumeQueue;

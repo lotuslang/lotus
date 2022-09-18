@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="/home/blokyk/csharp/ide0058_supressor/ide0058_supressor.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <PackageReference Include="Blokyk.Roslyn.ValueNotUsedSuppressor" Version="*" />
   </ItemGroup>
 
 </Project>

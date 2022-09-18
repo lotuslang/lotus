@@ -9,9 +9,7 @@ public class Grammar : ReadOnlyGrammar
         IDictionary<ExpressionKind, IPostfixParslet<ValueNode>>? postfixParslets = null,
         IDictionary<string, IStatementParslet<StatementNode>>? statementParslets = null,
         IDictionary<string, ITopLevelParslet<TopLevelNode>>? topLevelParslets = null,
-        IDictionary<string, ExpressionKind>? expressionKinds = null,
-        ICollection<IToklet<Token>>? toklets = null,
-        ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
+        IDictionary<string, ExpressionKind>? expressionKinds = null
     )
         : base(
             prefixParslets,
@@ -19,26 +17,12 @@ public class Grammar : ReadOnlyGrammar
             postfixParslets,
             statementParslets,
             topLevelParslets,
-            expressionKinds,
-            toklets,
-            triviaToklets
+            expressionKinds
         )
     { }
 
     public Grammar(ReadOnlyGrammar grammar) : base(grammar)
     { }
-
-    public Grammar RegisterToklet(IToklet<Token> toklet) {
-        toklets.Add(toklet);
-
-        return this;
-    }
-
-    public Grammar RegisterTriviaToklet(ITriviaToklet<TriviaToken> toklet) {
-        triviaToklets.Add(toklet);
-
-        return this;
-    }
 
     public Grammar RegisterPrefix(ExpressionKind kind, IPrefixParslet<ValueNode> parslet) {
         prefixParslets.Add(kind, parslet);

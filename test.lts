@@ -85,10 +85,6 @@ do
     print("still looping");
 while (_global++ < 13)
 
-/* some /* nested */ comments */
-
-// some one-line comment
-
 internal enum TokenKind {
     EOF = 0,
     delimiter,
@@ -114,3 +110,7 @@ internal struct test {
     someStuff: int;
     otherStuff: str = "58" + hi;
 }
+
+/* some /* nested */ comments */
+
+// some ending one-line comment

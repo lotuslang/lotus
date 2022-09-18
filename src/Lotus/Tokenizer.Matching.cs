@@ -113,44 +113,4 @@ public partial class Tokenizer : IConsumer<Token>
                 return ConsumeDelimToken(in currChar);
         }
     }
-
-    private NumberToken ConsumeNumberToken() {
-        _input.Reconsume();
-        return NumberToklet.Instance.Consume(_input, this);
-    }
-
-    private Token ConsumeIdentToken() {
-        _input.Reconsume();
-        return IdentToklet.Instance.Consume(_input, this);
-    }
-
-    private ComplexStringToken ConsumeComplexStringToken() {
-        _input.Reconsume();
-        return ComplexStringToklet.Instance.Consume(_input, this);
-    }
-
-    private StringToken ConsumeStringToken() {
-        _input.Reconsume();
-        return StringToklet.Instance.Consume(_input, this);
-    }
-
-    private OperatorToken ConsumeOperatorToken() {
-        _input.Reconsume();
-        return OperatorToklet.Instance.Consume(_input, this);
-    }
-
-    private Token ConsumeSemicolonToken()
-        => new(";", TokenKind.semicolon, _input.Position);
-
-    private Token ConsumeDoubleColonToken() {
-        Debug.Assert(_input.Consume() == ':');
-        // FIXME: position should be 2-char wide here
-        return new Token("::", TokenKind.delimiter, _input.Position);
-    }
-
-    private Token ConsumeDelimToken(in char c)
-        => new(c.ToString(), TokenKind.delimiter, _input.Position);
-
-    private Token ConsumeEOFToken(in char c)
-        => new(c.ToString(), TokenKind.EOF, _input.Position) { IsValid = false };
 }

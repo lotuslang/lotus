@@ -46,20 +46,6 @@ public class ReadOnlyGrammar
         init => expressionKinds = value;
     }
 
-    protected ICollection<IToklet<Token>> toklets;
-
-    public virtual ReadOnlyCollection<IToklet<Token>> Toklets {
-        get => toklets.AsReadOnly();
-        init => toklets = value;
-    }
-
-    protected ICollection<ITriviaToklet<TriviaToken>> triviaToklets;
-
-    public virtual ReadOnlyCollection<ITriviaToklet<TriviaToken>> TriviaToklets {
-        get => triviaToklets.AsReadOnly();
-        init => triviaToklets = value;
-    }
-
 #pragma warning disable CS8618
     public ReadOnlyGrammar(
         IDictionary<ExpressionKind, IPrefixParslet<ValueNode>>? prefixParslets = null,
@@ -67,9 +53,7 @@ public class ReadOnlyGrammar
         IDictionary<ExpressionKind, IPostfixParslet<ValueNode>>? postfixParslets = null,
         IDictionary<string, IStatementParslet<StatementNode>>? statementParslets = null,
         IDictionary<string, ITopLevelParslet<TopLevelNode>>? topLevelParslets = null,
-        IDictionary<string, ExpressionKind>? expressionKinds = null,
-        ICollection<IToklet<Token>>? toklets = null,
-        ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
+        IDictionary<string, ExpressionKind>? expressionKinds = null
     ) {
         Initialize(
             prefixParslets,
@@ -77,9 +61,7 @@ public class ReadOnlyGrammar
             postfixParslets,
             statementParslets,
             topLevelParslets,
-            expressionKinds,
-            toklets,
-            triviaToklets
+            expressionKinds
         );
     }
 #pragma warning restore CS8618
@@ -91,9 +73,7 @@ public class ReadOnlyGrammar
             grammar.postfixParslets,
             grammar.statementParslets,
             grammar.topLevelParslets,
-            grammar.expressionKinds,
-            grammar.toklets,
-            grammar.triviaToklets
+            grammar.expressionKinds
         ) { }
 
     /// <summary>
@@ -109,9 +89,7 @@ public class ReadOnlyGrammar
                 grammar.postfixParslets,
                 grammar.statementParslets,
                 grammar.topLevelParslets,
-                grammar.expressionKinds,
-                grammar.toklets,
-                grammar.triviaToklets
+                grammar.expressionKinds
         );
 
     /// <summary>
@@ -126,9 +104,7 @@ public class ReadOnlyGrammar
         IDictionary<ExpressionKind, IPostfixParslet<ValueNode>>? postfixParslets = null,
         IDictionary<string, IStatementParslet<StatementNode>>? statementParslets = null,
         IDictionary<string, ITopLevelParslet<TopLevelNode>>? topLevelParslets = null,
-        IDictionary<string, ExpressionKind>? expressionKinds = null,
-        ICollection<IToklet<Token>>? toklets = null,
-        ICollection<ITriviaToklet<TriviaToken>>? triviaToklets = null
+        IDictionary<string, ExpressionKind>? expressionKinds = null
     ) {
         this.prefixParslets = prefixParslets ?? new Dictionary<ExpressionKind, IPrefixParslet<ValueNode>>();
         this.infixParslets = infixParslets ?? new Dictionary<ExpressionKind, IInfixParslet<ValueNode>>();
@@ -137,9 +113,6 @@ public class ReadOnlyGrammar
         this.topLevelParslets = topLevelParslets ?? new Dictionary<string, ITopLevelParslet<TopLevelNode>>();
 
         this.expressionKinds = expressionKinds ?? new Dictionary<string, ExpressionKind>();
-
-        this.toklets = toklets ?? new List<IToklet<Token>>();
-        this.triviaToklets = triviaToklets ?? new List<ITriviaToklet<TriviaToken>>();
     }
 
     public ExpressionKind GetExpressionKind(Token token) {

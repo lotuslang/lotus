@@ -135,34 +135,6 @@ public partial class Tokenizer : IConsumer<Token>
         return ref _curr;
     }
 
-    public TriviaToken? ConsumeTrivia() {
-        if (!_input.Consume(out char currChar))
-            return null;
-
-        switch (currChar) {
-            case '/':
-                if (_input.Peek() is '/' or '*') {
-                    _input.Reconsume();
-                    return CommentTriviaToklet.Instance.Consume(_input, this);
-                }
-
-                _input.Reconsume();
-                return null;
-            case '\n':
-                _input.Reconsume();
-                return NewlineTriviaToklet.Instance.Consume(_input, this);
-            case ' ':
-                _input.Reconsume();
-                return WhitespaceTriviaToklet.Instance.Consume(_input, this);
-            default:
-                _input.Reconsume();
-                if (Char.IsWhiteSpace(currChar))
-                    return WhitespaceTriviaToklet.Instance.Consume(_input, this);
-                else
-                    return null;
-        }
-    }
-
     public IConsumer<Token> Clone() => new Tokenizer(this);
     IConsumer<Token> IConsumer<Token>.Clone() => Clone();
 }

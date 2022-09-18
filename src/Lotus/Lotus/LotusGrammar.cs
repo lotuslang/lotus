@@ -17,6 +17,10 @@ public sealed class LotusGrammar : ReadOnlyGrammar
         base.Initialize(internalGrammar);
     }
 
+    static internal bool IsStartOfNumber(char c, char nextChar)
+        => MiscUtils.IsAsciiDigit(c)
+        || (c is '.' && MiscUtils.IsAsciiDigit(nextChar));
+
     private void InitializeExpressionParslets() {
         // values
         internalGrammar

@@ -159,7 +159,7 @@ partial class Program
 
         if ((s = ASTUtils.PrintToken(tokenizer.Current)).Length >= 2) {
             // print the last (EOF) token, which is not consumed by the parser
-            Console.WriteLine(s[..^2]);
+            Console.WriteLine(s[..^1]);
         }
 
         return Task.FromResult(0);

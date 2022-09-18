@@ -108,9 +108,11 @@ public static class Logger
     private static string TerminalCompliantStringOf(MarkupBuilder sb) {
         // don't apply any formatting if stdout is redirected or use asked
         // for NO_COLOR
+#pragma warning disable RCS1001 // Add braces to if statement
         if (Console.IsOutputRedirected
         ||  Environment.GetEnvironmentVariable("NO_COLOR") is not null and not "")
             return sb.ToString();
+#pragma warning restore RCS1001
 
         return sb.Render();
     }

@@ -11,7 +11,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
             || (currChar == '.' && Utils.IsAsciiDigit(getInput().Consume()))
         );
 
-    public NumberToken Consume(IConsumer<char> input, Tokenizer _) {
+    public NumberToken Consume(IConsumer<char> input, Tokenizer __) {
         // the output token
         var numberSB = new StringBuilder();
 
@@ -83,13 +83,13 @@ public sealed class NumberToklet : IToklet<NumberToken>
             if (nextIsNumber()) {
                 var errorCount = Logger.ErrorCount;
 
-                numberSB.Append(currChar).Append(Consume(input, _).Representation);
+                numberSB.Append(currChar).Append(Consume(input, __).Representation);
 
                 // The above .Consume(...) could generate extra errors, except we don't really
                 // want to show them to the user since they don't really matter ; we just wanna
                 // be sure we consumed what we had to
                 while (Logger.ErrorCount > errorCount) {
-                    Logger.errorStack.Pop();
+                    _ = Logger.errorStack.Pop();
                 }
 
                 var str = numberSB.ToString();
@@ -114,7 +114,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
                 isValid = false;
 
-                input.Consume(); // hack to prevent the reconsume from fucking up the input
+                _ = input.Consume(); // hack to prevent the reconsume from fucking up the input
             }
         }
 
@@ -123,10 +123,10 @@ public sealed class NumberToklet : IToklet<NumberToken>
             if (nextIsNumber()) {
                 var errorCount = Logger.ErrorCount;
 
-                numberSB.Append(currChar).Append(Consume(input, _).Representation);
+                numberSB.Append(currChar).Append(Consume(input, __).Representation);
 
                 while (Logger.ErrorCount > errorCount) {
-                    Logger.errorStack.Pop();
+                    _ = Logger.errorStack.Pop();
                 }
             }
 
@@ -138,7 +138,7 @@ public sealed class NumberToklet : IToklet<NumberToken>
 
             isValid = false;
 
-            input.Consume(); // hack to prevent the reconsume from fucking up the input
+            _ = input.Consume(); // hack to prevent the reconsume from fucking up the input
         }
 
         input.Reconsume();

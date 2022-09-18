@@ -91,7 +91,7 @@ public sealed class Graph
         // For each independent tree in this graph
         foreach (var node in rootNodes) {
             // Add the root node to the registry
-            registry.Add(node);
+            _ = registry.Add(node);
 
             // Append the 'dot' representation of this root node to the graph's representation
             strBuilder.Append('\t').AppendLine(node.ToText(registry));

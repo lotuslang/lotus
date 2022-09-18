@@ -13,9 +13,8 @@ partial class Program
 
         var fileArgument = new Argument<FileInfo>("input", "The file to read code from, or stdin if '-'");
         fileArgument.SetDefaultValue(_sourceCodeFile);
-        fileArgument.LegalFilePathsOnly();
         fileArgument.Arity = ArgumentArity.ZeroOrOne;
-        fileArgument.AddValidator((result) => {
+        fileArgument.AddValidator(result => {
             if (result.Tokens.Count == 0)
                 return;
 
@@ -103,6 +102,7 @@ partial class Program
             graphVerb,
         };
 
+        rootCommand.Name = "lotus";
         rootCommand.TreatUnmatchedTokensAsErrors = true;
 
         return rootCommand;

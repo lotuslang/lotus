@@ -125,7 +125,7 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
         if (!TryConsume<TNode>(out var output, out var val)) {
             if (!val.IsValid) {
                 // if it's not valid, it probably already emitted an error
-                Logger.errorStack.Pop();
+                _ = Logger.errorStack.Pop();
             }
 
             errorHandler(val);

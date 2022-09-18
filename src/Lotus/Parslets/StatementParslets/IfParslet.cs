@@ -19,7 +19,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
             isValid = false;
 
             if (conditionNode is TupleNode tuple) {
-                Logger.errorStack.Pop();
+                _ = Logger.errorStack.Pop();
 
                 Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                     Value = conditionNode,

@@ -10,7 +10,7 @@ public sealed class IdentToklet : IToklet<Token>
             || (currChar == '@' && Char.IsLetter(getInput().Consume()))
         );
 
-    public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
+        public Token Consume(IConsumer<char> input, Tokenizer tokenizer) {
         // consume a character
         var currChar = input.Consume();
 

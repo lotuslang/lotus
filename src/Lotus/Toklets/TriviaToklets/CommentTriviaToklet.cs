@@ -69,7 +69,7 @@ public sealed class CommentTriviaToklet : ITriviaToklet<CommentTriviaToken>
             }
 
             // consumes the remaining '/'
-            input.Consume();
+            _ = input.Consume();
 
             strBuilder.Append("*/");
 

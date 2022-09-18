@@ -66,7 +66,7 @@ public sealed class OperatorToklet : IToklet<OperatorToken>
 
         if (currChar == '^') {
             if (input.Peek() == '^') {
-                input.Consume(); // consume the '^' we just peeked at
+                _ = input.Consume(); // consume the '^' we just peeked at
 
                 return new OperatorToken("^^", Precedence.Xor, true, new LocationRange(currPos, input.Position));
             }

@@ -115,7 +115,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     break;
                 } else if (parser.Tokenizer.Peek() == Delim) {
                     isValid = false;
-                    parser.Tokenizer.Consume();
+                    _ = parser.Tokenizer.Consume();
                 }
 
                 //parser.Tokenizer.Reconsume();
@@ -130,7 +130,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             //                      literally right there
             if (parser.Tokenizer.Peek() == End) {
                 if (EndingDelimBehaviour is TupleEndingDelimBehaviour.Accept or TupleEndingDelimBehaviour.Force ) {
-                    parser.Tokenizer.Consume();
+                    _ = parser.Tokenizer.Consume();
                     break;
                 }
 

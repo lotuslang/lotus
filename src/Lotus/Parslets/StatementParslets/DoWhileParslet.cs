@@ -19,7 +19,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             isValid = false;
 
             if (parser.Tokenizer.Current == "(") {
-                Logger.errorStack.Pop(); // remove the last exception
+                _ = Logger.errorStack.Pop(); // remove the last exception
 
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Message = "Did you forget the 'while' keyword before the condition ?",

@@ -46,7 +46,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     }
 
     public override ref readonly TopLevelNode Consume() {
-        base.Consume();
+        _ = base.Consume();
 
         var currToken = Tokenizer.Consume();
 

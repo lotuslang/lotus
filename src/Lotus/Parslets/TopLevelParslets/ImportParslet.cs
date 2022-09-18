@@ -63,7 +63,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
             if (!import.IsValid) {
                 if (parser.ExpressionParser.Current.Token == "*") {
-                    Logger.errorStack.Pop();
+                    _ = Logger.errorStack.Pop();
 
                     Logger.Error(new NotANameError(ErrorArea.Parser) {
                         Value = parser.ExpressionParser.Current,

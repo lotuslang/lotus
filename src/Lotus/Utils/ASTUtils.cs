@@ -1,25 +1,25 @@
-﻿internal static class ASTUtils
+﻿public static class ASTUtils
 {
     [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
-    public static readonly NameChecker NameChecker = new();
+    internal static readonly NameChecker NameChecker = new();
 
-    public static readonly TopLevelPrinter TopLevelPrinter = new();
+    internal static readonly TopLevelPrinter TopLevelPrinter = new();
 
-    public static readonly StatementPrinter StatementPrinter = new();
+    internal static readonly StatementPrinter StatementPrinter = new();
 
-    public static readonly ValuePrinter ValuePrinter = new();
+    internal static readonly ValuePrinter ValuePrinter = new();
 
-    public static readonly TokenPrinter TokenPrinter = new();
+    internal static readonly TokenPrinter TokenPrinter = new();
 
-    public static readonly TokenGraphMaker TokenGraphMaker = new();
+    internal static readonly TokenGraphMaker TokenGraphMaker = new();
 
-    public static readonly StatementGraphMaker StatementGraphMaker = new();
+    internal static readonly StatementGraphMaker StatementGraphMaker = new();
 
-    public static readonly TopLevelGraphMaker TopLevelGraphMaker = new();
+    internal static readonly TopLevelGraphMaker TopLevelGraphMaker = new();
 
-    public static readonly ConstantChecker ConstantChecker = new();
+    internal static readonly ConstantChecker ConstantChecker = new();
 
-    public static readonly ConstantVisualizer ConstantVisualizer = new();
+    internal static readonly ConstantVisualizer ConstantVisualizer = new();
 
     [Obsolete("ASTHelper.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
     public static bool IsName(ValueNode node) => NameChecker.IsName(node);

@@ -41,7 +41,7 @@ public sealed class ExpressionParser : Parser<ValueNode>
         => ref Consume(Precedence.Comma);
 
     public ref readonly ValueNode Consume(Precedence precedence = 0) {
-        base.Consume();
+        _ = base.Consume();
 
         _curr = ConsumeValue(precedence);
 

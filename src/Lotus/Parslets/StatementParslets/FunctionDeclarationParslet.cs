@@ -99,7 +99,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
         if (paramNameNode is not IdentNode paramName) {
             if (!paramNameNode.IsValid) { // && Logger.Exceptions.Peek().Item1 is UnexpectedTokenException) {
-                Logger.errorStack.Pop();
+                _ = Logger.errorStack.Pop();
             }
 
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {

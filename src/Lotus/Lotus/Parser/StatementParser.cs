@@ -47,7 +47,7 @@ public sealed class StatementParser : Parser<StatementNode>
         => ref Consume(true);
 
     public ref readonly StatementNode Consume(bool checkSemicolon = true) {
-        base.Consume();
+        _ = base.Consume();
 
         // Consume a token
         var currToken = Tokenizer.Consume();
@@ -74,7 +74,7 @@ public sealed class StatementParser : Parser<StatementNode>
 
             // consume trailing semicolons
             while (Tokenizer.Peek().Kind == TokenKind.semicolon) {
-                Tokenizer.Consume();
+                _ = Tokenizer.Consume();
             }
         }
 

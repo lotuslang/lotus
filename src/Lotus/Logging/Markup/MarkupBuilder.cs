@@ -207,7 +207,7 @@ internal sealed class MarkupBuilder
                         continue;
                     }
 
-                    bgColorStack.TryPop(out _);
+                    _ = bgColorStack.TryPop(out _);
                     ReapplyStacks();
                 } else {
                     if (cm != FGCOLOR_POP) {
@@ -216,7 +216,7 @@ internal sealed class MarkupBuilder
                         continue;
                     }
 
-                    fgColorStack.TryPop(out _);
+                    _ = fgColorStack.TryPop(out _);
                         ReapplyStacks();
                 }
             } else if (node is Markup.StyleMarker sm) {
@@ -226,7 +226,7 @@ internal sealed class MarkupBuilder
                     continue;
                 }
 
-                styleStack.TryPop(out _);
+                _ = styleStack.TryPop(out _);
                 ReapplyStacks();
                 ReapplyStacks();
             } else if (node is Markup.TextFormatMarker tfm) {
@@ -236,7 +236,7 @@ internal sealed class MarkupBuilder
                     continue;
                 }
 
-                fmtStack.TryPop(out _);
+                _ = fmtStack.TryPop(out _);
                 ReapplyStacks();
             }
         }

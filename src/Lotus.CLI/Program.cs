@@ -24,7 +24,7 @@ partial class Program
 #endif
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-        _sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.txt"));
+        _sourceCodeFile = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "test.lts"));
 
         _cli = BuildRootCommand();
     }
@@ -111,7 +111,11 @@ partial class Program
     static int HandleParsing(LotusTokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);
 
-        nodes = parser.ToImmutableArray();
+        var nodesBuilder = ImmutableArray.CreateBuilder<TopLevelNode>();
+
+        while (parser.Consume(out var node)) nodesBuilder.Add(node);
+
+        nodes = nodesBuilder.ToImmutable();
 
         if (Logger.HasErrors) {
             Logger.PrintAllErrors();

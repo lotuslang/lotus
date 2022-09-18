@@ -79,7 +79,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
             if (closingBracket.Kind == TokenKind.EOF) {
                 // if this node was already invalid, it probably means that we already encountered an EOF,
                 // so no need to tell the user twice
-                if (!isValid) Logger.errorStack.Pop();
+                if (!isValid) _ = Logger.errorStack.Pop();
             } else {
                 parser.Tokenizer.Reconsume();
             }
@@ -87,7 +87,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
             isValid = false;
         }
 
-        parser.Tokenizer.Consume();
+        _ = parser.Tokenizer.Consume();
 
         return new Tuple<StatementNode>(statements.ToImmutable(), openingBracket, closingBracket) { IsValid = isValid };
     }

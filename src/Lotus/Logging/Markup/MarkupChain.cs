@@ -72,7 +72,7 @@ internal sealed class MarkupChain : IEnumerable<Markup>
 
     private class Enumerator : IEnumerator<Markup>
     {
-        private readonly MarkupChain chain;
+        private readonly MarkupNode? _first;
 
         private MarkupNode? _nextNode;
 
@@ -82,8 +82,8 @@ internal sealed class MarkupChain : IEnumerable<Markup>
         object? IEnumerator.Current => _item;
 
         public Enumerator(MarkupChain chain) {
-            this.chain = chain;
-            _nextNode = chain.First;
+            _first = chain.First;
+            _nextNode = _first;
         }
 
         public bool MoveNext() {
@@ -95,13 +95,13 @@ internal sealed class MarkupChain : IEnumerable<Markup>
             _item = _nextNode.Value;
             _nextNode = _nextNode!.Next;
 
-            if (_nextNode == chain.First)
+            if (_nextNode == _first)
                 _nextNode = null;
 
             return true;
         }
 
-        public void Reset() => _nextNode = chain.First;
+        public void Reset() => _nextNode = _first;
         // suggested by roslyn, don't know either :shrug:
         public void Dispose() => GC.SuppressFinalize(this);
     }

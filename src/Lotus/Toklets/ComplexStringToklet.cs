@@ -8,7 +8,7 @@ public sealed class ComplexStringToklet : IToklet<ComplexStringToken>
 
     public ComplexStringToken Consume(IConsumer<char> input, Tokenizer tokenizer) {
         // consume the '$' in front
-        input.Consume();
+        _ = input.Consume();
 
         var startPos = input.Position;
 

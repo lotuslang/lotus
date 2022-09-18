@@ -1,3 +1,4 @@
+
 public sealed class LotusGrammar : ReadOnlyGrammar
 {
     private readonly Grammar internalGrammar = new();

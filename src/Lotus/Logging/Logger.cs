@@ -116,40 +116,32 @@ public static class Logger
         => TerminalCompliantStringOf(Format(error));
 
     internal static MarkupBuilder Format(LotusError error) {
-        var sb = new MarkupBuilder();
+        var markupBuilder = new MarkupBuilder();
 
-        // Interfaces to implement :
-        //      - ILocalized
-        //      - IContextualized
-        //      - UnexpectedError (abstract class)
-
-        // TODO: NotAName handling (e.g. traversing parse tree to print which part makes it "not a name")
-        /*if (error is NotANameError eNotAName) {
-            sb.AppendLine(FormatNotAName(eNotAName)).AppendLine();
-        } else*/ if (error is UnexpectedError eUnx) {
-            sb.AppendLine(FormatUnexpected(eUnx)).AppendLine();
+        if (error is UnexpectedError eUnx) {
+            markupBuilder.AppendLine(FormatUnexpected(eUnx)).AppendLine();
         } else if (error is IContextualized eCtx) {
             //* FormatUnexpected already takes care of context for us, so we only do it
             //* if the error is not UnexpectedError
-            sb.AppendLine(FormatContextualized(eCtx)).AppendLine();
+            markupBuilder.AppendLine(FormatContextualized(eCtx)).AppendLine();
         }
 
         if (error is ILocalized eLoc) {
             // TODO: Allow passing a short message to be displayed in the sample
-            sb.AppendLine(FormatLocalized(eLoc));
+            markupBuilder.AppendLine(FormatLocalized(eLoc));
         }
 
         if (error.Message != null) {
-            sb.AppendLine("\n" + error.Message);
+            markupBuilder.AppendLine("\n" + error.Message);
         }
 
         if (error.ExtraNotes != null) {
-            sb.AppendLine("\nNote: " + error.ExtraNotes);
+            markupBuilder.AppendLine("\nNote: " + error.ExtraNotes);
         }
 
-        sb.AppendLine();
+        markupBuilder.AppendLine();
 
-        return sb;
+        return markupBuilder;
     }
 
     internal static MarkupBuilder FormatUnexpected(UnexpectedError error) {
@@ -236,7 +228,7 @@ public static class Logger
         if (error.As is not null)
             sb.Append(" as " + error.As);
 
-        error.Expected.Match(
+        _ = error.Expected.Match(
             s => sb.Append("\nExpected " + s + "."),
             list => sb.Append("\nExpected one of :\n\t- " + String.Join("\n\t- ", list)),
             _ => sb

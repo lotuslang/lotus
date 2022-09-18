@@ -20,7 +20,7 @@ public static class Utils
         => new(list.ToArray());
 
     [DebuggerStepThrough]
-    public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
+        public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
         var count = coll.Count();
 
         if (count == 0) {
@@ -46,15 +46,6 @@ public static class Utils
 
             return output.ToString();
         }
-    }
-
-    [DebuggerStepThrough]
-    public static GraphNode Apply(this GraphNode node, Func<GraphNode, GraphNode> transform) {
-        foreach (var child in node.Children) {
-            child.Apply(transform);
-        }
-
-        return transform(node);
     }
 
     public static string GetDisplayName(this Type type) {

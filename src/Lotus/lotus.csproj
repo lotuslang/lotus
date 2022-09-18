@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net6</TargetFramework>
+    <RootNamespace>Lotus</RootNamespace>
+    <TargetCulture>InvariantCulture</TargetCulture>
+    <Nullable>enable</Nullable>
+    <WarningAsError>IDE0059</WarningAsError>
+    <NoWarn>IDE1006,CA1050,RCS1110</NoWarn>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+
+    <Using Remove="System.IO" />
+    <Using Remove="System.Net.Http" />
+    <Using Remove="System.Threading.Tasks" />
+    <Using Remove="System.Threading" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="/home/blokyk/csharp/ide0058_supressor/ide0058_supressor.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Logging\Logger.cs.old" />
+  </ItemGroup>
+
+</Project>

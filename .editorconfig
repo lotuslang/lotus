@@ -35,14 +35,14 @@ dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_property = false:silent
 
 # Language keywords vs BCL types preferences
-dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
-dotnet_style_predefined_type_for_member_access = false:suggestion
+dotnet_style_predefined_type_for_locals_parameters_members = true:warning
+dotnet_style_predefined_type_for_member_access = false:warning
 
 # Parentheses preferences
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:suggestion
 dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:suggestion
 dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
-dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:suggestion
 
 # Modifier preferences
 dotnet_style_require_accessibility_modifiers = false #for_non_interface_members:silent
@@ -57,7 +57,7 @@ dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_prefer_auto_properties = true:silent
 dotnet_style_prefer_compound_assignment = true:suggestion
 dotnet_style_prefer_conditional_expression_over_assignment = when_on_single_line:suggestion
-dotnet_style_prefer_conditional_expression_over_return = true:suggestion
+dotnet_style_prefer_conditional_expression_over_return = when_on_single_line:suggestion # IDE0046
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:silent
 dotnet_style_prefer_inferred_tuple_names = true:silent
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
@@ -69,13 +69,17 @@ dotnet_style_readonly_field = true:suggestion
 dotnet_diagnostic.RCS1129.severity = none
 
 # Parameter preferences
-dotnet_code_quality_unused_parameters = all:suggestion
+dotnet_code_quality_unused_parameters = non_public:suggestion
+dotnet_diagnostic.RCS1163.severity = none # RCS1163: Unused parameter
 
 # Constructor preferences
 dotnet_diagnostic.RCS1071.severity = none
 
 # Suppression preferences
-dotnet_remove_unnecessary_suppression_exclusions = none
+dotnet_remove_unnecessary_suppression_exclusions = all:warning
+
+# Custom stuff
+dotnet_fluent_types = Grammar, MarkupBuilder, GraphNode
 
 #### C# Coding Conventions ####
 
@@ -113,16 +117,17 @@ csharp_prefer_braces = when_multiline:silent
 csharp_prefer_simple_using_statement = true:suggestion
 
 # Expression-level preferences
-csharp_prefer_simple_default_expression = true:suggestion
-csharp_style_deconstructed_variable_declaration = true:suggestion
-csharp_style_inlined_variable_declaration = true:suggestion
-csharp_style_pattern_local_over_anonymous_function = true:silent
-csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_range_operator = true:suggestion
-csharp_style_throw_expression = true:suggestion
-csharp_style_unused_value_assignment_preference = discard_variable:suggestion
-csharp_style_unused_value_expression_statement_preference = discard_variable:silent
-dotnet_diagnostic.RCS1163.severity = none # RCS1163: Unused parameter
+csharp_prefer_simple_default_expression = false # IDE0034
+csharp_style_deconstructed_variable_declaration = true:suggestion # IDE0042
+csharp_style_inlined_variable_declaration = true:suggestion # IDE0018
+csharp_style_pattern_local_over_anonymous_function = true:suggestion # IDE0039
+csharp_style_prefer_index_operator = true:suggestion # IDE0056
+csharp_style_prefer_range_operator = true:suggestion # IDE0057
+csharp_style_throw_expression = true:suggestion # IDE0016
+csharp_style_unused_value_assignment_preference = discard_variable:error # IDE0059
+dotnet_diagnostics.IDE0059.severity = warning
+csharp_style_unused_value_expression_statement_preference = discard_variable:error # IDE0058
+dotnet_diagnostics.IDE0058.severity = warning
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:suggestion
@@ -196,24 +201,24 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.interface.required_modifiers = 
+dotnet_naming_symbols.interface.required_modifiers =
 
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
 dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.types.required_modifiers = 
+dotnet_naming_symbols.types.required_modifiers =
 
 dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
 dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
-dotnet_naming_symbols.non_field_members.required_modifiers = 
+dotnet_naming_symbols.non_field_members.required_modifiers =
 
 # Naming styles
 
-dotnet_naming_style.pascal_case.required_prefix = 
-dotnet_naming_style.pascal_case.required_suffix = 
-dotnet_naming_style.pascal_case.word_separator = 
+dotnet_naming_style.pascal_case.required_prefix =
+dotnet_naming_style.pascal_case.required_suffix =
+dotnet_naming_style.pascal_case.word_separator =
 dotnet_naming_style.pascal_case.capitalization = pascal_case
 
 dotnet_naming_style.begins_with_i.required_prefix = I
-dotnet_naming_style.begins_with_i.required_suffix = 
-dotnet_naming_style.begins_with_i.word_separator = 
+dotnet_naming_style.begins_with_i.required_suffix =
+dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case

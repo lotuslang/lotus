@@ -29,7 +29,7 @@ internal sealed class ValuePrinter : IValueVisitor<string>
 
             // normal infix stuff
             case OperationType.Addition:
-            case OperationType.Substraction:
+            case OperationType.Subtraction:
             case OperationType.Multiplication:
             case OperationType.Division:
             case OperationType.Power:

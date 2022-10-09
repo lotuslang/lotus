@@ -42,7 +42,7 @@ public static partial class LotusFacts
         { ExpressionKind.Access,        DotAccessParslet.Instance.Precedence },
 
         { ExpressionKind.Plus,          Precedence.Addition},
-        { ExpressionKind.Minus,         Precedence.Substraction},
+        { ExpressionKind.Minus,         Precedence.Subtraction},
         { ExpressionKind.Multiply,      Precedence.Multiplication},
         { ExpressionKind.Divide,        Precedence.Division},
         { ExpressionKind.Power,         Precedence.Power},
@@ -66,7 +66,7 @@ public static partial class LotusFacts
         { ExpressionKind.Access,        DotAccessParslet.Instance },
 
         { ExpressionKind.Plus,          new BinaryOperatorParslet(Precedence.Addition, OperationType.Addition) },
-        { ExpressionKind.Minus,         new BinaryOperatorParslet(Precedence.Substraction, OperationType.Substraction) },
+        { ExpressionKind.Minus,         new BinaryOperatorParslet(Precedence.Subtraction, OperationType.Subtraction) },
         { ExpressionKind.Multiply,      new BinaryOperatorParslet(Precedence.Multiplication, OperationType.Multiplication) },
         { ExpressionKind.Divide,        new BinaryOperatorParslet(Precedence.Division, OperationType.Division) },
         { ExpressionKind.Power,         new BinaryOperatorParslet(Precedence.Power, OperationType.Power) },

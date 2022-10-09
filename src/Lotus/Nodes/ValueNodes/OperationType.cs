@@ -10,7 +10,7 @@ public enum OperationType {
     PrefixDecrement, // --a
     PostfixDecrement, // a--
     Addition, // a + b
-    Substraction, // a - b
+    Subtraction, // a - b
     Multiplication, // a * b
     Division, // a / b
     Power, // a ^ b

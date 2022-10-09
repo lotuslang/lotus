@@ -20,7 +20,7 @@ Here's a beautiful ASCII table for operator precedence
 +------------+--------------+-------------------------------------------+
 | 9          | a*b a/b a%b  | Multiplication, division and modulo       |
 +------------+--------------+-------------------------------------------+
-| 8          | a+b a-b      | Addition and Substraction                 |
+| 8          | a+b a-b      | Addition and Subtraction                 |
 +------------+--------------+-------------------------------------------+
 | 7          | < <=         | Greater-than and greater-than-or-equal-to |
 |            | > >=         | Lesser-than and lesser-than-or-equal-to   |
@@ -107,7 +107,7 @@ public enum Precedence {
     GreaterThanOrEqual = LessThan,
 
     Addition = LessThan + 1,
-    Substraction = Addition,
+    Subtraction = Addition,
 
     Multiplication = Addition + 1,
     Division = Multiplication,

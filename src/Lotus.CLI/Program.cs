@@ -12,8 +12,7 @@ using Lotus.Syntax;
 partial class Program
 {
     static readonly RootCommand _cli;
-    static int Main(string[] args)
-        => _cli.Invoke(args);
+    static int Main(string[] args) => _cli.Invoke(args);
 
     static Program() {
         // Lil hack for our visual studio (win and mac) users, whose IDE thinks it's a rebel

@@ -1,6 +1,5 @@
 namespace Lotus.Syntax;
 
-[DebuggerDisplay("{Location} {Precedence}({(int)Precedence}) : {_repr}")]
 public sealed record OperatorToken(string Representation, Precedence Precedence, bool IsLeftAssociative, LocationRange Location)
 : Token(Representation, TokenKind.@operator, Location)
 {
@@ -11,4 +10,6 @@ public sealed record OperatorToken(string Representation, Precedence Precedence,
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
+
+    protected override string DbgStr() => $"<operator({Precedence})> {_repr} @ {Location}";
 }

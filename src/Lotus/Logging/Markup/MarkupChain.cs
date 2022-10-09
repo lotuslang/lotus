@@ -4,7 +4,7 @@ namespace Lotus.Text;
 
 internal sealed class MarkupChain : IEnumerable<Markup>
 {
-    [DebuggerDisplay("{Prev?.Value.DbgString() ?? \"\"} < {Value.DbgString()} > {Next?.Value.DbgString() ?? \"\"}")]
+    [DebuggerDisplay("{DbgStr(),nq}")]
     internal sealed class MarkupNode {
         public Markup Value { get; init; }
         public MarkupNode? Next { get; set; }
@@ -15,6 +15,13 @@ internal sealed class MarkupChain : IEnumerable<Markup>
             Next = next;
             Prev = prev;
         }
+
+        private string DbgStr()
+            => (Prev?.Value.DbgStr() ?? "")
+            + " < "
+            + Value.DbgStr()
+            + " > "
+            + (Next?.Value.DbgStr() ?? "");
     }
 
     public MarkupNode? First { get; private set; }

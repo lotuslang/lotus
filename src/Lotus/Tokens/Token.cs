@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-[DebuggerDisplay("<{_kind}> {_repr} @ {Location}")]
+[DebuggerDisplay("{DbgStr(),nq}")]
 public record Token : ILocalized
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL) { IsValid = false };
@@ -120,4 +120,6 @@ public record Token : ILocalized
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
+
+    protected virtual string DbgStr() => $"<{_kind}> {_repr} @ {Location}";
 }

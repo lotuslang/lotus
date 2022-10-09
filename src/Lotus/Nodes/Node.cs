@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-[DebuggerDisplay("[{GetType().Name}]: {Token.Representation}")]
+[DebuggerDisplay("{DbgStr(),nq}")]
 public abstract record Node : ILocalized
 {
     public static readonly Node NULL = ValueNode.NULL;
@@ -15,4 +15,6 @@ public abstract record Node : ILocalized
     }
 
     protected Node(Token token) : this(token, token.Location) { }
+
+    protected virtual string DbgStr() => $"[{GetType().Name}]: {Token.Representation}";
 }

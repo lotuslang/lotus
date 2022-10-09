@@ -1,7 +1,7 @@
 namespace Lotus.Text;
 
 [DebuggerStepThrough]
-[DebuggerDisplay("{DbgString()}")]
+[DebuggerDisplay("{DbgStr(),nq}")]
 internal sealed record Style(
     TextColor? Foreground = null,
     TextColor? Background = null,
@@ -24,7 +24,7 @@ internal sealed record Style(
         return output + ";10m";
     }
 
-    internal string DbgString() {
+    internal string DbgStr() {
         var output = "";
 
         if (Foreground is not null) {

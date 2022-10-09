@@ -2,10 +2,10 @@ namespace Lotus.Text;
 
 internal abstract record Markup
 {
-    internal abstract string DbgString();
+    internal abstract string DbgStr();
 
     [DebuggerStepThrough]
-    [DebuggerDisplay("{DbgString()}")]
+    [DebuggerDisplay("{DbgStr(),nq}")]
     public sealed record TextFormatMarker(TextFormat Format) : Markup
     {
         public static readonly TextFormatMarker None =
@@ -17,12 +17,12 @@ internal abstract record Markup
         public override string ToString()
             => MarkupUtils.ToString(Format);
 
-        internal override string DbgString()
+        internal override string DbgStr()
             => $"FMT({Format})";
     }
 
     [DebuggerStepThrough]
-    [DebuggerDisplay("{DbgString()}")]
+    [DebuggerDisplay("{DbgStr(),nq}")]
     public sealed record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker ResetBackground =
@@ -33,12 +33,12 @@ internal abstract record Markup
         public override string ToString()
             => "\x1b[" + (IsBackground ? Color.GetBGString() : Color.GetFGString()) + 'm';
 
-        internal override string DbgString()
+        internal override string DbgStr()
             => $"{(IsBackground ? "BG" : "FG")}({Color.GetType().Name})";
     }
 
     [DebuggerStepThrough]
-    [DebuggerDisplay("{DbgString()}")]
+    [DebuggerDisplay("{DbgStr(),nq}")]
     public sealed record StyleMarker(Style Style) : Markup
     {
         public static readonly StyleMarker Reset =
@@ -53,8 +53,8 @@ internal abstract record Markup
         public override string ToString()
             => Style.ToString();
 
-        internal override string DbgString()
-            => "STY(" + Style.DbgString() + ")";
+        internal override string DbgStr()
+            => "STY(" + Style.DbgStr() + ")";
     }
 
     [DebuggerStepThrough]
@@ -62,6 +62,6 @@ internal abstract record Markup
     {
         public override string ToString() => Content;
 
-        internal override string DbgString() => Content;
+        internal override string DbgStr() => Content;
     }
 }

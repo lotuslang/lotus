@@ -1,7 +1,7 @@
 namespace Lotus.Text;
 
 #pragma warning disable IDE1006
-[DebuggerDisplay("{System.IO.Path.GetFileName(filename)}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})")]
+[DebuggerDisplay("{DbgStr(),nq}")]
 public sealed record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>, ILocalized
 {
     public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);
@@ -98,4 +98,7 @@ public sealed record LocationRange(int firstLine, int lastLine, int firstColumn,
 
         return output;
     }
+
+    private string DbgStr()
+        => $"{System.IO.Path.GetFileName(filename)}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";
 }

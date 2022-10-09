@@ -1,6 +1,5 @@
 namespace Lotus.Syntax;
 
-[DebuggerDisplay("{Location} {Kind} : {val}")]
 public sealed record BoolToken : Token
 {
     public new static readonly BoolToken NULL = new("", false, LocationRange.NULL) { IsValid = false };

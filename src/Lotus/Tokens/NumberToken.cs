@@ -1,6 +1,5 @@
 namespace Lotus.Syntax;
 
-[DebuggerDisplay("{Location} {Kind} : {val}")]
 public sealed record NumberToken : Token
 {
     public new static readonly NumberToken NULL = new("", Double.NaN, LocationRange.NULL) { IsValid = false };

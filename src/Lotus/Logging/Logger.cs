@@ -264,10 +264,7 @@ public static class Logger
         sb.PushTextFormat(TextFormat.Bold);
         sb.Append($"\t --> @{relPath}({location.firstLine}:{location.firstColumn}");
         if (!location.IsSingleLocation()) {
-            if (location.firstLine == location.lastLine)
-                sb.Append($" ~ {location.lastColumn}");
-            else
-                sb.Append($" ~ {location.lastLine}:{location.lastColumn}");
+            sb.Append($" ~ {location.lastLine}:{location.lastColumn}");
         }
         sb.AppendLine(")");
         sb.PopTextFormat();

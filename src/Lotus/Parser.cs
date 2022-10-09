@@ -28,49 +28,33 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// </summary>
     public virtual T Default => ConstantDefault with { Location = Position };
 
-    public ReadOnlyGrammar Grammar { get; protected set; }
-
 #pragma warning disable CS8618
     protected Parser() {
         reconsumeQueue = new Queue<T>();
 
         _curr = ConstantDefault;
-
-        Grammar = new ReadOnlyGrammar();
     }
 #pragma warning restore
 
-    protected Parser(ReadOnlyGrammar grammar) : this() {
-        Debug.Assert(grammar is not null);
-
-        Grammar = grammar;
-    }
-
     //public Parser(Tokenizer tokenizer) : this(tokenizer as IConsumer<Token>) { }
 
-    protected Parser(IConsumer<Token> tokenConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+    protected Parser(IConsumer<Token> tokenConsumer) : this() {
         Tokenizer = tokenConsumer;
     }
 
-    protected Parser(IConsumer<T> nodeConsumer, ReadOnlyGrammar grammar) : this(grammar) {
+    protected Parser(IConsumer<T> nodeConsumer) : this() {
         foreach (var node in nodeConsumer) {
             reconsumeQueue.Enqueue(node);
         }
     }
 
-    protected Parser(StringConsumer consumer, ReadOnlyGrammar grammar) : this(new Tokenizer(consumer), grammar) { }
+    protected Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
 
-    protected Parser(IEnumerable<char> collection, ReadOnlyGrammar grammar) : this(new Tokenizer(collection), grammar) { }
+    protected Parser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
 
-    protected Parser(Uri file, ReadOnlyGrammar grammar) : this(new Tokenizer(file), grammar) { }
+    protected Parser(Uri file) : this(new Tokenizer(file)) { }
 
-    protected Parser(Parser<T> parser) : this(parser.Grammar) {
-        reconsumeQueue = parser.reconsumeQueue;
-        Tokenizer = parser.Tokenizer;
-        _curr = parser.Current;
-    }
-
-    protected Parser(Parser<T> parser, ReadOnlyGrammar grammar) : this(parser.Tokenizer, grammar) {
+    protected Parser(Parser<T> parser) : this(parser.Tokenizer) {
         reconsumeQueue = parser.reconsumeQueue;
         _curr = parser.Current;
     }

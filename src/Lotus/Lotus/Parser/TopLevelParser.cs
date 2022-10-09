@@ -18,10 +18,10 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     }
 
 #nullable disable
-    public TopLevelParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
+    public TopLevelParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer)
         => Init();
 
-    public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
+    public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer)
         => Init();
 
     public TopLevelParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
@@ -30,7 +30,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
     public TopLevelParser(Uri file) : this(new Tokenizer(file)) { }
 
-    public TopLevelParser(Parser<TopLevelNode> parser) : base(parser, LotusGrammar.Instance)
+    public TopLevelParser(Parser<TopLevelNode> parser) : base(parser)
         => Init();
 #nullable enable
 
@@ -77,14 +77,14 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
         // we'll just consume the same token again
         currToken = Tokenizer.Consume();
 
-        if (Grammar.TryGetTopLevelParslet(currToken, out var parslet)) {
+        if (LotusFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
             _curr = parslet.Parse(this, currToken);
 
             // TODO: Throw an error when there's a modifier but the node isn't
             //       supposed to be modded
 
             if (Current is IAccessible accCurrent) {
-                accCurrent.AccessLevel = MiscUtils.GetAccessAndValidate(
+                accCurrent.AccessLevel = LotusFacts.GetAccessAndValidate(
                     accessKeyword,
                     accCurrent.DefaultAccessLevel,
                     accCurrent.ValidLevels

@@ -62,49 +62,8 @@ public static class MiscUtils
              + '>';
     }
 
-    public static bool NeedsSemicolon(StatementNode node)
-        => node is not (
-                   ElseNode
-                or ForeachNode
-                or ForNode
-                or FunctionDeclarationNode
-                or IfNode
-                or WhileNode
-            );
-
-    public static AccessLevel GetAccess(string str)
-        => str switch {
-            "public" => AccessLevel.Public,
-            "internal" => AccessLevel.Internal,
-            "private" => AccessLevel.Private,
-            _ => AccessLevel.Default,
-        };
-
-    // TODO: move to LotusGrammar & co
-    public static AccessLevel GetAccessAndValidate(
-        Token accessToken,
-        AccessLevel defaultLvl,
-        AccessLevel validLvls
-    ) {
-        var _accessLevel = defaultLvl;
-
-        if (accessToken != Token.NULL) {
-            _accessLevel = GetAccess(accessToken);
-
-            if ((_accessLevel & validLvls) == AccessLevel.Default) {
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = accessToken,
-                    As = "an access modifier",
-                    Message = "The " + accessToken + " modifier is not valid here",
-                    Expected = "one of " + String.Join(", ", GetMatchingValues(validLvls))
-                });
-            }
-        }
-
-        return _accessLevel;
-    }
-
     public static IEnumerable<TEnum> GetMatchingValues<TEnum>(this TEnum flag) where TEnum : struct, Enum {
+        // FIXME: hard-code this or drastically improve the performance
         foreach (var value in Enum.GetValues<TEnum>()) {
             if (flag.HasFlag(value))
                 yield return value;

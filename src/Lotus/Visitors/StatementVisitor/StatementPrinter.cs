@@ -82,7 +82,7 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
               + Print(node.Body);
 
     public string Print(Tuple<StatementNode> tuple)
-        => ASTUtils.PrintTuple(tuple, "", (stmt) => Print(stmt) + (MiscUtils.NeedsSemicolon(stmt) ? ";" : ""));
+        => ASTUtils.PrintTuple(tuple, "", (stmt) => Print(stmt) + (LotusFacts.NeedsSemicolon(stmt) ? ";" : ""));
 
     public string Print(StatementNode node) => node.Accept(this);
 }

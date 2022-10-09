@@ -96,7 +96,7 @@ public partial class Tokenizer : IConsumer<Token>
             return new BoolToken(outputStr, outputStr == "true", new LocationRange(startPos, _input.Position));
         }
 
-        if (Resources.keywords.Contains(outputStr)) {
+        if (LotusFacts.IsKeyword(outputStr)) {
             return new Token(outputStr, TokenKind.keyword, new LocationRange(startPos, _input.Position));
         }
 
@@ -168,7 +168,7 @@ public partial class Tokenizer : IConsumer<Token>
             }
         }
 
-        bool nextIsNumber() => LotusGrammar.IsStartOfNumber(_input.Consume(), _input.Peek());
+        bool nextIsNumber() => LotusFacts.IsStartOfNumber(_input.Consume(), _input.Peek());
 
         // if we have a decimal separator...
         if (currChar == '.') {

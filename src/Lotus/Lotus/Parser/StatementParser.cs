@@ -14,10 +14,10 @@ public sealed class StatementParser : Parser<StatementNode>
     }
 
 #nullable disable
-    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
+    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer)
         => Init();
 
-    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
+    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer)
         => Init();
 
     public StatementParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
@@ -64,14 +64,14 @@ public sealed class StatementParser : Parser<StatementNode>
             return ref _curr;
         }
 
-        if (Grammar.TryGetStatementParslet(currToken, out var parslet)) {
+        if (LotusFacts.TryGetStatementParslet(currToken, out var parslet)) {
             _curr = parslet.Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();
             _curr = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
-        if (checkSemicolon && MiscUtils.NeedsSemicolon(Current)) {
+        if (checkSemicolon && LotusFacts.NeedsSemicolon(Current)) {
             CheckSemicolon();
 
             // consume trailing semicolons

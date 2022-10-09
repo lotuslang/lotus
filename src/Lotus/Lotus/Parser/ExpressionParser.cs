@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-public sealed class ExpressionParser : Parser<ValueNode>
+public sealed partial class ExpressionParser : Parser<ValueNode>
 {
     public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
 
@@ -9,10 +9,10 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public void SetCurrentToDefault()
         => _curr = ConstantDefault with { Location = Tokenizer.Position };
 
-    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer, LotusGrammar.Instance)
+    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer)
         => SetCurrentToDefault();
 
-    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer, LotusGrammar.Instance)
+    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer)
         => SetCurrentToDefault();
 
     public ExpressionParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
@@ -52,8 +52,9 @@ public sealed class ExpressionParser : Parser<ValueNode>
 
     private ValueNode ConsumeValue(Precedence precedence) {
         var token = Tokenizer.Consume();
+        var tokenKind = LotusFacts.GetExpressionKind(token);
 
-        if (!Grammar.IsPrefix(Grammar.GetExpressionKind(token))) {
+        if (!LotusFacts.IsPrefixOrValueKind(tokenKind)) {
             string? notes = null;
 
             if (token.Kind == TokenKind.EOF) {
@@ -85,27 +86,28 @@ public sealed class ExpressionParser : Parser<ValueNode>
             return ConstantDefault with { Token = token, Location = token.Location };
         }
 
-        var left = Grammar.GetPrefixParslet(token).Parse(this, token);
+        var left = LotusFacts.GetPrefixParslet(tokenKind).Parse(this, token);
 
-        if (!Tokenizer.Consume(out token)) {
+        if (!Tokenizer.Consume(out token))
             return left;
-        }
 
-        if (Grammar.IsPostfix(Grammar.GetExpressionKind(token))) {
-            left = Grammar.GetPostfixParslet(token).Parse(this, token, left);
+        tokenKind = LotusFacts.GetExpressionKind(token);
 
-            token = Tokenizer.Consume();
-        }
-
-        while (precedence < Grammar.GetPrecedence(token)) {
-            left = Grammar.GetOperatorParslet(token).Parse(this, token, left);
+        if (LotusFacts.IsPostfixKind(tokenKind)) {
+            left = LotusFacts.GetPostfixParslet(tokenKind).Parse(this, token, left);
 
             token = Tokenizer.Consume();
+            tokenKind = LotusFacts.GetExpressionKind(token);
+        }
+
+        while (precedence < LotusFacts.GetPrecedence(tokenKind)) {
+            left = LotusFacts.GetInfixParslet(tokenKind).Parse(this, token, left);
+
+            token = Tokenizer.Consume();
+            tokenKind = LotusFacts.GetExpressionKind(token);
         }
 
         Tokenizer.Reconsume();
-
-        //left.IsValid = isValid;
 
         return left;
     }

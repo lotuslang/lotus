@@ -2,145 +2,83 @@ using Lotus.Syntax;
 
 namespace Lotus;
 
-public sealed class LotusGrammar : ReadOnlyGrammar
+public static partial class LotusFacts
 {
-    private readonly Grammar internalGrammar = new();
+    public static bool IsPrefixOrValueKind(ExpressionKind kind)
+        => ((int)kind & ExpressionKindFlags.PREFIX) == ExpressionKindFlags.PREFIX;
+    public static bool IsValueKind(ExpressionKind kind)
+        => ((int)kind & ExpressionKindFlags.VALUE) == ExpressionKindFlags.VALUE;
+    public static bool IsStrictlyPrefixKind(ExpressionKind kind)
+        => IsPrefixOrValueKind(kind) && !IsValueKind(kind);
+    public static bool IsInfixOrPostfixKind(ExpressionKind kind)
+        => ((int)kind & ExpressionKindFlags.INFIX) == ExpressionKindFlags.INFIX;
+    public static bool IsPostfixKind(ExpressionKind kind)
+        => ((int)kind & ExpressionKindFlags.POSTFIX) == ExpressionKindFlags.POSTFIX;
+    public static bool IsStrictlyInfixKind(ExpressionKind kind)
+        => IsInfixOrPostfixKind(kind) && !IsPostfixKind(kind);
 
-    public static LotusGrammar Instance { get; } = new();
+    public static bool IsKeyword(string str) => _keywords.Contains(str);
 
-    private LotusGrammar() : base() {
-        InitializeExpressionKinds();
-        InitializeExpressionParslets();
-        InitializeStatementParslets();
-        InitializeTopLevelParslets();
+    public static ExpressionKind GetExpressionKind(Token token) {
+        switch (token.Kind) {
+            case TokenKind.identifier:
+                return ExpressionKind.Identifier;
+            case TokenKind.number:
+                return ExpressionKind.Number;
+            case TokenKind.@bool:
+                return ExpressionKind.Boolean;
+            case TokenKind.@string:
+                return ExpressionKind.String;
+            case TokenKind.EOF:
+                return ExpressionKind.NotAnExpr;
+        }
 
-        base.Initialize(internalGrammar);
+        var str = token.Representation;
+
+        if (!_strToExprKinds.TryGetValue(str, out var kind))
+            return ExpressionKind.NotAnExpr;
+        return kind;
     }
 
-    static internal bool IsStartOfNumber(char c, char nextChar)
-        => MiscUtils.IsAsciiDigit(c)
-        || (c is '.' && MiscUtils.IsAsciiDigit(nextChar));
-
-    private void InitializeExpressionParslets() {
-        // values
-        internalGrammar
-            .RegisterPrefix(ExpressionKind.Number, NumberLiteralParslet.Instance)
-            .RegisterPrefix(ExpressionKind.String, StringLiteralParslet.Instance)
-            .RegisterPrefix(ExpressionKind.Identifier, IdentifierParslet.Instance)
-            .RegisterPrefix(ExpressionKind.Boolean, BoolLiteralParslet.Instance)
-            .RegisterPrefix(ExpressionKind.LeftParen, LeftParenParslet.Instance)
-            ;
-
-        // prefix operators
-        internalGrammar
-            .RegisterPrefixOperator(ExpressionKind.Plus, OperationType.Positive)
-            .RegisterPrefixOperator(ExpressionKind.Minus, OperationType.Negative)
-            .RegisterPrefixOperator(ExpressionKind.Not, OperationType.Not)
-            .RegisterPrefixOperator(ExpressionKind.Increment, OperationType.PrefixIncrement)
-            .RegisterPrefixOperator(ExpressionKind.Decrement, OperationType.PrefixDecrement)
-            ;
-
-        // misc prefix parslets
-        internalGrammar
-            .RegisterPrefix(ExpressionKind.Array, ArrayLiteralParslet.Instance)
-            .RegisterPrefix(ExpressionKind.New, ObjectCreationParslet.Instance)
-            ;
-
-        // infix binary operators
-        internalGrammar
-            .RegisterInfixBinaryOperator(ExpressionKind.Plus, Precedence.Addition, OperationType.Addition)
-            .RegisterInfixBinaryOperator(ExpressionKind.Minus, Precedence.Substraction, OperationType.Substraction)
-            .RegisterInfixBinaryOperator(ExpressionKind.Multiply, Precedence.Multiplication, OperationType.Multiplication)
-            .RegisterInfixBinaryOperator(ExpressionKind.Divide, Precedence.Division, OperationType.Division)
-            .RegisterInfixBinaryOperator(ExpressionKind.Power, Precedence.Power, OperationType.Power)
-            .RegisterInfixBinaryOperator(ExpressionKind.Modulo, Precedence.Modulo, OperationType.Modulo)
-            .RegisterInfixBinaryOperator(ExpressionKind.Or, Precedence.Or, OperationType.Or)
-            .RegisterInfixBinaryOperator(ExpressionKind.And, Precedence.And, OperationType.And)
-            .RegisterInfixBinaryOperator(ExpressionKind.Xor, Precedence.Xor, OperationType.Xor)
-            .RegisterInfixBinaryOperator(ExpressionKind.Eq, Precedence.Equal, OperationType.Equal)
-            .RegisterInfixBinaryOperator(ExpressionKind.NotEq, Precedence.NotEqual, OperationType.NotEqual)
-            .RegisterInfixBinaryOperator(ExpressionKind.Less, Precedence.LessThan, OperationType.Less)
-            .RegisterInfixBinaryOperator(ExpressionKind.LessOrEq, Precedence.LessThanOrEqual, OperationType.LessOrEqual)
-            .RegisterInfixBinaryOperator(ExpressionKind.Greater, Precedence.GreaterThan, OperationType.Greater)
-            .RegisterInfixBinaryOperator(ExpressionKind.GreaterOrEq, Precedence.GreaterThanOrEqual, OperationType.GreaterOrEqual)
-            .RegisterInfixBinaryOperator(ExpressionKind.Assignment, Precedence.Assignment, OperationType.Assign)
-            ;
-
-        // misc infix parslets
-        internalGrammar
-            .RegisterInfix(ExpressionKind.Array, ArrayAccessParslet.Instance)
-            .RegisterInfix(ExpressionKind.LeftParen, FuncCallParslet.Instance)
-            .RegisterInfix(ExpressionKind.Ternary, TernaryOperatorParslet.Instance)
-            .RegisterInfix(ExpressionKind.Access, DotAccessParslet.Instance)
-            ;
-
-        // postfix operators
-        internalGrammar
-            .RegisterPostfixOperation(ExpressionKind.Increment, OperationType.PostfixIncrement)
-            .RegisterPostfixOperation(ExpressionKind.Decrement, OperationType.PostfixDecrement)
-            ;
+    public static Precedence GetPrecedence(ExpressionKind kind) {
+        if (!_exprToPrecedence.TryGetValue(kind, out var precedence))
+            return Precedence.Comma;
+        return precedence;
     }
 
-    private void InitializeExpressionKinds() {
-        // Maths operators
-        internalGrammar
-            .RegisterExpressionKind("+", ExpressionKind.Plus)
-            .RegisterExpressionKind("-", ExpressionKind.Minus)
-            .RegisterExpressionKind("*", ExpressionKind.Multiply)
-            .RegisterExpressionKind("/", ExpressionKind.Divide)
-            .RegisterExpressionKind("%", ExpressionKind.Modulo)
-            .RegisterExpressionKind("^", ExpressionKind.Power)
-            ;
-
-        // Logical/comparison operators
-        internalGrammar
-            .RegisterExpressionKind("!", ExpressionKind.Not)
-            .RegisterExpressionKind("&&", ExpressionKind.And)
-            .RegisterExpressionKind("||", ExpressionKind.Or)
-            .RegisterExpressionKind("^^", ExpressionKind.Xor)
-            .RegisterExpressionKind("<", ExpressionKind.Less)
-            .RegisterExpressionKind("<=", ExpressionKind.LessOrEq)
-            .RegisterExpressionKind(">", ExpressionKind.Greater)
-            .RegisterExpressionKind(">=", ExpressionKind.GreaterOrEq)
-            .RegisterExpressionKind("(", ExpressionKind.LeftParen)
-            .RegisterExpressionKind("[", ExpressionKind.Array)
-            .RegisterExpressionKind(".", ExpressionKind.Access)
-            .RegisterExpressionKind("=", ExpressionKind.Assignment)
-            .RegisterExpressionKind("==", ExpressionKind.Eq)
-            .RegisterExpressionKind("!=", ExpressionKind.NotEq)
-            ;
-
-        // Misc
-        internalGrammar
-            .RegisterExpressionKind("++", ExpressionKind.Increment)
-            .RegisterExpressionKind("--", ExpressionKind.Decrement)
-            .RegisterExpressionKind("new", ExpressionKind.New)
-            .RegisterExpressionKind("?", ExpressionKind.Ternary)
-            ;
+    public static IInfixParslet<ValueNode> GetInfixParslet(ExpressionKind kind) {
+        if (!_exprToInfixParslets.TryGetValue(kind, out var parslet))
+            Debug.Fail("ExpressionKind '" + kind + "' doesn't correspond to any infix parslet");
+        return parslet;
     }
 
-    private void InitializeStatementParslets()
-    //! IMPORTANT: Update StatementParser.NeedsSemicolon if you add a new statement
-        => internalGrammar
-            .RegisterStatementParslet("var", DeclarationParslet.Instance)
-            .RegisterStatementParslet("func", FunctionDeclarationParslet.Instance)
-            .RegisterStatementParslet("return", ReturnParslet.Instance)
-            .RegisterStatementParslet("foreach", ForeachParslet.Instance)
-            .RegisterStatementParslet("for", ForParslet.Instance)
-            .RegisterStatementParslet("if", IfParslet.Instance)
-            .RegisterStatementParslet("while", WhileParslet.Instance)
-            .RegisterStatementParslet("do", DoWhileParslet.Instance)
-            .RegisterStatementParslet("break", BreakParslet.Instance)
-            .RegisterStatementParslet("continue", ContinueParslet.Instance)
-            .RegisterStatementParslet("print", PrintParslet.Instance)
-            ;
+    public static IPrefixParslet<ValueNode> GetPrefixParslet(ExpressionKind kind) {
+        if (!_exprToPrefixParslets.TryGetValue(kind, out var parslet))
+            Debug.Fail("ExpressionKind '" + kind + "' doesn't correspond to any prefix parslet");
+        return parslet;
+    }
 
-    private void InitializeTopLevelParslets()
-        => internalGrammar
-            .RegisterTopLevelParslets("namespace", NamespaceParslet.Instance)
-            .RegisterTopLevelParslets("from", ImportParslet.Instance)
-            .RegisterTopLevelParslets("using", UsingParslet.Instance)
-            .RegisterTopLevelParslets("enum", EnumParslet.Instance)
-            .RegisterTopLevelParslets("struct", StructParslet.Instance)
-            ;
+    public static IPostfixParslet<ValueNode> GetPostfixParslet(ExpressionKind kind) {
+        if (!_exprToPostfixParslets.TryGetValue(kind, out var parslet))
+            Debug.Fail("ExpressionKind '" + kind + "' doesn't correspond to any postfix parslet");
+        return parslet;
+    }
+
+    public static bool TryGetStatementParslet(Token token, [NotNullWhen(true)] out IStatementParslet<StatementNode>? parslet) {
+        if (token == Token.NULL) {
+            parslet = null;
+            return false;
+        }
+
+        return _strToStmtParslets.TryGetValue(token.Representation, out parslet);
+    }
+
+    public static bool TryGetTopLevelParslet(Token token, [NotNullWhen(true)] out ITopLevelParslet<TopLevelNode>? parslet) {
+        if (token == Token.NULL) {
+            parslet = null;
+            return false;
+        }
+
+        return _strToTopLevelParslets.TryGetValue(token.Representation, out parslet);
+    }
 }

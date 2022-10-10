@@ -1,4 +1,6 @@
-internal class DeterministicStringComparer : IEqualityComparer<string>
+namespace Lotus.Utils;
+
+public class DeterministicStringComparer : IEqualityComparer<string>
 {
     public static readonly DeterministicStringComparer Instance = new();
 

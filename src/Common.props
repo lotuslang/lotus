@@ -23,4 +23,12 @@
   <ItemGroup>
     <PackageReference Include="Blokyk.Roslyn.ValueNotUsedSuppressor" Version="*" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition="'$(MSBuildProjectName)' != 'Common'">
+      <ItemGroup>
+       <ProjectReference Include="../Common/Common.csproj" />
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

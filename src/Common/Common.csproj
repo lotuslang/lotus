@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Common.props" />
+
+  <PropertyGroup>
+    <RootNamespace>Lotus.Utils</RootNamespace>
+  </PropertyGroup>
+</Project>

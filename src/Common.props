@@ -1,0 +1,26 @@
+<Project>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetCulture>InvariantCulture</TargetCulture>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+
+    <Using Include="Lotus" />
+    <Using Include="Lotus.Utils" />
+
+    <Using Remove="System.Net.Http" />
+    <Using Remove="System.Threading.Tasks" />
+    <Using Remove="System.Threading" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blokyk.Roslyn.ValueNotUsedSuppressor" Version="*" />
+  </ItemGroup>
+</Project>

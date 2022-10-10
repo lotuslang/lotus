@@ -1,28 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Common.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <LangVersion>latest</LangVersion>
-    <TargetFramework>net6</TargetFramework>
     <RootNamespace>Lotus.CLI</RootNamespace>
-    <TargetCulture>InvariantCulture</TargetCulture>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Using Include="System" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Diagnostics" />
-    <Using Include="System.Collections.Immutable" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-
-    <Using Remove="System.IO" />
-    <Using Remove="System.Net.Http" />
-    <Using Remove="System.Threading.Tasks" />
-    <Using Remove="System.Threading" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.0-*" />

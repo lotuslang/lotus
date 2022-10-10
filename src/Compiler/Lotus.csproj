@@ -1,39 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Common.props" />
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <LangVersion>latest</LangVersion>
-    <TargetFramework>net6</TargetFramework>
     <RootNamespace>Lotus</RootNamespace>
-    <TargetCulture>InvariantCulture</TargetCulture>
-    <Nullable>enable</Nullable>
     <WarningAsError>IDE0059</WarningAsError>
     <NoWarn>IDE1006,CA1050,RCS1110</NoWarn>
-
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <Using Include="System" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Diagnostics" />
-    <Using Include="System.Collections.Immutable" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-
     <Using Include="Lotus" />
     <Using Include="Lotus.Text" />
     <Using Include="Lotus.Error" />
     <Using Include="Lotus.Utils" />
 
     <Using Remove="System.IO" />
-    <Using Remove="System.Net.Http" />
-    <Using Remove="System.Threading.Tasks" />
-    <Using Remove="System.Threading" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Blokyk.Roslyn.ValueNotUsedSuppressor" Version="*" />
   </ItemGroup>
 
 </Project>

@@ -20,7 +20,7 @@ public sealed record StructNode(
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(ITopLevelVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }
 
 public sealed record StructField(

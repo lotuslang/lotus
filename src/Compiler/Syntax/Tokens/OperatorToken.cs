@@ -9,7 +9,7 @@ public sealed record OperatorToken(string Representation, Precedence Precedence,
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 
     protected override string DbgStr() => $"<operator({Precedence})> {_repr} @ {Location}";
 }

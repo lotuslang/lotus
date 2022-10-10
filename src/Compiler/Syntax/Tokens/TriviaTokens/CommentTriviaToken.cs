@@ -16,5 +16,5 @@ public sealed record CommentTriviaToken : TriviaToken
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 }

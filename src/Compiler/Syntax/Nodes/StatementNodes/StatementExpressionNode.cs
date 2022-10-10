@@ -17,5 +17,5 @@ public sealed record StatementExpressionNode(ValueNode Value)
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(IStatementVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -18,5 +18,5 @@ public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts)
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 }

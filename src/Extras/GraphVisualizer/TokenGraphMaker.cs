@@ -1,4 +1,6 @@
-namespace Lotus.Syntax.Visitors;
+using Lotus.Syntax.Visitors;
+
+namespace Lotus.Extras.Graphs;
 
 internal sealed class TokenGraphMaker : ITokenVisitor<GraphNode>
 {

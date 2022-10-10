@@ -1,11 +1,9 @@
-using System.IO;
 using System.Threading.Tasks;
 
 using System.CommandLine;
 
-using Lotus;
-using Lotus.Text;
-using Lotus.Utils;
+using Lotus.Extras;
+using Lotus.Extras.Graphs;
 using Lotus.Syntax;
 
 partial class Program
@@ -130,7 +128,7 @@ partial class Program
             var g = MakeGraph(
                 file,
                 Enumerable.OfType<TopLevelStatementNode>, // filter
-                n => ASTUtils.ShowConstants(n), // transform
+                n => Extras.ShowConstants(n), // transform
                 force,
                 out int exitCode
             );
@@ -152,12 +150,12 @@ partial class Program
         }
 
         foreach (var node in tlNodes) {
-            Console.Write(ASTUtils.PrintTopLevel(node));
+            Console.Write(Extras.PrintTopLevel(node));
         }
 
         string s;
 
-        if ((s = ASTUtils.PrintToken(tokenizer.Current)).Length >= 2) {
+        if ((s = Extras.PrintToken(tokenizer.Current)).Length >= 2) {
             // print the last (EOF) token, which is not consumed by the parser
             Console.WriteLine(s[..^1]);
         }

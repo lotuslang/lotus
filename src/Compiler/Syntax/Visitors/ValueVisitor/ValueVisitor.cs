@@ -1,4 +1,4 @@
-namespace Lotus.Syntax;
+namespace Lotus.Syntax.Visitors;
 
 public interface IValueVisitor<T>
 {

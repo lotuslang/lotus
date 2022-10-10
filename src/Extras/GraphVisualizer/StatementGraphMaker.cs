@@ -1,4 +1,6 @@
-namespace Lotus.Syntax.Visitors;
+using Lotus.Syntax.Visitors;
+
+namespace Lotus.Extras.Graphs;
 
 internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor<GraphNode>
 {
@@ -91,7 +93,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public GraphNode Visit(DeclarationNode node)
         => new GraphNode(node.GetHashCode(), "var") {
-               ASTUtils.ToGraphNode(node.Name)
+               Extras.ToGraphNode(node.Name)
                     .SetColor(DeclarationName.color)
                     .SetTooltip(DeclarationName.tooltip),
                ToGraphNode(node.Value)
@@ -356,19 +358,19 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         return root;
     }
 
-    public GraphNode Visit(Tuple<StatementNode> block)
+    public GraphNode Visit(Syntax.Tuple<StatementNode> block)
         => ToGraphNode<StatementNode>(block)
                 .SetName("body")
                 .SetTooltip(SimpleBlock.tooltip)
                 .SetColor(SimpleBlock.color);
 
-    public GraphNode ToGraphNode<TVal>(Tuple<TVal> tuple) where TVal : Node {
+    public GraphNode ToGraphNode<TVal>(Syntax.Tuple<TVal> tuple) where TVal : Node {
         var root = new GraphNode(tuple.GetHashCode(), "tuple")
             .SetColor(Tuple.color)
             .SetTooltip(Tuple.tooltip);
 
         foreach (var node in tuple.Items)
-            root.Add(ASTUtils.ToGraphNode(node));
+            root.Add(Extras.ToGraphNode(node));
 
         return root;
     }
@@ -377,5 +379,5 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     public virtual GraphNode ToGraphNode(ValueNode node) => node.Accept(this);
 
-    public virtual GraphNode ToGraphNode(Tuple<StatementNode> block) => Visit(block);
+    public virtual GraphNode ToGraphNode(Syntax.Tuple<StatementNode> block) => Visit(block);
 }

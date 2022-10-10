@@ -1,3 +1,5 @@
+namespace Lotus.Utils;
+
 public struct DeterministicHashCode
 {
     private int current;

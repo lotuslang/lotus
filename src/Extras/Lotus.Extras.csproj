@@ -2,9 +2,7 @@
   <Import Project="../Common.props" />
 
   <PropertyGroup>
-    <RootNamespace>Lotus</RootNamespace>
-    <WarningAsError>IDE0059</WarningAsError>
-    <NoWarn>IDE1006,CA1050,RCS1110</NoWarn>
+    <RootNamespace>Lotus.Extras</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,12 +10,10 @@
     <Using Include="Lotus.Text" />
     <Using Include="Lotus.Error" />
     <Using Include="Lotus.Utils" />
-
-    <Using Remove="System.IO" />
+    <Using Include="Lotus.Syntax" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Lotus.Extras" />
+    <ProjectReference Include="../Compiler/Lotus.csproj" />
   </ItemGroup>
-
 </Project>

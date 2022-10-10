@@ -119,7 +119,7 @@ public record Token : ILocalized
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public virtual T Accept<T>(ITokenVisitor<T> visitor) => visitor.Visit(this);
+    public virtual T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 
     protected virtual string DbgStr() => $"<{_kind}> {_repr} @ {Location}";
 }

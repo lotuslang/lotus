@@ -1,54 +1,31 @@
-﻿using Lotus.Syntax.Visitors;
+﻿using Lotus.Extras.Graphs;
+using Lotus.Syntax.Visitors;
 
-namespace Lotus.Syntax;
+namespace Lotus.Extras;
 
-public static class ASTUtils
+public static class Extras
 {
-    [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
-    internal static readonly NameChecker NameChecker = new();
-
-    internal static readonly TopLevelPrinter TopLevelPrinter = new();
-
-    internal static readonly StatementPrinter StatementPrinter = new();
-
-    internal static readonly ValuePrinter ValuePrinter = new();
-
-    internal static readonly TokenPrinter TokenPrinter = new();
-
     internal static readonly TokenGraphMaker TokenGraphMaker = new();
 
     internal static readonly StatementGraphMaker StatementGraphMaker = new();
 
     internal static readonly TopLevelGraphMaker TopLevelGraphMaker = new();
 
-    internal static readonly ConstantChecker ConstantChecker = new();
-
     internal static readonly ConstantVisualizer ConstantVisualizer = new();
 
-    [Obsolete("ASTHelper.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
-    public static bool IsName(ValueNode node) => NameChecker.IsName(node);
+    public static string PrintNode(Node node) => ASTUtils.PrintNode(node);
 
-    public static string PrintNode(Node node)
-        => node switch {
-            ValueNode value         => PrintValue(value),
-            StatementNode statement => PrintStatement(statement),
-            TopLevelNode tl         => PrintTopLevel(tl),
-            _                       => throw new NotImplementedException(
-                                           "There's no ToGraphNode() method for type " + node.GetType() + " or any of its base types"
-                                       )
-        };
+    public static string PrintTuple<T>(Syntax.Tuple<T> tuple, string sep, Func<T, string> transform)
+        => ASTUtils.PrintTuple<T>(tuple, sep, transform);
 
-    public static string PrintTuple<T>(Tuple<T> tuple, string sep, Func<T, string> transform)
-        => PrintToken(tuple.OpeningToken) + MiscUtils.Join(sep, transform, tuple.Items) + PrintToken(tuple.ClosingToken);
-
-    public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);
-    public static string PrintStatement(StatementNode node) => StatementPrinter.Print(node);
-    public static string PrintValue(ValueNode node) => ValuePrinter.Print(node);
-    public static string PrintTypeName(TypeDecName typeDec) => TopLevelPrinter.Print(typeDec);
-    public static string PrintToken(Token token) => TokenPrinter.Print(token);
+    public static string PrintTopLevel(TopLevelNode node) => ASTUtils.PrintNode(node);
+    public static string PrintStatement(StatementNode node) => ASTUtils.PrintNode(node);
+    public static string PrintValue(ValueNode node) => ASTUtils.PrintNode(node);
+    public static string PrintTypeName(TypeDecName typeDec) => ASTUtils.PrintTypeName(typeDec);
+    public static string PrintToken(Token token) => ASTUtils.PrintToken(token);
     public static string PrintUnion<T, U>(Union<T, U> u) where T : Node
                                                          where U : Node
-        => u.Match(PrintNode, PrintNode);
+        => ASTUtils.PrintUnion(u);
 
     public static GraphNode ToGraphNode(Token token) => TokenGraphMaker.ToGraphNode(token);
     public static GraphNode ToGraphNode(ValueNode node) => StatementGraphMaker.ToGraphNode(node);
@@ -67,8 +44,6 @@ public static class ASTUtils
                                     "There's no ToGraphNode() method for type " + node.GetType() + " or any of its base types"
                                 )
         };
-
-    public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
 
     public static GraphNode ShowConstants(StatementNode node) => ConstantVisualizer.ShowConstants(node);
     public static GraphNode ShowConstants(ValueNode node) => ConstantVisualizer.ShowConstants(node);

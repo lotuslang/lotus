@@ -1,12 +1,11 @@
-using System.IO;
 using System.Globalization;
 
 using System.CommandLine;
 
-using Lotus;
 using Lotus.Text;
 using Lotus.Error;
-using Lotus.Utils;
+using Lotus.Extras;
+using Lotus.Extras.Graphs;
 using Lotus.Syntax;
 
 partial class Program
@@ -60,7 +59,7 @@ partial class Program
             AddGraphPrelude(g, file);
 
             foreach (var node in tlNodes) {
-                g.AddNode(ASTUtils.ToGraphNode(node));
+                g.AddNode(Extras.ToGraphNode(node));
             }
         }
 

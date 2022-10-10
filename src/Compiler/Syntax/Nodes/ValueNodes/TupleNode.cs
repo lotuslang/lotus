@@ -35,7 +35,7 @@ public sealed record TupleNode
     [DebuggerStepThrough()]
     [DebuggerNonUserCode()]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(IValueVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ImmutableArray<ValueNode>.Enumerator GetEnumerator() => _internalTuple.GetEnumerator();

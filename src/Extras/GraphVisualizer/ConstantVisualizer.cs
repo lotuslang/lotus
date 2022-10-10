@@ -1,4 +1,4 @@
-namespace Lotus.Syntax.Visitors;
+namespace Lotus.Extras.Graphs;
 
 internal sealed class ConstantVisualizer : StatementGraphMaker
 {

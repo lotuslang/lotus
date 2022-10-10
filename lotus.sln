@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E1E8FA66-945B-4A19-ABC8-9F90D7A418F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lotus", "src\Lotus\lotus.csproj", "{CFCB7433-E71A-4D57-97BE-FD41A606E545}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "src\Compiler\Lotus.csproj", "{CFCB7433-E71A-4D57-97BE-FD41A606E545}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lotus.cli", "src\Lotus.CLI\lotus.cli.csproj", "{AD5CF91F-C547-4C70-9CE6-71C8E1F1C04F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "src\CLI\Lotus.CLI.csproj", "{AD5CF91F-C547-4C70-9CE6-71C8E1F1C04F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

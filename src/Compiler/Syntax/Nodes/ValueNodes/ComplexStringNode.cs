@@ -6,14 +6,12 @@ public sealed record ComplexStringNode : StringNode
 
     public ImmutableArray<ValueNode> CodeSections;
 
+    // can't be moved to normal record decl because StringToken.Token's type is incompatible
     public ComplexStringNode(ComplexStringToken token, ImmutableArray<ValueNode> codeSections)
         : base(token)
     {
         CodeSections = codeSections;
     }
-
-    public void AddSection(ValueNode section)
-        => CodeSections = CodeSections.Add(section);
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

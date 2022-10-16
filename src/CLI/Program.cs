@@ -59,7 +59,7 @@ partial class Program
             AddGraphPrelude(g, file);
 
             foreach (var node in tlNodes) {
-                g.AddNode(Extras.ToGraphNode(node));
+                g.AddNode(ExtraUtils.ToGraphNode(node));
             }
         }
 

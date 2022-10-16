@@ -30,18 +30,18 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
                 .SetTooltip(TopLevel.tooltip);
 
     public GraphNode Visit(TopLevelStatementNode node)
-        => Extras.ToGraphNode(node.Statement);
+        => ExtraUtils.ToGraphNode(node.Statement);
 
     public GraphNode Visit(FromNode node)
         => new GraphNode(node.GetHashCode(), "from") {
-               Extras.UnionToGraphNode(node.OriginName)
+               ExtraUtils.UnionToGraphNode(node.OriginName)
                    .SetTooltip("origin name")
            }.SetColor(From.color)
             .SetTooltip(From.tooltip);
 
     public GraphNode Visit(ImportNode node) {
         var root = new GraphNode(node.GetHashCode(), "import") {
-            Extras.ToGraphNode(node.FromStatement)
+            ExtraUtils.ToGraphNode(node.FromStatement)
         }.SetColor(Import.color)
          .SetTooltip(Import.tooltip);
 
@@ -50,7 +50,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             .SetTooltip(ImportNames.tooltip);
 
         foreach (var import in node.Names) {
-            importsNode.Add(Extras.ToGraphNode(import));
+            importsNode.Add(ExtraUtils.ToGraphNode(import));
         }
 
         root.Add(importsNode);
@@ -71,7 +71,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
                 )
                 .SetColor(EnumParent.color)
                 .SetTooltip(EnumParent.tooltip)
-                .Add(Extras.ToGraphNode(node.Name.Parent))
+                .Add(ExtraUtils.ToGraphNode(node.Name.Parent))
             );
         }
 
@@ -80,7 +80,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             .SetTooltip(EnumValues.tooltip);
 
         foreach (var val in node.Values) {
-            valuesNode.Add(Extras.ToGraphNode(val));
+            valuesNode.Add(ExtraUtils.ToGraphNode(val));
         }
 
         root.Add(valuesNode);
@@ -90,13 +90,13 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     public GraphNode Visit(NamespaceNode node)
         => new GraphNode(node.GetHashCode(), "namespace") {
-                Extras.ToGraphNode(node.Name).SetTooltip("namespace name")
+                ExtraUtils.ToGraphNode(node.Name).SetTooltip("namespace name")
             }.SetColor(Namespace.color)
              .SetTooltip(Namespace.tooltip);
 
     public GraphNode Visit(UsingNode node)
         => new GraphNode(node.GetHashCode(), "using") {
-                Extras.UnionToGraphNode(node.Name)
+                ExtraUtils.UnionToGraphNode(node.Name)
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
 
@@ -110,12 +110,12 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
             .SetTooltip(StructFields.tooltip);
 
         foreach (var field in node.Fields) {
-            var fieldNode = Extras.ToGraphNode(field.Name);
+            var fieldNode = ExtraUtils.ToGraphNode(field.Name);
 
-            fieldNode.Add(Extras.ToGraphNode(field.Type));
+            fieldNode.Add(ExtraUtils.ToGraphNode(field.Type));
 
             if (field.HasDefaultValue) {
-                fieldNode.Add(Extras.ToGraphNode(field.DefaultValue));
+                fieldNode.Add(ExtraUtils.ToGraphNode(field.DefaultValue));
             }
 
             fields.Add(fieldNode);
@@ -127,14 +127,14 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(TypeDecName typeDec) {
-        var root = Extras.ToGraphNode(typeDec.TypeName)
+        var root = ExtraUtils.ToGraphNode(typeDec.TypeName)
                     .SetColor("")
                     .SetTooltip("type name");
 
         if (typeDec.HasParent) {
             root.Add(
                 new GraphNode(DeterministicHashCode.Combine(typeDec.Parent, "parent"), "parent") {
-                    Extras.ToGraphNode(typeDec.Parent)
+                    ExtraUtils.ToGraphNode(typeDec.Parent)
                 }
             );
         }

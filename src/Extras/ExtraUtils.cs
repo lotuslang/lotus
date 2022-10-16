@@ -3,7 +3,7 @@ using Lotus.Syntax.Visitors;
 
 namespace Lotus.Extras;
 
-public static class Extras
+public static class ExtraUtils
 {
     internal static readonly TokenGraphMaker TokenGraphMaker = new();
 

@@ -213,13 +213,13 @@ public static class Logger
             case IValued<char> unxChar:
                 var chr = unxChar.Value;
                 if (chr is '\n' or '\r') {
-                    sb.Append("newline character.");
+                    sb.Append("newline character");
                 } else if (chr == '\t') {
-                    sb.Append("tabulation character.");
+                    sb.Append("tabulation character");
                 } else if (Char.IsWhiteSpace(chr)) {
                     sb.Append("whitespace character '" + System.Text.RegularExpressions.Regex.Escape(chr.ToString()));
                 } else {
-                    sb.Append("character '" + chr + "'.");
+                    sb.Append("character '" + chr + "'");
                 }
                 break;
             default:

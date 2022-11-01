@@ -13,6 +13,8 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             var sections = ImmutableArray.CreateBuilder<ValueNode>(complexString.CodeSections.Length);
 
             foreach (var section in complexString.CodeSections) {
+                Debug.Assert(section.Length > 0);
+
                 var endPos = (section.LastOrDefault()?.Location ?? parser.Position).GetLastLocation();
 
                 var sectionConsumer = new Consumer<Token>(

@@ -415,11 +415,22 @@ public partial class Tokenizer : IConsumer<Token>
                         tokenList.Add(currToken);
                 }
 
+                if (tokenList.Count > 0) {
+                    sections.Add(tokenList.ToImmutable());
+
+                    output.Append('{').Append(sections.Count - 1).Append('}');
+                } else {
+                    Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                        In = "an interpolated string",
+                        Value = '}',
+                        Expected = "an expression",
+                        Location = this.Position
+                    });
+
+                    isValid = false;
+                }
+
                 this.Reconsume();
-
-                sections.Add(tokenList.ToImmutable());
-
-                output.Append('{').Append(sections.Count - 1).Append('}');
 
                 if (this.Consume(preserveTrivia: true).TrailingTrivia != null) {
                     output.Append(this.Current.TrailingTrivia!.Representation);

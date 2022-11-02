@@ -423,7 +423,8 @@ public partial class Tokenizer : IConsumer<Token>
                     Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                         In = "an interpolated string",
                         Value = '}',
-                        Expected = "an expression",
+                        Expected = "a value",
+                        Message = "An interpolated section can't be empty.",
                         Location = this.Position
                     });
 

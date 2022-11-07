@@ -22,16 +22,15 @@ public abstract class UnexpectedError : LotusError, ILocalized, IContextualized
         : base(area, caller, callerPath) { }
 }
 
-public class UnexpectedError<T> : UnexpectedError, IValued<T>
+public class UnexpectedError<T> : UnexpectedError, IValued<T> where T : notnull
 {
-    public T Value { get; init; }
+    public required T Value { get; init; }
 
     public override LocationRange Location {
         get => loc ?? (Value as ILocalized)?.Location ?? LocationRange.NULL;
         init => loc = value;
     }
 
-#pragma warning disable CS8618
     public UnexpectedError(ErrorArea area, [CallerMemberName] string caller = "<unknown-caller>", [CallerFilePath] string callerPath = "")
         : base(area, caller: caller, callerPath: callerPath) { }
 }

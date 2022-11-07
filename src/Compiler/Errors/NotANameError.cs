@@ -7,7 +7,7 @@ namespace Lotus.Error;
 public class NotANameError : UnexpectedError, IValued<ValueNode>
 {
     private ValueNode _val;
-    public ValueNode Value {
+    public required ValueNode Value {
         get => _val;
         init {
             _val = value;

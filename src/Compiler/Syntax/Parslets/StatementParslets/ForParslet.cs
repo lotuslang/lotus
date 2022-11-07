@@ -57,7 +57,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             if (hasEOF) {
                 Logger.Error(new UnexpectedEOFError() {
                     In = "a for-loop header",
-                    Expected = (header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','"),
+                    Expected = header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','",
                     Location = token.Location
                 });
 
@@ -86,6 +86,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         if (!hasEOF && header.Count > 3) { // FIXME: This is kind of a reoccurring error, should we make a specific class for it ?
             Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
+                Value = header.Last(),
                 Message = "Too many statements (expected up to 3 statements, got "
                         + header.Count + " statements).",
                 In = "a for-loop header",
@@ -96,7 +97,8 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
             header.Count = 3;
         } else if (!hasEOF && header.Count <= 2) {
-            Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = closingParen,
                 Message = "Not enough statements (expected up to 3 statements, got "
                         + header.Count + " statements).",
                 In = "a for-loop header",

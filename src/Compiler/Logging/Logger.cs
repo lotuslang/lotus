@@ -173,7 +173,7 @@ public static class Logger
                             caller: error.Caller,
                             callerPath: error.CallerPath
                         ) {
-                            Value = unxNode.Value.Token,
+                            Value = node.Token ?? Token.NULL,
                             As = error.As,
                             In = error.In,
                             Location = error.Location,
@@ -293,9 +293,9 @@ public static class Logger
 
         string sourceCode;
 
-        if (error is IValued<Node> eNode) {
+        if (error is IValued<Node?> { Value: not null } eNode) {
             sourceCode = ASTUtils.PrintNode(eNode.Value);
-        } else if (error is IValued<Token> eToken) {
+        } else if (error is IValued<Token?> { Value: not null } eToken) {
             sourceCode = ASTUtils.PrintToken(eToken.Value);
         } else if (error is IValued<string> eString) {
             sourceCode = eString.Value;

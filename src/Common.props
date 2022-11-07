@@ -3,7 +3,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7</TargetFramework>
     <TargetCulture>InvariantCulture</TargetCulture>
   </PropertyGroup>
 

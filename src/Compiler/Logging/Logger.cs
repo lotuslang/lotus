@@ -35,7 +35,7 @@ public static class Logger
         if (ErrorCount > 0)
             PrintAllErrors();
 
-        return e; // TODO: Do fancy stuff with method (like pretty-printing the exception)
+        return e; // todo(log-format): Do fancy stuff with method (like pretty-printing the exception)
     }
 
     public static void PrintAllErrors() {
@@ -46,7 +46,7 @@ public static class Logger
             else return LocationRange.NULL;
         })*/;
 
-        // TODO: we could optimize this function to call Format() in parallel and then Thread.WaitAll() to then print them
+        // todo(logging): we could optimize this function to call Format() in parallel and then Thread.WaitAll() to then print them
         // Problems :
         //      - They won't be in order anymore (because we'll have to use a ConcurrentBag)
         foreach (var error in orderedErrorStack) {
@@ -60,7 +60,7 @@ public static class Logger
 #endif
                 ;
 
-            // TODO: Why not try to center the names when there's multiple exceptions ?
+            // todo(log-format): Why not try to center the names when there's multiple exceptions ?
             var frontCharCount = Console.WindowWidth - errorTypeString.Length;
 
             if (frontCharCount > 2) {
@@ -126,13 +126,13 @@ public static class Logger
         if (error is UnexpectedError eUnx) {
             markupBuilder.AppendLine(FormatUnexpected(eUnx)).AppendLine();
         } else if (error is IContextualized eCtx) {
-            //* FormatUnexpected already takes care of context for us, so we only do it
-            //* if the error is not UnexpectedError
+            // FormatUnexpected already takes care of context for us, so we only do it
+            // if the error is not UnexpectedError
             markupBuilder.AppendLine(FormatContextualized(eCtx)).AppendLine();
         }
 
         if (error is ILocalized eLoc) {
-            // TODO: Allow passing a short message to be displayed in the sample
+            // todo(logging): Allow passing a short message to be displayed in the sample
             markupBuilder.AppendLine(FormatLocalized(eLoc));
         }
 
@@ -256,7 +256,7 @@ public static class Logger
             relPath = Path.GetRelativePath(Directory.GetCurrentDirectory(), fileInfo.FullName);
         }
 
-        // TODO: Ideas for formatting the filename :
+        // todo(log-format): Ideas for formatting the filename :
         //      - Underline the path and put a '@' prefix
         //      - Use the '-->' prefix
         //      - Put in bold

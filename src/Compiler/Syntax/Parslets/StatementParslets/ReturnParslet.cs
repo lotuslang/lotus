@@ -11,7 +11,7 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 
         var value = ValueNode.NULL;
 
-        // TODO: add special error message for when we encounter an end of block
+        // todo(logging): add special error message for when we encounter an end of block
 
         if (nextToken.Kind != TokenKind.semicolon) {
             value = parser.ExpressionParser.Consume();

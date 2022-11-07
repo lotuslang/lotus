@@ -23,7 +23,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         var from = new FromNode(fromOrigin, fromToken) { IsValid = fromIsValid };
 
-        // TODO: Would it be better to have parser.ConsumeValue() here ? it would probably do the same thing
+        // todo(algo): Would it be better to have parser.ConsumeValue() here ? it would probably do the same thing
         //
         // For now, I think it's better to use parser.Tokenizer because it better represents what is needed here :
         // we don't need a value, we need a token. The context is important, and calling ConsumeValue() would ignore

@@ -84,7 +84,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         var closingParen = parser.Tokenizer.Current; // consume the ')'
 
-        if (!hasEOF && header.Count > 3) { // FIXME: This is kind of a reoccurring error, should we make a specific class for it ?
+        if (!hasEOF && header.Count > 3) { // fixme(logging): This is kind of a reoccurring error, should we make a specific class for it ?
             Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
                 Value = header.Last(),
                 Message = "Too many statements (expected up to 3 statements, got "

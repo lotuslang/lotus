@@ -76,7 +76,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     break;
                 }
 
-                // FIXME: this assumes the function used the main parser and/or set the
+                // fixme(algo): this assumes the function used the main parser and/or set the
                 // parser's Current property, which is not always the case
                 if (!isValid || !parser.Current.IsValid) {
                     continue;
@@ -87,7 +87,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
 
                     // If we set isValid here without emitting an error, execution will just continue normally
                     // since the errors at the end require that isValid is set to true
-                    // FIXME: Although, it might be better to emit a custom error here :shrug:
+                    // fixme(logging): Although, it might be better to emit a custom error here :shrug:
                     //isValid = false;
 
                     break;

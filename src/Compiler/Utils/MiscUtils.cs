@@ -61,7 +61,7 @@ public static class MiscUtils
     }
 
     public static IEnumerable<TEnum> GetMatchingValues<TEnum>(this TEnum flag) where TEnum : struct, Enum {
-        // FIXME: hard-code this or drastically improve the performance
+        // fixme(utils): hard-code this or drastically improve the performance
         foreach (var value in Enum.GetValues<TEnum>()) {
             if (flag.HasFlag(value))
                 yield return value;

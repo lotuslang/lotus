@@ -80,7 +80,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
         if (LotusFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
             _curr = parslet.Parse(this, currToken);
 
-            // TODO: Throw an error when there's a modifier but the node isn't
+            // todo(logging): Throw an error when there's a modifier but the node isn't
             //       supposed to be modded
 
             if (Current is IAccessible accCurrent) {

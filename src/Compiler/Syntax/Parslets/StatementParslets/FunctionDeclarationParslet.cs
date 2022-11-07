@@ -170,7 +170,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
                     Expected = "a type name followed by an array-like syntax (e.g. int [param1, param2])"
                 });
 
-                // FIXME: Maybe we could try to consume until there's either a comma or a parenthesis,
+                // fixme(logging): Maybe we could try to consume until there's either a comma or a parenthesis,
                 // but if there isn't any (i.e. the function is malformed later on), we would have a problem :/
 
                 yield return FunctionParameter.NULL;
@@ -181,7 +181,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             var paramType = typeNameArray.Operands.FirstOrDefault(ValueNode.NULL);
 
             // if there's less than 2 names (illegal)
-            if (typeNameArray.Operands.Length < 2) { // FIXME: We should really make an error type for wrong-numbered things
+            if (typeNameArray.Operands.Length < 2) { // fixme(utils): We should really make a helper for wrong-numbered things
                 var errorLoc = paramType.Location;
 
                 if (typeNameArray.Operands.Length == 0) {

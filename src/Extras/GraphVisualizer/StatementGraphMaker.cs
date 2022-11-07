@@ -70,9 +70,9 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
             .SetColor(Value.color)
             .SetTooltip(Value.tooltip);
 
-    // TODO: This is used by basically all nodes to be able to get the basic GraphNode
-    // If you change this, be very careful ! You could end up with a stack overflow or
-    // a completely different graph !
+    //! WARNING: This is used by basically all nodes to be able to get the basic GraphNode
+    //! If you change this, be very careful ! You could end up with a stack overflow or
+    //! a completely different graph !
     public virtual GraphNode Default(StatementNode node)
         => BaseDefault(node);
     public virtual GraphNode Default(ValueNode node)
@@ -151,7 +151,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
                                         .SetColor(FuncDecParameters.color)
                                         .SetTooltip(FuncDecParameters.tooltip);
 
-            foreach (var parameter in node.ParamList.Items) { // FIXME: Write tooltips
+            foreach (var parameter in node.ParamList.Items) { // fixme(graph): Write tooltips
                 var paramNameNode = ToGraphNode(parameter.Name);
 
                 paramNameNode.Add(ToGraphNode(parameter.Type));
@@ -167,7 +167,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         }
 
         if (node.HasReturnType) {
-            root.Add(new GraphNode(DeterministicHashCode.Combine(node.ReturnType, node), "return type") { // FIXME: Color & Tooltip
+            root.Add(new GraphNode(DeterministicHashCode.Combine(node.ReturnType, node), "return type") { // fixme(graph): Color & Tooltip
                 ToGraphNode(node.ReturnType)
             });
         }
@@ -185,7 +185,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
              .SetTooltip(IfCondition.tooltip),
             ToGraphNode(node.Body)
         }.SetColor(If.color)
-         .SetTooltip(If.tooltip); // FIXME: Choose color
+         .SetTooltip(If.tooltip); // fixme(graph): Choose color
 
         if (node.HasElse) {
             root.Add(ToGraphNode(node.ElseNode!));
@@ -198,7 +198,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
         => new GraphNode(node.GetHashCode(), "print") {
                 ToGraphNode(node.Value)
             }.SetColor(Print.color)
-             .SetTooltip(Print.tooltip); // FIXME: find color
+             .SetTooltip(Print.tooltip); // fixme(graph): find color
 
     public GraphNode Visit(ReturnNode node) {
         var root = new GraphNode(node.GetHashCode(), "return")

@@ -39,7 +39,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 token = parser.Tokenizer.Consume();
 
                 // If the next token isn't one of these, then it's a statement, so we shouldn't insert anything
-                if (token.Representation is ("," or ")")) {
+                if (token.Representation is "," or ")") {
                     // add an empty statement
                     header.Add(GetDefaultStatement(token.Location));
 
@@ -60,8 +60,6 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                     Expected = header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','",
                     Location = token.Location
                 });
-
-                isValid = false;
 
                 while (header.Count < 3)
                     header.Add(parser.Default);
@@ -84,30 +82,34 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         var closingParen = parser.Tokenizer.Current; // consume the ')'
 
-        if (!hasEOF && header.Count > 3) { // fixme(logging): This is kind of a reoccurring error, should we make a specific class for it ?
-            Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
-                Value = header.Last(),
-                Message = "Too many statements (expected up to 3 statements, got "
-                        + header.Count + " statements).",
-                In = "a for-loop header",
-                Location = header[^1].Token.Location
-            });
+        if (!hasEOF) {
+            if (header.Count > 3) { // fixme(logging): This is kind of a reoccurring error, should we make a specific class for it ?
+                Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
+                    Value = header.Last(),
+                    Message = "Too many statements (expected up to 3 statements, got "
+                            + header.Count + " statements).",
+                    In = "a for-loop header",
+                    Location = header[^1].Token.Location
+                });
+            } else if (header.Count <= 2) {
+                var loc
+                    = header.Count == 0
+                    ? forToken.Location
+                    : header[^1].Location;
 
-            isValid = false;
-
-            header.Count = 3;
-        } else if (!hasEOF && header.Count <= 2) {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                Value = closingParen,
-                Message = "Not enough statements (expected up to 3 statements, got "
-                        + header.Count + " statements).",
-                In = "a for-loop header",
-                Location = header[^1].Token.Location
-            });
-
-            while (header.Count < 3)
-                header.Add(parser.Default);
+                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                    Value = closingParen,
+                    Message = "Not enough statements (expected 3 statements, got "
+                            + header.Count + " statements).",
+                    In = "a for-loop header",
+                    Location = loc
+                });
+            }
         }
+
+        isValid |= hasEOF;
+
+        SanitizeHeaderSize(header, parser.Default);
 
         // We have to change position cause default filename doesn't match current otherwise
         var body = Tuple<StatementNode>.NULL with { Location = parser.Position };
@@ -116,6 +118,15 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             body = parser.ConsumeStatementBlock();
 
         return new ForNode(forToken, new Tuple<StatementNode>(header.MoveToImmutable(), openingParen, closingParen), body) { IsValid = isValid };
+    }
+
+    private static void SanitizeHeaderSize(ImmutableArray<StatementNode>.Builder header, StatementNode defaultNode) {
+        if (header.Count == header.Capacity)
+            return;
+
+        while (header.Count < header.Capacity) {
+            header.Add(defaultNode);
+        }
     }
 
     private static StatementNode GetDefaultStatement(LocationRange pos)

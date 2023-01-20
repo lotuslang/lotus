@@ -100,7 +100,7 @@ public sealed partial class Tokenizer : IConsumer<Token>
         if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
 
-            if (_input.Count == 0) {
+            if (_input.Unconsumed == 0) {
                 _curr = Default with { LeadingTrivia = leadingTrivia };
                 return ref _curr;
             }

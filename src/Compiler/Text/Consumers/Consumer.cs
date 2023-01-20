@@ -2,14 +2,19 @@ namespace Lotus.Text;
 
 public class Consumer<T> : IConsumer<T>
 {
-    protected bool _atStart;
-
     protected ImmutableArray<T> _data;
     protected int _currIdx;
 
-    public virtual ref readonly T Current => ref _data.ItemRef(_currIdx);
+    public virtual ref readonly T Current {
+        get {
+            if (_currIdx < 0 || Unconsumed < 0)
+                return ref ConstantDefault;
+            else
+                return ref _data.ItemRef(_currIdx);
+        }
+    }
 
-    public int Count => _data.Length - (_currIdx + 1);
+    public int Unconsumed => _data.Length - (_currIdx + 1);
 
     public T ConstantDefault;
 
@@ -21,9 +26,9 @@ public class Consumer<T> : IConsumer<T>
 
     protected Consumer() {
         _data = ImmutableArray<T>.Empty;
-        _atStart = true;
         internalPos = new Location(1, 0);
         ConstantDefault = default(T)!;
+        _currIdx = -1;
     }
 
     public Consumer(ImmutableArray<T> enumerable, T defaultValue, string filename) : this() {
@@ -39,7 +44,6 @@ public class Consumer<T> : IConsumer<T>
 
         _data = consumer._data;
         _currIdx = consumer._currIdx;
-        _atStart = consumer._atStart;
 
         internalPos = consumer.internalPos;
     }
@@ -59,31 +63,21 @@ public class Consumer<T> : IConsumer<T>
     }
 
     public virtual ref readonly T Consume() {
-        if (!_atStart && Count <= 0) {
-            _currIdx++; // still update because reconsume() might be called
+        if (Unconsumed <= 0) {
+            _currIdx++; // increment it for Reconsume()
             return ref ConstantDefault;
         }
 
-        if (!_atStart) {
-            _currIdx++;
-        } else {
-            _atStart = false;
-        }
-
+        _currIdx++;
         internalPos = internalPos with { column = internalPos.column + 1 };
-
         return ref _data.ItemRef(_currIdx);
     }
 
-    public virtual void Reconsume() {
-        if (_currIdx <= 0)
-            _atStart = true;
-        else
-            _currIdx--;
-    }
+    public virtual void Reconsume()
+        => _currIdx--;
 
     public virtual T Peek()
-        => Count <= 0 ? ConstantDefault : _data[_atStart ? _currIdx : _currIdx + 1];
+        => Unconsumed <= 0 ? ConstantDefault : _data[_currIdx + 1];
 
     public virtual Consumer<T> Clone() => new(this);
 

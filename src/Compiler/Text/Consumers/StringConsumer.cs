@@ -17,9 +17,8 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 
 	public override LocationRange Position => pos;
 
-    private StringConsumer() {
+    private StringConsumer() : base() {
         _data = ImmutableArray<char>.Empty;
-        _atStart = true;
         pos = new Location(1, 0);
         lastPos = new Location(1, 0);
 
@@ -30,8 +29,6 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
     public StringConsumer(StringConsumer consumer) : this() {
 		_data = consumer._data;
         _currIdx = consumer._currIdx;
-
-        _atStart = consumer._atStart;
 
         // Since Location is a record, the underlying value never mutates
         pos = consumer.pos;

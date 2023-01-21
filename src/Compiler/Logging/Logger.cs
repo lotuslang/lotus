@@ -23,10 +23,10 @@ public static class Logger
         => Console.WriteLine($"{location}: {message}");
 
     public static void Warning(string message, LocationRange location)
-        => Console.Error.WriteLine(location + " : " + message);
+        => Console.Error.WriteLine(location + ": " + message);
 
     public static void Warning(LotusError e)
-        => Console.Error.WriteLine("WARNING : " + Format(e));
+        => Console.Error.WriteLine("WARNING: " + Format(e));
 
     public static void Error(LotusError e)
         => errorStack.Push(e);
@@ -235,7 +235,7 @@ public static class Logger
 
         _ = error.Expected.Match(
             s => sb.Append("\nExpected " + s + "."),
-            list => sb.Append("\nExpected one of :\n\t- " + String.Join("\n\t- ", list)),
+            list => sb.Append("\nExpected one of:\n\t- " + String.Join("\n\t- ", list)),
             _ => sb
         );
 

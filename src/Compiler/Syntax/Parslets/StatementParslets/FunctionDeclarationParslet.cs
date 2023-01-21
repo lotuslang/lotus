@@ -227,7 +227,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             }
 
             var notes = "Did you forget to specify a type for this parameter ? "
-                      + "For example, you could write :\n\t"
+                      + "For example, you could write:\n\t"
                       + "..., int "+ ASTUtils.PrintValue(typeName) + ", ...";
 
             Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {

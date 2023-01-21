@@ -19,7 +19,7 @@ public partial class Tokenizer : IConsumer<Token>
             case '9':
                 return ConsumeNumberToken();
             case '.':
-                if (MiscUtils.IsAsciiDigit(_input.Peek()))
+                if (Char.IsAsciiDigit(_input.Peek()))
                     return ConsumeNumberToken();
                 else
                     return ConsumeOperatorToken();

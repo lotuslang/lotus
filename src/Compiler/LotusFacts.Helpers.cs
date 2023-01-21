@@ -6,8 +6,8 @@ namespace Lotus;
 public static partial class LotusFacts
 {
     internal static bool IsStartOfNumber(char c, char nextChar)
-        => MiscUtils.IsAsciiDigit(c)
-        || (c is '.' && MiscUtils.IsAsciiDigit(nextChar));
+        => Char.IsAsciiDigit(c)
+        || (c is '.' && Char.IsAsciiDigit(nextChar));
 
     public static bool NeedsSemicolon(StatementNode node)
         => node is not (

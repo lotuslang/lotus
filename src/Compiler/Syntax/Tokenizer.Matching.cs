@@ -79,7 +79,7 @@ public partial class Tokenizer : IConsumer<Token>
             case 'z':
                 return ConsumeIdentToken();
             case '$' when _input.Peek() is '"' or '\'':
-                return ConsumeComplexStringToken();
+                return ConsumeStringToken(isComplex: true);
             case '"':
             case '\'':
                 return ConsumeStringToken();

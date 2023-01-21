@@ -18,7 +18,7 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
 
         // please don't ask, i was "in the flow" (and really hungry too so goodbye)
         for (var i = 0; i < token.Representation.Length; i++) {
-            if (str[i] is not '{' and not '\\') {
+            if (str[i] is not '{') {
                 output.Append(str[i]);
                 continue;
             }

@@ -18,37 +18,28 @@ public partial class Tokenizer : IConsumer<Token>
     private Token ConsumeEOFToken(in char c)
         => new(c.ToString(), TokenKind.EOF, _input.Position) { IsValid = false };
 
-    private StringToken ConsumeStringToken() {
+#pragma warning disable IDE0003 // Name can be simplified => avoid confusion between text consumer and tokenizer
+    private StringToken ConsumeStringToken(bool isComplex = false) {
+        if (isComplex)
+            _ = _input.Consume(); // consume the '$' prefix
+
         var endingDelimiter = _input.Current;
 
         var startPos = _input.Position;
 
-        // consume a character
-        var currChar = _input.Consume();
-
         // the output token
         var output = new StringBuilder();
+
+        var sections
+            = isComplex
+            ? ImmutableArray.CreateBuilder<ImmutableArray<Token>>()
+            : null!;
 
         var isValid = true;
 
         // while the current character is not the ending delimiter
+        char currChar = '\0';
         while (currChar != endingDelimiter) {
-            if (currChar == '\n') {
-                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
-                    In = "a string",
-                    Value = currChar,
-                    Location = _input.Position,
-                    Expected = "a string delimiter like this : " + endingDelimiter + output.ToString() + endingDelimiter
-                });
-
-                isValid = false;
-
-                break;
-            }
-
-            // add it to the value of output
-            output.Append(currChar);
-
             if (!_input.Consume(out currChar)) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                     In = "a string",
@@ -63,10 +54,170 @@ public partial class Tokenizer : IConsumer<Token>
 
                 break;
             }
+
+            if (currChar == '\n') {
+                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                    In = "a string",
+                    Value = currChar,
+                    Location = _input.Position,
+                    Expected = "a string delimiter like this: " + endingDelimiter + output.ToString() + endingDelimiter
+                });
+
+                isValid = false;
+
+                break;
+            }
+
+            if (isComplex && currChar == '{') {
+                var tokenList = ImmutableArray.CreateBuilder<Token>();
+
+                var unmatchedBrackets = 1; // count the opening bracket as currently unmatched
+
+                while (unmatchedBrackets != 0) { // until we match the opening bracket
+                    if (!this.Consume(out var currToken)) {
+                        Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                            In = "an interpolated string",
+                            Expected = "} followed by a string delimiter like this: "
+                                     + endingDelimiter
+                                     + output.ToString()
+                                     + endingDelimiter,
+                            Location = new LocationRange(startPos, this.Position)
+                        });
+
+                        isValid = false;
+
+                        break;
+                    }
+
+                    switch (currToken.Representation) {
+                        case "{":
+                            unmatchedBrackets++;
+                            break;
+                        case "}":
+                            unmatchedBrackets--;
+                            Debug.Assert(unmatchedBrackets >= 0);
+                            break;
+                    }
+
+                    if (unmatchedBrackets != 0)
+                        tokenList.Add(currToken);
+                }
+
+                if (tokenList.Count > 0) {
+                    sections.Add(tokenList.ToImmutable());
+
+                    output.Append('{').Append(sections.Count - 1).Append('}');
+
+                    // append whatever was after the closing '}'
+                    output.Append(this.Current.TrailingTrivia?.Representation);
+                } else {
+                    Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                        In = "an interpolated string",
+                        Value = '}',
+                        Expected = "a value",
+                        Message = "An interpolated section can't be empty.",
+                        Location = this.Position
+                    });
+
+                    isValid = false;
+                }
+
+                continue;
+            }
+
+            if (currChar == '\\') {
+                if (!_input.Consume(out currChar))
+                    break; // by breaking, we go back to the start of the loop, which also checks for EOFs
+
+                char throwInvalidEscapeAndGetChar(char escape) {
+                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                        Value = "\\" + escape,
+                        In = "a string",
+                        Message = $@"Unrecognized escape sequence '\{escape}'",
+                        Location = _input.Position
+                    });
+
+                    isValid = false;
+
+                    return '\0';
+                }
+
+                output.Append(
+                    currChar switch {
+                        '\\' or '\'' or '"' => currChar,
+                        '0' => '\0',
+                        'a' => '\a',
+                        'b' => '\b',
+                        'f' => '\f',
+                        'n' => '\n',
+                        'r' => '\r',
+                        't' => '\t',
+                        'v' => '\v',
+                        'u' => ParseUnicodeEscapeSequence(), // todo(lexer): implement \U and \x
+                        _   => throwInvalidEscapeAndGetChar(currChar)
+                    }
+                );
+
+                break;
+            }
+
+            // add it to the value of output
+            output.Append(currChar);
         }
 
-        // return the output token
-        return new StringToken(output.ToString(), new LocationRange(startPos, _input.Position)) { IsValid = isValid };
+        if (output.Length > 0) // have to check because the string might be empty and stopped because of EOF
+            output.Length--; // remove the ending delimiter
+
+        if (isComplex) {
+            return
+                new ComplexStringToken(
+                    output.ToString(),
+                    sections.ToImmutable(),
+                    new LocationRange(startPos, _input.Position)
+                ) { IsValid = isValid };
+        } else {
+            return
+                new StringToken(
+                    output.ToString(),
+                    new LocationRange(startPos, _input.Position)
+                ) { IsValid = isValid };
+        }
+    }
+#pragma warning restore IDE0003
+
+    private char ParseUnicodeEscapeSequence() {
+        Debug.Assert(_input.Current is 'u');
+
+        Span<char> chars = stackalloc char[4];
+
+        for (int i = 0; i < 4; i++) {
+            if (!_input.Consume(out chars[i])) {
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                    In = "a string",
+                    Expected = "a unicode escape sequence with 4 digits",
+                    Location = _input.Position,
+                });
+            }
+
+            if (!Char.IsAsciiHexDigit(chars[i])) {
+                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                    Value = chars[i],
+                    As = "a hex digit",
+                    In = "a string",
+                    Expected = "an hexadecimal digit, from 0-9, or A-F",
+                    Location = _input.Position
+                });
+            }
+        }
+
+        char finalChar = '\0';
+
+        for (int i = 0; i < 4; i++) {
+            finalChar <<= 1;
+            finalChar += (char)MiscUtils.CharToHexLookup[chars[i]];
+        }
+
+        return finalChar;
     }
 
     private Token ConsumeIdentToken() {
@@ -344,116 +495,5 @@ public partial class Tokenizer : IConsumer<Token>
 
         Debug.Fail("Couldn't make an operator token from '" + currCharStr + "'");
         throw null;
-    }
-
-    private ComplexStringToken ConsumeComplexStringToken() {
-#pragma warning disable IDE0003 // Name can be simplified => avoid confusion between text consumer and tokenizer
-        // consume the '$' in front
-        _ = _input.Current;
-
-        var startPos = _input.Position;
-
-        var endingDelimiter = _input.Consume();
-
-        //consume a character
-        var currChar = _input.Consume();
-
-        // the output token
-        var output = new System.Text.StringBuilder();
-
-        var isValid = true;
-
-        var sections = ImmutableArray.CreateBuilder<ImmutableArray<Token>>();
-
-        // while the current character is not the ending delimiter
-        while (currChar != endingDelimiter) {
-            if (currChar == '\n') {
-                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
-                    In = "an interpolated string",
-                    Value = currChar,
-                    Location = _input.Position,
-                    Expected = "a string delimiter like this : " + endingDelimiter + output.ToString() + endingDelimiter
-                });
-
-                isValid = false;
-
-                break;
-            }
-
-            if (currChar == '{') {
-                var tokenList = ImmutableArray.CreateBuilder<Token>();
-
-                var unmatchedBrackets = 1; // count the opening bracket as currently unmatched
-
-                while (unmatchedBrackets != 0) { // until we match the opening bracket
-                    if (!this.Consume(out var currToken)) {
-                        Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
-                            In = "an interpolated string",
-                            Expected = "} followed by a string delimiter like this: "
-                                     + endingDelimiter
-                                     + output.ToString()
-                                     + endingDelimiter,
-                            Location = new LocationRange(startPos, this.Position)
-                        });
-
-                        isValid = false;
-
-                        break;
-                    }
-
-                    switch (currToken.Representation) {
-                        case "{":
-                            unmatchedBrackets++;
-                            break;
-                        case "}":
-                            unmatchedBrackets--;
-                            Debug.Assert(unmatchedBrackets >= 0);
-                            break;
-                    }
-
-                    if (unmatchedBrackets != 0)
-                        tokenList.Add(currToken);
-                }
-
-                if (tokenList.Count > 0) {
-                    sections.Add(tokenList.ToImmutable());
-
-                    output.Append('{').Append(sections.Count - 1).Append('}');
-                } else {
-                    Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
-                        In = "an interpolated string",
-                        Value = '}',
-                        Expected = "a value",
-                        Message = "An interpolated section can't be empty.",
-                        Location = this.Position
-                    });
-
-                    isValid = false;
-                }
-
-                this.Reconsume();
-
-                if (this.Consume(preserveTrivia: true).TrailingTrivia != null) {
-                    output.Append(this.Current.TrailingTrivia!.Representation);
-                }
-            } else {
-                output.Append(currChar);
-            }
-
-            if (!_input.Consume(out currChar)) {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
-                    In = "an interpolated string",
-                    Expected = "a string delimiter like this: " + endingDelimiter + output.ToString() + endingDelimiter,
-                    Location = new LocationRange(startPos, this.Position)
-                });
-
-                isValid = false;
-
-                break;
-            }
-        }
-
-        return new ComplexStringToken(output.ToString(), sections.ToImmutable(), new LocationRange(startPos, _input.Position)) { IsValid = isValid };
-#pragma warning restore IDE0003
     }
 }

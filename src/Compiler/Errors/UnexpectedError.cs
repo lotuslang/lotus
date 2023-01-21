@@ -26,6 +26,7 @@ public class UnexpectedError<T> : UnexpectedError, IValued<T> where T : notnull
 {
     public required T Value { get; init; }
 
+    // todo: check if making Location required is feasible/practical
     public override LocationRange Location {
         get => loc ?? (Value as ILocalized)?.Location ?? LocationRange.NULL;
         init => loc = value;

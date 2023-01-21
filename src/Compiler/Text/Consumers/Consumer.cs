@@ -63,14 +63,9 @@ public class Consumer<T> : IConsumer<T>
     }
 
     public virtual ref readonly T Consume() {
-        if (Unconsumed <= 0) {
-            _currIdx++; // increment it for Reconsume()
-            return ref ConstantDefault;
-        }
-
         _currIdx++;
         internalPos = internalPos with { column = internalPos.column + 1 };
-        return ref _data.ItemRef(_currIdx);
+        return ref Current;
     }
 
     public virtual void Reconsume()

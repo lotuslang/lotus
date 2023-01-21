@@ -77,7 +77,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         strBuilder.AppendLine().Append(new string('\t', tabs - 1)).Append(_stringID).Append(" [label=\"").Append(Name).Append('"');
 
         foreach (var property in Properties) {
-            strBuilder.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('\"');
+            strBuilder.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('"');
         }
 
         strBuilder.AppendLine("]");

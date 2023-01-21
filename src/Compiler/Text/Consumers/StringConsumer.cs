@@ -18,7 +18,6 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
 	public override LocationRange Position => pos;
 
     private StringConsumer() : base() {
-        _data = ImmutableArray<char>.Empty;
         pos = new Location(1, 0);
         lastPos = new Location(1, 0);
 
@@ -66,7 +65,6 @@ public sealed class StringConsumer : Consumer<char>, ISourceCodeProvider
     }
 
     public override ref readonly char Consume() {
-        // If we are instructed to reconsume the last char, then dequeue a char from the reconsumeQueue and return it
         lastPos = pos;
 
         ref readonly var output = ref base.Consume();

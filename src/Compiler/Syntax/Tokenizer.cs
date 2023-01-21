@@ -21,6 +21,8 @@ public sealed partial class Tokenizer : IConsumer<Token>
         _curr = Token.NULL;
     }
 
+    // todo: add a SourceCode ctor
+
     public Tokenizer(StringConsumer stringConsumer) : this() {
         _input = stringConsumer.Clone();
     }

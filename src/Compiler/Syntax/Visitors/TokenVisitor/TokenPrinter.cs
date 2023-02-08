@@ -19,9 +19,8 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
 
         var str = token.Representation;
         var sections = token.CodeSections;
-        var currSectionIdx = 0;
+        var currSectionIdx = 0; // tracks the next code section we could insert
 
-        // please don't ask, i was "in the flow" (and really hungry too so goodbye)
         for (var i = 0; i < token.Representation.Length; i++) {
             if (currSectionIdx >= sections.Length || sections[currSectionIdx].StringOffset != i) {
                 output.Append(str[i]);
@@ -35,6 +34,7 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
 
             output.Append('}');
 
+            i++; // we don't wanna consume the '}' in the repr
             currSectionIdx++;
         }
 

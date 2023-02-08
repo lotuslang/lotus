@@ -117,7 +117,7 @@ public partial class Tokenizer : IConsumer<Token>
                         new LocationRange(sectionStartPos, _input.Position)
                     ));
 
-                    output.Append('$');
+                    output.Append("{}");
 
                     // append whatever was after the closing '}'
                     output.Append(this.Current.TrailingTrivia?.Representation);

@@ -32,7 +32,7 @@ public partial class Tokenizer : IConsumer<Token>
 
         var sections
             = isComplex
-            ? ImmutableArray.CreateBuilder<ImmutableArray<Token>>()
+            ? ImmutableArray.CreateBuilder<InterpolatedSection>()
             : null!;
 
         var isValid = true;
@@ -69,6 +69,13 @@ public partial class Tokenizer : IConsumer<Token>
             }
 
             if (isComplex && currChar == '{') {
+                var sectionStartPos = _input.Position;
+                // todo(lexer): implement '{{' escaping
+                // note: should probably refactor ComplexStrings so that they have a list of offsets
+                //       for the positions of code sections, such that later stages don't have to guard
+                //       against '{{' and such, which would also makes the fuzzer crashes in TokenPrinter
+                //       less likely
+
                 var tokenList = ImmutableArray.CreateBuilder<Token>();
 
                 var unmatchedBrackets = 1; // count the opening bracket as currently unmatched
@@ -104,9 +111,13 @@ public partial class Tokenizer : IConsumer<Token>
                 }
 
                 if (tokenList.Count > 0) {
-                    sections.Add(tokenList.ToImmutable());
+                    sections.Add(new InterpolatedSection(
+                        output.Length, // not -1 because we want to insert before the next character
+                        tokenList.ToImmutable(),
+                        new LocationRange(sectionStartPos, _input.Position)
+                    ));
 
-                    output.Append('{').Append(sections.Count - 1).Append('}');
+                    output.Append('$');
 
                     // append whatever was after the closing '}'
                     output.Append(this.Current.TrailingTrivia?.Representation);

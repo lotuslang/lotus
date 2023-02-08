@@ -13,15 +13,9 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             var sections = ImmutableArray.CreateBuilder<ValueNode>(complexString.CodeSections.Length);
 
             foreach (var section in complexString.CodeSections) {
-                Debug.Assert(section.Length > 0);
+                Debug.Assert(section.TokenCount > 0);
 
-                var endPos = (section.LastOrDefault()?.Location ?? parser.Position).GetLastLocation();
-
-                var sectionConsumer = new Consumer<Token>(
-                    section,
-                    Token.NULL with { Location = endPos },
-                    endPos.filename
-                );
+                var sectionConsumer = section.ToConsumer();
 
                 var sectionParser = new ExpressionParser(sectionConsumer);
 
@@ -30,8 +24,8 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
                 if (sectionParser.Current.IsValid && sectionConsumer.Peek() != sectionConsumer.Default) {
                     var location = sectionConsumer.Position;
 
-                    if (section.Length >= 1) {
-                        location = new LocationRange(section[0].Location, location);
+                    if (section.TokenCount > 0) {
+                        location = new LocationRange(section.Tokens[0].Location, location);
                     }
 
                     Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {

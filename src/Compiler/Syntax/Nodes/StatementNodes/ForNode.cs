@@ -11,9 +11,9 @@ public sealed record ForNode(
 {
     public new static readonly ForNode NULL = new(Token.NULL, Tuple<StatementNode>.NULL, Tuple<StatementNode>.NULL) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

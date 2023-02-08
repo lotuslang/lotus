@@ -5,9 +5,9 @@ public sealed record UsingNode(Union<StringNode, NameNode> Name, Token Token)
 {
     public new static readonly UsingNode NULL = new(StringNode.NULL, Token.NULL) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

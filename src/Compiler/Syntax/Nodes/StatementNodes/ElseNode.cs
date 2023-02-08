@@ -9,9 +9,9 @@ public sealed record ElseNode(Union<Tuple<StatementNode>, IfNode> BlockOrIfNode,
 
     public bool HasIf => BlockOrIfNode.Match(b => false, n => true);
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

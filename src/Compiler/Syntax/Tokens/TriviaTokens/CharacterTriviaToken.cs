@@ -5,9 +5,9 @@ public sealed record CharacterTriviaToken(char Character, LocationRange Location
 {
     public new static readonly CharacterTriviaToken NULL = new('\0', LocationRange.NULL) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 }

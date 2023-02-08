@@ -14,9 +14,9 @@ public sealed record BoolToken : Token
         _val = value;
     }
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -31,9 +31,9 @@ public sealed record TupleNode
             ClosingToken
         ) { IsValid = IsValid };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 

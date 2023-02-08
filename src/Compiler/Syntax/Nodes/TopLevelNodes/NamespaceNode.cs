@@ -5,9 +5,9 @@ public sealed record NamespaceNode(NameNode Name, Token Token, ImmutableArray<To
 {
     public new static readonly NamespaceNode NULL = new(NameNode.NULL, Token.NULL, default) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

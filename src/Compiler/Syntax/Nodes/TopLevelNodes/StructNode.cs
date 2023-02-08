@@ -8,9 +8,9 @@ public sealed record StructNode(
 ) : TopLevelNode(Token, new LocationRange(Token, Fields)){
     public new static readonly StructNode NULL = new(Token.NULL, TypeDecName.NULL, Tuple<StructField>.NULL, default) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

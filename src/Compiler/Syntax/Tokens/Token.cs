@@ -115,9 +115,9 @@ public record Token : ILocalized
 
     internal Token ShallowClone() => new(this);
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 

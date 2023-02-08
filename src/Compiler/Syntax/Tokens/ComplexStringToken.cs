@@ -9,9 +9,9 @@ public sealed record ComplexStringToken(
 {
     public new static readonly ComplexStringToken NULL = new("", ImmutableArray<InterpolatedSection>.Empty, LocationRange.NULL) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 }

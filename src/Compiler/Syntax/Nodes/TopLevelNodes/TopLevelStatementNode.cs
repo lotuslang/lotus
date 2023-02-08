@@ -10,9 +10,9 @@ public sealed record TopLevelStatementNode(StatementNode Statement)
         init => Statement = Statement with { Location = value };
     }
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

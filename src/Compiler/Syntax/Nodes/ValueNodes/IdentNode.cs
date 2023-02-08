@@ -8,9 +8,9 @@ public sealed record IdentNode(IdentToken Token) : NameNode(Token, ImmutableArra
 
     public string Value => Token.Representation;
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 }

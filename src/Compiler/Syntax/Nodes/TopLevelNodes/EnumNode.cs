@@ -18,9 +18,9 @@ public sealed record EnumNode(
     public Token OpeningBracket => Values.OpeningToken;
     public Token ClosingBracket => Values.ClosingToken;
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }

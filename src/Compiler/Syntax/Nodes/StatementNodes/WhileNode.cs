@@ -16,9 +16,9 @@ public sealed record WhileNode(
 
     public bool IsDoLoop => DoToken != Token.NULL;
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
 }

@@ -11,9 +11,9 @@ public abstract record StatementNode(Token Token, LocationRange Location)
         IsValid = isValid;
     }
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
 

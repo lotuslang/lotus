@@ -5,9 +5,9 @@ public sealed record OperatorToken(string Representation, Precedence Precedence,
 {
     public new static readonly OperatorToken NULL = new("", Precedence.Comma, false, LocationRange.NULL) { IsValid = false };
 
-    [DebuggerHidden()]
-    [DebuggerStepThrough()]
-    [DebuggerNonUserCode()]
+    [DebuggerHidden]
+    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 

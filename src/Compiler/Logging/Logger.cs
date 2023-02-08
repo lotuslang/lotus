@@ -156,11 +156,53 @@ public static class Logger
             case IValued<Token> unxToken:
                 var token = unxToken.Value;
 
-                sb.Append(token.Kind);
-
-                if (token.Kind is not TokenKind.EOF) {
-                    sb.Append(" '").Append(ASTUtils.PrintToken(token).Trim()).Append('\'');
+                if (token.Kind is TokenKind.EOF) {
+                    sb.Append("end of file");
+                    break;
                 }
+
+                if (token is not OperatorToken opToken) {
+                    sb.Append(token.Kind).Append(" '").Append(ASTUtils.PrintToken(token).Trim()).Append('\'');
+
+                    break;
+                }
+
+                var opKind = LotusFacts.GetExpressionKind(opToken);
+
+                switch (opKind) {
+                    case ExpressionKind.Array:
+                        sb.Append("array access operator");
+                        break;
+                    case ExpressionKind.LeftParen:
+                        sb.Append("left parenthesis");
+                        break;
+                    case ExpressionKind.Eq:
+                        sb.Append("equality operator");
+                        break;
+                    case ExpressionKind.NotEq:
+                        sb.Append("non-equality operator");
+                        break;
+                    case ExpressionKind.LessOrEq:
+                        sb.Append("less-or-equal operator");
+                        break;
+                    case ExpressionKind.GreaterOrEq:
+                        sb.Append("greater-or-equal operator");
+                        break;
+                    case ExpressionKind.Or:
+                    case ExpressionKind.And:
+                    case ExpressionKind.Xor:
+                    case ExpressionKind.Not:
+                        sb.Append("boolean ").Append(opKind.ToString().ToLowerInvariant());
+                        break;
+                    default:
+                        sb.Append(opKind.ToString().ToLowerInvariant()).Append(" operator");
+                        break;
+                }
+
+                sb
+                    .Append(" '")
+                    .Append(opToken.Representation)
+                    .Append('\'');
 
                 break;
             case IValued<IEnumerable<Token>> unxTokens: // todo(logging): handle IValued<Node[]> as well

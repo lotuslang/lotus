@@ -159,8 +159,17 @@ public static class Logger
                 sb.Append(token.Kind);
 
                 if (token.Kind is not TokenKind.EOF) {
-                    sb.Append(" '" + ASTUtils.PrintToken(token).Trim() + "'");
+                    sb.Append(" '").Append(ASTUtils.PrintToken(token).Trim()).Append('\'');
                 }
+
+                break;
+            case IValued<IEnumerable<Token>> unxTokens: // todo(logging): handle IValued<Node[]> as well
+                var tokens = unxTokens.Value;
+
+                sb
+                    .Append("tokens '")
+                    .Append(MiscUtils.Join(" ", ASTUtils.PrintToken, tokens).Trim())
+                    .Append('\'');
 
                 break;
             case IValued<Node> unxNode:

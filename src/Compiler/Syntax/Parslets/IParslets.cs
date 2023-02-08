@@ -17,9 +17,10 @@ public interface IStatementParslet<out T> : IParslet<StatementParser, Token, T>
 where T : StatementNode
 {}
 
-public interface ITopLevelParslet<out T> : IParslet<TopLevelParser, Token, T>
-where T : TopLevelNode
-{}
+public interface ITopLevelParslet<out T> where T : TopLevelNode
+{
+    T Parse(TopLevelParser parser, Token token, ImmutableArray<Token> modifiers);
+}
 
 public interface IParslet<in TParser, out TOut> : IParslet<TParser, None, TOut>
 {

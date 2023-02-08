@@ -4,10 +4,12 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
 {
     public static readonly UsingParslet Instance = new();
 
-    public UsingNode Parse(TopLevelParser parser, Token usingToken) {
+    public UsingNode Parse(TopLevelParser parser, Token usingToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(usingToken == "using");
 
-        var isValid = parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
+        TopLevelParser.ReportIfAnyModifiers(modifiers, "using statements", out var isValid);
+
+        isValid &= parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
             defaultVal: NameNode.NULL,
             out var import,
             out var importVal

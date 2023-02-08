@@ -1,5 +1,3 @@
-using Lotus.Semantic;
-
 namespace Lotus.Syntax;
 
 public sealed class TopLevelParser : Parser<TopLevelNode>
@@ -60,46 +58,20 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             return ref _curr;
         }
 
-        var accessKeyword = Token.NULL;
+        var modifiers = ImmutableArray.CreateBuilder<Token>();
 
-        switch (currToken) {
-            case "public":
-            case "private":
-            case "internal":
-                accessKeyword = currToken;
-                break;
-            default:
-                Tokenizer.Reconsume();
-                break;
+        while (LotusFacts.IsModifierKeyword(currToken)) {
+            modifiers.Add(currToken);
+            currToken = Tokenizer.Consume();
         }
 
-        // get the token after the accessor; if we didn't get an accessor, then
-        // we'll just consume the same token again
-        currToken = Tokenizer.Consume();
+        // we don't need to update currToken here, since we know it's *not* a modifier
 
         if (LotusFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
-            _curr = parslet.Parse(this, currToken);
+            _curr = parslet.Parse(this, currToken, modifiers.ToImmutable());
 
             // todo(logging): Throw an error when there's a modifier but the node isn't
             //       supposed to be modded
-
-            if (Current is IAccessible accCurrent) {
-                accCurrent.AccessLevel = LotusFacts.GetAccessAndValidate(
-                    accessKeyword,
-                    accCurrent.DefaultAccessLevel,
-                    accCurrent.ValidLevels
-                );
-
-                accCurrent.AccessToken = accessKeyword;
-            } else if (Current.IsValid && accessKeyword != Token.NULL) {
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Value = accessKeyword,
-                    As = "an access modifier",
-                    Message = Current.GetType().Name + "s cannot be marked '" + accessKeyword + "'"
-                });
-
-                Current.IsValid = false;
-            }
         } else {
             Tokenizer.Reconsume();
             _curr = new TopLevelStatementNode(StatementParser.Consume());
@@ -147,6 +119,22 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
         }
 
         return new TypeDecName(typeIdent, parent, colonToken) { IsValid = isValid };
+    }
+
+    internal static void ReportIfAnyModifiers(
+        ImmutableArray<Token> modifiers,
+        string nodeFriendlyName,
+        out bool isValid
+    ) {
+        isValid = modifiers.IsDefaultOrEmpty;
+
+        if (!isValid) {
+            Logger.Error(new UnexpectedError<Token[]>(ErrorArea.Parser) {
+                Value = modifiers.ToArray(), // why can't i use ImmutableArray directly :(
+                As = "a modifier",
+                Message = nodeFriendlyName + " cannot have any modifiers"
+            });
+        }
     }
 
     public override TopLevelParser Clone() => new(this);

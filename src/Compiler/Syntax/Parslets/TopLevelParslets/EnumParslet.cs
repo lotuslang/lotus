@@ -11,7 +11,7 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
             EndingDelimBehaviour = TupleEndingDelimBehaviour.Accept
         };
 
-    public EnumNode Parse(TopLevelParser parser, Token enumToken) {
+    public EnumNode Parse(TopLevelParser parser, Token enumToken, ImmutableArray<Token> modifiers) {
         /*
         *   Enums, just like a lot of top-lvl stuff comes in all shapes
         *   and sizes, so parsing them is gonna require a bit of caution
@@ -55,6 +55,6 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 
         var isValid = enumToken.IsValid && name.IsValid && values.IsValid;
 
-        return new EnumNode(name, values, enumToken) { IsValid = isValid };
+        return new EnumNode(name, values, enumToken, modifiers) { IsValid = isValid };
     }
 }

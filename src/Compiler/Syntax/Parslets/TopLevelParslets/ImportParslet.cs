@@ -4,14 +4,17 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
     public static readonly ImportParslet Instance = new();
 
-    public ImportNode Parse(TopLevelParser parser, Token fromToken) {
+    public ImportNode Parse(TopLevelParser parser, Token fromToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(fromToken == "from");
 
-        var fromIsValid = parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
-            defaultVal: NameNode.NULL,
-            out var fromOrigin,
-            out var fromVal
-        );
+        TopLevelParser.ReportIfAnyModifiers(modifiers, "import statements", out var hasModifiers);
+
+        var fromIsValid =
+            parser.ExpressionParser.TryConsumeEither<StringNode, NameNode>(
+                defaultVal: NameNode.NULL,
+                out var fromOrigin,
+                out var fromVal
+            );
 
         if (!fromIsValid) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
@@ -21,7 +24,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             });
         }
 
-        var from = new FromNode(fromOrigin, fromToken) { IsValid = fromIsValid };
+        var from = new FromNode(fromOrigin, fromToken) { IsValid = fromIsValid && !hasModifiers };
 
         // todo(algo): Would it be better to have parser.ConsumeValue() here ? it would probably do the same thing
         //
@@ -92,6 +95,6 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 
         parser.Tokenizer.Reconsume();
 
-        return new ImportNode(importList.ToImmutable(), from, importKeyword) { IsValid = importIsValid };
+        return new ImportNode(importList.ToImmutable(), from, importKeyword) { IsValid = importIsValid && !hasModifiers };
     }
 }

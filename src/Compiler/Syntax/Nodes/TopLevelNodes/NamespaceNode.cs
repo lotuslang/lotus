@@ -1,18 +1,9 @@
-using Lotus.Semantic;
-
 namespace Lotus.Syntax;
 
-public sealed record NamespaceNode(NameNode Name, Token Token)
-: TopLevelNode(Token, new LocationRange(Token.Location, Name.Location)), IAccessible
+public sealed record NamespaceNode(NameNode Name, Token Token, ImmutableArray<Token> Modifiers)
+: TopLevelNode(Token, new LocationRange(Token.Location, Name.Location))
 {
-    public new static readonly NamespaceNode NULL = new(NameNode.NULL, Token.NULL) { IsValid = false };
-
-    public AccessLevel AccessLevel { get; set; } = AccessLevel.Public;
-
-    public Token AccessToken { get; set; } = Token.NULL;
-
-    AccessLevel IAccessible.DefaultAccessLevel => AccessLevel.Public;
-    AccessLevel IAccessible.ValidLevels => AccessLevel.Public | AccessLevel.Internal;
+    public new static readonly NamespaceNode NULL = new(NameNode.NULL, Token.NULL, default) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

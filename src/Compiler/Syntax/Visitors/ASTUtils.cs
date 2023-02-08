@@ -20,6 +20,8 @@ internal static class ASTUtils
     [Obsolete("ASTHelper.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
     public static bool IsName(ValueNode node) => NameChecker.IsName(node);
 
+    // todo(utils): add a way to print nodes/tokens without trivia
+
     public static string PrintNode(Node node)
         => node switch {
             ValueNode value => PrintValue(value),

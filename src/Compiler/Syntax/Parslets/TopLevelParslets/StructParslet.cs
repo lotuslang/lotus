@@ -77,13 +77,13 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
         return new StructField(name, typeName, defaultValue, equalSign) { IsValid = isValid };
     }
 
-    public StructNode Parse(TopLevelParser parser, Token structToken) {
+    public StructNode Parse(TopLevelParser parser, Token structToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(structToken == "struct");
 
         var name = parser.ConsumeTypeDeclarationName();
 
         var fields = _fieldsParslet.Parse(parser.ExpressionParser);
 
-        return new StructNode(structToken, name, fields) { IsValid = name.IsValid && fields.IsValid };
+        return new StructNode(structToken, name, fields, modifiers) { IsValid = name.IsValid && fields.IsValid };
     }
 }

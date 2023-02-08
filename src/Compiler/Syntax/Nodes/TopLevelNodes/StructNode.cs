@@ -1,20 +1,12 @@
-using Lotus.Semantic;
-
 namespace Lotus.Syntax;
 
 public sealed record StructNode(
     Token Token,
     TypeDecName Name,
-    Tuple<StructField> Fields
-) : TopLevelNode(Token, new LocationRange(Token, Fields)), IAccessible {
-    public new static readonly StructNode NULL = new(Token.NULL, TypeDecName.NULL, Tuple<StructField>.NULL) { IsValid = false };
-
-    public AccessLevel AccessLevel { get; set; } = AccessLevel.Public;
-
-    public Token AccessToken { get; set; } = Token.NULL;
-
-    AccessLevel IAccessible.DefaultAccessLevel => AccessLevel.Public;
-    AccessLevel IAccessible.ValidLevels => AccessLevel.Public | AccessLevel.Internal;
+    Tuple<StructField> Fields,
+    ImmutableArray<Token> Modifiers
+) : TopLevelNode(Token, new LocationRange(Token, Fields)){
+    public new static readonly StructNode NULL = new(Token.NULL, TypeDecName.NULL, Tuple<StructField>.NULL, default) { IsValid = false };
 
     [DebuggerHidden()]
     [DebuggerStepThrough()]

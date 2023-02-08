@@ -13,7 +13,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
         => ASTUtils.PrintStatement(node.Statement);
 
     public string Visit(EnumNode node)
-        => ASTUtils.PrintToken(node.AccessToken)
+        => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers)
          + ASTUtils.PrintToken(node.EnumToken)
          + Print(node.Name)
          + ASTUtils.PrintTuple(node.Values, ",", ASTUtils.PrintValue);
@@ -24,13 +24,13 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + MiscUtils.Join(",", ASTUtils.PrintValue, node.Names);
 
     public string Visit(NamespaceNode node)
-        => ASTUtils.PrintToken(node.AccessToken) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
+        => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
 
     public string Visit(UsingNode node)
         => ASTUtils.PrintToken(node.Token) + ASTUtils.PrintUnion(node.Name);
 
     public string Visit(StructNode node)
-        => ASTUtils.PrintToken(node.AccessToken)
+        => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers)
          + ASTUtils.PrintToken(node.Token)
          + ASTUtils.PrintTypeName(node.Name)
          + ASTUtils.PrintToken(node.Fields.OpeningToken)

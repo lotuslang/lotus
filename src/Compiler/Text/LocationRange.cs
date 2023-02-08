@@ -2,7 +2,7 @@ namespace Lotus.Text;
 
 #pragma warning disable IDE1006
 [DebuggerDisplay("{DbgStr(),nq}")]
-public sealed record LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>, ILocalized
+public record struct LocationRange(int firstLine, int lastLine, int firstColumn, int lastColumn, string filename = "<std>") : IComparable<LocationRange>, ILocalized
 {
     public static readonly LocationRange NULL = new(Location.NULL, Location.NULL);
 
@@ -72,8 +72,7 @@ public sealed record LocationRange(int firstLine, int lastLine, int firstColumn,
                 ? GetFirstLocation().ToString()
                 : $"{filename}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";
 
-    public int CompareTo(LocationRange? other) {
-        if (other is null) return -1;
+    public int CompareTo(LocationRange other) {
         if (other == NULL) return this == NULL ? 0 : -1;
         if (this.filename != other.filename) return 0;
 

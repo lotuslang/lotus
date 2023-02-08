@@ -2,7 +2,7 @@ namespace Lotus.Text;
 
 #pragma warning disable IDE1006
 [DebuggerDisplay("{DbgStr(),nq}")]
-public sealed record Location(int line, int column, string filename = "<std>") : ILocalized
+public record struct Location(int line, int column, string filename = "<std>") : ILocalized
 {
     public static readonly Location NULL = new(-1, -1);
 

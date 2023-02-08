@@ -226,12 +226,19 @@ public static class Logger
                     );
                 }
 
-                sb.Append(
-                      (node is OperationNode opNode ? opNode.OperationType + " (" + opNode.Token + ')': node.GetType().Name)
-                    + " '"
-                    + (node.Location.LineLength < 100 ? ASTUtils.PrintNode(node).Trim() : "")
-                    + "'"
-                );
+                if (node is not OperationNode opNode) {
+                    sb.Append(node.GetType().Name);
+                } else {
+                    sb
+                        .Append(opNode.OperationType)
+                        .Append(" (")
+                        .Append(opNode.Token)
+                        .Append(')');
+                }
+
+                if (node.Location.LineLength == 1)
+                    sb.Append(" '").Append(ASTUtils.PrintNode(node).Trim()).Append('\"');
+
                 break;
             case IValued<string> unxString:
                 sb.Append("input '" + unxString.Value.Trim() + "'");

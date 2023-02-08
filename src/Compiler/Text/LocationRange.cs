@@ -73,7 +73,7 @@ public record struct LocationRange(int firstLine, int lastLine, int firstColumn,
                 : $"{filename}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";
 
     public int CompareTo(LocationRange other) {
-        if (other == NULL) return this == NULL ? 0 : -1;
+        if (other == NULL) return this == NULL ? 0 : 1;
         if (this.filename != other.filename) return 0;
 
         if (firstLine != other.firstLine) {

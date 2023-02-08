@@ -76,27 +76,33 @@ public record struct LocationRange(int firstLine, int lastLine, int firstColumn,
         if (other == NULL) return this == NULL ? 0 : -1;
         if (this.filename != other.filename) return 0;
 
-        // line
-        var output = this.firstLine.CompareTo(other.firstLine);
+        if (firstLine != other.firstLine) {
+            return firstLine < other.firstLine ? -1 : 1;
+        }
 
-        // column
-        if (output == 0)
-            output = this.firstColumn.CompareTo(other.firstColumn);
-        else
-            return output;
+        if (firstColumn != other.firstColumn) {
+            return firstColumn < other.firstColumn ? -1 : 1;
+        }
 
-        // line length
-        if (output == 0)
-            output = this.LineLength.CompareTo(other.LineLength);
-        else
-            return output;
+        if (LineLength != other.LineLength) {
+            return LineLength < other.LineLength ? -1 : 1;
+        }
 
-        // column length
-        if (output == 0)
-            output = this.ColumnLength.CompareTo(other.ColumnLength);
+        if (ColumnLength != other.ColumnLength) {
+            return ColumnLength < other.ColumnLength ? -1 : 1;
+        }
 
-        return output;
+        return 0;
     }
+
+    public static bool operator <(LocationRange loc1, LocationRange loc2)
+        => loc1.CompareTo(loc2) < 0;
+    public static bool operator <=(LocationRange loc1, LocationRange loc2)
+        => loc1.CompareTo(loc2) <= 0;
+    public static bool operator >(LocationRange loc1, LocationRange loc2)
+        => loc1.CompareTo(loc2) > 0;
+    public static bool operator >=(LocationRange loc1, LocationRange loc2)
+        => loc1.CompareTo(loc2) >= 0;
 
     private string DbgStr()
         => $"{System.IO.Path.GetFileName(filename)}({firstLine}:{firstColumn} - {lastLine}:{lastColumn})";

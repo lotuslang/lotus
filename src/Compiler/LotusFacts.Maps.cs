@@ -130,30 +130,32 @@ public static partial class LotusFacts
         { "struct", StructParslet.Instance },
     };
 
-    private static readonly HashSet<string> _keywords = new() {
-        "var",
-        "new",
-        "func",
-        "return",
-        "for",
-        "while",
-        "foreach",
-        "in",
-        "if",
-        "else",
-        "from",
-        "continue",
-        "break",
-
-        "public",
-        "internal",
-        "protected",
+    private static readonly HashSet<string> _modifiers = new() {
         "private",
-
-        "import",
-        "using",
-        "namespace",
-        "enum",
-        "struct",
+        "protected",
+        "internal",
+        "public"
     };
+
+    private static readonly string[] _additionalKeywords = new[] {
+        "import",
+        "new"
+    };
+
+    private static readonly HashSet<string> _keywords;
+    static LotusFacts() {
+#pragma warning disable IDE0058
+        _keywords = new HashSet<string>();
+
+        foreach (var (keyword, _) in _strToStmtParslets)
+            _keywords.Add(keyword);
+        foreach (var (keyword, _) in _strToTopLevelParslets)
+            _keywords.Add(keyword);
+        foreach (var keyword in _modifiers)
+            _keywords.Add(keyword);
+        foreach (var keyword in _additionalKeywords)
+            _keywords.Add(keyword);
+
+#pragma warning restore IDE0058
+    }
 }

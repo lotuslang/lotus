@@ -19,6 +19,8 @@ public static partial class LotusFacts
 
     public static bool IsKeyword(string str) => _keywords.Contains(str);
 
+    public static bool IsModifierKeyword(string str) => _modifiers.Contains(str);
+
     public static ExpressionKind GetExpressionKind(Token token) {
         switch (token.Kind) {
             case TokenKind.identifier:

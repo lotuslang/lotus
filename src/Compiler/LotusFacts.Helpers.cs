@@ -17,11 +17,4 @@ public static partial class LotusFacts
                 or IfNode
                 or WhileNode
             );
-
-    public static bool IsModifierKeyword(string str)
-        => str is (
-               "public"
-            or "internal"
-            or "private"
-        );
 }

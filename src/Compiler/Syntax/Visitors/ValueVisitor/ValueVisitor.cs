@@ -1,6 +1,6 @@
 namespace Lotus.Syntax.Visitors;
 
-public interface IValueVisitor<T>
+public interface IValueVisitor<out T>
 {
     T Default(ValueNode node);
 

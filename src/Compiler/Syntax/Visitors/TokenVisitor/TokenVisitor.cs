@@ -1,6 +1,6 @@
 namespace Lotus.Syntax.Visitors;
 
-public interface ITokenVisitor<T>
+public interface ITokenVisitor<out T>
 {
     T Default(Token token);
 

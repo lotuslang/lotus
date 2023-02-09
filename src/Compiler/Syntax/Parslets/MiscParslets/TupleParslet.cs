@@ -7,33 +7,60 @@ public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, V
     public ValueTupleParslet(Func<ExpressionParser, TValue> valParser) : base(valParser) {}
 }
 
-public enum TupleEndingDelimBehaviour { Reject, Accept, Force }
+/// <summary>
+/// How the value delimiter should be handled at the end of a tuple
+/// </summary>
+public enum TrailingDelimiterBehaviour { // can't be moved into TupleParslet cause it'd require specifying type args
+    /// <summary>
+    /// Tuple should end without a value delimiter at the end.
+    /// This is the default behavior.
+    /// <br/>
+    /// Example: <c>[a, b, c]</c>
+    /// </summary>
+    Forbidden,
+
+    /// <summary>
+    /// Tuple *can* have a trailing value delimiter at the end.
+    /// This is how enums are parsed.
+    /// <br/>
+    /// Example: <c>{ a, b, c }</c> and <c>{ a, b, c, }</c> are both valid
+    /// </summary>
+    Accepted,
+
+    /// <summary>
+    /// Tuple *have to* end with a trailing value delimiter.
+    /// This is how structs and statement blocks are parsed.
+    /// <br/>
+    /// Example: <c>{ a; b; c; }</c>
+    /// </summary>
+    Required
+}
 
 public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TValue>>
     where TParser : Parser<TPNode>
     where TPNode : Node
 {
-    [MemberNotNullWhen(true, nameof(simpleValueParser))]
-    [MemberNotNullWhen(false, nameof(valueParser))]
-    private bool IsSimpleParser { get; }
+    [MemberNotNullWhen(true, nameof(singleValueParser))]
+    [MemberNotNullWhen(false, nameof(multiValueParser))]
+    private bool IsSingleValueParser { get; }
 
-    private readonly Func<TParser, IEnumerable<TValue>>? valueParser;
-    private readonly Func<TParser, TValue>? simpleValueParser;
+    private readonly Func<TParser, IEnumerable<TValue>>? multiValueParser;
+    private readonly Func<TParser, TValue>? singleValueParser;
 
     public string Start { get; init; } = "(";
     public string End { get; init; } = ")";
     public string Delim { get; init; } = ",";
-    public TupleEndingDelimBehaviour EndingDelimBehaviour { get; init; } = TupleEndingDelimBehaviour.Reject;
+    public TrailingDelimiterBehaviour EndingDelimBehaviour { get; init; } = TrailingDelimiterBehaviour.Forbidden;
     public string In { get; init; } = "a " + typeof(TValue).Name + " list";
 
-    public TupleParslet(Func<TParser, IEnumerable<TValue>> valParser) {
-        IsSimpleParser = false;
-        valueParser = valParser;
+    public TupleParslet(Func<TParser, IEnumerable<TValue>> valueParser) {
+        IsSingleValueParser = false;
+        multiValueParser = valueParser;
     }
 
     public TupleParslet(Func<TParser, TValue> valParser) {
-        IsSimpleParser = true;
-        simpleValueParser = valParser;
+        IsSingleValueParser = true;
+        singleValueParser = valParser;
     }
 
     public Tuple<TValue> Parse(TParser parser) {
@@ -56,14 +83,14 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
         while (parser.Tokenizer.Consume(out var token) && token != End) {
             parser.Tokenizer.Reconsume();
 
-            if (IsSimpleParser)
-                items.Add(simpleValueParser(parser));
+            if (IsSingleValueParser)
+                items.Add(singleValueParser(parser));
             else
-                items.AddRange(valueParser(parser));
+                items.AddRange(multiValueParser(parser));
 
             if (parser.Tokenizer.Consume() != Delim) {
                 if (parser.Tokenizer.Current == End) {
-                    if (EndingDelimBehaviour is TupleEndingDelimBehaviour.Force) {
+                    if (EndingDelimBehaviour is TrailingDelimiterBehaviour.Required) {
                         Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                             Value = parser.Tokenizer.Current,
                             In = In,
@@ -131,7 +158,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             //           ----------------------^--------------
             //                      literally right there
             if (parser.Tokenizer.Peek() == End) {
-                if (EndingDelimBehaviour is TupleEndingDelimBehaviour.Accept or TupleEndingDelimBehaviour.Force ) {
+                if (EndingDelimBehaviour is TrailingDelimiterBehaviour.Accepted or TrailingDelimiterBehaviour.Required) {
                     _ = parser.Tokenizer.Consume();
                     break;
                 }

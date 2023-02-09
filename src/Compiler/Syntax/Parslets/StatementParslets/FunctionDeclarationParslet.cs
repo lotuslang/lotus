@@ -8,7 +8,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         = new(ParseFuncParam) {
             Start = "(",
             End = ")",
-            EndingDelimBehaviour = TupleEndingDelimBehaviour.Reject,
+            EndingDelimBehaviour = TrailingDelimiterBehaviour.Forbidden,
         };
 
     public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {

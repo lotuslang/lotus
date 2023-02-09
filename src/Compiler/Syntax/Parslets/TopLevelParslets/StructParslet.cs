@@ -10,7 +10,7 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
             End = "}",
             Delim = ";",
             In = "in a struct field list",
-            EndingDelimBehaviour = TupleEndingDelimBehaviour.Force
+            EndingDelimBehaviour = TrailingDelimiterBehaviour.Required
         };
 
     private static StructField ParseStructField(ExpressionParser parser) {

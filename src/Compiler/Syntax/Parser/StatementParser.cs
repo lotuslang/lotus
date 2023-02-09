@@ -73,11 +73,6 @@ public sealed class StatementParser : Parser<StatementNode>
 
         if (checkSemicolon && LotusFacts.NeedsSemicolon(Current)) {
             CheckSemicolon();
-
-            // consume trailing semicolons
-            while (Tokenizer.Peek().Kind == TokenKind.semicolon) {
-                _ = Tokenizer.Consume();
-            }
         }
 
         return ref _curr;
@@ -102,6 +97,11 @@ public sealed class StatementParser : Parser<StatementNode>
             }
 
             _curr.IsValid = false;
+        }
+
+        // consume trailing semicolons
+        while (Tokenizer.Peek().Kind == TokenKind.semicolon) {
+            _ = Tokenizer.Consume();
         }
     }
 

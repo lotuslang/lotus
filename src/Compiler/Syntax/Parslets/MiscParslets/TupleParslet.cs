@@ -103,7 +103,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     break;
                 }
 
-                // fixme(algo): this assumes the function used the main parser and/or set the
+                // fixme(parsing): this assumes the function used the main parser and/or set the
                 // parser's Current property, which is not always the case
                 if (!isValid || !parser.Current.IsValid) {
                     continue;

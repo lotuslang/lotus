@@ -139,6 +139,6 @@ public partial class Tokenizer : IConsumer<Token>
             new LocationRange(startingPosition, _input.Position)
         ) { TrailingTrivia = ConsumeTrivia() };
 
-        // todo(algo): Shouldn't the tokenizer be responsible of consuming further trivia ?
+        // todo(parsing): Shouldn't the tokenizer be responsible of consuming further trivia ?
     }
 }

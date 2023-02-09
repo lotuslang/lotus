@@ -70,7 +70,7 @@ public partial class Tokenizer : IConsumer<Token>
 
             if (isComplex && currChar == '{') {
                 var sectionStartPos = _input.Position;
-                // todo(lexer): implement '{{' escaping
+                // todo(lexing): implement '{{' escaping
                 // note: should probably refactor ComplexStrings so that they have a list of offsets
                 //       for the positions of code sections, such that later stages don't have to guard
                 //       against '{{' and such, which would also makes the fuzzer crashes in TokenPrinter
@@ -164,7 +164,7 @@ public partial class Tokenizer : IConsumer<Token>
                         'r' => '\r',
                         't' => '\t',
                         'v' => '\v',
-                        'u' => ParseUnicodeEscapeSequence(), // todo(lexer): implement \U and \x
+                        'u' => ParseUnicodeEscapeSequence(), // todo(lexing): implement \U and \x
                         _   => throwInvalidEscapeAndGetChar(currChar)
                     }
                 );

@@ -267,45 +267,72 @@ public partial class Tokenizer : IConsumer<Token>
     }
 
     private NumberToken ConsumeNumberToken() {
-        // the output token
         var numberSB = new StringBuilder();
 
         var currChar = _input.Current;
 
+        Debug.Assert(currChar is '.' || Char.IsAsciiDigit(currChar));
+
         var isValid = true;
+
+        bool hasDecimalOrExponent = false;
 
         var originPos = _input.Position; // the position of the number's first character
 
-        // while the current character is a digit
-        while (Char.IsDigit(currChar)) {
-            // add it to the value of output
-            numberSB.Append(currChar);
+        bool nextIsNumber() => Char.IsAsciiDigit(_input.Peek());
 
-            // consume a character
-            currChar = _input.Consume();
+        /// <summary> consumes a span of consecutive digits </summary>
+        void consumeAllNextDigits() {
+            while (Char.IsAsciiDigit(currChar)) {
+                numberSB.Append(currChar);
+
+                currChar = _input.Consume();
+            }
         }
 
-        // if the character is '.'
-        if (currChar == '.') {
-            // add it to the value of output
+        // consume the whole part
+        consumeAllNextDigits();
+
+        // decimal point (must be followed by a number, cause it might
+        // be an access otherwise)
+        if (currChar is '.' && nextIsNumber()) {
+            hasDecimalOrExponent = true;
             numberSB.Append(currChar);
 
-            // consume a character
             currChar = _input.Consume();
+            consumeAllNextDigits();
         }
 
-        // while the current character is a digit
-        while (Char.IsDigit(currChar)) {
-            // add it to the value of output
-            numberSB.Append(currChar);
-
-            // consume a character
-            currChar = _input.Consume();
-        }
-
-        // if the character is an 'e' or an 'E'
+        // exponent separator
         if (currChar is 'e' or 'E') {
-            // add the e/E to the output
+            hasDecimalOrExponent = true;
+
+            if (!nextIsNumber()) {
+                var nextChar = _input.Consume();
+
+                if (nextChar is '+' or '-') {
+                    if (nextIsNumber()) {
+                        _input.Reconsume(); // reconsumes the '+'/'-' to be parsed correctly
+                        goto validExponent;
+                    } else {
+                        // display the non-digit in the error message and set the right position
+                        currChar = _input.Consume();
+                    }
+                }
+
+                Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                    Value = currChar,
+                    In = "a number literal",
+                    As = "an exponent separator",
+                    Message = "Exponent in numeric literal must be a number",
+                    Location = _input.Position
+                });
+
+                isValid = false;
+                goto dontTokenizeExponent;
+            }
+
+        validExponent:
             numberSB.Append(currChar);
 
             // consume a character
@@ -320,64 +347,68 @@ public partial class Tokenizer : IConsumer<Token>
                 currChar = _input.Consume();
             }
 
-            // while the current character is a digit
-            while (Char.IsDigit(currChar)) {
-                // add it to the value of output
-                numberSB.Append(currChar);
+            consumeAllNextDigits();
+        }
+    dontTokenizeExponent:
 
-                // consume a character
-                currChar = _input.Consume();
+        // if we have another decimal separator...
+        if (currChar == '.' && nextIsNumber()) {
+            var errorCount = Logger.ErrorCount;
+
+            _ = _input.Consume(); // we need to update _input.Current before lexing a new number token
+            numberSB.Append(currChar).Append(ConsumeNumberToken().Representation);
+
+            // The above .Consume(...) could generate extra errors, except we don't really
+            // want to show them to the user since they don't really matter; we just wanna
+            // be sure we consumed what we had to
+            while (Logger.ErrorCount > errorCount) {
+                _ = Logger.errorStack.Pop();
             }
+
+            var str = numberSB.ToString();
+
+            var loc = new LocationRange(originPos, _input.Position);
+
+            if (str.Contains('e') || str.Contains('E')) {
+                // ...we either stopped parsing an exponent number because of a
+                // decimal (which is not valid syntax)
+                Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                    Value = str,
+                    As = "a number",
+                    Message = "Exponents can't have any decimals",
+                    Location = loc,
+                });
+            } else {
+                // ...or there is a second decimal separator, which isn't valid either
+                Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                    Value = str,
+                    As = "a number",
+                    Message = "This number literal has more than one decimal part",
+                    Location = loc,
+                });
+            }
+
+            isValid = false;
+            currChar = _input.Consume();
         }
 
-        bool nextIsNumber() => LotusFacts.IsStartOfNumber(_input.Consume(), _input.Peek());
-
-        // if we have a decimal separator...
-        if (currChar == '.') {
-            if (nextIsNumber()) {
-                var errorCount = Logger.ErrorCount;
-
-                numberSB.Append(currChar).Append(ConsumeNumberToken().Representation);
-
-                // The above .Consume(...) could generate extra errors, except we don't really
-                // want to show them to the user since they don't really matter; we just wanna
-                // be sure we consumed what we had to
-                while (Logger.ErrorCount > errorCount) {
-                    _ = Logger.errorStack.Pop();
-                }
-
-                var str = numberSB.ToString();
-
-                if (str.Contains('e') || str.Contains('E')) {
-                    // ...we either stopped parsing a power-of-ten number because of a decimal (which is not valid syntax)
-                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
-                        Value = str,
-                        As = "a number. You cannot use a decimal separator after a power-of-ten separator",
-                        Location = new LocationRange(originPos, _input.Position),
-                        //ExtraNotes = notes
-                    });
-                } else {
-                    // ...or there is a second decimal separator, which isn't valid either
-                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
-                        Value = str,
-                        As = "a number. There already was a decimal separator earlier",
-                        Location = new LocationRange(originPos, _input.Position),
-                        //ExtraNotes = notes
-                    });
-                }
-
-                isValid = false;
-
-                _ = _input.Consume(); // hack to prevent the reconsume from fucking up the input
-            }
-        }
-
-        // we already had a "power-of-ten separator", so this is not valid.
+        // we already had an "exponent separator", so this is not valid.
         if (currChar is 'e' or 'E') {
-            if (nextIsNumber()) {
+            numberSB.Append(currChar);
+
+            if (nextIsNumber() || _input.Peek() is '+' or '-') {
+                // yes it's fine to consume a new one in any case, cause ConsumeNumberToken expects
+                // _input.Current to already be set to a digit or '.'
+                currChar = _input.Consume();
+
+                if (currChar is '+' or '-') {
+                    numberSB.Append(currChar);
+                    _ = _input.Consume(); // ConsumeNumberToken expects a digit or '.' at the start
+                }
+
                 var errorCount = Logger.ErrorCount;
 
-                numberSB.Append(currChar).Append(ConsumeNumberToken().Representation);
+                numberSB.Append(ConsumeNumberToken().Representation);
 
                 while (Logger.ErrorCount > errorCount) {
                     _ = Logger.errorStack.Pop();
@@ -386,30 +417,212 @@ public partial class Tokenizer : IConsumer<Token>
 
             Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
                 Value = numberSB.ToString(),
-                As = "a number. There already was a power-of-ten separator earlier",
+                As = "a number. There already was an exponent separator earlier",
                 Location = new LocationRange(originPos, _input.Position),
             });
 
             isValid = false;
+            currChar = _input.Consume();
+        }
 
-            _ = _input.Consume(); // hack to prevent the reconsume from fucking up the input
+        var numericStr = numberSB.ToString();
+
+        var kindStr = "";
+
+        var numberKind = NumberKind.Unknown;
+
+        if (currChar is 'u' or 'U') {
+            kindStr += currChar;
+            numberKind |= NumberKind.Unsigned;
+            currChar = _input.Consume();
+        }
+
+        if (currChar is 'f' or 'F') {
+            kindStr += currChar;
+            numberKind |= NumberKind.Float;
+            currChar = _input.Consume();
+        }
+
+        if (currChar is 'd' or 'D') {
+            kindStr += currChar;
+            numberKind |= NumberKind.Double;
+            currChar = _input.Consume();
+        }
+
+        if (currChar is 'l' or 'L') {
+            kindStr += currChar;
+            numberKind |= NumberKind.Long;
+            _ = _input.Consume();
+        }
+
+        if (numberKind is NumberKind.Unknown or NumberKind.Unsigned) {
+            if (hasDecimalOrExponent)
+                numberKind |= NumberKind.Double;
+            else
+                numberKind |= NumberKind.Int;
         }
 
         _input.Reconsume();
 
-        double val = 0;
-        string numberStr = numberSB.ToString();
+        var range = new LocationRange(originPos, _input.Position);
 
-        if (isValid && numberStr.Length != 0 && !Double.TryParse(numberStr.AsSpan(), out val)) {
-            Logger.Error(new UnexpectedError<string>(ErrorArea.Parser) {
-                Value = numberStr,
-                Message = "The number " + numberSB + " cannot be expressed in lotus"
+        if (numberSB.Length == 0)
+            return new NumberToken("", 0, range, NumberKind.Int) { IsValid = false };
+
+        var actualRepr = numericStr + kindStr;
+
+        var isKindValid = ValidateNumberKindAndSanitize(ref numberKind, hasDecimalOrExponent, actualRepr, range);
+
+        void outsideOfRange() {
+            if (!isValid)
+                return;
+
+            Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                Value = actualRepr,
+                Message = "Number " + numericStr + " is outside the range of type " + numberKind,
+                As = "a number literal",
+                Location = range
             });
 
             isValid = false;
         }
 
-        return new NumberToken(numberStr, val, new LocationRange(originPos, _input.Position)) { IsValid = isValid };
+        object value = 0;
+
+        switch (numberKind) {
+            case NumberKind.Unsigned:
+            case NumberKind.Int: {
+                var realValue = Int128.Parse(numericStr);
+                if (realValue > Int32.MaxValue || realValue < Int32.MinValue)
+                    outsideOfRange();
+                value = (int)realValue;
+                break;
+            }
+            case NumberKind.UInt: {
+                var realValue = Int128.Parse(numericStr);
+                if (realValue > UInt32.MaxValue || realValue < UInt32.MinValue)
+                    outsideOfRange();
+                value = (uint)realValue;
+                break;
+            }
+            case NumberKind.Long: {
+                var realValue = Int128.Parse(numericStr);
+                if (realValue > Int64.MaxValue || realValue < Int64.MinValue)
+                    outsideOfRange();
+                value = (long)realValue;
+                break;
+            }
+            case NumberKind.ULong: {
+                var realValue = Int128.Parse(numericStr);
+                if (realValue > UInt64.MaxValue || realValue < UInt64.MinValue)
+                    outsideOfRange();
+                value = (ulong)realValue;
+                break;
+            }
+            case NumberKind.Float: {
+                float realValue = 0;
+                if (isValid && !Single.TryParse(numericStr, out realValue)) {
+                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                        Value = actualRepr,
+                        Message = "The number " + numericStr + " cannot be expressed as a float."
+                    });
+                }
+
+                value = realValue;
+                break;
+            }
+            case NumberKind.Double: {
+                double realValue = 0;
+                if (isValid && !Double.TryParse(numericStr, out realValue)) {
+                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                        Value = actualRepr,
+                        Message = "The number " + numericStr + " cannot be expressed as a double."
+                    });
+                }
+
+                value = realValue;
+                break;
+            }
+        }
+
+        return new NumberToken(actualRepr, value, range, numberKind) { IsValid = isValid && isKindValid };
+    }
+
+    private bool ValidateNumberKindAndSanitize(ref NumberKind kind, bool hasDecimal, string numberStr, LocationRange loc) {
+        // note: we don't need to test for NumberKind.Int cause it'll only be assigned
+        // if there's no flag/marker and no decimal
+
+        if (kind.HasFlag(NumberKind.Unsigned)
+            && (hasDecimal || kind.HasFlag(NumberKind.Float) || kind.HasFlag(NumberKind.Double))
+        ) {
+            Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                Value = numberStr,
+                Message = "Floating-point numbers can't be unsigned",
+                As = "a number literal",
+                Location = loc
+            });
+
+            kind = NumberKind.Double;
+            return false;
+        }
+
+        // so we don't have to duplicate code in case of hasDecimal+Long
+        if (hasDecimal && !kind.HasFlag(NumberKind.Float))
+            kind |= NumberKind.Double;
+
+        if (kind.HasFlag(NumberKind.Float)) {
+            if (kind.HasFlag(NumberKind.Long)) {
+                Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                    Value = numberStr,
+                    Message = "A number can't be both a float and a long",
+                    As = "a number literal",
+                    Location = loc
+                });
+
+                kind = NumberKind.Float;
+                return false;
+            }
+
+            if (kind.HasFlag(NumberKind.Double)) {
+                Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                    Value = numberStr,
+                    Message = "A number can't be both a float and a double",
+                    As = "a number literal",
+                    Location = loc
+                });
+
+                kind = NumberKind.Double;
+                return false;
+            }
+        }
+
+        if (kind.HasFlag(NumberKind.Double)) {
+            if (kind.HasFlag(NumberKind.Long)) {
+                Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                    Value = numberStr,
+                    Message = "A number can't be both a double and a long",
+                    As = "a number literal",
+                    Location = loc
+                });
+
+                kind = NumberKind.Double;
+                return false;
+            }
+
+            if (kind.HasFlag(NumberKind.Float)) {
+                Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                    Value = numberStr,
+                    Message = "A number can't be both a float and a double",
+                    As = "a number literal",
+                    Location = loc
+                });
+
+                kind = NumberKind.Double;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private OperatorToken ConsumeOperatorToken() {

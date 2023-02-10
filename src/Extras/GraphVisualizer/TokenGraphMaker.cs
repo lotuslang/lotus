@@ -10,5 +10,8 @@ internal sealed class TokenGraphMaker : ITokenVisitor<GraphNode>
 
     public GraphNode Default(TriviaToken? token) => Default(token ?? Token.NULL);
 
+    public GraphNode Visit(NumberToken token)
+        => Default(token).SetTooltip(token.NumberKind.ToString());
+
     public GraphNode ToGraphNode(Token token) => token.Accept(this);
 }

@@ -7,7 +7,9 @@ public sealed record NumberNode(NumberToken Token)
 
     public new NumberToken Token { get => (base.Token as NumberToken)!; init => base.Token = value; }
 
-    public double Value => Token.Value;
+    public object Value => Token.Value;
+
+    public NumberKind Kind => Token.NumberKind;
 
     [DebuggerHidden]
     [DebuggerStepThrough]

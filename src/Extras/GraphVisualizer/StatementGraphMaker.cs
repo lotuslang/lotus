@@ -292,7 +292,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     public GraphNode Visit(NumberNode node)
         => Default(node)
             .SetColor(Number.color)
-            .SetTooltip(Number.tooltip);
+            .SetTooltip(node.Kind.ToString());
 
     public GraphNode Visit(ObjectCreationNode node) {
         var root = new GraphNode(node.GetHashCode(), "obj creation") {

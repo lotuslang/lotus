@@ -1,17 +1,31 @@
 namespace Lotus.Syntax;
 
+[Flags]
+public enum NumberKind {
+    Unknown = 0,
+    Unsigned = 1 << 0,
+    Int = 1 << 1,
+    Long = 1 << 2,
+    Float = 1 << 3,
+    Double = 1 << 4,
+
+    UInt = Unsigned | Int,
+    ULong = Unsigned | Long
+}
+
 public sealed record NumberToken : Token
 {
-    public new static readonly NumberToken NULL = new("", Double.NaN, LocationRange.NULL) { IsValid = false };
+    public new static readonly NumberToken NULL = new("", Double.NaN, LocationRange.NULL, default) { IsValid = false };
 
-    private readonly double _val;
+    public NumberKind NumberKind { get; }
 
-    public ref readonly double Value => ref _val;
+    public object Value { get; }
 
-    public NumberToken(string s, double d, LocationRange location)
-        : base(s, TokenKind.number, location) {
-        _repr = s;
-        _val = d;
+    public NumberToken(string repr, object value, LocationRange location, NumberKind numberKind)
+        : base(repr, TokenKind.number, location) {
+        _repr = repr;
+        Value = value;
+        NumberKind = numberKind;
     }
 
     [DebuggerHidden]

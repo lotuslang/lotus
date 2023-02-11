@@ -41,8 +41,9 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// Add a child to this node.
     /// </summary>
     /// <param name="node">The node to add as a child.</param>
-    public GraphNode Add(GraphNode node) {
-        Children.Add(node);
+    public GraphNode Add(GraphNode? node) {
+        if (node is not null)
+            Children.Add(node);
 
         return this;
     }

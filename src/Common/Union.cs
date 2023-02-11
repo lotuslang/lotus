@@ -200,12 +200,12 @@ public readonly struct Union<T, U, V>
 
 public readonly struct None
 {
-    public static readonly None Instance = new();
+    internal static readonly None Instance = new();
 }
 
 public readonly struct Result<T>
 {
-    public readonly T Value { get; }
+    public readonly T? Value { get; }
 
     private readonly bool isOk;
 
@@ -227,33 +227,33 @@ public readonly struct Result<T>
     }
 
     public T ValueOrDefault(Func<T> onError)
-        => isOk ? Value : onError();
+        => IsOk() ? Value : onError();
 
     public T ValueOrDefault(T defaultVal)
-        => isOk ? Value : defaultVal;
+        => IsOk() ? Value : defaultVal;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Match(Action<T> onOk, Action onError) {
-        if (isOk)
-            onOk(Value!);
+        if (IsOk())
+            onOk(Value);
         else
             onError();
     }
 
     public TResult Match<TResult>(Func<T, TResult> onOk, Func<TResult> onError)
-        => isOk ? onOk(Value) : onError();
+        => IsOk() ? onOk(Value) : onError();
 
-    [MemberNotNullWhen(true, nameof(Value), nameof(Value))]
+    [MemberNotNullWhen(true, nameof(Value))]
     public readonly bool IsOk() => isOk;
 
-    public Union<T, None> AsUnion() => (Union<T, None>)this;
+    public readonly Union<T, None> AsUnion() => (Union<T, None>)this;
 
     public static implicit operator Result<T>(T t) => new(t);
     public static implicit operator Union<T, None>(Result<T> res)
-        => res.isOk ? new(res.Value) : new(None.Instance);
+        => res.IsOk() ? new(res.Value) : new(None.Instance);
 
     public override string? ToString()
-        => isOk ? Value?.ToString() : "";
+        => IsOk() ? Value.ToString() : "";
     public override int GetHashCode()
-        => isOk ? (Value?.GetHashCode() ?? 0) : 0;
+        => IsOk() ? Value.GetHashCode() : 0;
 }

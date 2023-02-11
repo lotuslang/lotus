@@ -4,9 +4,6 @@ namespace Lotus.Syntax;
 
 internal static class ASTUtils
 {
-    [Obsolete("NameChecker is deprecated. Please use 'is NameNode' pattern matching instead")]
-    internal static readonly NameChecker NameChecker = new();
-
     internal static readonly TopLevelPrinter TopLevelPrinter = new();
 
     internal static readonly StatementPrinter StatementPrinter = new();
@@ -16,9 +13,6 @@ internal static class ASTUtils
     internal static readonly TokenPrinter TokenPrinter = new();
 
     internal static readonly ConstantChecker ConstantChecker = new();
-
-    [Obsolete("ASTHelper.IsName is deprecated. Please use 'is NameNode' pattern matching instead")]
-    public static bool IsName(ValueNode node) => NameChecker.IsName(node);
 
     // todo(utils): add a way to print nodes/tokens without trivia
 

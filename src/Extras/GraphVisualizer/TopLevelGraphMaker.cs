@@ -48,7 +48,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
         root.Add(importsNode);
 
         if (node.HasOrigin)
-            root.Add(Visit(node.FromOrigin));
+            root.Add(ToGraphNode(node.FromOrigin));
 
         return root;
     }
@@ -121,7 +121,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
         return root;
     }
 
-    public GraphNode Visit(FromOrigin node)
+    public GraphNode ToGraphNode(FromOrigin node)
         => new GraphNode(node.GetHashCode(), "from") {
                ExtraUtils.UnionToGraphNode(node.OriginName)
                    .SetTooltip("origin name")

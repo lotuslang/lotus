@@ -19,7 +19,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + ASTUtils.PrintToken(node.Names.OpeningToken)
          + MiscUtils.Join(",", ASTUtils.PrintValue, node.Names)
          + ASTUtils.PrintToken(node.Names.ClosingToken)
-         + (node.FromOrigin is null ? "" : Visit(node.FromOrigin));
+         + (node.FromOrigin is null ? "" : Print(node.FromOrigin));
 
     public string Visit(NamespaceNode node)
         => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
@@ -44,7 +44,7 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + (node.Fields.Count != 0 ? ";" : "")
          + ASTUtils.PrintToken(node.Fields.ClosingToken);
 
-    public string Visit(FromOrigin node)
+    public string Print(FromOrigin node)
         => ASTUtils.PrintToken(node.FromToken)
          + ASTUtils.PrintUnion(node.OriginName);
 

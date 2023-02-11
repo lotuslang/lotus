@@ -59,38 +59,10 @@ public sealed class StatementParser : Parser<StatementNode>
             _curr = new StatementExpressionNode(ExpressionParser.Consume());
         }
 
-        if (checkSemicolon && LotusFacts.NeedsSemicolon(Current)) {
-            CheckSemicolon();
-        }
+        if (checkSemicolon && LotusFacts.NeedsSemicolon(Current))
+            ParserUtils.CheckSemicolon(this);
 
         return ref _curr;
-    }
-
-    private void CheckSemicolon() {
-        if (!Tokenizer.Consume(out var currToken) || currToken.Kind != TokenKind.semicolon) {
-            var eMsg = Current.GetType() + "s must be terminated with semicolons ';'";
-            if (currToken.Kind == TokenKind.EOF) {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    Message = eMsg,
-                    Location = Current.Location.GetLastLocation()
-                });
-            } else {
-                Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                    Message = eMsg,
-                    Value = currToken,
-                    Location = currToken.Location
-                });
-
-                Tokenizer.Reconsume();
-            }
-
-            _curr.IsValid = false;
-        }
-
-        // consume trailing semicolons
-        while (Tokenizer.Peek().Kind == TokenKind.semicolon) {
-            _ = Tokenizer.Consume();
-        }
     }
 
     public Tuple<StatementNode> ConsumeStatementBlock(bool areOneLinersAllowed = true)

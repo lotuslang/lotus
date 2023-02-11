@@ -10,11 +10,11 @@ public static partial class LotusFacts
 
     public static bool NeedsSemicolon(StatementNode node)
         => node is not (
-                   ElseNode
-                or ForeachNode
-                or ForNode
-                or FunctionDeclarationNode
-                or IfNode
-                or WhileNode
-            );
+                ElseNode
+            or ForeachNode
+            or ForNode
+            or FunctionDeclarationNode
+            or IfNode
+            or WhileNode
+        );
 }

@@ -27,18 +27,6 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public override ValueNode Peek()
         => new ExpressionParser(this).Consume();
 
-    public override ImmutableArray<ValueNode> Peek(int n) {
-        var parser = new ExpressionParser(this);
-
-        var output = ImmutableArray.CreateBuilder<ValueNode>(n);
-
-        for (int i = 0; i < n; i++) {
-            output.Add(parser.Consume());
-        }
-
-        return output.MoveToImmutable();
-    }
-
     public override ref readonly ValueNode Consume()
         => ref Consume(Precedence.Comma);
 

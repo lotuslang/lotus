@@ -35,18 +35,6 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     public override TopLevelNode Peek()
         => new TopLevelParser(this).Consume();
 
-    public override ImmutableArray<TopLevelNode> Peek(int n) {
-        var parser = new TopLevelParser(this);
-
-        var output = ImmutableArray.CreateBuilder<TopLevelNode>(n);
-
-        for (int i = 0; i < n; i++) {
-            output.Add(parser.Consume());
-        }
-
-        return output.MoveToImmutable();
-    }
-
     public override ref readonly TopLevelNode Consume() {
         _ = base.Consume();
 

@@ -68,8 +68,6 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     public abstract T Peek();
 
-    public abstract ImmutableArray<T> Peek(int n);
-
     public virtual bool Consume(out T result) {
         result = Consume(); // consume a StatementNode
 

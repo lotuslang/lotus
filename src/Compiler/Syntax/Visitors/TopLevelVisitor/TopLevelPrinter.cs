@@ -48,13 +48,12 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
         => ASTUtils.PrintToken(node.FromToken)
          + ASTUtils.PrintUnion(node.OriginName);
 
-    public string Visit(TypeDecName typeDec)
+    public string Print(TypeDecName typeDec)
         => !typeDec.HasParent
                 ? ASTUtils.PrintValue(typeDec.TypeName)
                 : ASTUtils.PrintValue(typeDec.Parent)
                     + ASTUtils.PrintToken(typeDec.ColonToken)
                     + ASTUtils.PrintValue(typeDec.TypeName);
 
-    public string Print(TypeDecName typeDec) => Visit(typeDec);
     public string Print(TopLevelNode node) => node.Accept(this);
 }

@@ -128,7 +128,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
            }.SetColor(From.color)
             .SetTooltip(From.tooltip);
 
-    public GraphNode Visit(TypeDecName typeDec) {
+    public GraphNode ToGraphNode(TypeDecName typeDec) {
         var root = ExtraUtils.ToGraphNode(typeDec.TypeName)
                     .SetColor("")
                     .SetTooltip("type name");
@@ -144,6 +144,5 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
         return root;
     }
 
-    public GraphNode ToGraphNode(TypeDecName typeDec) => typeDec.Accept(this);
     public GraphNode ToGraphNode(TopLevelNode node) => node.Accept(this);
 }

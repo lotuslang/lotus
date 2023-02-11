@@ -124,7 +124,7 @@ public static partial class LotusFacts
 
     private static readonly Dictionary<string, ITopLevelParslet<TopLevelNode>> _strToTopLevelParslets = new() {
         { "namespace", NamespaceParslet.Instance },
-        { "from", ImportParslet.Instance },
+        { "import", ImportParslet.Instance },
         { "using", UsingParslet.Instance },
         { "enum", EnumParslet.Instance },
         { "struct", StructParslet.Instance },
@@ -138,7 +138,7 @@ public static partial class LotusFacts
     };
 
     private static readonly string[] _additionalKeywords = new[] {
-        "import",
+        "from",
         "new"
     };
 

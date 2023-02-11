@@ -5,10 +5,6 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Default(TopLevelNode node)
         => ASTUtils.PrintToken(node.Token);
 
-    public string Visit(FromNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintUnion(node.OriginName);
-
     public string Visit(TopLevelStatementNode node)
         => ASTUtils.PrintStatement(node.Statement);
 
@@ -19,9 +15,11 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
          + ASTUtils.PrintTuple(node.Values, ",", ASTUtils.PrintValue);
 
     public string Visit(ImportNode node)
-        => Visit(node.FromStatement)
-         + ASTUtils.PrintToken(node.Token)
-         + MiscUtils.Join(",", ASTUtils.PrintValue, node.Names);
+        => ASTUtils.PrintToken(node.Token)
+         + ASTUtils.PrintToken(node.Names.OpeningToken)
+         + MiscUtils.Join(",", ASTUtils.PrintValue, node.Names)
+         + ASTUtils.PrintToken(node.Names.ClosingToken)
+         + (node.FromOrigin is null ? "" : Visit(node.FromOrigin));
 
     public string Visit(NamespaceNode node)
         => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
@@ -45,6 +43,10 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
             )
          + (node.Fields.Count != 0 ? ";" : "")
          + ASTUtils.PrintToken(node.Fields.ClosingToken);
+
+    public string Visit(FromOrigin node)
+        => ASTUtils.PrintToken(node.FromToken)
+         + ASTUtils.PrintUnion(node.OriginName);
 
     public string Visit(TypeDecName typeDec)
         => !typeDec.HasParent

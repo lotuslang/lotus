@@ -45,7 +45,9 @@ func someFunc() {
     return;
 }
 
-from origin import someType
+import someType from origin.utils
+
+import foo from bar
 
 using std.collections
 

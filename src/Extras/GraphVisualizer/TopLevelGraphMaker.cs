@@ -32,18 +32,10 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     public GraphNode Visit(TopLevelStatementNode node)
         => ExtraUtils.ToGraphNode(node.Statement);
 
-    public GraphNode Visit(FromNode node)
-        => new GraphNode(node.GetHashCode(), "from") {
-               ExtraUtils.UnionToGraphNode(node.OriginName)
-                   .SetTooltip("origin name")
-           }.SetColor(From.color)
-            .SetTooltip(From.tooltip);
-
     public GraphNode Visit(ImportNode node) {
-        var root = new GraphNode(node.GetHashCode(), "import") {
-            ExtraUtils.ToGraphNode(node.FromStatement)
-        }.SetColor(Import.color)
-         .SetTooltip(Import.tooltip);
+        var root = new GraphNode(node.GetHashCode(), "import")
+            .SetColor(Import.color)
+            .SetTooltip(Import.tooltip);
 
         var importsNode = new GraphNode(node.Names.GetHashCode(), @"import\nnames")
             .SetColor(ImportNames.color)
@@ -54,6 +46,9 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
         }
 
         root.Add(importsNode);
+
+        if (node.HasOrigin)
+            root.Add(Visit(node.FromOrigin));
 
         return root;
     }
@@ -125,6 +120,13 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
         return root;
     }
+
+    public GraphNode Visit(FromOrigin node)
+        => new GraphNode(node.GetHashCode(), "from") {
+               ExtraUtils.UnionToGraphNode(node.OriginName)
+                   .SetTooltip("origin name")
+           }.SetColor(From.color)
+            .SetTooltip(From.tooltip);
 
     public GraphNode Visit(TypeDecName typeDec) {
         var root = ExtraUtils.ToGraphNode(typeDec.TypeName)

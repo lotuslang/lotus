@@ -15,7 +15,7 @@ public static class ExtraUtils
 
     public static string PrintNode(Node node) => ASTUtils.PrintNode(node);
 
-    public static string PrintTuple<T>(Syntax.Tuple<T> tuple, string sep, Func<T, string> transform)
+    public static string PrintTuple<T>(Syntax.Tuple<T> tuple, string sep, Func<T, string> transform) where T : ILocalized
         => ASTUtils.PrintTuple<T>(tuple, sep, transform);
 
     public static string PrintTopLevel(TopLevelNode node) => ASTUtils.PrintNode(node);

@@ -32,7 +32,7 @@ internal static class ASTUtils
                                        )
         };
 
-    public static string PrintTuple<T>(Tuple<T> tuple, string sep, Func<T, string> transform)
+    public static string PrintTuple<T>(Tuple<T> tuple, string sep, Func<T, string> transform) where T : ILocalized
         => PrintToken(tuple.OpeningToken) + MiscUtils.Join(sep, transform, tuple.Items) + PrintToken(tuple.ClosingToken);
 
     public static string PrintTopLevel(TopLevelNode node) => TopLevelPrinter.Print(node);

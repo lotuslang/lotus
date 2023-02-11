@@ -25,14 +25,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
                 isValid = false;
             }
 
-            return new Tuple<StatementNode>(
-                ImmutableArray.Create(statement),
-                Token.NULL,
-                Token.NULL
-            ) {
-                IsValid = isValid,
-                Location = statement.Location
-            };
+            return new Tuple<StatementNode>(statement) { IsValid = isValid };
         }
 
         var openingBracket = parser.Tokenizer.Consume();

@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, ValueNode, TValue>
+public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, ValueNode, TValue> where TValue : ILocalized
 {
     public ValueTupleParslet(Func<ExpressionParser, IEnumerable<TValue>> valParser) : base(valParser) {}
 
@@ -39,6 +39,7 @@ public enum TrailingDelimiterBehaviour { // can't be moved into TupleParslet cau
 public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TValue>>
     where TParser : Parser<TPNode>
     where TPNode : Node
+    where TValue : ILocalized
 {
     [MemberNotNullWhen(true, nameof(singleValueParser))]
     [MemberNotNullWhen(false, nameof(multiValueParser))]
@@ -76,6 +77,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             });
 
             isValid = false;
+            parser.Tokenizer.Reconsume();
         }
 
         var items = ImmutableArray.CreateBuilder<TValue>();

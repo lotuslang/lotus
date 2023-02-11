@@ -22,8 +22,8 @@ internal static class ASTUtils
             StatementNode statement => PrintStatement(statement),
             TopLevelNode tl => PrintTopLevel(tl),
             _ => throw new NotImplementedException(
-                                           "There's no ToGraphNode() method for type " + node.GetType() + " or any of its base types"
-                                       )
+                    $"There's no ToGraphNode() method for type {node.GetType()} or any of its base types"
+                )
         };
 
     public static string PrintTuple<T>(Tuple<T> tuple, string sep, Func<T, string> transform) where T : ILocalized
@@ -34,8 +34,7 @@ internal static class ASTUtils
     public static string PrintValue(ValueNode node) => ValuePrinter.Print(node);
     public static string PrintTypeName(TypeDecName typeDec) => TopLevelPrinter.Print(typeDec);
     public static string PrintToken(Token token) => TokenPrinter.Print(token);
-    public static string PrintUnion<T, U>(Union<T, U> u) where T : Node
-                                                         where U : Node
+    public static string PrintUnion<T, U>(Union<T, U> u) where T : Node where U : Node
         => u.Match(PrintNode, PrintNode);
 
     public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);

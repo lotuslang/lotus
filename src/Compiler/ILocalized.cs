@@ -1,4 +1,4 @@
-namespace Lotus.Error;
+namespace Lotus;
 
 public interface ILocalized
 {

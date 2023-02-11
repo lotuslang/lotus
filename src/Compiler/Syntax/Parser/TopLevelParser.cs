@@ -81,7 +81,7 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             colonToken = Tokenizer.Consume();
             parent = typeName;
 
-            typeName = ExpressionParser.Consume<IdentNode>(IdentNode.NULL, @as: "the name of a type");
+            typeName = ExpressionParser.Consume<IdentNode>(IdentNode.NULL, @as: "the name of the new type");
         }
 
         bool isValid = typeName.IsValid;

@@ -132,7 +132,8 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
     public bool TryConsumeEither<TNode1, TNode2>(Union<TNode1, TNode2> defaultVal, out Union<TNode1, TNode2> res, out T asNode)
         where TNode1 : T
-        where TNode2 : T {
+        where TNode2 : T
+    {
         asNode = Consume();
 
         switch (asNode) {

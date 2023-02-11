@@ -226,11 +226,11 @@ public readonly struct Result<T>
         if (!isOk) act();
     }
 
-    public T Rescue(Func<T> factory)
-        => isOk ? Value : factory();
+    public T ValueOrDefault(Func<T> onError)
+        => isOk ? Value : onError();
 
-    public T Rescue(T val)
-        => isOk ? Value : val;
+    public T ValueOrDefault(T defaultVal)
+        => isOk ? Value : defaultVal;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Match(Action<T> onOk, Action onError) {

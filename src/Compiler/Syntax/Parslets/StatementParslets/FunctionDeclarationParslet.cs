@@ -36,7 +36,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 
         var paramList = _paramListParslet.Parse(parser.ExpressionParser);
 
-        var returnType = NameNode.NULL;
+        NameNode? returnType = null;
 
         var colonToken = Token.NULL;
 
@@ -89,9 +89,9 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             typeName = NameNode.NULL;
         }
 
-        var defaultValue = ValueNode.NULL;
+        ValueNode? defaultValue = null;
 
-        var equalSign = Token.NULL;
+        Token? equalSign = null;
 
         if (paramNameNode is OperationNode opNode && opNode.OperationType == OperationType.Assign) {
             paramNameNode = opNode.Operands[0];

@@ -1,16 +1,17 @@
 namespace Lotus.Syntax;
 
-public sealed record ReturnNode(ValueNode Value, Token Token)
+public sealed record ReturnNode(ValueNode? Value, Token Token)
 : StatementNode(
     Token,
-    Value != ValueNode.NULL
+    Value is not null
         ? new LocationRange(Token.Location, Value.Location)
         : Token.Location
 )
 {
-    public new static readonly ReturnNode NULL = new(ValueNode.NULL, Token.NULL) { IsValid = false };
+    public new static readonly ReturnNode NULL = new(null, Token.NULL) { IsValid = false };
 
-    public bool IsReturningValue => Value != ValueNode.NULL;
+    [MemberNotNullWhen(true, nameof(Value))]
+    public bool IsReturningValue => Value is not null;
 
     [DebuggerHidden]
     [DebuggerStepThrough]

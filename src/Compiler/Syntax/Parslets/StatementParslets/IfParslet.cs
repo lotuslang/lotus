@@ -38,7 +38,7 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 
         var body = parser.ConsumeStatementBlock();
 
-        var elseNode = ElseNode.NULL;
+        ElseNode? elseNode = null;
 
         if (parser.Tokenizer.Peek() == "else") {
             elseNode = ElseParslet.Instance.Parse(parser, parser.Tokenizer.Consume());

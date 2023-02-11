@@ -3,13 +3,14 @@ namespace Lotus.Syntax;
 public sealed record IfNode(
     ParenthesizedValueNode Condition,
     Tuple<StatementNode> Body,
-    ElseNode ElseNode,
+    ElseNode? ElseNode,
     Token Token
-) : StatementNode(Token, new LocationRange(Token.Location, ElseNode != ElseNode.NULL ? ElseNode.Location : Body.Location))
+) : StatementNode(Token, new LocationRange(Token.Location, ElseNode?.Location ?? Body.Location))
 {
-    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, ElseNode.NULL, Token.NULL) { IsValid = false };
+    public new static readonly IfNode NULL = new(ParenthesizedValueNode.NULL, Tuple<StatementNode>.NULL, null, Token.NULL) { IsValid = false };
 
-    public bool HasElse => ElseNode != ElseNode.NULL;
+    [MemberNotNullWhen(true, nameof(ElseNode))]
+    public bool HasElse => ElseNode is not null;
 
     [DebuggerHidden]
     [DebuggerStepThrough]

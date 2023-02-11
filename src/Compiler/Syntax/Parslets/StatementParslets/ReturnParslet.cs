@@ -9,7 +9,7 @@ public sealed class ReturnParslet : IStatementParslet<ReturnNode>
 
         var nextToken = parser.Tokenizer.Peek();
 
-        var value = ValueNode.NULL;
+        ValueNode? value = null;
 
         // todo(logging): add special error message for when we encounter an end of block
 

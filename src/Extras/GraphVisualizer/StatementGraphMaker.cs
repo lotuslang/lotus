@@ -188,7 +188,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
          .SetTooltip(If.tooltip); // fixme(graph): Choose color
 
         if (node.HasElse) {
-            root.Add(ToGraphNode(node.ElseNode!));
+            root.Add(ToGraphNode(node.ElseNode));
         }
 
         return root;

@@ -3,7 +3,7 @@ namespace Lotus.Syntax;
 public sealed record FunctionDeclarationNode(
     Tuple<StatementNode> Body,
     Tuple<FunctionParameter> ParamList,
-    NameNode ReturnType,
+    NameNode? ReturnType,
     IdentToken FuncName,
     Token Token,
     Token ColonToken
@@ -13,7 +13,7 @@ public sealed record FunctionDeclarationNode(
         = new(
             Tuple<StatementNode>.NULL,
             Tuple<FunctionParameter>.NULL,
-            NameNode.NULL,
+            null,
             IdentToken.NULL,
             Token.NULL,
             Token.NULL
@@ -21,7 +21,8 @@ public sealed record FunctionDeclarationNode(
 
     internal bool isInternal = false;
 
-    public bool HasReturnType => ReturnType != NameNode.NULL;
+    [MemberNotNullWhen(true, nameof(ReturnType))]
+    public bool HasReturnType => ReturnType is not null;
 
     [DebuggerHidden]
     [DebuggerStepThrough]
@@ -34,16 +35,17 @@ public sealed record FunctionDeclarationNode(
 public record FunctionParameter(
     NameNode Type,
     IdentNode Name,
-    ValueNode DefaultValue,
-    Token EqualSign
-) : Parameter(Type, Name, new LocationRange(Type, DefaultValue == ValueNode.NULL ? Name : DefaultValue))
+    ValueNode? DefaultValue,
+    Token? EqualSign
+) : Parameter(Type, Name, new LocationRange(Type, DefaultValue ?? Name))
 {
     public static readonly FunctionParameter NULL = new(
         NameNode.NULL,
-        IdentNode.NULL,
-        ValueNode.NULL,
-        Token.NULL
+        IdentNode.NULL
     ) { IsValid = false };
 
-    public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
+    public FunctionParameter(NameNode type, IdentNode name) : this(type, name, null, null) { }
+
+    [MemberNotNullWhen(true, nameof(DefaultValue), nameof(EqualSign))]
+    public bool HasDefaultValue => DefaultValue is not null;
 }

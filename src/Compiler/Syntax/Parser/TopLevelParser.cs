@@ -65,6 +65,9 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
             _curr = new TopLevelStatementNode(StatementParser.Consume());
         }
 
+        if (LotusFacts.NeedsSemicolon(Current))
+            ParserUtils.CheckSemicolon(this);
+
         return ref _curr;
     }
 

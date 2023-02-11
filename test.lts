@@ -45,13 +45,13 @@ func someFunc() {
     return;
 }
 
-import someType from origin.utils
+import someType from origin.utils;
 
-import foo from bar
+import foo from bar;
 
-using std.collections
+using std.collections;
 
-public namespace my_space
+public namespace my_space;
 
 foreach (item in collection) { }
 

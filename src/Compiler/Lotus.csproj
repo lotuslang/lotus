@@ -4,7 +4,11 @@
   <PropertyGroup>
     <RootNamespace>Lotus</RootNamespace>
     <WarningAsError>IDE0059</WarningAsError>
-    <NoWarn>IDE1006,CA1050,RCS1110</NoWarn>
+    <NoWarn>
+      IDE1006, <!-- Naming rule violation -->
+      CA1050,  <!-- Declare type in namespaces -->
+      RCS1110, <!-- Declare type in namespaces -->
+    </NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

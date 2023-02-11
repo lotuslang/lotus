@@ -30,15 +30,15 @@ internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
     public string Visit(StructNode node)
         => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers)
          + ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintTypeName(node.Name)
+         + ASTUtils.PrintNode(node.Name)
          + ASTUtils.PrintToken(node.Fields.OpeningToken)
          + MiscUtils.Join(
                 "; ",
                 (field) => ASTUtils.PrintValue(field.Name)
                          + ": "
                          + ASTUtils.PrintValue(field.Type)
-                         + ASTUtils.PrintToken(field.EqualSign)
-                         + ASTUtils.PrintValue(field.DefaultValue),
+                         + ASTUtils.PrintToken(field.EqualSign ?? Token.NULL)
+                         + ASTUtils.PrintValue(field.DefaultValue ?? ValueNode.NULL),
                 node.Fields.Items
             )
          + (node.Fields.Count != 0 ? ";" : "")

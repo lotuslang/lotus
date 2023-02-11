@@ -2,11 +2,11 @@ namespace Lotus.Syntax;
 
 public sealed record StructNode(
     Token Token,
-    TypeDecName Name,
+    IdentNode Name,
     Tuple<StructField> Fields,
     ImmutableArray<Token> Modifiers
 ) : TopLevelNode(Token, new LocationRange(Token, Fields)){
-    public new static readonly StructNode NULL = new(Token.NULL, TypeDecName.NULL, Tuple<StructField>.NULL, default) { IsValid = false };
+    public new static readonly StructNode NULL = new(Token.NULL, IdentNode.NULL, Tuple<StructField>.NULL, default) { IsValid = false };
 
     [DebuggerHidden]
     [DebuggerStepThrough]
@@ -18,15 +18,16 @@ public sealed record StructNode(
 public sealed record StructField(
     IdentNode Name,
     NameNode Type,
-    ValueNode DefaultValue,
-    Token EqualSign
-) : Parameter(Type, Name, new LocationRange(Name, DefaultValue == ValueNode.NULL ? Name : DefaultValue)) {
+    ValueNode? DefaultValue,
+    Token? EqualSign
+) : Parameter(Type, Name, new LocationRange(Name, DefaultValue ?? Name)) {
     public static readonly StructField NULL = new(
         IdentNode.NULL,
-        NameNode.NULL,
-        ValueNode.NULL,
-        Token.NULL
+        NameNode.NULL
     ) { IsValid = false };
 
-    public bool HasDefaultValue => DefaultValue != ValueNode.NULL;
+    public StructField(IdentNode name, NameNode type) : this(name, type, null, null) {}
+
+    [MemberNotNullWhen(true, nameof(DefaultValue), nameof(EqualSign))]
+    public bool HasDefaultValue => DefaultValue is not null;
 }

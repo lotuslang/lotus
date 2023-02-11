@@ -4,6 +4,19 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
 {
     public static readonly StructParslet Instance = new();
 
+    public StructNode Parse(TopLevelParser parser, Token structToken, ImmutableArray<Token> modifiers) {
+        Debug.Assert(structToken == "struct");
+
+        var name = parser.ExpressionParser.Consume(
+            IdentNode.NULL,
+            @as: "a type name"
+        );
+
+        var fields = _fieldsParslet.Parse(parser.ExpressionParser);
+
+        return new StructNode(structToken, name, fields, modifiers) { IsValid = name.IsValid && fields.IsValid };
+    }
+
     private static readonly TupleParslet<ExpressionParser, ValueNode, StructField> _fieldsParslet
         = new(ParseStructField) {
             Start = "{",
@@ -13,6 +26,7 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
             EndingDelimBehaviour = TrailingDelimiterBehaviour.Required
         };
 
+#pragma warning disable IDE0018 // Variable declaration can be inlined
     private static StructField ParseStructField(ExpressionParser parser) {
         var isValid = true;
 
@@ -38,22 +52,22 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
             isValid = false;
         }
 
-        var typeOrDefaultResult = parser.TryConsumeEither<NameNode, OperationNode>(out var typeNameNode);
+        // The declaration could be either:
+        //      foo: str;            <-- no default value
+        //         OR
+        //      foo: str = "stuff";  <-- default value
+        //
+        // If we encounter the first one, then we'll parse a name,
+        // so everything's easy.
+        //
+        // However, if we have the second one, it gets trickier, since
+        // the parser will actually understand it as an assignment, and
+        // therefore we'll get back an OperationNode.
 
-        static bool isTypeOrDefaultValid(Union<NameNode, OperationNode> union) {
-            return union.Match(
-                name => true,
-                op => op is { OperationType: OperationType.Assign, Operands.Length: 2 } &&
-                        op.Operands[0] is NameNode
-            );
-        }
+        var typeNameOrDefaultResult = parser.TryConsumeEither<NameNode, OperationNode>(out var typeNameNode);
 
-        var isOpValid = true;
-
-        if (!typeOrDefaultResult.Match(
-            isTypeOrDefaultValid,
-            static () => false
-        )) {
+        // if it's neither a type name nor an operation node
+        if (!typeNameOrDefaultResult.IsOk()) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                 Value = typeNameNode,
                 As = "a field's type",
@@ -61,29 +75,38 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
             });
 
             isValid = false;
-            isOpValid = false;
+
+            return new StructField(name, NameNode.NULL, null, null) { IsValid = isValid };
         }
 
-        var typeOrDefault = typeOrDefaultResult.Match(un => un, static () => NameNode.NULL);
+        var typeNameOrDefault = typeNameOrDefaultResult.Value;
 
-        var (typeName, equalSign, defaultValue) = typeOrDefault.Match(
-            static (name) => (name, Token.NULL, ValueNode.NULL),
-            (op) => (   // we already checked that op[0] is NameNode
-                isOpValid ? (NameNode)op.Operands[0] : NameNode.NULL,
-                isOpValid ? op.Token : Token.NULL,
-                isOpValid ? op.Operands[1] : ValueNode.NULL) // we already check the length
-        );
+        NameNode? typeName;
+
+        // if it's a type name
+        if (typeNameOrDefault.Is<NameNode>(out typeName))
+            return new StructField(name, typeName) { IsValid = isValid };
+
+        // if we get here, we got an OperationNode
+        var assignNode = (OperationNode)typeNameOrDefault;
+
+        // ..however, we're not sure yet if it's actually an assignment, or if it's garbage
+        // so we check that the node looks like
+        //      <name> = <value>
+        isValid
+            &= assignNode is { OperationType: OperationType.Assign, Operands.Length: 2 }
+            && assignNode.Operands[0] is NameNode; // the type name must be a name
+
+        typeName = NameNode.NULL;
+        var equalSign = Token.NULL;
+        var defaultValue = ValueNode.NULL;
+
+        if (isValid) {
+            typeName = (NameNode)assignNode.Operands[0];
+            equalSign = assignNode.Token;
+            defaultValue = assignNode.Operands[1];
+        }
 
         return new StructField(name, typeName, defaultValue, equalSign) { IsValid = isValid };
-    }
-
-    public StructNode Parse(TopLevelParser parser, Token structToken, ImmutableArray<Token> modifiers) {
-        Debug.Assert(structToken == "struct");
-
-        var name = parser.ConsumeTypeDeclarationName();
-
-        var fields = _fieldsParslet.Parse(parser.ExpressionParser);
-
-        return new StructNode(structToken, name, fields, modifiers) { IsValid = name.IsValid && fields.IsValid };
     }
 }

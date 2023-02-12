@@ -38,28 +38,20 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     public override ref readonly TopLevelNode Consume() {
         _ = base.Consume();
 
-        var currToken = Tokenizer.Consume();
-
         // if the token is EOF, return TopLevelNode.NULL
-        if (currToken.Kind == TokenKind.EOF) {
-            _curr = Default with { Location = currToken.Location };
+        if (Tokenizer.Peek().Kind == TokenKind.EOF) {
+            _curr = Default with { Location = Tokenizer.Consume().Location };
             return ref _curr;
         }
 
-        var modifiers = ImmutableArray.CreateBuilder<Token>();
+        var modifiers = ParserUtils.ConsumeModifiers(this);
 
-        while (LotusFacts.IsModifierKeyword(currToken)) {
-            modifiers.Add(currToken);
-            currToken = Tokenizer.Consume();
-        }
+        var currToken = Tokenizer.Consume();
 
         // we don't need to update currToken here, since we know it's *not* a modifier
 
         if (LotusFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
-            _curr = parslet.Parse(this, currToken, modifiers.ToImmutable());
-
-            // todo(logging): Throw an error when there's a modifier but the node isn't
-            //       supposed to be modded
+            _curr = parslet.Parse(this, currToken, modifiers);
         } else {
             Tokenizer.Reconsume();
             _curr = new TopLevelStatementNode(StatementParser.Consume());

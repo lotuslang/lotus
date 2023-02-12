@@ -30,6 +30,8 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
     private static StructField ParseStructField(ExpressionParser parser) {
         var isValid = true;
 
+        var modifiers = ParserUtils.ConsumeModifiers(parser);
+
         if (!parser.TryConsume<IdentNode>(out var name, out var nameNode)) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                 Value = nameNode,
@@ -76,7 +78,7 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
 
             isValid = false;
 
-            return new StructField(name, NameNode.NULL, null, null) { IsValid = isValid };
+            return new StructField(name, NameNode.NULL, modifiers) { IsValid = isValid };
         }
 
         var typeNameOrDefault = typeNameOrDefaultResult.Value;
@@ -85,7 +87,7 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
 
         // if it's a type name
         if (typeNameOrDefault.Is<NameNode>(out typeName))
-            return new StructField(name, typeName) { IsValid = isValid };
+            return new StructField(name, typeName, modifiers) { IsValid = isValid };
 
         // if we get here, we got an OperationNode
         var assignNode = (OperationNode)typeNameOrDefault;
@@ -107,6 +109,6 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
             defaultValue = assignNode.Operands[1];
         }
 
-        return new StructField(name, typeName, defaultValue, equalSign) { IsValid = isValid };
+        return new StructField(name, typeName, defaultValue, equalSign, modifiers) { IsValid = isValid };
     }
 }

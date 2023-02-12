@@ -115,7 +115,7 @@ enum TokenKind.trivia::TriviaKind {
 }
 
 internal struct test {
-    someStuff: int;
+    private internal someStuff: int;
     otherStuff: str = "58" + hi;
 }
 

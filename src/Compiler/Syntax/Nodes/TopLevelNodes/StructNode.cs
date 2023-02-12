@@ -19,14 +19,17 @@ public sealed record StructField(
     IdentNode Name,
     NameNode Type,
     ValueNode? DefaultValue,
-    Token? EqualSign
+    Token? EqualSign,
+    ImmutableArray<Token> Modifiers
 ) : Parameter(Type, Name, new LocationRange(Name, DefaultValue ?? Name)) {
     public static readonly StructField NULL = new(
         IdentNode.NULL,
-        NameNode.NULL
+        NameNode.NULL,
+        ImmutableArray<Token>.Empty
     ) { IsValid = false };
 
-    public StructField(IdentNode name, NameNode type) : this(name, type, null, null) {}
+    public StructField(IdentNode name, NameNode type, ImmutableArray<Token> modifiers)
+        : this(name, type, null, null, modifiers) {}
 
     [MemberNotNullWhen(true, nameof(DefaultValue), nameof(EqualSign))]
     public bool HasDefaultValue => DefaultValue is not null;

@@ -34,7 +34,8 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
          + Print(node.Fields.OpeningToken)
          + MiscUtils.Join(
                 "; ",
-                (field) => Print(field.Name)
+                (field) => PrintModifiers(field.Modifiers)
+                         + Print(field.Name)
                          + ": "
                          + Print(field.Type)
                          + Print(field.EqualSign ?? Token.NULL)

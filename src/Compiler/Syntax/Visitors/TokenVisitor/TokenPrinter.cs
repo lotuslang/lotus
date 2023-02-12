@@ -7,6 +7,9 @@ internal sealed partial class Printer : ITokenVisitor<string>
     public string Visit(NumberToken token)
         => PrintLeadingTrivia(token) + token.Representation + PrintTrailingTrivia(token);
 
+    public string Visit(CharToken token)
+        => PrintLeadingTrivia(token) + "'" + token.Representation + "'" + PrintTrailingTrivia(token);
+
     public string Visit(StringToken token)
         => PrintLeadingTrivia(token) + '"' + token.Representation + '"' + PrintTrailingTrivia(token);
 

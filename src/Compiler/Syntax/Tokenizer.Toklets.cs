@@ -187,6 +187,54 @@ public partial class Tokenizer : IConsumer<Token>
     }
 #pragma warning restore IDE0003
 
+    private CharToken ConsumerCharToken() {
+        Debug.Assert(_input.Current is '\'');
+
+        var startPos = _input.Position;
+
+        var currChar = _input.Consume();
+
+        var isValid = true;
+
+        if (currChar == '\n') {
+            Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                Value = currChar,
+                Message = "Character literals cannot contain newlines",
+                In = "a character literal",
+                Expected = "the '\\n' escape sequence"
+            });
+
+            isValid = false;
+
+            // return directly to not trigger further errors
+            return new CharToken('\0', new LocationRange(startPos, _input.Position)) { IsValid = isValid };
+        }
+
+        if (currChar == '\\') {
+            isValid &= TryParseEscapeSequence(out currChar);
+        }
+
+        // if the next character isn't a quote
+        if (_input.Consume() != '\'') {
+            var sb = new StringBuilder();
+
+            do
+                sb.Append(_input.Current);
+            while (_input.Consume(out currChar) && currChar is not ('\n' or '\''));
+
+            Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                Value = sb.ToString(),
+                Message = "Too many characters in character literal",
+                In = "a character literal",
+                Expected = "a single character, or an escape sequence"
+            });
+
+            isValid = false;
+        }
+
+        return new CharToken(currChar, new LocationRange(startPos, _input.Position)) { IsValid = isValid };
+    }
+
     private bool TryParseEscapeSequence(out char escapedChar) {
         Debug.Assert(_input.Current is '\\');
 

@@ -78,11 +78,12 @@ public partial class Tokenizer : IConsumer<Token>
             case 'y':
             case 'z':
                 return ConsumeIdentToken();
-            case '$' when _input.Peek() is '"' or '\'':
+            case '$' when _input.Peek() is '"' :
                 return ConsumeStringToken(isComplex: true);
             case '"':
-            case '\'':
                 return ConsumeStringToken();
+            case '\'':
+                return ConsumerCharToken();
             case '+':
             case '-':
             case '*':

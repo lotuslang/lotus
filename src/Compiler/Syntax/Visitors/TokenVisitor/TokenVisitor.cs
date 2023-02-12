@@ -9,6 +9,7 @@ public interface ITokenVisitor<out T>
     T Visit(Token token) => Default(token);
 
     T Visit(BoolToken token) => Visit(token as Token);
+    T Visit(CharToken token) => Visit(token as Token);
     T Visit(ComplexStringToken token) => Visit(token as Token);
     T Visit(IdentToken token) => Visit(token as Token);
     T Visit(NumberToken token) => Visit(token as Token);

@@ -11,6 +11,9 @@ internal sealed class ConstantChecker : IValueVisitor<bool>
     public bool Visit(BoolNode node)
         => true;
 
+    public bool Visit(CharNode node)
+        => true;
+
     public bool Visit(NumberNode node)
         => true;
 

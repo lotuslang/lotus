@@ -29,6 +29,8 @@ public static partial class LotusFacts
                 return ExpressionKind.Number;
             case TokenKind.@bool:
                 return ExpressionKind.Boolean;
+            case TokenKind.@char:
+                return ExpressionKind.Char;
             case TokenKind.@string:
                 return ExpressionKind.String;
             case TokenKind.EOF:

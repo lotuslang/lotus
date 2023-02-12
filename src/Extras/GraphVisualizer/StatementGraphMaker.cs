@@ -37,6 +37,8 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
 
     protected readonly (string tooltip, string color) Bool = ("bool literal", "");
 
+    protected readonly (string tooltip, string color) Char = ("char literal", "");
+
     protected readonly (string tooltip, string color) ComplexString = ("Complex string literal", "darkorange");
 
     protected readonly (string tooltip, string color) FuncCall = ("call to a function", "tomato");
@@ -235,6 +237,11 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
             .SetColor(Bool.color)
             .SetTooltip(Bool.tooltip);
 
+    public GraphNode Visit(CharNode node)
+        => Default(node)
+            .SetColor(Char.color)
+            .SetTooltip(Char.tooltip);
+
     public GraphNode Visit(ComplexStringNode node) {
         var root = new GraphNode(node.GetHashCode(), node.Value)
                         .SetColor(ComplexString.color)
@@ -341,6 +348,7 @@ internal class StatementGraphMaker : IStatementVisitor<GraphNode>, IValueVisitor
     public GraphNode Visit(ParenthesizedValueNode node)
         => ToGraphNode(node.Value);
 
+    // todo(graph): handle escape sequences (same for Visit(CharNode))
     public GraphNode Visit(StringNode node)
         => new GraphNode(node.GetHashCode(), "'" + node.Value.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
             .SetColor(String.color)

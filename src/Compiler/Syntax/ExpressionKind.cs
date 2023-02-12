@@ -22,6 +22,7 @@ public enum ExpressionKind {
     String      = Number + 1,
     Identifier  = String + 1,
     Boolean     = Identifier + 1,
+    Char        = Boolean + 1,
 
     // value+infix
     LeftParen   = ExpressionKindFlags.VALUE | ExpressionKindFlags.INFIX,

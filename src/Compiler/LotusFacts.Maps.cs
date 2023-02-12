@@ -88,6 +88,7 @@ public static partial class LotusFacts
         { ExpressionKind.Number,        NumberLiteralParslet.Instance },
         { ExpressionKind.String,        StringLiteralParslet.Instance },
         { ExpressionKind.Identifier,    IdentifierParslet.Instance },
+        { ExpressionKind.Char,          CharLiteralParslet.Instance },
         { ExpressionKind.Boolean,       BoolLiteralParslet.Instance },
         { ExpressionKind.LeftParen,     LeftParenParslet.Instance },
 

@@ -9,7 +9,7 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
         => Print(node.Statement);
 
     public string Visit(EnumNode node)
-        => MiscUtils.Join(" ", Print, node.Modifiers)
+        => PrintModifiers(node.Modifiers)
          + Print(node.EnumToken)
          + Print(node.Name)
          + PrintTuple(node.Values, ",", Print);
@@ -22,13 +22,13 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
          + (node.FromOrigin is null ? "" : Print(node.FromOrigin));
 
     public string Visit(NamespaceNode node)
-        => MiscUtils.Join(" ", Print, node.Modifiers) + Print(node.Token) + Print(node.Name);
+        => PrintModifiers(node.Modifiers) + Print(node.Token) + Print(node.Name);
 
     public string Visit(UsingNode node)
         => Print(node.Token) + Print(node.Name);
 
     public string Visit(StructNode node)
-        => MiscUtils.Join(" ", Print, node.Modifiers)
+        => PrintModifiers(node.Modifiers)
          + Print(node.Token)
          + Print(node.Name)
          + Print(node.Fields.OpeningToken)

@@ -4,6 +4,9 @@ internal sealed partial class Printer
 {
     public bool PrintTrivia { get; set; } = true;
 
+    public string PrintModifiers(ImmutableArray<Token> modifiers)
+        => String.Concat(modifiers.Select(Print));
+
     public string Print<T, U>(Union<T, U> u) where T : Node where U : Node
         => u.Match(Print, Print);
 

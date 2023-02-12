@@ -14,7 +14,7 @@ public sealed partial class Tokenizer : IConsumer<Token>
     private readonly StringConsumer _input;
 
     private Tokenizer() {
-        _reconsumeQueue = new Queue<Token>();
+        _reconsumeQueue = new Queue<Token>(2);
 
         _input = new StringConsumer(Array.Empty<char>());
 

@@ -27,8 +27,6 @@ public partial class Tokenizer : IConsumer<Token>
 
         Debug.Assert(_input.Current is '"' or '\'');
 
-        var endingDelimiter = _input.Current;
-
         var startPos = _input.Position;
 
         // the output token
@@ -42,13 +40,13 @@ public partial class Tokenizer : IConsumer<Token>
         var isValid = true;
 
         // while the current character is not the ending delimiter
-        while (_input.Consume(out var currChar) && currChar != endingDelimiter) {
+        while (_input.Consume(out var currChar) && currChar != '"') {
             if (currChar == '\n') {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                     In = "a string literal",
                     Value = currChar,
                     Location = _input.Position,
-                    Expected = "a string delimiter like this: " + endingDelimiter + output.ToString() + endingDelimiter
+                    Expected = "a string delimiter like this: \"" + output.ToString() + '"'
                 });
 
                 isValid = false;
@@ -91,10 +89,7 @@ public partial class Tokenizer : IConsumer<Token>
                     if (!this.Consume(out var currToken)) {
                         Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                             In = "an interpolated string",
-                            Expected = "} followed by a string delimiter like this: "
-                                     + endingDelimiter
-                                     + output.ToString()
-                                     + endingDelimiter,
+                            Expected = "} followed by a string delimiter like this: \"" + output.ToString() + '"',
                             Location = new LocationRange(startPos, this.Position)
                         });
 
@@ -144,7 +139,7 @@ public partial class Tokenizer : IConsumer<Token>
             }
 
             if (currChar == '\\') {
-                if (!TryParseEscapeSequence(out currChar))
+                if (!TryParseEscapeSequence(out currChar, out _))
                     isValid = false;
 
                 output.Append(currChar);
@@ -195,7 +190,6 @@ public partial class Tokenizer : IConsumer<Token>
         var currChar = _input.Consume();
 
         var isValid = true;
-
         if (currChar == '\n') {
             Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                 Value = currChar,
@@ -210,8 +204,11 @@ public partial class Tokenizer : IConsumer<Token>
             return new CharToken('\0', new LocationRange(startPos, _input.Position)) { IsValid = isValid };
         }
 
+        string repr;
         if (currChar == '\\') {
-            isValid &= TryParseEscapeSequence(out currChar);
+            isValid &= TryParseEscapeSequence(out currChar, out repr);
+        } else {
+            repr = "\\" + currChar.ToString();
         }
 
         // if the next character isn't a quote
@@ -232,10 +229,10 @@ public partial class Tokenizer : IConsumer<Token>
             isValid = false;
         }
 
-        return new CharToken(currChar, new LocationRange(startPos, _input.Position)) { IsValid = isValid };
+        return new CharToken(currChar, repr, new LocationRange(startPos, _input.Position)) { IsValid = isValid };
     }
 
-    private bool TryParseEscapeSequence(out char escapedChar) {
+    private bool TryParseEscapeSequence(out char escapedChar, out string rawCharString) {
         Debug.Assert(_input.Current is '\\');
 
         var currChar = _input.Consume();
@@ -255,30 +252,33 @@ public partial class Tokenizer : IConsumer<Token>
             return rawChar;
         }
 
-        escapedChar = currChar switch {
-            '\\' or '\'' or '"' => currChar,
-            '0' => '\0',
-            'a' => '\a',
-            'b' => '\b',
-            'f' => '\f',
-            'n' => '\n',
-            'r' => '\r',
-            't' => '\t',
-            'v' => '\v',
-            'u' => ParseUnicodeEscapeSequence(), // todo(lexing): implement \U and \x
-            _ => throwInvalidEscapeAndGetChar(currChar)
+        Span<char> rawChars = stackalloc char[4];
+
+        (escapedChar, rawCharString) = currChar switch {
+            '\\' => ('\\', @"\\"),
+            '\'' => ('\'', @"\'"),
+            '"' => ('"', "\""),
+            '0' => ('\0', @"\0"),
+            'a' => ('\a', @"\a"),
+            'b' => ('\b', @"\b"),
+            'f' => ('\f', @"\f"),
+            'n' => ('\n', @"\n"),
+            'r' => ('\r', @"\r"),
+            't' => ('\t', @"\t"),
+            'v' => ('\v', @"\v"),
+            // todo(lexing): implement \U and \x
+            'u' => (ParseUnicodeEscapeSequence(ref rawChars), @"\u" + rawChars.ToString()),
+            _ => (throwInvalidEscapeAndGetChar(currChar), @"\" + currChar)
         };
 
         return isValid;
     }
 
-    private char ParseUnicodeEscapeSequence() {
+    private char ParseUnicodeEscapeSequence(ref Span<char> rawChars) {
         Debug.Assert(_input.Current is 'u');
 
-        Span<char> chars = stackalloc char[4];
-
         for (int i = 0; i < 4; i++) {
-            if (!_input.Consume(out chars[i])) {
+            if (!_input.Consume(out rawChars[i])) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                     In = "a string",
                     Expected = "a unicode escape sequence with 4 digits",
@@ -286,14 +286,17 @@ public partial class Tokenizer : IConsumer<Token>
                 });
             }
 
-            if (!Char.IsAsciiHexDigit(chars[i])) {
+            if (!Char.IsAsciiHexDigit(rawChars[i])) {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
-                    Value = chars[i],
+                    Value = rawChars[i],
                     As = "an hex digit",
                     In = "a string",
                     Expected = "an hexadecimal digit, from 0-9, or A-F",
                     Location = _input.Position
                 });
+
+                // avoid filling rawChars with garbage, since it's used by CharToHexLookup
+                rawChars[i] = '0';
             }
         }
 
@@ -301,7 +304,7 @@ public partial class Tokenizer : IConsumer<Token>
 
         for (int i = 0; i < 4; i++) {
             finalChar *= 16;
-            finalChar += MiscUtils.CharToHexLookup[chars[i]];
+            finalChar += MiscUtils.CharToHexLookup[rawChars[i]];
         }
 
         return (char)finalChar;

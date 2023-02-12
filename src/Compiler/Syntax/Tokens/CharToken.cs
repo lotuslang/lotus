@@ -1,9 +1,11 @@
 namespace Lotus.Syntax;
 
-public record CharToken(char Value, LocationRange Location)
-: Token(Value.ToString(), TokenKind.@char, Location)
+public record CharToken(char Value, string Representation, LocationRange Location)
+: Token(Representation, TokenKind.@char, Location)
 {
     public new static readonly CharToken NULL = new('\0', LocationRange.NULL) { IsValid = false };
+
+    public CharToken(char value, LocationRange location) : this(value, value.ToString(), location) {}
 
     [DebuggerHidden]
     [DebuggerStepThrough]

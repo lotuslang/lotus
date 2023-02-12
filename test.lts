@@ -17,7 +17,7 @@ print "Fun fact: In lotus, you can easily mix expression and strings! "
 
 print(arr[1][0] == '1');
 
-print(io.read(test.lts).count("\u0041"));
+print(io.read(test.lts).count('\u0041'));
 
 n   =  5
     *  ("hello " + "world")

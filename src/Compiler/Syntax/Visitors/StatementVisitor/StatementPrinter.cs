@@ -1,52 +1,40 @@
 namespace Lotus.Syntax.Visitors;
 
-internal sealed class StatementPrinter : IStatementVisitor<string>
+internal sealed partial class Printer : IStatementVisitor<string>
 {
     public string Default(StatementNode node)
-        => ASTUtils.PrintToken(node.Token);
+        => Print(node.Token);
 
     public string Visit(DeclarationNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintToken(node.Name)
-         + ASTUtils.PrintToken(node.EqualToken)
-         + ASTUtils.PrintValue(node.Value);
+        => Print(node.Token)
+         + Print(node.Name)
+         + Print(node.EqualToken)
+         + Print(node.Value);
 
     public string Visit(ElseNode node)
-        => ASTUtils.PrintToken(node.Token)
+        => Print(node.Token)
          + node.BlockOrIfNode.Match(Print, Print);
 
     public string Visit(ForeachNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintToken(node.OpeningParen)
-         + ASTUtils.PrintValue(node.ItemName)
-         + ASTUtils.PrintToken(node.InToken)
-         + ASTUtils.PrintValue(node.CollectionRef)
-         + ASTUtils.PrintToken(node.ClosingParen)
+        => Print(node.Token)
+         + Print(node.OpeningParen)
+         + Print(node.ItemName)
+         + Print(node.InToken)
+         + Print(node.CollectionRef)
+         + Print(node.ClosingParen)
          + Print(node.Body);
 
     public string Visit(ForNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintTuple(node.Header, ",", Print)
+        => Print(node.Token)
+         + PrintTuple(node.Header, ",", stmt => stmt.Accept(this)) // we can't use Print(stmt) since it would insert semicolons
          + Print(node.Body);
 
     public string Visit(FunctionDeclarationNode node) {
-        var output = ASTUtils.PrintToken(node.Token) + ASTUtils.PrintToken(node.FuncName) + ASTUtils.PrintToken(node.ParamList.OpeningToken);
+        var output = Print(node.Token) + Print(node.FuncName) + Print(node.ParamList.OpeningToken);
 
-        static string printParameter(FunctionParameter param) {
-            var output = "";
+        output += MiscUtils.Join(",", Print, node.ParamList.Items) + Print(node.ParamList.ClosingToken);
 
-            if (param.Type != ValueNode.NULL) output += ASTUtils.PrintValue(param.Type);
-
-            output += ASTUtils.PrintValue(param.Name);
-
-            if (param.HasDefaultValue) output += ASTUtils.PrintToken(param.EqualSign) + ASTUtils.PrintValue(param.DefaultValue);
-
-            return output;
-        }
-
-        output += MiscUtils.Join(",", printParameter, node.ParamList.Items) + ASTUtils.PrintToken(node.ParamList.ClosingToken);
-
-        if (node.HasReturnType) output += ASTUtils.PrintToken(node.ColonToken) + ASTUtils.PrintValue(node.ReturnType);
+        if (node.HasReturnType) output += Print(node.ColonToken) + Print(node.ReturnType);
 
         output += Print(node.Body);
 
@@ -54,35 +42,47 @@ internal sealed class StatementPrinter : IStatementVisitor<string>
     }
 
     public string Visit(IfNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintValue(node.Condition)
+        => Print(node.Token)
+         + Print(node.Condition)
          + Print(node.Body)
          + (node.HasElse ? Print(node.ElseNode!) : "");
 
     public string Visit(PrintNode node)
-        => ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Value);
+        => Print(node.Token) + Print(node.Value);
 
     public string Visit(ReturnNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + (node.IsReturningValue ? ASTUtils.PrintValue(node.Value) : "");
+        => Print(node.Token)
+         + (node.IsReturningValue ? Print(node.Value) : "");
 
     public string Visit(StatementExpressionNode node)
-        => ASTUtils.PrintValue(node.Value);
+        => Print(node.Value);
 
     public string Visit(WhileNode node)
         => node.IsDoLoop ?
         // if it's a do loop
-            ASTUtils.PrintToken(node.DoToken!)
+            Print(node.DoToken!)
               + Print(node.Body)
-              + ASTUtils.PrintToken(node.Token)
-              + ASTUtils.PrintValue(node.Condition)
+              + Print(node.Token)
+              + Print(node.Condition)
         // else if it's a normal while loop
-        :   ASTUtils.PrintToken(node.Token)
-              + ASTUtils.PrintValue(node.Condition)
+        :   Print(node.Token)
+              + Print(node.Condition)
               + Print(node.Body);
 
-    public string Print(Tuple<StatementNode> tuple)
-        => ASTUtils.PrintTuple(tuple, "", (stmt) => Print(stmt) + (LotusFacts.NeedsSemicolon(stmt) ? ";" : ""));
+    string Print(FunctionParameter param) {
+        var output = "";
 
-    public string Print(StatementNode node) => node.Accept(this);
+        if (param.Type != ValueNode.NULL) output += Print(param.Type);
+
+        output += Print(param.Name);
+
+        if (param.HasDefaultValue) output += Print(param.EqualSign) + Print(param.DefaultValue);
+
+        return output;
+    }
+
+    public string Print(Tuple<StatementNode> tuple)
+        => PrintTuple(tuple, "", Print);
+
+    public string Print(StatementNode node) => node.Accept(this) + (LotusFacts.NeedsSemicolon(node) ? ";" : "");
 }

@@ -54,7 +54,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(EnumNode node) {
-        var root = new GraphNode(node.GetHashCode(), "enum " + ASTUtils.PrintTypeName(node.Name))
+        var root = new GraphNode(node.GetHashCode(), "enum " + ASTUtils.PrintTypeName(node.Name, printTrivia: false))
             .SetColor(Enum.color)
             .SetTooltip(Enum.tooltip);
 

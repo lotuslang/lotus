@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Lotus.Syntax.Visitors;
 
-internal sealed class TokenPrinter : ITokenVisitor<string>
+internal sealed partial class Printer : ITokenVisitor<string>
 {
     public string Visit(NumberToken token)
         => PrintLeadingTrivia(token) + token.Representation + PrintTrailingTrivia(token);
@@ -53,11 +53,19 @@ internal sealed class TokenPrinter : ITokenVisitor<string>
         return output;
     }
 
-    public string PrintLeadingTrivia(Token token)
-        => token.LeadingTrivia is not null ? Default(token.LeadingTrivia) : "";
+    public string PrintLeadingTrivia(Token token) {
+        if (!PrintTrivia || token.LeadingTrivia is null)
+            return "";
 
-    public string PrintTrailingTrivia(Token token)
-        => token.TrailingTrivia is not null ? Default(token.TrailingTrivia) : "";
+        return Default(token.LeadingTrivia);
+    }
+
+    public string PrintTrailingTrivia(Token token) {
+        if (!PrintTrivia || token.TrailingTrivia is null)
+            return "";
+
+        return Default(token.TrailingTrivia);
+    }
 
     public string Print(Token token) => token.Accept(this);
 

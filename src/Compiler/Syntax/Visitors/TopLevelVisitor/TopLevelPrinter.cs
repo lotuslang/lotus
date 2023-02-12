@@ -1,59 +1,63 @@
 namespace Lotus.Syntax.Visitors;
 
-internal sealed class TopLevelPrinter : ITopLevelVisitor<string>
+internal sealed partial class Printer : ITopLevelVisitor<string>
 {
     public string Default(TopLevelNode node)
-        => ASTUtils.PrintToken(node.Token);
+        => Print(node.Token);
 
     public string Visit(TopLevelStatementNode node)
-        => ASTUtils.PrintStatement(node.Statement);
+        => Print(node.Statement);
 
     public string Visit(EnumNode node)
-        => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers)
-         + ASTUtils.PrintToken(node.EnumToken)
+        => MiscUtils.Join(" ", Print, node.Modifiers)
+         + Print(node.EnumToken)
          + Print(node.Name)
-         + ASTUtils.PrintTuple(node.Values, ",", ASTUtils.PrintValue);
+         + PrintTuple(node.Values, ",", Print);
 
     public string Visit(ImportNode node)
-        => ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintToken(node.Names.OpeningToken)
-         + MiscUtils.Join(",", ASTUtils.PrintValue, node.Names)
-         + ASTUtils.PrintToken(node.Names.ClosingToken)
+        => Print(node.Token)
+         + Print(node.Names.OpeningToken)
+         + MiscUtils.Join(",", Print, node.Names)
+         + Print(node.Names.ClosingToken)
          + (node.FromOrigin is null ? "" : Print(node.FromOrigin));
 
     public string Visit(NamespaceNode node)
-        => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers) + ASTUtils.PrintToken(node.Token) + ASTUtils.PrintValue(node.Name);
+        => MiscUtils.Join(" ", Print, node.Modifiers) + Print(node.Token) + Print(node.Name);
 
     public string Visit(UsingNode node)
-        => ASTUtils.PrintToken(node.Token) + ASTUtils.PrintUnion(node.Name);
+        => Print(node.Token) + Print(node.Name);
 
     public string Visit(StructNode node)
-        => MiscUtils.Join(" ", ASTUtils.PrintToken, node.Modifiers)
-         + ASTUtils.PrintToken(node.Token)
-         + ASTUtils.PrintNode(node.Name)
-         + ASTUtils.PrintToken(node.Fields.OpeningToken)
+        => MiscUtils.Join(" ", Print, node.Modifiers)
+         + Print(node.Token)
+         + Print(node.Name)
+         + Print(node.Fields.OpeningToken)
          + MiscUtils.Join(
                 "; ",
-                (field) => ASTUtils.PrintValue(field.Name)
+                (field) => Print(field.Name)
                          + ": "
-                         + ASTUtils.PrintValue(field.Type)
-                         + ASTUtils.PrintToken(field.EqualSign ?? Token.NULL)
-                         + ASTUtils.PrintValue(field.DefaultValue ?? ValueNode.NULL),
+                         + Print(field.Type)
+                         + Print(field.EqualSign ?? Token.NULL)
+                         + Print(field.DefaultValue ?? ValueNode.NULL),
                 node.Fields.Items
             )
          + (node.Fields.Count != 0 ? ";" : "")
-         + ASTUtils.PrintToken(node.Fields.ClosingToken);
+         + Print(node.Fields.ClosingToken);
 
     public string Print(FromOrigin node)
-        => ASTUtils.PrintToken(node.FromToken)
-         + ASTUtils.PrintUnion(node.OriginName);
+        => Print(node.FromToken)
+         + Print(node.OriginName);
 
     public string Print(TypeDecName typeDec)
         => !typeDec.HasParent
-                ? ASTUtils.PrintValue(typeDec.TypeName)
-                : ASTUtils.PrintValue(typeDec.Parent)
-                    + ASTUtils.PrintToken(typeDec.ColonToken)
-                    + ASTUtils.PrintValue(typeDec.TypeName);
+                ? Print(typeDec.TypeName)
+                : Print(typeDec.Parent)
+                    + Print(typeDec.ColonToken)
+                    + Print(typeDec.TypeName);
 
-    public string Print(TopLevelNode node) => node.Accept(this);
+    public string Print(Tuple<TopLevelNode> tuple)
+        => PrintTuple(tuple, "", Print);
+
+    public string Print(TopLevelNode node)
+        => node.Accept(this) + (LotusFacts.NeedsSemicolon(node) ? ";" : "");
 }

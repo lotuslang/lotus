@@ -12,6 +12,8 @@ arr = [ 36, 1.1d.toString(), 215, "he", true, [ .546e+20, 486513UL], aur, /* wtf
 arr.add([], arr);
 
 print $"hello {"benjamin"} ! Today will be {GetWeather(pressure * 10.644^(temperature-2048))}";
+print "Fun fact:\n\tIn lotus, you can easily mix expression and strings! "
+    + $"For example, you can write: $\"It's currently {{time.now}}\" and it will replace time.now with {time.now}";
 
 n   =  5
     *  ("hello " + "world")

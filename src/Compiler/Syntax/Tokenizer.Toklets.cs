@@ -20,8 +20,12 @@ public partial class Tokenizer : IConsumer<Token>
 
 #pragma warning disable IDE0003 // Name can be simplified => avoid confusion between text consumer and tokenizer
     private StringToken ConsumeStringToken(bool isComplex = false) {
+        Debug.Assert(!isComplex || _input.Current == '$');
+
         if (isComplex)
             _ = _input.Consume(); // consume the '$' prefix
+
+        Debug.Assert(_input.Current is '"' or '\'');
 
         var endingDelimiter = _input.Current;
 
@@ -38,23 +42,7 @@ public partial class Tokenizer : IConsumer<Token>
         var isValid = true;
 
         // while the current character is not the ending delimiter
-        char currChar = '\0';
-        while (currChar != endingDelimiter) {
-            if (!_input.Consume(out currChar)) {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
-                    In = "a string",
-                    Expected = new[] {
-                        "a character",
-                        "a string delimiter ' or \"",
-                    },
-                    Location = _input.Position
-                });
-
-                isValid = false;
-
-                break;
-            }
-
+        while (_input.Consume(out var currChar) && currChar != endingDelimiter) {
             if (currChar == '\n') {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                     In = "a string",
@@ -68,13 +56,32 @@ public partial class Tokenizer : IConsumer<Token>
                 break;
             }
 
+            if (isComplex && currChar == '}') {
+                output.Append('}');
+
+                if (_input.Consume() != '}') {
+                    Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
+                        Value = _input.Current,
+                        Message = "A raw '}' character must be escaped in interpolated strings",
+                        In = "an interpolated string",
+                        Location = _input.Position
+                    });
+
+                    _input.Reconsume();
+                    isValid = false;
+                }
+
+                continue;
+            }
+
             if (isComplex && currChar == '{') {
+                output.Append('{');
+                if (_input.Peek() == '{') {
+                    _ = _input.Consume(); // consume the '{' to not consume it twice
+                    continue;
+                }
+
                 var sectionStartPos = _input.Position;
-                // todo(lexing): implement '{{' escaping
-                // note: should probably refactor ComplexStrings so that they have a list of offsets
-                //       for the positions of code sections, such that later stages don't have to guard
-                //       against '{{' and such, which would also makes the fuzzer crashes in TokenPrinter
-                //       less likely
 
                 var tokenList = ImmutableArray.CreateBuilder<Token>();
 
@@ -112,15 +119,10 @@ public partial class Tokenizer : IConsumer<Token>
 
                 if (tokenList.Count > 0) {
                     sections.Add(new InterpolatedSection(
-                        output.Length, // not -1 because we want to insert before the next character
+                        output.Length - 1,
                         tokenList.ToImmutable(),
                         new LocationRange(sectionStartPos, _input.Position)
                     ));
-
-                    output.Append("{}");
-
-                    // append whatever was after the closing '}'
-                    output.Append(this.Current.TrailingTrivia?.Representation);
                 } else {
                     Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                         In = "an interpolated string",
@@ -132,6 +134,11 @@ public partial class Tokenizer : IConsumer<Token>
 
                     isValid = false;
                 }
+
+                output.Append('}');
+
+                // append whatever was after the closing '}'
+                output.Append(this.Current.TrailingTrivia?.Representation);
 
                 continue;
             }
@@ -169,15 +176,29 @@ public partial class Tokenizer : IConsumer<Token>
                     }
                 );
 
-                break;
+                continue;
             }
 
             // add it to the value of output
             output.Append(currChar);
         }
 
+        // if we encountered an EOF
+        if (_input.Current == _input.Default) {
+            Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
+                In = "a string",
+                Expected = new[] {
+                        "a character",
+                        "a string delimiter ' or \"",
+                    },
+                Location = _input.Position
+            });
+
+            isValid = false;
+        }
+
         if (output.Length > 0) // have to check because the string might be empty and stopped because of EOF
-            output.Length--; // remove the ending delimiter
+            output.Length--; // the ending delimiter
 
         if (isComplex) {
             return
@@ -466,7 +487,7 @@ public partial class Tokenizer : IConsumer<Token>
 
         var range = new LocationRange(originPos, _input.Position);
 
-        if (numberSB.Length == 0)
+        if (numberSB.Length == 0) //
             return new NumberToken("", 0, range, NumberKind.Int) { IsValid = false };
 
         var actualRepr = numericStr + kindStr;

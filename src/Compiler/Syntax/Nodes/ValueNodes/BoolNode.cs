@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Lotus.Syntax;
 
 public sealed record BoolNode(BoolToken Token) : ValueNode(Token, Token.IsValid)
@@ -6,11 +8,11 @@ public sealed record BoolNode(BoolToken Token) : ValueNode(Token, Token.IsValid)
 
     public bool Value => Token.Value;
 
-    public new BoolToken Token { get => (base.Token as BoolToken)!; init => base.Token = value; }
+    public new BoolToken Token { get => Unsafe.As<BoolToken>(base.Token); init => base.Token = value; }
 
     [DebuggerHidden]
     [DebuggerStepThrough]
     [DebuggerNonUserCode]
-    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 }

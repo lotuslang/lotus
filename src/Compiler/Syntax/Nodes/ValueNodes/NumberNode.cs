@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Lotus.Syntax;
 
 public sealed record NumberNode(NumberToken Token)
@@ -5,7 +7,7 @@ public sealed record NumberNode(NumberToken Token)
 {
     public new static readonly NumberNode NULL = new(NumberToken.NULL);
 
-    public new NumberToken Token { get => (base.Token as NumberToken)!; init => base.Token = value; }
+    public new NumberToken Token { get => Unsafe.As<NumberToken>(base.Token); init => base.Token = value; }
 
     public object Value => Token.Value;
 
@@ -14,6 +16,6 @@ public sealed record NumberNode(NumberToken Token)
     [DebuggerHidden]
     [DebuggerStepThrough]
     [DebuggerNonUserCode]
-    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 }

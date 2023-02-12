@@ -162,7 +162,7 @@ public static class Logger
                 }
 
                 if (token is not OperatorToken opToken) {
-                    sb.Append(token.Kind).Append(" '").Append(ASTUtils.PrintToken(token).Trim()).Append('\'');
+                    sb.Append(token.Kind).Append(" '").Append(ASTUtils.PrintToken(token, false).Trim()).Append('\'');
 
                     break;
                 }
@@ -210,7 +210,7 @@ public static class Logger
 
                 sb
                     .Append("tokens '")
-                    .Append(MiscUtils.Join(" ", ASTUtils.PrintToken, tokens).Trim())
+                    .Append(MiscUtils.Join(" ", t => ASTUtils.PrintToken(t, false), tokens).Trim())
                     .Append('\'');
 
                 break;
@@ -279,7 +279,7 @@ public static class Logger
                 }
 
                 if (node.Location.LineLength == 1)
-                    sb.Append(" '").Append(ASTUtils.PrintNode(node).Trim()).Append('\"');
+                    sb.Append(" '").Append(ASTUtils.PrintNode(node, false).Trim()).Append('\"');
 
                 break;
             case IValued<string> unxString:

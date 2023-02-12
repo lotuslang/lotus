@@ -45,7 +45,7 @@ public partial class Tokenizer : IConsumer<Token>
         while (_input.Consume(out var currChar) && currChar != endingDelimiter) {
             if (currChar == '\n') {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
-                    In = "a string",
+                    In = "a string literal",
                     Value = currChar,
                     Location = _input.Position,
                     Expected = "a string delimiter like this: " + endingDelimiter + output.ToString() + endingDelimiter
@@ -196,9 +196,6 @@ public partial class Tokenizer : IConsumer<Token>
 
             isValid = false;
         }
-
-        if (output.Length > 0) // have to check because the string might be empty and stopped because of EOF
-            output.Length--; // the ending delimiter
 
         if (isComplex) {
             return

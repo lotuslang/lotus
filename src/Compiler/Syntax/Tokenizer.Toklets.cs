@@ -234,7 +234,7 @@ public partial class Tokenizer : IConsumer<Token>
             if (!Char.IsAsciiHexDigit(chars[i])) {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                     Value = chars[i],
-                    As = "a hex digit",
+                    As = "an hex digit",
                     In = "a string",
                     Expected = "an hexadecimal digit, from 0-9, or A-F",
                     Location = _input.Position
@@ -242,14 +242,14 @@ public partial class Tokenizer : IConsumer<Token>
             }
         }
 
-        char finalChar = '\0';
+        byte finalChar = 0;
 
         for (int i = 0; i < 4; i++) {
-            finalChar <<= 1;
-            finalChar += (char)MiscUtils.CharToHexLookup[chars[i]];
+            finalChar *= 16;
+            finalChar += MiscUtils.CharToHexLookup[chars[i]];
         }
 
-        return finalChar;
+        return (char)finalChar;
     }
 
     private Token ConsumeIdentToken() {

@@ -144,37 +144,10 @@ public partial class Tokenizer : IConsumer<Token>
             }
 
             if (currChar == '\\') {
-                if (!_input.Consume(out currChar))
-                    break; // by breaking, we go back to the start of the loop, which also checks for EOFs
-
-                char throwInvalidEscapeAndGetChar(char escape) {
-                    Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
-                        Value = "\\" + escape,
-                        In = "a string",
-                        Message = $@"Unrecognized escape sequence '\{escape}'",
-                        Location = _input.Position
-                    });
-
+                if (!TryParseEscapeSequence(out currChar))
                     isValid = false;
 
-                    return '\0';
-                }
-
-                output.Append(
-                    currChar switch {
-                        '\\' or '\'' or '"' => currChar,
-                        '0' => '\0',
-                        'a' => '\a',
-                        'b' => '\b',
-                        'f' => '\f',
-                        'n' => '\n',
-                        'r' => '\r',
-                        't' => '\t',
-                        'v' => '\v',
-                        'u' => ParseUnicodeEscapeSequence(), // todo(lexing): implement \U and \x
-                        _   => throwInvalidEscapeAndGetChar(currChar)
-                    }
-                );
+                output.Append(currChar);
 
                 continue;
             }
@@ -213,6 +186,43 @@ public partial class Tokenizer : IConsumer<Token>
         }
     }
 #pragma warning restore IDE0003
+
+    private bool TryParseEscapeSequence(out char escapedChar) {
+        Debug.Assert(_input.Current is '\\');
+
+        var currChar = _input.Consume();
+
+        var isValid = true;
+
+        char throwInvalidEscapeAndGetChar(char rawChar) {
+            Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
+                Value = "\\" + rawChar,
+                In = "a string",
+                Message = $@"Unrecognized escape sequence '\{rawChar}'",
+                Location = _input.Position
+            });
+
+            isValid = false;
+
+            return rawChar;
+        }
+
+        escapedChar = currChar switch {
+            '\\' or '\'' or '"' => currChar,
+            '0' => '\0',
+            'a' => '\a',
+            'b' => '\b',
+            'f' => '\f',
+            'n' => '\n',
+            'r' => '\r',
+            't' => '\t',
+            'v' => '\v',
+            'u' => ParseUnicodeEscapeSequence(), // todo(lexing): implement \U and \x
+            _ => throwInvalidEscapeAndGetChar(currChar)
+        };
+
+        return isValid;
+    }
 
     private char ParseUnicodeEscapeSequence() {
         Debug.Assert(_input.Current is 'u');

@@ -11,8 +11,7 @@ public sealed class DotAccessParslet : IInfixParslet<ValueNode>
     public ValueNode Parse(ExpressionParser parser, Token dotToken, ValueNode left) {
         var dotOpToken = dotToken as OperatorToken;
 
-        Debug.Assert(dotOpToken is not null);
-        Debug.Assert(dotOpToken.Representation == ".");
+        Debug.Assert(dotOpToken is { Representation: "." });
 
         if (left is not NameNode leftName) {
             if (left is not IdentNode leftIdent) {

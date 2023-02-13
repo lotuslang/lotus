@@ -19,7 +19,7 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
         };
 
     public ImportNode Parse(TopLevelParser parser, Token importToken, ImmutableArray<Token> modifiers) {
-        Debug.Assert(importToken.Representation is "import");
+        Debug.Assert(importToken == "import");
 
         TopLevelParser.ReportIfAnyModifiers(modifiers, "import statements", out var hasModifiers);
 

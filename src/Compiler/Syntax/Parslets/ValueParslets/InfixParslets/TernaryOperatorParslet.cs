@@ -9,8 +9,7 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
     public OperationNode Parse(ExpressionParser parser, Token questionMarkToken, ValueNode condition) {
         var questionMarkOperator = questionMarkToken as OperatorToken;
 
-        Debug.Assert(questionMarkOperator is not null);
-        Debug.Assert(questionMarkOperator.Representation == "?");
+        Debug.Assert(questionMarkOperator is { Representation: "?" });
 
         var isValid = true;
 

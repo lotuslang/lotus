@@ -4,11 +4,15 @@ namespace Lotus.Syntax;
 
 public partial class Tokenizer : IConsumer<Token>
 {
-    private Token ConsumeSemicolonToken()
-        => new(";", TokenKind.semicolon, _input.Position);
+    private Token ConsumeSemicolonToken() {
+        Debug.Assert(_input.Current is ';');
+        return new(";", TokenKind.semicolon, _input.Position);
+    }
 
     private Token ConsumeDoubleColonToken() {
+        Debug.Assert(_input.Current is ':');
         _ = _input.Consume();
+        Debug.Assert(_input.Current is ':');
         return new Token("::", TokenKind.delimiter, _input.Position);
     }
 
@@ -20,7 +24,7 @@ public partial class Tokenizer : IConsumer<Token>
 
 #pragma warning disable IDE0003 // Name can be simplified => avoid confusion between text consumer and tokenizer
     private StringToken ConsumeStringToken(bool isComplex = false) {
-        Debug.Assert(!isComplex || _input.Current == '$');
+        Debug.Assert(!isComplex || _input.Current is '$');
 
         if (isComplex)
             _ = _input.Consume(); // consume the '$' prefix

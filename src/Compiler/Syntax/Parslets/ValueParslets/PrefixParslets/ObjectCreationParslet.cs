@@ -44,7 +44,8 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 
             isValid = false;
 
-            parser.Tokenizer.Reconsume();
+            if (type.IsValid)
+                parser.Tokenizer.Reconsume();
 
             typeName = new IdentNode(
                 new IdentToken(

@@ -568,6 +568,16 @@ public partial class Tokenizer : IConsumer<Token>
 
         object value = 0;
 
+        // avoid a number too long for Int128.Parse
+        if ((numberKind & (NumberKind.Int | NumberKind.Long)) != 0) {
+            if (numericStr.Length >= 20)
+                outsideOfRange();
+            value = 0;
+
+            // Double.Parse can handle anything :)
+            numberKind = NumberKind.Double;
+        }
+
         switch (numberKind) {
             case NumberKind.Unsigned:
             case NumberKind.Int: {

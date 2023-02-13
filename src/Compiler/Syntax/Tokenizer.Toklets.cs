@@ -212,7 +212,7 @@ public partial class Tokenizer : IConsumer<Token>
         if (currChar == '\\') {
             isValid &= TryParseEscapeSequence(out currChar, out repr);
         } else {
-            repr = "\\" + currChar.ToString();
+            repr = currChar.ToString();
         }
 
         // if the next character isn't a quote

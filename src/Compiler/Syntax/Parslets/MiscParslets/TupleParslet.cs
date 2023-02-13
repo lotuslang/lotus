@@ -122,11 +122,9 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     break;
                 }
 
-                if (parser.Tokenizer.Current == "}") {
-                    parser.Tokenizer.Reconsume();
-
+                // no need to emit an error (or reconsume), it'll be handled later
+                if (parser.Tokenizer.Current == "}")
                     break;
-                }
 
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = parser.Tokenizer.Current,

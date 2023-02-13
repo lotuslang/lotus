@@ -438,7 +438,6 @@ public partial class Tokenizer : IConsumer<Token>
         if (currChar == '.' && nextIsNumber()) {
             var errorCount = Logger.ErrorCount;
 
-            _ = _input.Consume(); // we need to update _input.Current before lexing a new number token
             numberSB.Append(currChar).Append(ConsumeNumberToken().Representation);
 
             // The above .Consume(...) could generate extra errors, except we don't really
@@ -479,15 +478,10 @@ public partial class Tokenizer : IConsumer<Token>
         if (currChar is 'e' or 'E') {
             numberSB.Append(currChar);
 
-            if (nextIsNumber() || _input.Peek() is '+' or '-') {
+            if (nextIsNumber()) {
                 // yes it's fine to consume a new one in any case, cause ConsumeNumberToken expects
                 // _input.Current to already be set to a digit or '.'
-                currChar = _input.Consume();
-
-                if (currChar is '+' or '-') {
-                    numberSB.Append(currChar);
-                    _ = _input.Consume(); // ConsumeNumberToken expects a digit or '.' at the start
-                }
+                _ = _input.Consume();
 
                 var errorCount = Logger.ErrorCount;
 

@@ -44,45 +44,22 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
 
         var statements = ImmutableArray.CreateBuilder<StatementNode>();
 
-        while (parser.Tokenizer.Peek() != "}") {
+        while (parser.Tokenizer.Peek() is not ({ Kind: TokenKind.EOF } or { Representation: "}" })) {
             statements.Add(parser.Consume());
-
-            if (parser.Tokenizer.Peek().Kind == TokenKind.EOF) {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    In = "a simple block",
-                    Expected = "a statement",
-                    Location = parser.Tokenizer.Current.Location
-                });
-
-                isValid = false;
-
-                break;
-            }
-
-            //if (Tokenizer.Peek() == ";") Tokenizer.Consume();
         }
 
-        var closingBracket = parser.Tokenizer.Peek();
+        var closingBracket = parser.Tokenizer.Consume();
 
-        if (!(!isValid && closingBracket.Kind == TokenKind.EOF) && closingBracket != "}") {
-            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                Value = closingBracket,
-                In = "a simple block",
-                Expected = "the character '}'"
+        // if we stopped because of an EOF
+        if (closingBracket.Kind == TokenKind.EOF) {
+            Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
+                In = "a statement block",
+                Expected = "a statement or the '}' character",
+                Location = parser.Tokenizer.Current.Location
             });
-
-            if (closingBracket.Kind == TokenKind.EOF) {
-                // if this node was already invalid, it probably means that we already encountered an EOF,
-                // so no need to tell the user twice
-                if (!isValid) _ = Logger.errorStack.Pop();
-            } else {
-                parser.Tokenizer.Reconsume();
-            }
 
             isValid = false;
         }
-
-        _ = parser.Tokenizer.Consume();
 
         return new Tuple<StatementNode>(statements.ToImmutable(), openingBracket, closingBracket) { IsValid = isValid };
     }

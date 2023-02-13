@@ -80,15 +80,22 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
             parser.Tokenizer.Reconsume();
         }
 
-        var items = ImmutableArray.CreateBuilder<TValue>();
+        // in case this tuple is empty, don't alloc a builder
+        if (parser.Tokenizer.Consume(out var token) && token == End) {
+            var items = ImmutableArray<TValue>.Empty;
 
-        while (parser.Tokenizer.Consume(out var token) && token != End) {
+            return new Tuple<TValue>(items, startingToken, token) { IsValid = isValid };
+        }
+
+        var itemsBuilder = ImmutableArray.CreateBuilder<TValue>();
+
+        do {
             parser.Tokenizer.Reconsume();
 
             if (IsSingleValueParser)
-                items.Add(singleValueParser(parser));
+                itemsBuilder.Add(singleValueParser(parser));
             else
-                items.AddRange(multiValueParser(parser));
+                itemsBuilder.AddRange(multiValueParser(parser));
 
             if (parser.Tokenizer.Consume() != Delim) {
                 if (parser.Tokenizer.Current == End) {
@@ -174,6 +181,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                 break;
             }
         }
+        while (parser.Tokenizer.Consume(out token) && token != End);
 
         var endingToken = parser.Tokenizer.Current;
 
@@ -197,13 +205,13 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     In = In,
                     Expected = "an ending delimiter '" + End + "'",
-                    Location = (items.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
+                    Location = (itemsBuilder.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
                 });
             }
 
             isValid = false;
         }
 
-        return new Tuple<TValue>(items.ToImmutable(), startingToken, endingToken) { IsValid = isValid };
+        return new Tuple<TValue>(itemsBuilder.ToImmutable(), startingToken, endingToken) { IsValid = isValid };
     }
 }

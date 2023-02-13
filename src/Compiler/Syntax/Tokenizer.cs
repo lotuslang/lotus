@@ -7,14 +7,14 @@ public sealed partial class Tokenizer : IConsumer<Token>
 
     public Token Default => Token.NULL with { Location = Position };
 
-    private readonly Queue<Token> _reconsumeQueue;
+    private readonly Stack<Token> _reconsumeStack;
 
     public LocationRange Position => Current.Location;
 
     private readonly StringConsumer _input;
 
     private Tokenizer() {
-        _reconsumeQueue = new Queue<Token>(2);
+        _reconsumeStack = new Stack<Token>(2);
 
         _input = new StringConsumer(Array.Empty<char>());
 
@@ -34,12 +34,12 @@ public sealed partial class Tokenizer : IConsumer<Token>
     public Tokenizer(IConsumer<Token> tokenConsumer) : this(new StringConsumer("")) {
         var cloned = tokenConsumer.Clone();
         while (cloned.Consume(out _)) {
-            _reconsumeQueue.Enqueue(tokenConsumer.Current);
+            _reconsumeStack.Push(tokenConsumer.Current);
         }
     }
 
     public Tokenizer(Tokenizer tokenizer) : this(tokenizer._input) {
-        _reconsumeQueue = new Queue<Token>(tokenizer._reconsumeQueue);
+        _reconsumeStack = new Stack<Token>(tokenizer._reconsumeStack);
 
         _curr = tokenizer._curr;
         _lastTok = tokenizer._lastTok;
@@ -51,9 +51,10 @@ public sealed partial class Tokenizer : IConsumer<Token>
 
     private Token _lastTok = Token.NULL;
     public void Reconsume() {
-        Debug.Assert(!_reconsumeQueue.TryPeek(out var token) || !Object.ReferenceEquals(token, Current));
+        if (_reconsumeStack.TryPeek(out var token))
+          Debug.Assert(!Object.ReferenceEquals(token, Current));
 
-        _reconsumeQueue.Enqueue(Current);
+        _reconsumeStack.Push(Current);
         _curr = _lastTok;
     }
 
@@ -65,7 +66,7 @@ public sealed partial class Tokenizer : IConsumer<Token>
 
         var output = Consume(preserveTrivia);
 
-        _reconsumeQueue.Enqueue(output);
+        _reconsumeStack.Push(output);
 
         _curr = _lastTok;
         _lastTok = oldLastTok;
@@ -86,8 +87,8 @@ public sealed partial class Tokenizer : IConsumer<Token>
         _lastTok = _curr;
 
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
-        if (_reconsumeQueue.Count != 0) {
-            _curr = _reconsumeQueue.Dequeue();
+        if (_reconsumeStack.Count != 0) {
+            _curr = _reconsumeStack.Pop();
             return ref _curr;
         }
 

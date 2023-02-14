@@ -2,7 +2,7 @@ using Lotus.Syntax.Visitors;
 
 namespace Lotus.Extras.Graphs;
 
-internal sealed class TokenGraphMaker : ITokenVisitor<GraphNode>
+internal sealed partial class GraphMaker : ITokenVisitor<GraphNode>
 {
     public GraphNode Default(Token token)
         =>  new GraphNode(token.GetHashCode(), token.Representation)

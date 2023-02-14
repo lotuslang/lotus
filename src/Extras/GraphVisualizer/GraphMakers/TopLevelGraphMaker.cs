@@ -2,27 +2,29 @@ using Lotus.Syntax.Visitors;
 
 namespace Lotus.Extras.Graphs;
 
-internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
+internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
 {
-    protected readonly (string tooltip, string color) From = ("from statement", "navy");
-    protected readonly (string tooltip, string color) FromOrigin = ("origin name", "");
+    private static readonly (string tooltip, string color) From = ("from statement", "navy");
+    private static readonly (string tooltip, string color) FromOrigin = ("origin name", "");
 
-    protected readonly (string tooltip, string color) Import = ("import statement", "fuchsia");
-    protected readonly (string tooltip, string color) ImportNames = ("import names", "peru");
+    private static readonly (string tooltip, string color) Import = ("import statement", "fuchsia");
+    private static readonly (string tooltip, string color) ImportNames = ("import names", "peru");
 
-    protected readonly (string tooltip, string color) Namespace = ("namespace declaration", "cornflowerblue");
-    protected readonly (string tooltip, string color) NamespaceName = ("namespace name", "");
+    private static readonly (string tooltip, string color) Namespace = ("namespace declaration", "cornflowerblue");
+    private static readonly (string tooltip, string color) NamespaceName = ("namespace name", "");
 
-    protected readonly (string tooltip, string color) Using = (nameof(UsingNode), "");
+    private static readonly (string tooltip, string color) Using = (nameof(UsingNode), "");
 
-    protected readonly (string tooltip, string color) Enum = (nameof(EnumNode), "");
-    protected readonly (string tooltip, string color) EnumParent = ("this enum's parent value/name", "");
-    protected readonly (string tooltip, string color) EnumValues = ("this enum's values", "");
+    private static readonly (string tooltip, string color) Enum = (nameof(EnumNode), "");
+    private static readonly (string tooltip, string color) EnumParent = ("this enum's parent value/name", "");
+    private static readonly (string tooltip, string color) EnumValues = ("this enum's values", "");
 
-    protected readonly (string tooltip, string color) Struct = (nameof(StructNode), "");
-    protected readonly (string tooltip, string color) StructFields = ("this struct's fields", "");
+    private static readonly (string tooltip, string color) Struct = (nameof(StructNode), "");
+    private static readonly (string tooltip, string color) StructFields = ("this struct's fields", "");
 
-    protected readonly (string tooltip, string color) TopLevel = (nameof(TopLevelNode), "black");
+    private static readonly (string tooltip, string color) TopLevel = (nameof(TopLevelNode), "black");
+
+    private static readonly (string tooltip, string color) TypeDecName = ("type name", "");
 
     public GraphNode Default(TopLevelNode node)
         =>  new GraphNode(node.GetHashCode(), node.Token.Representation)
@@ -85,7 +87,7 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
 
     public GraphNode Visit(NamespaceNode node)
         => new GraphNode(node.GetHashCode(), "namespace") {
-                ExtraUtils.ToGraphNode(node.Name).SetTooltip("namespace name")
+                ExtraUtils.ToGraphNode(node.Name).SetTooltip(NamespaceName.tooltip)
             }.SetColor(Namespace.color)
              .SetTooltip(Namespace.tooltip);
 
@@ -124,14 +126,14 @@ internal class TopLevelGraphMaker : ITopLevelVisitor<GraphNode>
     public GraphNode ToGraphNode(FromOrigin node)
         => new GraphNode(node.GetHashCode(), "from") {
                ExtraUtils.UnionToGraphNode(node.OriginName)
-                   .SetTooltip("origin name")
+                   .SetTooltip(FromOrigin.tooltip)
            }.SetColor(From.color)
             .SetTooltip(From.tooltip);
 
     public GraphNode ToGraphNode(TypeDecName typeDec) {
         var root = ExtraUtils.ToGraphNode(typeDec.TypeName)
-                    .SetColor("")
-                    .SetTooltip("type name");
+                    .SetColor(TypeDecName.color)
+                    .SetTooltip(TypeDecName.tooltip);
 
         if (typeDec.HasParent) {
             root.Add(

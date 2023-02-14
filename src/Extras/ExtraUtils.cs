@@ -5,13 +5,7 @@ namespace Lotus.Extras;
 
 public static class ExtraUtils
 {
-    internal static readonly TokenGraphMaker TokenGraphMaker = new();
-
-    internal static readonly StatementGraphMaker StatementGraphMaker = new();
-
-    internal static readonly TopLevelGraphMaker TopLevelGraphMaker = new();
-
-    internal static readonly ConstantVisualizer ConstantVisualizer = new();
+    internal static readonly GraphMaker GraphMaker = new();
 
     public static string PrintNode(Node node) => ASTUtils.PrintNode(node);
 
@@ -27,11 +21,11 @@ public static class ExtraUtils
                                                          where U : Node
         => ASTUtils.PrintUnion(u);
 
-    public static GraphNode ToGraphNode(Token token) => TokenGraphMaker.ToGraphNode(token);
-    public static GraphNode ToGraphNode(ValueNode node) => StatementGraphMaker.ToGraphNode(node);
-    public static GraphNode ToGraphNode(StatementNode node) => StatementGraphMaker.ToGraphNode(node);
-    public static GraphNode ToGraphNode(TopLevelNode node) => TopLevelGraphMaker.ToGraphNode(node);
-    public static GraphNode ToGraphNode(TypeDecName typeDec) => TopLevelGraphMaker.ToGraphNode(typeDec);
+    public static GraphNode ToGraphNode(Token token) => GraphMaker.ToGraphNode(token);
+    public static GraphNode ToGraphNode(ValueNode node) => GraphMaker.ToGraphNode(node);
+    public static GraphNode ToGraphNode(StatementNode node) => GraphMaker.ToGraphNode(node);
+    public static GraphNode ToGraphNode(TopLevelNode node) => GraphMaker.ToGraphNode(node);
+    public static GraphNode ToGraphNode(TypeDecName typeDec) => GraphMaker.ToGraphNode(typeDec);
     public static GraphNode UnionToGraphNode<T, U>(Union<T, U> u) where T : Node
                                                                   where U : Node
         => u.Match(ToGraphNode, ToGraphNode);
@@ -44,12 +38,4 @@ public static class ExtraUtils
                                     "There's no ToGraphNode() method for type " + node.GetType() + " or any of its base types"
                                 )
         };
-
-    public static GraphNode ShowConstants(StatementNode node) => ConstantVisualizer.ShowConstants(node);
-    public static GraphNode ShowConstants(ValueNode node) => ConstantVisualizer.ShowConstants(node);
-
-    public static GraphNode ShowConstants(StatementNode node, string constantColor, string nonConstantColor)
-        => new ConstantVisualizer(constantColor, nonConstantColor).ShowConstants(node);
-    public static GraphNode ShowConstants(ValueNode node, string constantColor, string nonConstantColor)
-        => new ConstantVisualizer(constantColor, nonConstantColor).ShowConstants(node);
 }

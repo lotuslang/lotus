@@ -4,7 +4,6 @@ using System.CommandLine;
 
 using Lotus.Extras;
 using Lotus.Extras.Graphs;
-using Lotus.Syntax;
 
 partial class Program
 {
@@ -28,13 +27,6 @@ partial class Program
             }
         });
 
-        Command makeConstSubCmd(Action<Graph> act) {
-            var cmd = new Command("const", "Apply constant-coloring to the AST graph");
-            cmd.AddArgument(fileArgument);
-            cmd.SetHandler(ConstHandlerFactory(act), fileArgument, forceOption);
-            return cmd;
-        }
-
         /*
         *   lotus silent [file.txt]
         */
@@ -57,7 +49,6 @@ partial class Program
 
         /*
         *   lotus hash [file.txt]
-        *   lotus hash const [file.txt]
         */
 
         var hashVerb = new Command("hash", "Print the hash of the AST graph") {
@@ -72,11 +63,8 @@ partial class Program
             forceOption
         );
 
-        hashVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.GetHashCode())));
-
         /*
         *   lotus graph [file.txt]
-        *   lotus graph const [file.txt]
         */
 
         var graphVerb = new Command("graph", "Print graphviz code for the AST graph") {
@@ -91,19 +79,18 @@ partial class Program
             forceOption
         );
 
-        graphVerb.AddCommand(makeConstSubCmd(g => Console.WriteLine(g.ToText())));
-
         /*
         *   lotus [--force] {silent, print, hash, graph}
         */
 
         var rootCommand = new RootCommand("A lotus parser/typechecker") {
-            forceOption, // global option
             silentVerb,
             printVerb,
             hashVerb,
             graphVerb,
         };
+
+        rootCommand.AddGlobalOption(forceOption);
 
         rootCommand.Name = "lotus";
         rootCommand.TreatUnmatchedTokensAsErrors = true;
@@ -114,24 +101,6 @@ partial class Program
     static Func<FileInfo, bool, Task<int>> GraphHandlerFactory(Action<Graph> act)
         => (file, force) => {
             var g = MakeGraph(file, force, out int exitCode);
-
-            if (exitCode != 0 && !force) {
-                return Task.FromResult(exitCode);
-            }
-
-            act(g);
-            return Task.FromResult(0);
-        };
-
-    static Func<FileInfo, bool, Task<int>> ConstHandlerFactory(Action<Graph> act)
-        => (file, force) => {
-            var g = MakeGraph(
-                file,
-                Enumerable.OfType<TopLevelStatementNode>, // filter
-                n => ExtraUtils.ShowConstants(n), // transform
-                force,
-                out int exitCode
-            );
 
             if (exitCode != 0 && !force) {
                 return Task.FromResult(exitCode);

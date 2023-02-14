@@ -39,6 +39,15 @@ public sealed class ExpressionParser : Parser<ValueNode>
     }
 
     private ValueNode ConsumeValue(Precedence precedence) {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack()) {
+            Logger.Error(new InternalError(ErrorArea.Parser) {
+                Message = "Expression's nesting level is too high for the compiler to deal with.",
+                Location = Tokenizer.Position
+            });
+
+            return ValueNode.NULL;
+        }
+
         var token = Tokenizer.Consume();
         var tokenKind = LotusFacts.GetExpressionKind(token);
 

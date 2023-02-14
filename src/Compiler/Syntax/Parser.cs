@@ -106,11 +106,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
         => (asNode = Consume()) as TNode ?? Result<TNode>.Error;
 
     public TNode Consume<TNode>(TNode defaultVal, Action<T> errorHandler) where TNode : T {
+        var errCount = Logger.ErrorCount;
         if (!TryConsume<TNode>(out var output, out var val)) {
-            if (!val.IsValid) {
-                // if it's not valid, it probably already emitted an error
+            while (errCount < Logger.ErrorCount)
                 _ = Logger.errorStack.Pop();
-            }
 
             errorHandler(val);
         }

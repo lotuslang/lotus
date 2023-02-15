@@ -66,31 +66,6 @@ partial class Program
         return g;
     }
 
-    static Graph MakeGraph<T>(
-        FileInfo file,
-        Func<IEnumerable<TopLevelNode>, IEnumerable<T>> filter,
-        Func<T, GraphNode> transform,
-        bool force,
-        out int exitCode
-    ) {
-        var tokenizer = GetTokenizerForFile(file);
-        exitCode = HandleParsing(tokenizer, out var tlNodes);
-
-        var g = new Graph("AST");
-
-        if (exitCode == 0 || force) {
-            var nodes = filter(tlNodes);
-
-            AddGraphPrelude(g, file);
-
-            foreach (var node in nodes) {
-                g.AddNode(transform(node));
-            }
-        }
-
-        return g;
-    }
-
     static TextStream GetStreamForFile(FileInfo file) {
         var originalPath = file.ToString();
 

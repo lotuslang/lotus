@@ -25,7 +25,7 @@ public partial class Tokenizer
             case '"':
                 return ConsumeStringToken();
             case '\'':
-                return ConsumerCharToken();
+                return ConsumeCharToken();
             case '+':
             case '-':
             case '*':

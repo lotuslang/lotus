@@ -186,7 +186,7 @@ public partial class Tokenizer
     }
 #pragma warning restore IDE0003
 
-    private CharToken ConsumerCharToken() {
+    private CharToken ConsumeCharToken() {
         Debug.Assert(_input.Current is '\'');
 
         var startPos = _input.Position;

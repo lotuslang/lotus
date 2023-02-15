@@ -1,5 +1,4 @@
 using Lotus.Extras.Graphs;
-using Lotus.Syntax.Visitors;
 
 namespace Lotus.Extras;
 

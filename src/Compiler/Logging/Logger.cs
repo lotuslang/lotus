@@ -3,6 +3,7 @@ using Lotus.Syntax;
 
 namespace Lotus.Error;
 
+#pragma warning disable CA2211 // Non-constant field should not be visible
 public static class Logger
 {
     public static Stack<LotusError> errorStack = new();

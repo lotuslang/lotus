@@ -576,6 +576,7 @@ public partial class Tokenizer
             numberKind = NumberKind.Double;
         }
 
+#pragma warning disable IDE0078 // Use pattern matching -- bug in roslyn :)
         switch (numberKind) {
             case NumberKind.Unsigned:
             case NumberKind.Int: {
@@ -631,6 +632,7 @@ public partial class Tokenizer
                 break;
             }
         }
+#pragma warning restore IDE0078
 
         return new NumberToken(actualRepr, value, range, numberKind) { IsValid = isValid && isKindValid };
     }

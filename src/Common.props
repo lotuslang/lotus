@@ -9,6 +9,8 @@
       IDE1006, <!-- Naming rule violation -->
       CA1050,  <!-- Declare type in namespaces -->
       RCS1110, <!-- Declare type in namespaces -->
+      RCS1154, <!-- Sort enum members -->
+      CA1822,  <!-- Member can be marked static -->
     </NoWarn>
   </PropertyGroup>
 

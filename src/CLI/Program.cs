@@ -119,7 +119,7 @@ partial class Program
 
         var nodesBuilder = ImmutableArray.CreateBuilder<TopLevelNode>();
 
-        while (parser.Consume(out var node)) nodesBuilder.Add(node);
+        while (parser.TryConsume(out var node)) nodesBuilder.Add(node);
 
         nodes = nodesBuilder.ToImmutable();
 

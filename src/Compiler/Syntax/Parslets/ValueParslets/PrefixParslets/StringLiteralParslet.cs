@@ -20,7 +20,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
                 sections.Add(sectionParser.Consume());
 
                 // if we can still consume, then there's too many tokens for an expression
-                if (sectionParser.Current.IsValid && sectionTokenizer.Consume(out var extraToken)) {
+                if (sectionParser.Current.IsValid && sectionTokenizer.TryConsume(out var extraToken)) {
                     var location = sectionTokenizer.Position;
 
                     if (section.TokenCount > 0) {

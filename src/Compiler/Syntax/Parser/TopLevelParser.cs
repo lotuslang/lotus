@@ -25,9 +25,6 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
     public TopLevelParser(Parser<TopLevelNode> parser) : base(parser)
         => Init();
 
-    public override TopLevelNode Peek()
-        => new TopLevelParser(this).Consume();
-
     public override ref readonly TopLevelNode Consume() {
         _ = base.Consume();
 
@@ -113,5 +110,5 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
         }
     }
 
-    public override TopLevelParser Clone() => new(this);
+    internal override TopLevelParser Clone() => new(this);
 }

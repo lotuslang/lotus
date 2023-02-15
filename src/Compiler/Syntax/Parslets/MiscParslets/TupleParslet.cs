@@ -81,7 +81,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
         }
 
         // in case this tuple is empty, don't alloc a builder
-        if (parser.Tokenizer.Consume(out var token) && token == End) {
+        if (parser.Tokenizer.TryConsume(out var token) && token == End) {
             var items = ImmutableArray<TValue>.Empty;
 
             return new Tuple<TValue>(items, startingToken, token) { IsValid = isValid };
@@ -181,7 +181,7 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                 break;
             }
         }
-        while (parser.Tokenizer.Consume(out token) && token != End);
+        while (parser.Tokenizer.TryConsume(out token) && token != End);
 
         var endingToken = parser.Tokenizer.Current;
 

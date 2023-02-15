@@ -3,8 +3,6 @@ namespace Lotus.Syntax;
 // todo(parsing): consolidate all parsers into one
 public abstract class Parser<T> where T : Node
 {
-    protected readonly Stack<T> _reconsumeStack;
-
     public Tokenizer Tokenizer { get; }
 
     public LocationRange Position => Current.Location;
@@ -31,7 +29,6 @@ public abstract class Parser<T> where T : Node
 
 #pragma warning disable CS8618
     protected Parser() {
-        _reconsumeStack = new Stack<T>();
         _curr = ConstantDefault;
     }
 #pragma warning restore
@@ -43,23 +40,10 @@ public abstract class Parser<T> where T : Node
     protected Parser(TextStream stream) : this(new Tokenizer(stream)) { }
 
     protected Parser(Parser<T> parser) : this(parser.Tokenizer) {
-        _reconsumeStack = parser._reconsumeStack;
         _curr = parser.Current;
     }
 
-    /// <summary>
-    /// Reconsumes the last Node object.
-    /// </summary>
-    public void Reconsume() {
-        if (_reconsumeStack.TryPeek(out var node))
-            Debug.Assert(!Object.ReferenceEquals(node, Current));
-
-        _reconsumeStack.Push(Current);
-    }
-
-    public abstract T Peek();
-
-    public virtual bool Consume(out T result) {
+    public virtual bool TryConsume(out T result) {
         result = Consume(); // consume a StatementNode
 
         return result != Default;
@@ -70,12 +54,6 @@ public abstract class Parser<T> where T : Node
     /// </summary>
     /// <returns>The StatementNode object consumed.</returns>
     public virtual ref readonly T Consume() {
-        // If we are instructed to reconsume the last node, then dequeue a node from the reconsumeQueue and return it
-        if (_reconsumeStack.Count != 0) {
-            _curr = _reconsumeStack.Pop();
-            return ref _curr;
-        }
-
         _curr = Default;
         return ref _curr;
     }
@@ -143,5 +121,5 @@ public abstract class Parser<T> where T : Node
                 _ => Result<Union<T1, T2>>.Error
             };
 
-    public abstract Parser<T> Clone();
+    internal abstract Parser<T> Clone();
 }

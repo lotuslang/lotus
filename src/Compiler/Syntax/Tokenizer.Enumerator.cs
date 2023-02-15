@@ -17,7 +17,7 @@ public sealed partial class Tokenizer : IEnumerable<Token>
 
         public Enumerator(Tokenizer tokenizer) => _tokenizer = tokenizer;
 
-        public bool MoveNext() => _tokenizer.Consume(out _curr);
+        public bool MoveNext() => _tokenizer.TryConsume(out _curr);
         public void Reset() => throw new NotImplementedException();
         public void Dispose() => throw new NotImplementedException();
     }

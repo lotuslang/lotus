@@ -23,9 +23,6 @@ public sealed class StatementParser : Parser<StatementNode>
     public StatementParser(Parser<StatementNode> parser) : base(parser)
         => Init();
 
-    public override StatementNode Peek()
-        => new StatementParser(this).Consume();
-
     public override ref readonly StatementNode Consume()
         => ref Consume(true);
 
@@ -36,7 +33,7 @@ public sealed class StatementParser : Parser<StatementNode>
         var currToken = Tokenizer.Consume();
 
         // consume leading semicolons
-        while (currToken.Kind == TokenKind.semicolon && Tokenizer.Consume(out currToken))
+        while (currToken.Kind == TokenKind.semicolon && Tokenizer.TryConsume(out currToken))
         { }
 
         // if the token is EOF, return StatementNode.NULL
@@ -63,5 +60,5 @@ public sealed class StatementParser : Parser<StatementNode>
             ? StatementBlockParslet.Default
             : StatementBlockParslet.NoOneLiner).Parse(this);
 
-    public override StatementParser Clone() => new(this);
+    internal override StatementParser Clone() => new(this);
 }

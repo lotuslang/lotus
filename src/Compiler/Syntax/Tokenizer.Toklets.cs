@@ -90,7 +90,7 @@ public partial class Tokenizer
                 var unmatchedBrackets = 1; // count the opening bracket as currently unmatched
 
                 while (unmatchedBrackets != 0) { // until we match the opening bracket
-                    if (!this.Consume(out var currToken)) {
+                    if (!this.TryConsume(out var currToken)) {
                         Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                             In = "an interpolated string",
                             Expected = "} followed by a string delimiter like this: \"" + output.ToString() + '"',

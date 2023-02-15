@@ -26,7 +26,7 @@ public static class ParserUtils
 
     public static void CheckSemicolon<T>(Parser<T> parser) where T : Node {
         // if the next token is a semicolon
-        if (parser.Tokenizer.Consume(out var currToken) && currToken.Kind == TokenKind.semicolon) {
+        if (parser.Tokenizer.TryConsume(out var currToken) && currToken.Kind == TokenKind.semicolon) {
             // consume trailing semicolons
             while (parser.Tokenizer.Peek().Kind == TokenKind.semicolon) {
                 _ = parser.Tokenizer.Consume();

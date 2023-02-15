@@ -57,7 +57,7 @@ public sealed partial class Tokenizer
         return output;
     }
 
-    public bool Consume(out Token result) {
+    public bool TryConsume(out Token result) {
         result = Consume();
 
         return result.Kind != TokenKind.EOF;

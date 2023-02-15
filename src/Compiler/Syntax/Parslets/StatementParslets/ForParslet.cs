@@ -34,7 +34,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         parser.Tokenizer.Reconsume();
 
         // no we can't use Parser.ConsumeCommaSeparatedList because here we can have empty "values"
-        while (parser.Tokenizer.Consume(out var token) && token != ")") {
+        while (parser.Tokenizer.TryConsume(out var token) && token != ")") {
             if (token == ",") {
                 token = parser.Tokenizer.Consume();
 
@@ -52,7 +52,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
             header.Add(parser.Consume(false));
 
-            hasEOF = !parser.Tokenizer.Consume(out token);
+            hasEOF = !parser.Tokenizer.TryConsume(out token);
 
             if (hasEOF) {
                 Logger.Error(new UnexpectedEOFError() {

@@ -18,9 +18,6 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public ExpressionParser(Parser<ValueNode> parser) : base(parser)
         => SetCurrentToDefault();
 
-    public override ValueNode Peek()
-        => new ExpressionParser(this).Consume();
-
     public override ref readonly ValueNode Consume()
         => ref Consume(Precedence.Comma);
 
@@ -79,7 +76,7 @@ public sealed class ExpressionParser : Parser<ValueNode>
 
         var left = LotusFacts.GetPrefixParslet(tokenKind).Parse(this, token);
 
-        if (!Tokenizer.Consume(out token))
+        if (!Tokenizer.TryConsume(out token))
             return left;
 
         tokenKind = LotusFacts.GetExpressionKind(token);
@@ -128,5 +125,5 @@ public sealed class ExpressionParser : Parser<ValueNode>
         return baseTuple;
     }
 
-    public override ExpressionParser Clone() => new(this);
+    internal override ExpressionParser Clone() => new(this);
 }

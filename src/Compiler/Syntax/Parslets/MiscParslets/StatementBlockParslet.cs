@@ -15,7 +15,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
 
         // to consume a one-liner, you just consume a statement and return
         if (areOneLinersAllowed && parser.Tokenizer.Peek() != "{") {
-            if (!parser.Consume(out var statement)) {
+            if (!parser.TryConsume(out var statement)) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     In = "a statement block",
                     Expected = "a statement",

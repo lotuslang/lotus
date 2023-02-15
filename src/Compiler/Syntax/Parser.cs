@@ -63,7 +63,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// Reconsumes the last Node object.
     /// </summary>
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out var node) && Object.ReferenceEquals(node, Current)) return;
+        if (reconsumeQueue.TryPeek(out var node))
+            Debug.Assert(!Object.ReferenceEquals(node, Current));
+
+        reconsumeQueue.Enqueue(Current);
     }
 
     public abstract T Peek();

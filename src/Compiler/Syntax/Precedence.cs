@@ -20,7 +20,7 @@ Here's a beautiful ASCII table for operator precedence
 +------------+--------------+-------------------------------------------+
 | 9          | a*b a/b a%b  | Multiplication, division and modulo       |
 +------------+--------------+-------------------------------------------+
-| 8          | a+b a-b      | Addition and Subtraction                 |
+| 8          | a+b a-b      | Addition and Subtraction                  |
 +------------+--------------+-------------------------------------------+
 | 7          | < <=         | Greater-than and greater-than-or-equal-to |
 |            | > >=         | Lesser-than and lesser-than-or-equal-to   |

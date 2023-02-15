@@ -5,6 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TargetFramework>net7</TargetFramework>
     <TargetCulture>InvariantCulture</TargetCulture>
+    <NoWarn>
+      IDE1006, <!-- Naming rule violation -->
+      CA1050,  <!-- Declare type in namespaces -->
+      RCS1110, <!-- Declare type in namespaces -->
+    </NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

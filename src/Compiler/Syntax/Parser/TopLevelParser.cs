@@ -10,27 +10,20 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
     public override TopLevelNode Default => ConstantDefault with { Location = Position };
 
+    [MemberNotNull(nameof(StatementParser))]
     private void Init() {
         StatementParser = new StatementParser(Tokenizer);
         _curr = ConstantDefault with { Location = Tokenizer.Position };
     }
 
-#nullable disable
-    public TopLevelParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer)
+    public TopLevelParser(Tokenizer tokenizer) : base(tokenizer)
         => Init();
 
-    public TopLevelParser(IConsumer<TopLevelNode> nodeConsumer) : base(nodeConsumer)
+    public TopLevelParser(TextStream stream) : base(stream)
         => Init();
-
-    public TopLevelParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
-
-    public TopLevelParser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
-
-    public TopLevelParser(Uri file) : this(new Tokenizer(file)) { }
 
     public TopLevelParser(Parser<TopLevelNode> parser) : base(parser)
         => Init();
-#nullable enable
 
     public override TopLevelNode Peek()
         => new TopLevelParser(this).Consume();

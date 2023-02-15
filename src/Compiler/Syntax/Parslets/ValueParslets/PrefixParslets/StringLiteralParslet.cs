@@ -13,21 +13,22 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             var sections = ImmutableArray.CreateBuilder<ValueNode>(complexString.CodeSections.Length);
 
             foreach (var section in complexString.CodeSections) {
-                var sectionConsumer = section.ToConsumer();
+                var sectionTokenizer = section.CreateTokenizer();
 
-                var sectionParser = new ExpressionParser(sectionConsumer);
+                var sectionParser = new ExpressionParser(sectionTokenizer);
 
                 sections.Add(sectionParser.Consume());
 
-                if (sectionParser.Current.IsValid && sectionConsumer.Peek() != sectionConsumer.Default) {
-                    var location = sectionConsumer.Position;
+                // if we can still consume, then there's too many tokens for an expression
+                if (sectionParser.Current.IsValid && sectionTokenizer.Consume(out var extraToken)) {
+                    var location = sectionTokenizer.Position;
 
                     if (section.TokenCount > 0) {
                         location = new LocationRange(section.Tokens[0].Location, location);
                     }
 
                     Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                        Value = sectionConsumer.Consume(),
+                        Value = extraToken,
                         Location = location,
                         Message = "Too many tokens in interpolated string's code section."
                                 + " Sections should only contain ONE expression each.",

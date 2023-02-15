@@ -1,65 +1,48 @@
 namespace Lotus.Syntax;
 
-public sealed partial class Tokenizer : IConsumer<Token>
+public sealed partial class Tokenizer
 {
-    private Token _curr;
+    private Token _lastTok = Token.NULL;
+
+    private Token _curr = Token.NULL;
     public ref readonly Token Current => ref _curr;
 
     public Token Default => Token.NULL with { Location = Position };
 
-    private readonly Stack<Token> _reconsumeStack;
-
     public LocationRange Position => Current.Location;
 
-    private readonly StringConsumer _input;
+    private readonly Stack<Token> _reconsumeStack;
+
+    private readonly TextStream _input;
 
     private Tokenizer() {
         _reconsumeStack = new Stack<Token>(2);
-
-        _input = new StringConsumer(Array.Empty<char>());
-
-        _curr = Token.NULL;
+        _input = new(ImmutableArray<string>.Empty, "");
     }
 
-    // todo: add a SourceCode ctor
-
-    public Tokenizer(StringConsumer stringConsumer) : this() {
-        _input = stringConsumer.Clone();
+    private Tokenizer(IEnumerable<Token> tokens, string filename) {
+        _reconsumeStack = new Stack<Token>(tokens.Reverse());
+        _input = new TextStream(ImmutableArray<string>.Empty, filename);
     }
 
-    public Tokenizer(IConsumer<char> consumer) : this() {
-        _input = new StringConsumer(consumer);
+    private Tokenizer(Tokenizer tokenizer) {
+        _reconsumeStack = tokenizer._reconsumeStack.Clone();
+        _input = tokenizer._input.Clone();
     }
 
-    public Tokenizer(IConsumer<Token> tokenConsumer) : this(new StringConsumer("")) {
-        var cloned = tokenConsumer.Clone();
-        while (cloned.Consume(out _)) {
-            _reconsumeStack.Push(tokenConsumer.Current);
-        }
+    public Tokenizer(TextStream stream) : this() {
+        _input = stream.Clone();
     }
 
-    public Tokenizer(Tokenizer tokenizer) : this(tokenizer._input) {
-        _reconsumeStack = new Stack<Token>(tokenizer._reconsumeStack);
-
-        _curr = tokenizer._curr;
-        _lastTok = tokenizer._lastTok;
-    }
-
-    public Tokenizer(Uri fileInfo) : this(new StringConsumer(fileInfo)) { }
-
-    public Tokenizer(IEnumerable<char> collection) : this(new StringConsumer(collection)) { }
-
-    private Token _lastTok = Token.NULL;
     public void Reconsume() {
-        if (_reconsumeStack.TryPeek(out var token))
-          Debug.Assert(!Object.ReferenceEquals(token, Current));
+        if (_reconsumeStack.TryPeek(out var token)) {
+            // check that we're not gonna reconsume the same token twice
+            Debug.Assert(!Object.ReferenceEquals(token, Current));
+        }
 
         _reconsumeStack.Push(Current);
         _curr = _lastTok;
     }
-
-    // Because of stupid interface rule
-    Token IConsumer<Token>.Peek() => Peek(preserveTrivia: false);
 
     public Token Peek(bool preserveTrivia = false) {
         var oldLastTok = _lastTok.ShallowClone();
@@ -80,9 +63,6 @@ public sealed partial class Tokenizer : IConsumer<Token>
         return result.Kind != TokenKind.EOF;
     }
 
-    // Because of stupid interface rule
-    ref readonly Token IConsumer<Token>.Consume() => ref Consume(preserveTrivia: false);
-
     public ref readonly Token Consume(bool preserveTrivia = false) {
         _lastTok = _curr;
 
@@ -93,7 +73,7 @@ public sealed partial class Tokenizer : IConsumer<Token>
         }
 
         // If there is nothing left to consume, return an EOF token
-        if (!_input.Consume(out var currChar)) {
+        if (!_input.TryConsumeChar(out var currChar)) {
             _curr = Default;
             return ref _curr;
         }
@@ -103,17 +83,12 @@ public sealed partial class Tokenizer : IConsumer<Token>
         if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
 
-            if (_input.Unconsumed == 0) {
-                _curr = Default with { LeadingTrivia = leadingTrivia };
-                return ref _curr;
-            }
-
             _curr = ConsumeTokenCore();
 
             if (leadingTrivia != null)
                 _curr.AddLeadingTrivia(leadingTrivia);
 
-            if (_input.Peek() != '\n') {
+            if (_input.PeekNextChar() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
                 if (trailingTrivia != null)
@@ -126,6 +101,7 @@ public sealed partial class Tokenizer : IConsumer<Token>
         return ref _curr;
     }
 
-    public IConsumer<Token> Clone() => new Tokenizer(this);
-    IConsumer<Token> IConsumer<Token>.Clone() => Clone();
+    public Tokenizer Clone() => new(this);
+    internal static Tokenizer FromExtractedTokens(IEnumerable<Token> tokens, string originalFile)
+        => new(tokens, originalFile);
 }

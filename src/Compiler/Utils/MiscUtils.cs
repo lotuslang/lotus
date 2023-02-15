@@ -12,6 +12,22 @@ public static class MiscUtils
         return count;
     }
 
+    public static Stack<T> Clone<T>(this Stack<T> original) {
+        if (original.Count == 0)
+            return new Stack<T>();
+
+        if (original.Count == 1) {
+            var s = new Stack<T>();
+            s.Push(original.Pop());
+            return s;
+        }
+
+        var arr = new T[original.Count];
+        original.CopyTo(arr, 0);
+        Array.Reverse(arr);
+        return new Stack<T>(arr);
+    }
+
     [DebuggerStepThrough]
     public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
         where TKey : notnull

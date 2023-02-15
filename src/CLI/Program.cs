@@ -91,26 +91,28 @@ partial class Program
         return g;
     }
 
-    static StringConsumer GetConsumerForFile(FileInfo file) {
-        StringConsumer consumer;
+    static TextStream GetStreamForFile(FileInfo file) {
+        var originalPath = file.ToString();
 
-        var fileStr = file.ToString();
+        SourceCode src;
 
-        if (fileStr == "-") {
+        if (originalPath == "-") {
             using var stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
 
-            consumer = new StringConsumer(stdin.ReadToEnd());
+            src = new(stdin.ReadToEnd());
         } else {
-            consumer = new StringConsumer(new Uri(file.FullName));
+            src = new SourceCode(File.ReadAllLines(file.FullName));
         }
 
-        Logger.RegisterSourceProvider(consumer);
+        var stream = new TextStream(src, originalPath);
 
-        return consumer;
+        Logger.RegisterSourceProvider(stream);
+
+        return stream;
     }
 
     static Tokenizer GetTokenizerForFile(FileInfo file)
-        => new(GetConsumerForFile(file));
+        => new(GetStreamForFile(file));
 
     static int HandleParsing(Tokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
         var parser = new TopLevelParser(tokenizer);

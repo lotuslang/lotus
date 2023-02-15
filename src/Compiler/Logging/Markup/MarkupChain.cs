@@ -97,7 +97,6 @@ internal sealed class MarkupChain : IEnumerable<Markup>
 
         public bool MoveNext() {
             if (_nextNode is null) {
-                //_current = consumer.Default;
                 return false;
             }
 

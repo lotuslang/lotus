@@ -5,34 +5,34 @@ namespace Lotus.Text;
 // !! WARNING !!
 // I had to invoke dark powers to write the following functions, hopefully without bugs, so edit
 // with *extreme* care.
-// It takes way longer than it looks to figure out, so please again : beware !
+// It takes way longer than it looks to figure out, so please again: beware !
 public sealed class SourceCode
 {
     public ReadOnlyMemory<string> RawLines { get; }
 
-    public SourceCode(Uri path) {
-        RawLines = File.ReadAllLines(path.AbsolutePath);
-    }
-
     public SourceCode(string text) {
         RawLines = text.Split('\n');
+    }
+
+    public SourceCode(ReadOnlyMemory<string> lines) {
+        RawLines = lines;
     }
 
     public SourceCode(string[] lines) {
         RawLines = lines.AsMemory();
     }
 
-    public SourceCode(IEnumerable<string> lines) {
-        RawLines = lines.ToArray();
+    public SourceCode(ImmutableArray<string> lines) {
+        RawLines = lines.AsMemory();
     }
 
-    public string? GetRawLineAt(int lineNumber)
+    public string? GetRawLineAtOrDefault(int lineNumber)
         => lineNumber < 1 || RawLines.Length < lineNumber
                 ? null
                 : RawLines.Span[lineNumber - 1];
 
     public string GetPrettyLineAt(int lineNumber, string separator = "|") {
-        var lineText = GetRawLineAt(lineNumber);
+        var lineText = GetRawLineAtOrDefault(lineNumber);
 
         if (lineText is null) return "";
 

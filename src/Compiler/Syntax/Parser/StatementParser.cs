@@ -8,27 +8,20 @@ public sealed class StatementParser : Parser<StatementNode>
 
     public override StatementNode Default => ConstantDefault with { Location = Position };
 
+    [MemberNotNull(nameof(ExpressionParser))]
     private void Init() {
         ExpressionParser = new ExpressionParser(Tokenizer);
         _curr = ConstantDefault with { Location = Tokenizer.Position };
     }
 
-#nullable disable
-    public StatementParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer)
+    public StatementParser(Tokenizer tokenizer) : base(tokenizer)
         => Init();
 
-    public StatementParser(IConsumer<StatementNode> nodeConsumer) : base(nodeConsumer)
+    public StatementParser(TextStream stream) : base(stream)
         => Init();
-
-    public StatementParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
-
-    public StatementParser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
-
-    public StatementParser(Uri file) : this(new Tokenizer(file)) { }
 
     public StatementParser(Parser<StatementNode> parser) : base(parser)
         => Init();
-#nullable enable
 
     public override StatementNode Peek()
         => new StatementParser(this).Consume();

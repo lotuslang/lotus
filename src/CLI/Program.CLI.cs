@@ -111,6 +111,12 @@ partial class Program
         };
 
     static Task<int> PrintHandler(FileInfo file, bool force) {
+        // var stream = GetStreamForFile(file);
+
+        // while (stream.TryConsumeChar(out char c))
+        //     Console.Write(c);
+        // return Task.FromResult(0);
+
         var tokenizer = GetTokenizerForFile(file);
         var exitCode = HandleParsing(tokenizer, out var tlNodes);
 

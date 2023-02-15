@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Lotus.Syntax;
 
-public partial class Tokenizer : IConsumer<Token>
+public partial class Tokenizer
 {
     private Token ConsumeSemicolonToken() {
         Debug.Assert(_input.Current is ';');
@@ -11,7 +11,7 @@ public partial class Tokenizer : IConsumer<Token>
 
     private Token ConsumeDoubleColonToken() {
         Debug.Assert(_input.Current is ':');
-        _ = _input.Consume();
+        _ = _input.ConsumeChar();
         Debug.Assert(_input.Current is ':');
         return new Token("::", TokenKind.delimiter, _input.Position);
     }
@@ -27,7 +27,7 @@ public partial class Tokenizer : IConsumer<Token>
         Debug.Assert(!isComplex || _input.Current is '$');
 
         if (isComplex)
-            _ = _input.Consume(); // consume the '$' prefix
+            _ = _input.ConsumeChar(); // consume the '$' prefix
 
         Debug.Assert(_input.Current is '"' or '\'');
 
@@ -44,7 +44,7 @@ public partial class Tokenizer : IConsumer<Token>
         var isValid = true;
 
         // while the current character is not the ending delimiter
-        while (_input.Consume(out var currChar) && currChar != '"') {
+        while (_input.TryConsumeChar(out var currChar) && currChar != '"') {
             if (currChar == '\n') {
                 Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                     In = "a string literal",
@@ -61,7 +61,7 @@ public partial class Tokenizer : IConsumer<Token>
             if (isComplex && currChar == '}') {
                 output.Append('}');
 
-                if (_input.Consume() != '}') {
+                if (_input.ConsumeChar() != '}') {
                     Logger.Error(new UnexpectedError<char>(ErrorArea.Tokenizer) {
                         Value = _input.Current,
                         Message = "A raw '}' character must be escaped in interpolated strings",
@@ -78,8 +78,8 @@ public partial class Tokenizer : IConsumer<Token>
 
             if (isComplex && currChar == '{') {
                 output.Append('{');
-                if (_input.Peek() == '{') {
-                    _ = _input.Consume(); // consume the '{' to not consume it twice
+                if (_input.PeekNextChar() == '{') {
+                    _ = _input.ConsumeChar(); // consume the '{' to not consume it twice
                     continue;
                 }
 
@@ -156,7 +156,7 @@ public partial class Tokenizer : IConsumer<Token>
         }
 
         // if we encountered an EOF
-        if (_input.Current == _input.Default) {
+        if (_input.EndOfStream) {
             Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                 In = "a string",
                 Expected = new[] {
@@ -191,7 +191,7 @@ public partial class Tokenizer : IConsumer<Token>
 
         var startPos = _input.Position;
 
-        var currChar = _input.Consume();
+        var currChar = _input.ConsumeChar();
 
         var isValid = true;
         if (currChar == '\n') {
@@ -216,12 +216,12 @@ public partial class Tokenizer : IConsumer<Token>
         }
 
         // if the next character isn't a quote
-        if (_input.Consume() != '\'') {
+        if (_input.ConsumeChar() != '\'') {
             var sb = new StringBuilder();
 
             do
                 sb.Append(_input.Current);
-            while (_input.Consume(out currChar) && currChar is not ('\n' or '\''));
+            while (_input.TryConsumeChar(out currChar) && currChar is not ('\n' or '\''));
 
             Logger.Error(new UnexpectedError<string>(ErrorArea.Tokenizer) {
                 Value = sb.ToString(),
@@ -239,7 +239,7 @@ public partial class Tokenizer : IConsumer<Token>
     private bool TryParseEscapeSequence(out char escapedChar, out string rawCharString) {
         Debug.Assert(_input.Current is '\\');
 
-        var currChar = _input.Consume();
+        var currChar = _input.ConsumeChar();
 
         var isValid = true;
 
@@ -282,7 +282,7 @@ public partial class Tokenizer : IConsumer<Token>
         Debug.Assert(_input.Current is 'u');
 
         for (int i = 0; i < 4; i++) {
-            if (!_input.Consume(out rawChars[i])) {
+            if (!_input.TryConsumeChar(out rawChars[i])) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                     In = "a string",
                     Expected = "a unicode escape sequence with 4 digits",
@@ -318,15 +318,15 @@ public partial class Tokenizer : IConsumer<Token>
         // consume a character
         var currChar = _input.Current;
 
+        var startPos = _input.Position;
+
         Debug.Assert(currChar is '_' or '@' || Char.IsLetter(currChar));
 
         // the output token
         var output = new StringBuilder().Append(currChar);
 
-        var startPos = _input.Position;
-
         // while the current character is a letter, a digit, or an underscore
-        while (_input.Consume(out currChar) && (Char.IsLetterOrDigit(currChar) || currChar is '_')) {
+        while (_input.TryConsumeChar(out currChar) && (Char.IsLetterOrDigit(currChar) || currChar is '_')) {
             // add it to the value of output
             output.Append(currChar);
         }
@@ -362,14 +362,14 @@ public partial class Tokenizer : IConsumer<Token>
 
         var originPos = _input.Position; // the position of the number's first character
 
-        bool nextIsNumber() => Char.IsAsciiDigit(_input.Peek());
+        bool nextIsNumber() => Char.IsAsciiDigit(_input.PeekNextChar());
 
         /// <summary> consumes a span of consecutive digits </summary>
         void consumeAllNextDigits() {
             while (Char.IsAsciiDigit(currChar)) {
                 numberSB.Append(currChar);
 
-                currChar = _input.Consume();
+                currChar = _input.ConsumeChar();
             }
         }
 
@@ -382,7 +382,7 @@ public partial class Tokenizer : IConsumer<Token>
             hasDecimalOrExponent = true;
             numberSB.Append(currChar);
 
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
             consumeAllNextDigits();
         }
 
@@ -391,7 +391,7 @@ public partial class Tokenizer : IConsumer<Token>
             hasDecimalOrExponent = true;
 
             if (!nextIsNumber()) {
-                var nextChar = _input.Consume();
+                var nextChar = _input.ConsumeChar();
 
                 if (nextChar is '+' or '-') {
                     if (nextIsNumber()) {
@@ -399,7 +399,7 @@ public partial class Tokenizer : IConsumer<Token>
                         goto validExponent;
                     } else {
                         // display the non-digit in the error message and set the right position
-                        currChar = _input.Consume();
+                        currChar = _input.ConsumeChar();
                     }
                 }
 
@@ -419,7 +419,7 @@ public partial class Tokenizer : IConsumer<Token>
             numberSB.Append(currChar);
 
             // consume a character
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
 
             // if the character is a '+' or a '-'
             if (currChar is '+' or '-') {
@@ -427,7 +427,7 @@ public partial class Tokenizer : IConsumer<Token>
                 numberSB.Append(currChar);
 
                 // consume a character
-                currChar = _input.Consume();
+                currChar = _input.ConsumeChar();
             }
 
             consumeAllNextDigits();
@@ -471,7 +471,7 @@ public partial class Tokenizer : IConsumer<Token>
             }
 
             isValid = false;
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
         }
 
         // we already had an "exponent separator", so this is not valid.
@@ -481,7 +481,7 @@ public partial class Tokenizer : IConsumer<Token>
             if (nextIsNumber()) {
                 // yes it's fine to consume a new one in any case, cause ConsumeNumberToken expects
                 // _input.Current to already be set to a digit or '.'
-                _ = _input.Consume();
+                _ = _input.ConsumeChar();
 
                 var errorCount = Logger.ErrorCount;
 
@@ -499,7 +499,7 @@ public partial class Tokenizer : IConsumer<Token>
             });
 
             isValid = false;
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
         }
 
         var numericStr = numberSB.ToString();
@@ -511,25 +511,25 @@ public partial class Tokenizer : IConsumer<Token>
         if (currChar is 'u' or 'U') {
             kindStr += currChar;
             numberKind |= NumberKind.Unsigned;
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
         }
 
         if (currChar is 'f' or 'F') {
             kindStr += currChar;
             numberKind |= NumberKind.Float;
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
         }
 
         if (currChar is 'd' or 'D') {
             kindStr += currChar;
             numberKind |= NumberKind.Double;
-            currChar = _input.Consume();
+            currChar = _input.ConsumeChar();
         }
 
         if (currChar is 'l' or 'L') {
             kindStr += currChar;
             numberKind |= NumberKind.Long;
-            _ = _input.Consume();
+            _ = _input.ConsumeChar();
         }
 
         if (numberKind is NumberKind.Unknown or NumberKind.Unsigned) {
@@ -732,12 +732,12 @@ public partial class Tokenizer : IConsumer<Token>
             case ".":
                 // Member access "operator" a.b
                 return new OperatorToken(currCharStr, Precedence.Access, true, _input.Position);
-            case "&" when _input.Peek() == '&':
+            case "&" when _input.PeekNextChar() == '&':
                 // Logical AND operator a && b
-                return new OperatorToken(currCharStr + "" + _input.Consume(), Precedence.And, true, new LocationRange(currPos, _input.Position));
-            case "|" when _input.Peek() == '|':
+                return new OperatorToken(currCharStr + "" + _input.ConsumeChar(), Precedence.And, true, new LocationRange(currPos, _input.Position));
+            case "|" when _input.PeekNextChar() == '|':
                 // Logical OR operator a || b
-                return new OperatorToken(currCharStr + "" + _input.Consume(), Precedence.Or, true, new LocationRange(currPos, _input.Position));
+                return new OperatorToken(currCharStr + "" + _input.ConsumeChar(), Precedence.Or, true, new LocationRange(currPos, _input.Position));
             case "?":
                 // Ternary comparison operator a ? b : c
                 return new OperatorToken(currCharStr, Precedence.Ternary, true, _input.Position);
@@ -746,16 +746,16 @@ public partial class Tokenizer : IConsumer<Token>
         // this part is for cases that aren't simple and/or wouldn't look good in a switch expression
 
         if (currChar is '+' or '-') {
-            if (_input.Peek() == currChar) {
-                return new OperatorToken(currChar + "" + _input.Consume(), Precedence.Unary, false, new LocationRange(currPos, _input.Position));
+            if (_input.PeekNextChar() == currChar) {
+                return new OperatorToken(currChar + "" + _input.ConsumeChar(), Precedence.Unary, false, new LocationRange(currPos, _input.Position));
             }
 
             return new OperatorToken(currCharStr, Precedence.Addition, true, _input.Position);
         }
 
         if (currChar == '^') {
-            if (_input.Peek() == '^') {
-                _ = _input.Consume(); // consume the '^' we just peeked at
+            if (_input.PeekNextChar() == '^') {
+                _ = _input.ConsumeChar(); // consume the '^' we just peeked at
 
                 return new OperatorToken("^^", Precedence.Xor, true, new LocationRange(currPos, _input.Position));
             }
@@ -766,8 +766,8 @@ public partial class Tokenizer : IConsumer<Token>
 
         if (currChar == '=') {
             // Equality comparison operator a == b
-            if (_input.Peek() == '=') {
-                return new OperatorToken(currCharStr + _input.Consume(), Precedence.Equal, true, new LocationRange(currPos, _input.Position));
+            if (_input.PeekNextChar() == '=') {
+                return new OperatorToken(currCharStr + _input.ConsumeChar(), Precedence.Equal, true, new LocationRange(currPos, _input.Position));
             }
 
             // Assignment operator a = b
@@ -776,8 +776,8 @@ public partial class Tokenizer : IConsumer<Token>
 
         if (currChar == '>') {
             // Greater-than-or-equal comparison operator a >= b
-            if (_input.Peek() == '=') {
-                return new OperatorToken(currCharStr + _input.Consume(), Precedence.GreaterThanOrEqual, true, new LocationRange(currPos, _input.Position));
+            if (_input.PeekNextChar() == '=') {
+                return new OperatorToken(currCharStr + _input.ConsumeChar(), Precedence.GreaterThanOrEqual, true, new LocationRange(currPos, _input.Position));
             }
 
             // Greater-than comparison operator a > b
@@ -786,8 +786,8 @@ public partial class Tokenizer : IConsumer<Token>
 
         if (currChar == '<') {
             // Less-than-or-equal comparison operator a <= b
-            if (_input.Peek() == '=') {
-                return new OperatorToken(currCharStr + _input.Consume(), Precedence.LessThanOrEqual, true, new LocationRange(currPos, _input.Position));
+            if (_input.PeekNextChar() == '=') {
+                return new OperatorToken(currCharStr + _input.ConsumeChar(), Precedence.LessThanOrEqual, true, new LocationRange(currPos, _input.Position));
             }
 
             // Less-than comparison operator a < b
@@ -796,8 +796,8 @@ public partial class Tokenizer : IConsumer<Token>
 
         if (currChar == '!') {
             // Not-equal comparison operator a != b
-            if (_input.Peek() == '=') {
-                return new OperatorToken(currCharStr + _input.Consume(), Precedence.NotEqual, true, new LocationRange(currPos, _input.Position));
+            if (_input.PeekNextChar() == '=') {
+                return new OperatorToken(currCharStr + _input.ConsumeChar(), Precedence.NotEqual, true, new LocationRange(currPos, _input.Position));
             }
 
             // Unary logical NOT operator !a

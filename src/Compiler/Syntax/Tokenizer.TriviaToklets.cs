@@ -2,15 +2,15 @@ using System.Text;
 
 namespace Lotus.Syntax;
 
-public partial class Tokenizer : IConsumer<Token>
+public partial class Tokenizer
 {
     public TriviaToken? ConsumeTrivia() {
-        if (!_input.Consume(out char currChar))
+        if (!_input.TryConsumeChar(out char currChar))
             return null;
 
         switch (currChar) {
             case '/':
-                if (_input.Peek() is '/' or '*')
+                if (_input.PeekNextChar() is '/' or '*')
                     return ConsumeCommentTrivia(false);
 
                 _input.Reconsume();
@@ -37,14 +37,14 @@ public partial class Tokenizer : IConsumer<Token>
 
         Debug.Assert(currChar is '/');
 
-        currChar = _input.Consume();
+        currChar = _input.ConsumeChar();
 
         Debug.Assert(currChar is '/' or '*');
 
         if (currChar is '/') {
             var strBuilder = new StringBuilder("//");
 
-            while (_input.Consume(out currChar) && currChar is not '\n') {
+            while (_input.TryConsumeChar(out currChar) && currChar is not '\n') {
                 strBuilder.Append(currChar);
             }
 
@@ -61,8 +61,8 @@ public partial class Tokenizer : IConsumer<Token>
 
             var inner = ImmutableArray.CreateBuilder<CommentTriviaToken>();
 
-            while (_input.Consume(out currChar) && !(currChar is '*' && _input.Peek() is '/')) {
-                if (currChar is '/' && _input.Peek() is '*') {
+            while (_input.TryConsumeChar(out currChar) && !(currChar is '*' && _input.PeekNextChar() is '/')) {
+                if (currChar is '/' && _input.PeekNextChar() is '*') {
                     inner.Add(ConsumeCommentTrivia(isInner: true));
 
                     strBuilder.Append(inner.Last().Representation);
@@ -73,7 +73,7 @@ public partial class Tokenizer : IConsumer<Token>
                 strBuilder.Append(currChar);
             }
 
-            if (_input.Current == _input.Default) {
+            if (_input.EndOfStream) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Tokenizer) {
                     In = "a multi-line comment",
                     Expected = "the comment delimiter '*/'",
@@ -84,7 +84,7 @@ public partial class Tokenizer : IConsumer<Token>
             }
 
             // consumes the remaining '/'
-            _ = _input.Consume();
+            _ = _input.ConsumeChar();
 
             strBuilder.Append("*/");
 
@@ -102,16 +102,14 @@ public partial class Tokenizer : IConsumer<Token>
     private NewlineTriviaToken ConsumeNewlineTrivia() {
         var startingPosition = _input.Position;
 
-        Debug.Assert(_input.Current == '\n');
+        Debug.Assert(_input.Current is '\n');
 
         int charCounter = 1;
 
-        char currChar;
-
-        while (_input.Consume(out currChar) && currChar == '\n') charCounter++;
+        while (_input.TryConsumeChar(out char currChar) && currChar == '\n') charCounter++;
 
         // if it's an eof, we shouldn't reconsume cause we would just go back and be stuck otherwise
-        if (currChar != _input.Default)
+        if (!_input.EndOfStream)
             _input.Reconsume();
 
         return new NewlineTriviaToken(
@@ -129,9 +127,11 @@ public partial class Tokenizer : IConsumer<Token>
 
         int charCounter = 1;
 
-        while (_input.Consume(out char currChar) && currChar == whitespaceChar) charCounter++;
+        while (_input.TryConsumeChar(out char currChar) && currChar == whitespaceChar) charCounter++;
 
-        _input.Reconsume();
+        // same as NewlineTrivia, we don't want to be stuck if there's whitespace at the end of a file
+        if (!_input.EndOfStream)
+            _input.Reconsume();
 
         return new WhitespaceTriviaToken(
             whitespaceChar,

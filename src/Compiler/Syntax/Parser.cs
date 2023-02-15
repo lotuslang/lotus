@@ -1,10 +1,11 @@
 namespace Lotus.Syntax;
 
-public abstract class Parser<T> : IConsumer<T> where T : Node
+// todo(parsing): consolidate all parsers into one
+public abstract class Parser<T> where T : Node
 {
-    protected readonly Queue<T> reconsumeQueue;
+    protected readonly Stack<T> _reconsumeStack;
 
-    public IConsumer<Token> Tokenizer { get; }
+    public Tokenizer Tokenizer { get; }
 
     public LocationRange Position => Current.Location;
 
@@ -30,32 +31,19 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
 
 #pragma warning disable CS8618
     protected Parser() {
-        reconsumeQueue = new Queue<T>();
-
+        _reconsumeStack = new Stack<T>();
         _curr = ConstantDefault;
     }
 #pragma warning restore
 
-    //public Parser(Tokenizer tokenizer) : this(tokenizer as IConsumer<Token>) { }
-
-    protected Parser(IConsumer<Token> tokenConsumer) : this() {
-        Tokenizer = tokenConsumer;
+    protected Parser(Tokenizer tokenizer) : this() {
+        Tokenizer = tokenizer;
     }
 
-    protected Parser(IConsumer<T> nodeConsumer) : this() {
-        foreach (var node in nodeConsumer) {
-            reconsumeQueue.Enqueue(node);
-        }
-    }
-
-    protected Parser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
-
-    protected Parser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
-
-    protected Parser(Uri file) : this(new Tokenizer(file)) { }
+    protected Parser(TextStream stream) : this(new Tokenizer(stream)) { }
 
     protected Parser(Parser<T> parser) : this(parser.Tokenizer) {
-        reconsumeQueue = parser.reconsumeQueue;
+        _reconsumeStack = parser._reconsumeStack;
         _curr = parser.Current;
     }
 
@@ -63,10 +51,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// Reconsumes the last Node object.
     /// </summary>
     public void Reconsume() {
-        if (reconsumeQueue.TryPeek(out var node))
+        if (_reconsumeStack.TryPeek(out var node))
             Debug.Assert(!Object.ReferenceEquals(node, Current));
 
-        reconsumeQueue.Enqueue(Current);
+        _reconsumeStack.Push(Current);
     }
 
     public abstract T Peek();
@@ -83,15 +71,10 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
     /// <returns>The StatementNode object consumed.</returns>
     public virtual ref readonly T Consume() {
         // If we are instructed to reconsume the last node, then dequeue a node from the reconsumeQueue and return it
-        if (reconsumeQueue.Count != 0) {
-            _curr = reconsumeQueue.Dequeue();
+        if (_reconsumeStack.Count != 0) {
+            _curr = _reconsumeStack.Pop();
             return ref _curr;
         }
-
-        Debug.Assert(
-            condition: Tokenizer is not null,
-            "The parser's tokenizer was null. Something went seriously wrong"
-        );
 
         _curr = Default;
         return ref _curr;
@@ -161,5 +144,4 @@ public abstract class Parser<T> : IConsumer<T> where T : Node
             };
 
     public abstract Parser<T> Clone();
-    IConsumer<T> IConsumer<T>.Clone() => Clone();
 }

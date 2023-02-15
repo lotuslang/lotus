@@ -29,10 +29,9 @@ public readonly struct InterpolatedSection : ILocalized {
 
     public int TokenCount => Tokens.Length;
 
-    public Consumer<Token> ToConsumer()
-        => new(
+    public Tokenizer CreateTokenizer()
+        => Tokenizer.FromExtractedTokens(
             Tokens,
-            Token.NULL with { Location = Location.GetLastLocation() },
             Location.filename
         );
 }

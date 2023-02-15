@@ -9,17 +9,11 @@ public sealed class ExpressionParser : Parser<ValueNode>
     public void SetCurrentToDefault()
         => _curr = ConstantDefault with { Location = Tokenizer.Position };
 
-    public ExpressionParser(IConsumer<Token> tokenConsumer) : base(tokenConsumer)
+    public ExpressionParser(Tokenizer tokenizer) : base(tokenizer)
         => SetCurrentToDefault();
 
-    public ExpressionParser(IConsumer<ValueNode> nodeConsumer) : base(nodeConsumer)
+    public ExpressionParser(TextStream stream) : base(stream)
         => SetCurrentToDefault();
-
-    public ExpressionParser(StringConsumer consumer) : this(new Tokenizer(consumer)) { }
-
-    public ExpressionParser(IEnumerable<char> collection) : this(new Tokenizer(collection)) { }
-
-    public ExpressionParser(Uri file) : this(new Tokenizer(file)) { }
 
     public ExpressionParser(Parser<ValueNode> parser) : base(parser)
         => SetCurrentToDefault();

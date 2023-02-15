@@ -359,7 +359,7 @@ public static class Logger
         }
 
         if (File.Exists(location.filename)) {
-            var src = new SourceCode(new Uri(location.filename));
+            var src = new SourceCode(File.ReadAllLines(location.filename));
 
             RegisterSourceProvider(new SourceCodeWrapper(location.filename, src));
 

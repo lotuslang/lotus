@@ -49,7 +49,15 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
     private int _currColIdx = -1;
 
     private TextStream(TextStream other)
-        : this(other.Source, other.Filename) { }
+        : this(other.Source, other.Filename)
+    {
+        EndOfStream = other.EndOfStream;
+        Current = other.Current;
+        _oldLineIdx = other._oldLineIdx;
+        _currLineIdx = other._currLineIdx;
+        _currColIdx = other._currColIdx;
+        _currLine = other._currLine;
+    }
 
     public TextStream(string text, string filename)
         : this(new SourceCode(text.Split('\n').AsMemory()), filename) { }

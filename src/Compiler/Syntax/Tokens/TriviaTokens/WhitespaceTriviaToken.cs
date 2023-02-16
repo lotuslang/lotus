@@ -1,5 +1,6 @@
 namespace Lotus.Syntax;
 
+[DebuggerDisplay("<ws> {WhitespaceChar} (x{WhitespaceCount})")]
 public record WhitespaceTriviaToken(char WhitespaceChar, int WhitespaceCount, LocationRange Location)
 : TriviaToken(new string(WhitespaceChar, WhitespaceCount), TriviaKind.whitespace, Location)
 {

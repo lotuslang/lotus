@@ -1,5 +1,6 @@
 namespace Lotus.Syntax;
 
+[DebuggerDisplay("<trivia({Kind})>")]
 public record TriviaToken : Token
 {
     public new TriviaKind Kind { get; init; }

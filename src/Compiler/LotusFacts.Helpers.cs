@@ -17,7 +17,8 @@ public static partial class LotusFacts
 
     public static bool NeedsSemicolon(StatementNode node)
         => node is not (
-                ElseNode
+               ElseNode
+            or EmptyStatementNode
             or ForeachNode
             or ForNode
             or FunctionDeclarationNode

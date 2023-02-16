@@ -13,6 +13,8 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
 
     private static readonly (string tooltip, string color) Else = ("else branch", "");
 
+    private static readonly (string tooltip, string color) EmptyStatement = ("empty statement", "");
+
     private static readonly (string tooltip, string color) Foreach = ("foreach loop", "pink");
 
     private static readonly (string tooltip, string color) For = ("for loop", "");
@@ -67,6 +69,11 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                 node.BlockOrIfNode.Match(ToGraphNode, ToGraphNode)
            }.SetColor(Else.color)
             .SetTooltip(Else.tooltip);
+
+    public GraphNode Visit(EmptyStatementNode node)
+        => Default(node)
+                .SetTooltip(EmptyStatement.tooltip)
+                .SetColor(EmptyStatement.color);
 
     public GraphNode Visit(ForeachNode node)
         => new GraphNode(node.GetHashCode(), "foreach") {

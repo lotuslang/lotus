@@ -69,15 +69,11 @@ public sealed partial class Parser
                 break;
         }
 
-        // if the next token is a semicolon
-        if (Tokenizer.TryConsume(out var currToken) && currToken.Kind == TokenKind.semicolon) {
-            // consume trailing semicolons
-            while (Tokenizer.Peek().Kind == TokenKind.semicolon) {
-                _ = Tokenizer.Consume();
-            }
+        var currToken = Tokenizer.Consume();
 
+        // if it's a semicolon, everything's fine
+        if (currToken.Kind == TokenKind.semicolon)
             return;
-        }
 
         var eMsg = Current.GetType() + "s must be terminated with semicolons ';'";
         if (currToken.Kind == TokenKind.EOF) {

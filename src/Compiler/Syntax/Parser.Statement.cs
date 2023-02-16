@@ -6,10 +6,6 @@ public sealed partial class Parser
         // Consume a token
         var currToken = Tokenizer.Consume();
 
-        // consume leading semicolons
-        while (currToken.Kind == TokenKind.semicolon)
-            currToken = Tokenizer.Consume();
-
         // if the token is EOF, return StatementNode.NULL
         if (currToken.Kind == TokenKind.EOF) {
             _curr = CreateFakeStatement(currToken);

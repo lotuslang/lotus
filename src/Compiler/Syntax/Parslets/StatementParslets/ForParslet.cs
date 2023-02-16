@@ -28,7 +28,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         if (parser.Tokenizer.Consume() == ",") {
             // add an empty statement
-            header.Add(GetEmptyStatement(parser.Tokenizer.Position));
+            header.Add(new EmptyStatementNode(parser.Tokenizer.Position, true));
         }
 
         parser.Tokenizer.Reconsume();
@@ -41,7 +41,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 // If the next token isn't one of these, then it's a statement, so we shouldn't insert anything
                 if (token.Representation is "," or ")") {
                     // add an empty statement
-                    header.Add(GetEmptyStatement(token.Location));
+                    header.Add(new EmptyStatementNode(token.Location, true));
 
                     parser.Tokenizer.Reconsume();
                     continue;
@@ -128,7 +128,4 @@ public sealed class ForParslet : IStatementParslet<ForNode>
             header.Add(defaultNode);
         }
     }
-
-    private static StatementNode GetEmptyStatement(LocationRange pos)
-        => StatementNode.NULL with { Token = Token.NULL with { Location = pos, IsValid = true }, Location = pos, IsValid = true };
 }

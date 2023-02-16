@@ -121,6 +121,7 @@ public static partial class LotusFacts
         { "break", BreakParslet.Instance },
         { "continue", ContinueParslet.Instance },
         { "print", PrintParslet.Instance },
+        { ";", EmptyStatementParslet.Instance }
     };
 
     private static readonly Dictionary<string, ITopLevelParslet<TopLevelNode>> _strToTopLevelParslets = new() {

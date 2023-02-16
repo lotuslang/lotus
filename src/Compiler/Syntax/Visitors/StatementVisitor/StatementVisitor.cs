@@ -10,6 +10,7 @@ public interface IStatementVisitor<out T>
     T Visit(ContinueNode node) => Default(node);
     T Visit(DeclarationNode node) => Default(node);
     T Visit(ElseNode node) => Default(node);
+    T Visit(EmptyStatementNode node) => Default(node);
     T Visit(ForeachNode node) => Default(node);
     T Visit(ForNode node) => Default(node);
     T Visit(FunctionDeclarationNode node) => Default(node);

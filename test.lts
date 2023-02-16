@@ -76,6 +76,8 @@ for (var j = i, i > 10,) { }
 
 if (condition)
     print("it's true");
+else
+    ;
 
 if (a || b && c != d + e)
     print("tf");
@@ -118,6 +120,8 @@ internal struct test {
     private internal someStuff: int;
     otherStuff: str = "58" + hi;
 }
+
+;
 
 /* some /* nested */ comments */
 

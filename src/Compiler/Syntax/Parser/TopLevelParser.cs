@@ -42,13 +42,13 @@ public sealed class TopLevelParser : Parser<TopLevelNode>
 
         if (LotusFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
             _curr = parslet.Parse(this, currToken, modifiers);
+
+            if (LotusFacts.NeedsSemicolon(Current))
+                ParserUtils.CheckSemicolon(this);
         } else {
             Tokenizer.Reconsume();
             _curr = new TopLevelStatementNode(StatementParser.Consume());
         }
-
-        if (LotusFacts.NeedsSemicolon(Current))
-            ParserUtils.CheckSemicolon(this);
 
         return ref _curr;
     }

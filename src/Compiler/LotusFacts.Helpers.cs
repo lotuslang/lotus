@@ -13,7 +13,7 @@ public static partial class LotusFacts
                ImportNode
             or NamespaceNode
             or UsingNode
-        );
+        ) || (node is TopLevelStatementNode { Statement: var stmt} && NeedsSemicolon(stmt));
 
     public static bool NeedsSemicolon(StatementNode node)
         => node is not (

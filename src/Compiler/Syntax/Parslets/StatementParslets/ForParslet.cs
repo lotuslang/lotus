@@ -28,7 +28,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         if (parser.Tokenizer.Consume() == ",") {
             // add an empty statement
-            header.Add(GetDefaultStatement(parser.Tokenizer.Position));
+            header.Add(GetEmptyStatement(parser.Tokenizer.Position));
         }
 
         parser.Tokenizer.Reconsume();
@@ -41,7 +41,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 // If the next token isn't one of these, then it's a statement, so we shouldn't insert anything
                 if (token.Representation is "," or ")") {
                     // add an empty statement
-                    header.Add(GetDefaultStatement(token.Location));
+                    header.Add(GetEmptyStatement(token.Location));
 
                     parser.Tokenizer.Reconsume();
                     continue;
@@ -62,7 +62,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
                 });
 
                 while (header.Count < 3)
-                    header.Add(StatementNode.NULL); // there's an error so we don't want to call GetDefaultStatement
+                    header.Add(StatementNode.NULL); // there's an error so we don't want to call GetEmptyStatement
 
                 break;
             }
@@ -109,7 +109,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         isValid |= hasEOF;
 
-        SanitizeHeaderSize(header, StatementNode.NULL with { Location = parser.Position });
+        SanitizeHeaderSize(header, parser.CreateFakeStatement());
 
         // We have to change position cause default filename doesn't match current otherwise
         var body = Tuple<StatementNode>.NULL with { Location = parser.Position };
@@ -129,6 +129,6 @@ public sealed class ForParslet : IStatementParslet<ForNode>
         }
     }
 
-    private static StatementNode GetDefaultStatement(LocationRange pos)
+    private static StatementNode GetEmptyStatement(LocationRange pos)
         => StatementNode.NULL with { Token = Token.NULL with { Location = pos, IsValid = true }, Location = pos, IsValid = true };
 }

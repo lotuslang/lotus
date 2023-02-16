@@ -44,7 +44,7 @@ public sealed partial class Parser
                     Tokenizer.Reconsume();
             }
 
-            return ValueNode.NULL with { Token = token, Location = token.Location };
+            return CreateFakeExpression(token);
         }
 
         var left = LotusFacts.GetPrefixParslet(tokenKind).Parse(this, token);
@@ -84,7 +84,7 @@ public sealed partial class Parser
         // if expectedItemCount is 0, then it means there's no limit
         if (baseTuple.IsValid && expectedItemCount != 0 && expectedItemCount != items.Length) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
-                Value = items.LastOrDefault() ?? ValueNode.NULL,
+                Value = items.LastOrDefault() ?? CreateFakeExpression(),
                 In = "a tuple",
                 Location = items.LastOrDefault()?.Location ?? Position,
                 Message = (items.Length > expectedItemCount ? "There were too many" : "There weren't enough")

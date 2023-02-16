@@ -5,7 +5,7 @@ public sealed partial class Parser
     public TopLevelNode ConsumeTopLevel() {
         // if the token is EOF, return TopLevelNode.NULL
         if (Tokenizer.Peek().Kind == TokenKind.EOF) {
-            _curr = TopLevelNode.NULL with { Location = Tokenizer.Consume().Location };
+            _curr = CreateFakeTopLevel(Tokenizer.Consume());
             return (TopLevelNode)_curr;
         }
 

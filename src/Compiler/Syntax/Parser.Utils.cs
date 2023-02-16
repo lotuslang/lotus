@@ -2,6 +2,21 @@ namespace Lotus.Syntax;
 
 public sealed partial class Parser
 {
+    internal ValueNode CreateFakeExpression()
+        => ValueNode.NULL with { Location = Position };
+    internal ValueNode CreateFakeExpression(Token token)
+        => ValueNode.NULL with { Location = token.Location, Token = token };
+
+    internal StatementNode CreateFakeStatement()
+        => StatementNode.NULL with { Location = Position };
+    internal StatementNode CreateFakeStatement(Token token)
+        => StatementNode.NULL with { Location = token.Location, Token = token };
+
+    internal TopLevelNode CreateFakeTopLevel()
+        => TopLevelNode.NULL with { Location = Position };
+    internal TopLevelNode CreateFakeTopLevel(Token token)
+        => TopLevelNode.NULL with { Location = token.Location, Token = token };
+
     internal ImmutableArray<Token> ConsumeModifiers() {
         // don't allocate in case there's no modifier at all
         if (!LotusFacts.IsModifierKeyword(Tokenizer.Peek()))

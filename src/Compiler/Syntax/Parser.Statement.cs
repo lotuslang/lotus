@@ -12,7 +12,7 @@ public sealed partial class Parser
 
         // if the token is EOF, return StatementNode.NULL
         if (currToken.Kind == TokenKind.EOF) {
-            _curr = StatementNode.NULL with { Location = currToken.Location };
+            _curr = CreateFakeStatement(currToken);
             return (StatementNode)_curr;
         }
 

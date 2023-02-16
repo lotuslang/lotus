@@ -2,6 +2,8 @@ namespace Lotus.Syntax;
 
 public sealed partial class Tokenizer
 {
+    private readonly Stack<Token> _reconsumeStack;
+    private readonly TextStream _input;
     private Token _lastTok = Token.NULL;
 
     private Token _curr = Token.NULL;
@@ -11,9 +13,7 @@ public sealed partial class Tokenizer
 
     public LocationRange Position => Current.Location;
 
-    private readonly Stack<Token> _reconsumeStack;
-
-    private readonly TextStream _input;
+    public bool EndOfStream { get; private set; }
 
     private Tokenizer() {
         _reconsumeStack = new Stack<Token>(2);
@@ -40,15 +40,19 @@ public sealed partial class Tokenizer
             Debug.Assert(!Object.ReferenceEquals(token, Current));
         }
 
+        EndOfStream = Current.Kind == TokenKind.EOF;
+
         _reconsumeStack.Push(Current);
         _curr = _lastTok;
     }
 
     public Token Peek(bool preserveTrivia = false) {
         var oldLastTok = _lastTok.ShallowClone();
+        var eos = EndOfStream;
 
         var output = Consume(preserveTrivia);
 
+        EndOfStream = eos;
         _reconsumeStack.Push(output);
 
         _curr = _lastTok;
@@ -69,16 +73,19 @@ public sealed partial class Tokenizer
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
         if (_reconsumeStack.Count != 0) {
             _curr = _reconsumeStack.Pop();
+            if (_reconsumeStack.Count == 0)
+                EndOfStream = _input.EndOfStream;
             return ref _curr;
         }
 
         // If there is nothing left to consume, return an EOF token
-        if (!_input.TryConsumeChar(out var currChar)) {
+        if (_input.EndOfStream) {
             _curr = Default;
+            EndOfStream = true;
             return ref _curr;
         }
 
-        _input.Reconsume();
+        var currChar = _input.PeekNextChar();
 
         if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
@@ -91,12 +98,17 @@ public sealed partial class Tokenizer
             if (_input.PeekNextChar() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
-                if (trailingTrivia != null)
+                if (trailingTrivia != null) {
+                    EndOfStream = _input.EndOfStream;
                     _curr.AddTrailingTrivia(trailingTrivia);
+                }
             }
         } else {
             _curr = ConsumeTokenCore();
         }
+
+        if (_curr.Kind == TokenKind.EOF)
+            EndOfStream = true;
 
         return ref _curr;
     }

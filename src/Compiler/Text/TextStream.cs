@@ -85,13 +85,8 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
     }
 
     public bool TryConsumeChar(out char result) {
-        result = EOF;
-
-        if (!MoveNext())
-            return false;
-
-        result = Current;
-        return true;
+        result = ConsumeChar();
+        return !EndOfStream;
     }
 
     // We don't use arrow-expr/getter props because they'd have to check for out-of-bounds.
@@ -135,7 +130,7 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
 
         if (_currLineIdx - 1 >= 0) {
             _currLineIdx--;
-            _currColIdx = 0; // +1 for Line.Length, -1 for idx; cancels out
+            _currColIdx = 0;
             UpdateCurrent();
             _currColIdx = _currLine.Length - 1;
             UpdateCurrent();

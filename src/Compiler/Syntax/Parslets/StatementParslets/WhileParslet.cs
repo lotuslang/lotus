@@ -4,12 +4,12 @@ public sealed class WhileParslet : IStatementParslet<WhileNode>
 {
     public static readonly WhileParslet Instance = new();
 
-    public WhileNode Parse(StatementParser parser, Token whileToken) {
+    public WhileNode Parse(Parser parser, Token whileToken) {
         Debug.Assert(whileToken == "while");
 
         var isValid = true;
 
-        var conditionNode = parser.ExpressionParser.Consume();
+        var conditionNode = parser.ConsumeValue();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {

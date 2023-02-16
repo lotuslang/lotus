@@ -64,7 +64,7 @@ public sealed partial class Tokenizer
     public bool TryConsume(out Token result) {
         result = Consume();
 
-        return result.Kind != TokenKind.EOF;
+        return !EndOfStream;
     }
 
     public ref readonly Token Consume(bool preserveTrivia = false) {
@@ -73,8 +73,7 @@ public sealed partial class Tokenizer
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
         if (_reconsumeStack.Count != 0) {
             _curr = _reconsumeStack.Pop();
-            if (_reconsumeStack.Count == 0)
-                EndOfStream = _input.EndOfStream;
+            EndOfStream = _curr.Kind == TokenKind.EOF;
             return ref _curr;
         }
 
@@ -99,7 +98,6 @@ public sealed partial class Tokenizer
                 var trailingTrivia = ConsumeTrivia();
 
                 if (trailingTrivia != null) {
-                    EndOfStream = _input.EndOfStream;
                     _curr.AddTrailingTrivia(trailingTrivia);
                 }
             }
@@ -107,7 +105,7 @@ public sealed partial class Tokenizer
             _curr = ConsumeTokenCore();
         }
 
-        if (_curr.Kind == TokenKind.EOF)
+        if (_curr.Kind == TokenKind.EOF || _input.EndOfStream)
             EndOfStream = true;
 
         return ref _curr;

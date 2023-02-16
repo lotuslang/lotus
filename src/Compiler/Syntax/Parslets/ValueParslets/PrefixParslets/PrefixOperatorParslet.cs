@@ -8,11 +8,11 @@ public sealed class PrefixOperatorParslet : IPrefixParslet<OperationNode>
         _opType = operation;
     }
 
-    public OperationNode Parse(ExpressionParser parser, Token token) {
+    public OperationNode Parse(Parser parser, Token token) {
         var opToken = token as OperatorToken;
 
         Debug.Assert(opToken is not null);
 
-        return new OperationNode(opToken, ImmutableArray.Create(parser.Consume(Precedence.Unary)), _opType);
+        return new OperationNode(opToken, ImmutableArray.Create(parser.ConsumeValue(Precedence.Unary)), _opType);
     }
 }

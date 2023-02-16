@@ -4,13 +4,13 @@ public sealed class ArrayLiteralParslet : IPrefixParslet<TupleNode>
 {
     public static readonly ArrayLiteralParslet Instance = new();
 
-    private static readonly ValueTupleParslet<ValueNode> _valuesParslet
-        = new(static (parser) => parser.Consume()) {
+    private static readonly TupleParslet<ValueNode> _valuesParslet
+        = new(static (parser) => parser.ConsumeValue()) {
             Start = "[",
             End = "]"
         };
 
-    public TupleNode Parse(ExpressionParser parser, Token leftBracket) {
+    public TupleNode Parse(Parser parser, Token leftBracket) {
         Debug.Assert(leftBracket == "[");
 
         parser.Tokenizer.Reconsume();

@@ -4,7 +4,7 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
 {
     public static readonly StringLiteralParslet Instance = new();
 
-    public StringNode Parse(ExpressionParser parser, Token token) {
+    public StringNode Parse(Parser parser, Token token) {
         var strToken = token as StringToken;
 
         Debug.Assert(strToken is not null);
@@ -15,9 +15,9 @@ public sealed class StringLiteralParslet : IPrefixParslet<StringNode>
             foreach (var section in complexString.CodeSections) {
                 var sectionTokenizer = section.CreateTokenizer();
 
-                var sectionParser = new ExpressionParser(sectionTokenizer);
+                var sectionParser = new Parser(sectionTokenizer);
 
-                sections.Add(sectionParser.Consume());
+                sections.Add(sectionParser.ConsumeValue());
 
                 // if we can still consume, then there's too many tokens for an expression
                 if (sectionParser.Current.IsValid && !sectionTokenizer.EndOfStream) {

@@ -4,12 +4,12 @@ public sealed class IfParslet : IStatementParslet<IfNode>
 {
     public static readonly IfParslet Instance = new();
 
-    public IfNode Parse(StatementParser parser, Token ifToken) {
+    public IfNode Parse(Parser parser, Token ifToken) {
         Debug.Assert(ifToken == "if");
 
         var isValid = true;
 
-        var conditionNode = parser.ExpressionParser.Consume();
+        var conditionNode = parser.ConsumeValue();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {

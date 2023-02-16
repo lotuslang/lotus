@@ -8,7 +8,7 @@ public sealed class DotAccessParslet : IInfixParslet<ValueNode>
 
     private static readonly BinaryOperatorParslet _opParslet = new(Precedence.Access, OperationType.Access);
 
-    public ValueNode Parse(ExpressionParser parser, Token dotToken, ValueNode left) {
+    public ValueNode Parse(Parser parser, Token dotToken, ValueNode left) {
         var dotOpToken = dotToken as OperatorToken;
 
         Debug.Assert(dotOpToken is { Representation: "." });
@@ -26,7 +26,7 @@ public sealed class DotAccessParslet : IInfixParslet<ValueNode>
         //
         // Therefore, we only need to check that the right part is an identifier, since that's the only
         // value that could follow a name and a dot
-        var rightPart = parser.Consume(Precedence.Access);
+        var rightPart = parser.ConsumeValue(Precedence.Access);
 
         if (rightPart is not IdentNode ident) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {

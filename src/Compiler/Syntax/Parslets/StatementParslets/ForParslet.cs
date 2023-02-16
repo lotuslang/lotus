@@ -4,7 +4,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 {
     public static readonly ForParslet Instance = new();
 
-    public ForNode Parse(StatementParser parser, Token forToken) {
+    public ForNode Parse(Parser parser, Token forToken) {
         Debug.Assert(forToken == "for");
 
         var header = ImmutableArray.CreateBuilder<StatementNode>(3);
@@ -50,19 +50,19 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
             parser.Tokenizer.Reconsume();
 
-            header.Add(parser.Consume(false));
+            header.Add(parser.ConsumeStatement(shouldCheckSemicolon: false));
 
             hasEOF = !parser.Tokenizer.TryConsume(out token);
 
             if (hasEOF) {
                 Logger.Error(new UnexpectedEOFError() {
                     In = "a for-loop header",
-                    Expected = header.Count == 3 && header.Last() != parser.Default ? "a parenthesis ')'" : "a statement or comma ','",
+                    Expected = header.Count == 3 && header.Last().IsValid ? "a parenthesis ')'" : "a statement or comma ','",
                     Location = token.Location
                 });
 
                 while (header.Count < 3)
-                    header.Add(parser.Default);
+                    header.Add(StatementNode.NULL); // there's an error so we don't want to call GetDefaultStatement
 
                 break;
             }
@@ -109,7 +109,7 @@ public sealed class ForParslet : IStatementParslet<ForNode>
 
         isValid |= hasEOF;
 
-        SanitizeHeaderSize(header, parser.Default);
+        SanitizeHeaderSize(header, StatementNode.NULL with { Location = parser.Position });
 
         // We have to change position cause default filename doesn't match current otherwise
         var body = Tuple<StatementNode>.NULL with { Location = parser.Position };

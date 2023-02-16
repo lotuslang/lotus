@@ -4,14 +4,14 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
 {
     public static readonly FunctionDeclarationParslet Instance = new();
 
-    private static readonly ValueTupleParslet<FunctionParameter> _paramListParslet
+    private static readonly TupleParslet<FunctionParameter> _paramListParslet
         = new(ParseFuncParam) {
             Start = "(",
             End = ")",
             EndingDelimBehaviour = TrailingDelimiterBehaviour.Forbidden,
         };
 
-    public FunctionDeclarationNode Parse(StatementParser parser, Token funcToken) {
+    public FunctionDeclarationNode Parse(Parser parser, Token funcToken) {
         Debug.Assert(funcToken == "func");
 
         var isValid = true;
@@ -34,7 +34,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             funcName = new IdentToken(funcNameToken.Representation, funcNameToken.Location) { IsValid = false };
         }
 
-        var paramList = _paramListParslet.Parse(parser.ExpressionParser);
+        var paramList = _paramListParslet.Parse(parser);
 
         NameNode? returnType = null;
 
@@ -43,7 +43,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         if (parser.Tokenizer.Peek() == ":") {
             colonToken = parser.Tokenizer.Consume(); // consume the colon
 
-            returnType = parser.ExpressionParser.Consume<NameNode>(
+            returnType = parser.ConsumeValue<NameNode>(
                 IdentNode.NULL,
                 @as: "a return type in a function declaration"
             );
@@ -123,7 +123,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         return new FunctionParameter(typeName, paramName, defaultValue, equalSign) { IsValid = isValid };
     }
 
-    static IEnumerable<FunctionParameter> ParseFuncParam(ExpressionParser parser) {
+    static IEnumerable<FunctionParameter> ParseFuncParam(Parser parser) {
         /*
         * Ok, this needs a bit of explanation. So, I wanted to implement a syntactic shorthand I'd like to see
         * in csharp (and other languages) that allows users to define the type of multiple parameters at the
@@ -155,7 +155,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
         * disgusting to look at. Fuck all of you.
         */
 
-        var typeName = parser.Consume();
+        var typeName = parser.ConsumeValue();
 
         // i don't wanna talk about it any more than i already did
 
@@ -210,7 +210,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             // if there's still an identifier after typeOrName,
             // it's a typed parameter (and the name is the token we peeked at)
 
-            yield return MakeFuncParameter(typeName, parser.Consume());
+            yield return MakeFuncParameter(typeName, parser.ConsumeValue());
         } else {
             // otherwise, that means we have a parameter without type info
             //! in that case, typeName is probably a parameter name

@@ -1,35 +1,8 @@
 namespace Lotus.Syntax;
 
-public sealed class ExpressionParser : Parser<ValueNode>
+public sealed partial class Parser
 {
-    public new static readonly ValueNode ConstantDefault = ValueNode.NULL;
-
-    public override ValueNode Default => ConstantDefault with { Location = Position };
-
-    public void SetCurrentToDefault()
-        => _curr = ConstantDefault with { Location = Tokenizer.Position };
-
-    public ExpressionParser(Tokenizer tokenizer) : base(tokenizer)
-        => SetCurrentToDefault();
-
-    public ExpressionParser(TextStream stream) : base(stream)
-        => SetCurrentToDefault();
-
-    public ExpressionParser(Parser<ValueNode> parser) : base(parser)
-        => SetCurrentToDefault();
-
-    public override ref readonly ValueNode Consume()
-        => ref Consume(Precedence.Comma);
-
-    public ref readonly ValueNode Consume(Precedence precedence = 0) {
-        _ = base.Consume();
-
-        _curr = ConsumeValue(precedence);
-
-        return ref _curr;
-    }
-
-    private ValueNode ConsumeValue(Precedence precedence) {
+    public ValueNode ConsumeValue(Precedence precedence = Precedence.Comma) {
         if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack()) {
             Logger.Error(new InternalError(ErrorArea.Parser) {
                 Message = "Expression's nesting level is too high for the compiler to deal with.",
@@ -71,7 +44,7 @@ public sealed class ExpressionParser : Parser<ValueNode>
                     Tokenizer.Reconsume();
             }
 
-            return ConstantDefault with { Token = token, Location = token.Location };
+            return ValueNode.NULL with { Token = token, Location = token.Location };
         }
 
         var left = LotusFacts.GetPrefixParslet(tokenKind).Parse(this, token);
@@ -100,8 +73,8 @@ public sealed class ExpressionParser : Parser<ValueNode>
         return left;
     }
 
-    private static readonly ValueTupleParslet<ValueNode> _defaultTupleParslet
-        = new(static (parser) => parser.Consume());
+    private static readonly TupleParslet<ValueNode> _defaultTupleParslet
+        = new(static (parser) => parser.ConsumeValue());
 
     public Tuple<ValueNode> ConsumeTuple(uint expectedItemCount = 0) {
         var baseTuple = _defaultTupleParslet.Parse(this);
@@ -124,6 +97,4 @@ public sealed class ExpressionParser : Parser<ValueNode>
 
         return baseTuple;
     }
-
-    internal override ExpressionParser Clone() => new(this);
 }

@@ -6,7 +6,7 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
 
     public static readonly FuncCallParslet Instance = new();
 
-    public FunctionCallNode Parse(ExpressionParser parser, Token leftParen, ValueNode function) {
+    public FunctionCallNode Parse(Parser parser, Token leftParen, ValueNode function) {
         Debug.Assert(leftParen == "(");
 
         // reconsume the '(' for the ConsumeCommaSeparatedList() function
@@ -20,6 +20,6 @@ public sealed class FuncCallParslet : IInfixParslet<FunctionCallNode>
         ) { IsValid = argsTuple.IsValid };
     }
 
-    public static Tuple<ValueNode> ConsumeFunctionArguments(ExpressionParser parser)
+    public static Tuple<ValueNode> ConsumeFunctionArguments(Parser parser)
         => parser.ConsumeTuple();
 }

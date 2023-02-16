@@ -60,5 +60,6 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
         => PrintTuple(tuple, "", Print);
 
     public string Print(TopLevelNode node)
-        => node.Accept(this) + (LotusFacts.NeedsSemicolon(node) ? ";" : "");
+        => node.Accept(this)
+        + (node is not TopLevelStatementNode && LotusFacts.NeedsSemicolon(node) ? ";" : "");
 }

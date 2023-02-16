@@ -1,34 +1,34 @@
 namespace Lotus.Syntax;
 
-public interface IPrefixParslet<out T> : IParslet<ExpressionParser, Token, T>
+public interface IPrefixParslet<out T> : IParslet<Token, T>
 where T : ValueNode
 {}
 
 public interface IInfixParslet<out T> where T : ValueNode
 {
-    T Parse(ExpressionParser parser, Token token, ValueNode left);
+    T Parse(Parser parser, Token token, ValueNode left);
     Precedence Precedence { get; }
 }
 
 public interface IPostfixParslet<out T> : IInfixParslet<T> where T : ValueNode
 { }
 
-public interface IStatementParslet<out T> : IParslet<StatementParser, Token, T>
+public interface IStatementParslet<out T> : IParslet<Token, T>
 where T : StatementNode
 {}
 
 public interface ITopLevelParslet<out T> where T : TopLevelNode
 {
-    T Parse(TopLevelParser parser, Token token, ImmutableArray<Token> modifiers);
+    T Parse(Parser parser, Token token, ImmutableArray<Token> modifiers);
 }
 
-public interface IParslet<in TParser, out TOut> : IParslet<TParser, None, TOut>
+public interface IParslet<out TOut> : IParslet<None, TOut>
 {
-    TOut Parse(TParser parser);
-    TOut IParslet<TParser, None, TOut>.Parse(TParser parser, None arg) => Parse(parser);
+    TOut Parse(Parser parser);
+    TOut IParslet<None, TOut>.Parse(Parser parser, None _) => Parse(parser);
 }
 
-public interface IParslet<in TParser, in TArg, out TOut>
+public interface IParslet<in TArg, out TOut>
 {
-    TOut Parse(TParser parser, TArg arg);
+    TOut Parse(Parser parser, TArg arg);
 }

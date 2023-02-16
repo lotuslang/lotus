@@ -4,7 +4,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
 {
     public static readonly DoWhileParslet Instance = new();
 
-    public WhileNode Parse(StatementParser parser, Token doToken) {
+    public WhileNode Parse(Parser parser, Token doToken) {
         Debug.Assert(doToken == "do");
 
         var isValid = true;
@@ -39,7 +39,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
             ) { IsValid = false };
         }
 
-        var conditionNode = parser.ExpressionParser.Consume();
+        var conditionNode = parser.ConsumeValue();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.TypeChecker) {

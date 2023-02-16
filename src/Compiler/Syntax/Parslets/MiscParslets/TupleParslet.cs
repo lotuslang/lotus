@@ -1,12 +1,5 @@
 namespace Lotus.Syntax;
 
-public sealed class ValueTupleParslet<TValue> : TupleParslet<ExpressionParser, ValueNode, TValue> where TValue : ILocalized
-{
-    public ValueTupleParslet(Func<ExpressionParser, IEnumerable<TValue>> valParser) : base(valParser) {}
-
-    public ValueTupleParslet(Func<ExpressionParser, TValue> valParser) : base(valParser) {}
-}
-
 /// <summary>
 /// How the value delimiter should be handled at the end of a tuple
 /// </summary>
@@ -36,17 +29,15 @@ public enum TrailingDelimiterBehaviour { // can't be moved into TupleParslet cau
     Required
 }
 
-public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TValue>>
-    where TParser : Parser<TPNode>
-    where TPNode : Node
+public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
     where TValue : ILocalized
 {
     [MemberNotNullWhen(true, nameof(singleValueParser))]
     [MemberNotNullWhen(false, nameof(multiValueParser))]
     private bool IsSingleValueParser { get; }
 
-    private readonly Func<TParser, IEnumerable<TValue>>? multiValueParser;
-    private readonly Func<TParser, TValue>? singleValueParser;
+    private readonly Func<Parser, IEnumerable<TValue>>? multiValueParser;
+    private readonly Func<Parser, TValue>? singleValueParser;
 
     public string Start { get; init; } = "(";
     public string End { get; init; } = ")";
@@ -54,17 +45,17 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
     public TrailingDelimiterBehaviour EndingDelimBehaviour { get; init; } = TrailingDelimiterBehaviour.Forbidden;
     public string In { get; init; } = "a " + typeof(TValue).Name + " list";
 
-    public TupleParslet(Func<TParser, IEnumerable<TValue>> valueParser) {
+    public TupleParslet(Func<Parser, IEnumerable<TValue>> valueParser) {
         IsSingleValueParser = false;
         multiValueParser = valueParser;
     }
 
-    public TupleParslet(Func<TParser, TValue> valParser) {
+    public TupleParslet(Func<Parser, TValue> valParser) {
         IsSingleValueParser = true;
         singleValueParser = valParser;
     }
 
-    public Tuple<TValue> Parse(TParser parser) {
+    public Tuple<TValue> Parse(Parser parser) {
         var startingToken = parser.Tokenizer.Consume();
 
         var isValid = true;
@@ -112,8 +103,6 @@ public class TupleParslet<TParser, TPNode, TValue> : IParslet<TParser, Tuple<TVa
                     break;
                 }
 
-                // fixme(parsing): this assumes the function used the main parser and/or set the
-                // parser's Current property, which is not always the case
                 if (!isValid || !parser.Current.IsValid) {
                     continue;
                 }

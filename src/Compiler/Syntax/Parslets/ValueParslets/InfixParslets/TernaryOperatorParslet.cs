@@ -6,14 +6,14 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
 
     public static readonly TernaryOperatorParslet Instance = new();
 
-    public OperationNode Parse(ExpressionParser parser, Token questionMarkToken, ValueNode condition) {
+    public OperationNode Parse(Parser parser, Token questionMarkToken, ValueNode condition) {
         var questionMarkOperator = questionMarkToken as OperatorToken;
 
         Debug.Assert(questionMarkOperator is { Representation: "?" });
 
         var isValid = true;
 
-        var firstValue = parser.Consume();
+        var firstValue = parser.ConsumeValue();
 
         var colon = parser.Tokenizer.Consume();
 
@@ -23,7 +23,7 @@ public sealed class TernaryOperatorParslet : IInfixParslet<OperationNode>
             parser.Tokenizer.Reconsume();
         }
 
-        var secondValue = parser.Consume();
+        var secondValue = parser.ConsumeValue();
 
         if (!isValid) { // move it after consuming the second value to give better suggestions
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {

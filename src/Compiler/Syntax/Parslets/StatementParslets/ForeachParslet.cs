@@ -4,7 +4,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
 {
     public static readonly ForeachParslet Instance = new();
 
-    public ForeachNode Parse(StatementParser parser, Token foreachToken) {
+    public ForeachNode Parse(Parser parser, Token foreachToken) {
         Debug.Assert(foreachToken == "foreach");
 
         var isValid = true;
@@ -73,7 +73,7 @@ public sealed class ForeachParslet : IStatementParslet<ForeachNode>
             inKeyword = new Token(inToken.Representation, inToken.Kind, inToken.Location) { IsValid = false };
         }
 
-        var collectionName = parser.ExpressionParser.Consume();
+        var collectionName = parser.ConsumeValue();
 
         var closingParen = parser.Tokenizer.Consume();
 

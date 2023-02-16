@@ -6,13 +6,13 @@ public sealed class ArrayAccessParslet : IInfixParslet<OperationNode>
 
     public static readonly ArrayAccessParslet Instance = new();
 
-    private static readonly ValueTupleParslet<ValueNode> _indexTupleParslet
-        = new(static (parser) => parser.Consume()) {
+    private static readonly TupleParslet<ValueNode> _indexTupleParslet
+        = new(static (parser) => parser.ConsumeValue()) {
             Start = "[",
             End = "]"
         };
 
-    public OperationNode Parse(ExpressionParser parser, Token openingBracket, ValueNode array) {
+    public OperationNode Parse(Parser parser, Token openingBracket, ValueNode array) {
         Debug.Assert(openingBracket == "[");
 
         parser.Tokenizer.Reconsume();

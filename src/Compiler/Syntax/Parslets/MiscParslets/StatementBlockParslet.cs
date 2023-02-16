@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<StatementNode>> {
+public sealed class StatementBlockParslet : IParslet<Tuple<StatementNode>> {
     private readonly bool areOneLinersAllowed;
 
     public static readonly StatementBlockParslet Default = new(true);
@@ -10,12 +10,12 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
         this.areOneLinersAllowed = areOneLinersAllowed;
     }
 
-    public Tuple<StatementNode> Parse(StatementParser parser) {
+    public Tuple<StatementNode> Parse(Parser parser) {
         var isValid = true;
 
         // to consume a one-liner, you just consume a statement and return
         if (areOneLinersAllowed && parser.Tokenizer.Peek() != "{") {
-            if (!parser.TryConsume(out var statement)) {
+            if (parser.EndOfStream) {
                 Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                     In = "a statement block",
                     Expected = "a statement",
@@ -25,7 +25,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
                 isValid = false;
             }
 
-            return new Tuple<StatementNode>(statement) { IsValid = isValid };
+            return new Tuple<StatementNode>(parser.ConsumeStatement()) { IsValid = isValid };
         }
 
         var openingBracket = parser.Tokenizer.Consume();
@@ -45,7 +45,7 @@ public sealed class StatementBlockParslet : IParslet<StatementParser, Tuple<Stat
         var statements = ImmutableArray.CreateBuilder<StatementNode>();
 
         while (parser.Tokenizer.Peek() is not ({ Kind: TokenKind.EOF } or { Representation: "}" })) {
-            statements.Add(parser.Consume());
+            statements.Add(parser.ConsumeStatement());
         }
 
         var closingBracket = parser.Tokenizer.Consume();

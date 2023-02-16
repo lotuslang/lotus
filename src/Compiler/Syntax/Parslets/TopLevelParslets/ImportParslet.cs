@@ -4,26 +4,26 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
 {
     public static readonly ImportParslet Instance = new();
 
-    private static NameNode ParseSingleName(ExpressionParser exprParser)
-        =>  exprParser.Consume<NameNode>(
+    private static NameNode ParseSingleName(Parser exprParser)
+        =>  exprParser.ConsumeValue<NameNode>(
                 NameNode.NULL,
                 @in: "an import statement",
                 @as: "a namespace or type name"
             );
 
-    private static readonly ValueTupleParslet<NameNode> _importNamesParslet
+    private static readonly TupleParslet<NameNode> _importNamesParslet
         = new(ParseSingleName) {
             Start = "{",
             End = "}",
             In = "an import statement's name list"
         };
 
-    public ImportNode Parse(TopLevelParser parser, Token importToken, ImmutableArray<Token> modifiers) {
+    public ImportNode Parse(Parser parser, Token importToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(importToken == "import");
 
-        TopLevelParser.ReportIfAnyModifiers(modifiers, "import statements", out var hasModifiers);
+        Parser.ReportIfAnyModifiers(modifiers, "import statements", out var hasModifiers);
 
-        var exprParser = parser.ExpressionParser;
+        var exprParser = parser;
 
         Tuple<NameNode> names;
 
@@ -38,14 +38,14 @@ public sealed class ImportParslet : ITopLevelParslet<ImportNode>
             var fromToken = parser.Tokenizer.Consume();
 
             var fromIsValid =
-                exprParser.TryConsumeEither<StringNode, NameNode>(
+                exprParser.TryConsumeEitherValues<StringNode, NameNode>(
                     defaultVal: NameNode.NULL,
                     out var fromOrigin,
                     out var fromVal
                 );
 
             if (!fromIsValid) {
-                Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
+                Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
                     Value = fromVal,
                     In = "a from statement",
                     Expected = "either a string or a name"

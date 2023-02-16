@@ -4,14 +4,14 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 {
     public static readonly EnumParslet Instance = new();
 
-    private static readonly ValueTupleParslet<ValueNode> _enumValuesParslet
-        = new(static (parser) => parser.Consume()) {
+    private static readonly TupleParslet<ValueNode> _enumValuesParslet
+        = new(static (parser) => parser.ConsumeValue()) {
             Start = "{",
             End = "}",
             EndingDelimBehaviour = TrailingDelimiterBehaviour.Accepted
         };
 
-    public EnumNode Parse(TopLevelParser parser, Token enumToken, ImmutableArray<Token> modifiers) {
+    public EnumNode Parse(Parser parser, Token enumToken, ImmutableArray<Token> modifiers) {
         /*
         *   Enums, just like a lot of top-lvl stuff comes in all shapes
         *   and sizes, so parsing them is gonna require a bit of caution
@@ -37,7 +37,7 @@ public sealed class EnumParslet : ITopLevelParslet<EnumNode>
 
         var name = parser.ConsumeTypeDeclarationName();
 
-        var values = _enumValuesParslet.Parse(parser.ExpressionParser);
+        var values = _enumValuesParslet.Parse(parser);
 
         // check that every field is the right format/type
         foreach (var node in values) {

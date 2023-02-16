@@ -4,7 +4,7 @@ public sealed class LeftParenParslet : IPrefixParslet<ValueNode>
 {
     public static readonly LeftParenParslet Instance = new();
 
-    public ValueNode Parse(ExpressionParser parser, Token leftParenToken) {
+    public ValueNode Parse(Parser parser, Token leftParenToken) {
         Debug.Assert(leftParenToken == "(");
 
         parser.Tokenizer.Reconsume();

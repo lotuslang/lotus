@@ -4,7 +4,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
 {
     public static readonly DeclarationParslet Instance = new();
 
-    public DeclarationNode Parse(StatementParser parser, Token varToken) {
+    public DeclarationNode Parse(Parser parser, Token varToken) {
         Debug.Assert(varToken == "var");
 
         var isValid = true;
@@ -51,7 +51,7 @@ public sealed class DeclarationParslet : IStatementParslet<DeclarationNode>
         }
 
         // consume a ValueNode (which is the value of the variable we're declaring)
-        var value = parser.ExpressionParser.Consume();
+        var value = parser.ConsumeValue();
 
         // return that value
         return new DeclarationNode(value, name, varToken, equalSign) { IsValid = isValid };

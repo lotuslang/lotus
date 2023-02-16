@@ -4,20 +4,20 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
 {
     public static readonly StructParslet Instance = new();
 
-    public StructNode Parse(TopLevelParser parser, Token structToken, ImmutableArray<Token> modifiers) {
+    public StructNode Parse(Parser parser, Token structToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(structToken == "struct");
 
-        var name = parser.ExpressionParser.Consume(
+        var name = parser.ConsumeValue(
             IdentNode.NULL,
             @as: "a type name"
         );
 
-        var fields = _fieldsParslet.Parse(parser.ExpressionParser);
+        var fields = _fieldsParslet.Parse(parser);
 
         return new StructNode(structToken, name, fields, modifiers) { IsValid = name.IsValid && fields.IsValid };
     }
 
-    private static readonly TupleParslet<ExpressionParser, ValueNode, StructField> _fieldsParslet
+    private static readonly TupleParslet<StructField> _fieldsParslet
         = new(ParseStructField) {
             Start = "{",
             End = "}",
@@ -27,12 +27,12 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
         };
 
 #pragma warning disable IDE0018 // Variable declaration can be inlined
-    private static StructField ParseStructField(ExpressionParser parser) {
+    private static StructField ParseStructField(Parser parser) {
         var isValid = true;
 
-        var modifiers = ParserUtils.ConsumeModifiers(parser);
+        var modifiers = parser.ConsumeModifiers();
 
-        if (!parser.TryConsume<IdentNode>(out var name, out var nameNode)) {
+        if (!parser.TryConsumeValue<IdentNode>(out var name, out var nameNode)) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                 Value = nameNode,
                 As = "a field name",
@@ -66,7 +66,7 @@ public sealed class StructParslet : ITopLevelParslet<StructNode>
         // the parser will actually understand it as an assignment, and
         // therefore we'll get back an OperationNode.
 
-        var typeNameOrDefaultResult = parser.TryConsumeEither<NameNode, OperationNode>(out var typeNameNode);
+        var typeNameOrDefaultResult = parser.TryConsumeEitherValues<NameNode, OperationNode>(out var typeNameNode);
 
         // if it's neither a type name nor an operation node
         if (!typeNameOrDefaultResult.IsOk()) {

@@ -1,77 +1,40 @@
 namespace Lotus.Syntax;
 
-// todo(parsing): consolidate all parsers into one
-public abstract class Parser<T> where T : Node
+public sealed partial class Parser
 {
     public Tokenizer Tokenizer { get; }
 
     public LocationRange Position => Current.Location;
 
-    protected T _curr;
-    /// <summary>
-    /// Gets the last StatementNode object consumed by this instance.
-    /// </summary>
-    /// <value>The last StatementNode consumed.</value>
-    public ref readonly T Current => ref _curr;
+    public bool EndOfStream => Tokenizer.EndOfStream;
 
-    /// <summary>
-    /// Contrary to <see cref="Parser.Default"/>, this variable is constant, and just returns <see cref="Node.NULL"/>
-    /// </summary>
-    public static readonly T ConstantDefault = (Node.NULL as T)!;
+    private Node _curr = Node.NULL;
+    public Node Current => _curr;
 
-    /// <summary>
-    /// Returns the value of <see cref="Parser.ConstantDefault"/> BUT adjusted for the current position. <br/>
-    /// Most of the time, this is the variable you want, because when comparing nodes, position is important,
-    /// and the parser will always return a node with relevant position, even if it is EOF and other things that
-    /// prompt for the use of <see cref="StatementNode.NULL"/>
-    /// </summary>
-    public virtual T Default => ConstantDefault with { Location = Position };
-
-#pragma warning disable CS8618
-    protected Parser() {
-        _curr = ConstantDefault;
-    }
-#pragma warning restore
-
-    protected Parser(Tokenizer tokenizer) : this() {
+    public Parser(Tokenizer tokenizer) {
         Tokenizer = tokenizer;
     }
 
-    protected Parser(TextStream stream) : this(new Tokenizer(stream)) { }
+    public Parser(TextStream stream) : this(new Tokenizer(stream)) { }
 
-    protected Parser(Parser<T> parser) : this(parser.Tokenizer) {
+    private Parser(Parser parser) : this(parser.Tokenizer) {
         _curr = parser.Current;
     }
 
-    public virtual bool TryConsume(out T result) {
-        result = Consume(); // consume a StatementNode
+    internal Parser Clone() => new(this);
 
-        return result != Default;
-    }
-
-    /// <summary>
-    /// Consume a StatementNode object and returns it.
-    /// </summary>
-    /// <returns>The StatementNode object consumed.</returns>
-    public virtual ref readonly T Consume() {
-        _curr = Default;
-        return ref _curr;
-    }
-
-    public bool TryConsume<TNode>([NotNullWhen(true)] out TNode? output, out T asNode) where TNode : T {
-        asNode = Consume();
-
+    public bool TryConsumeValue<TNode>([NotNullWhen(true)] out TNode? output, out ValueNode asNode) where TNode : ValueNode {
+        asNode = ConsumeValue();
         output = asNode as TNode;
-
         return output is not null;
     }
 
-    public Result<TNode> TryConsume<TNode>(out T asNode) where TNode : T
-        => (asNode = Consume()) as TNode ?? Result<TNode>.Error;
+    public Result<TNode> TryConsumeValue<TNode>(out ValueNode asNode) where TNode : ValueNode
+        => (asNode = ConsumeValue()) as TNode ?? Result<TNode>.Error;
 
-    public TNode Consume<TNode>(TNode defaultVal, Action<T> errorHandler) where TNode : T {
+    public TNode ConsumeValue<TNode>(TNode defaultVal, Action<Node> errorHandler) where TNode : ValueNode {
         var errCount = Logger.ErrorCount;
-        if (!TryConsume<TNode>(out var output, out var val)) {
+        if (!TryConsumeValue<TNode>(out var output, out var val)) {
             while (errCount < Logger.ErrorCount)
                 _ = Logger.errorStack.Pop();
 
@@ -81,11 +44,11 @@ public abstract class Parser<T> where T : Node
         return output ?? defaultVal;
     }
 
-    public TNode Consume<TNode>(TNode defaultVal, string? @in = null, string? @as = null) where TNode : T
-        => Consume<TNode>(
+    public TNode ConsumeValue<TNode>(TNode defaultVal, string? @in = null, string? @as = null) where TNode : ValueNode
+        => ConsumeValue<TNode>(
             defaultVal,
             val =>
-                Logger.Error(new UnexpectedError<T>(ErrorArea.Parser) {
+                Logger.Error(new UnexpectedError<Node>(ErrorArea.Parser) {
                     Value = val,
                     In = @in,
                     As = @as,
@@ -93,11 +56,10 @@ public abstract class Parser<T> where T : Node
                 })
         );
 
-    public bool TryConsumeEither<TNode1, TNode2>(Union<TNode1, TNode2> defaultVal, out Union<TNode1, TNode2> res, out T asNode)
-        where TNode1 : T
-        where TNode2 : T
-    {
-        asNode = Consume();
+    public bool TryConsumeEitherValues<TNode1, TNode2>(Union<TNode1, TNode2> defaultVal, out Union<TNode1, TNode2> res, out ValueNode asNode)
+        where TNode1 : ValueNode
+        where TNode2 : ValueNode {
+        asNode = ConsumeValue();
 
         switch (asNode) {
             case TNode1 t1:
@@ -112,14 +74,12 @@ public abstract class Parser<T> where T : Node
         }
     }
 
-    public Result<Union<T1, T2>> TryConsumeEither<T1, T2>(out T asNode)
-        where T1 : T
-        where T2 : T
-        =>  (asNode = Consume()) switch {
-                T1 t1 => new(t1),
-                T2 t2 => new(t2),
-                _ => Result<Union<T1, T2>>.Error
-            };
-
-    internal abstract Parser<T> Clone();
+    public Result<Union<T1, T2>> TryConsumeEitherValues<T1, T2>(out ValueNode asNode)
+        where T1 : ValueNode
+        where T2 : ValueNode
+        => (asNode = ConsumeValue()) switch {
+            T1 t1 => new(t1),
+            T2 t2 => new(t2),
+            _ => Result<Union<T1, T2>>.Error
+        };
 }

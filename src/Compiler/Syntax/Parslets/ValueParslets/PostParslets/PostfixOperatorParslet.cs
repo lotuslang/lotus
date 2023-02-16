@@ -10,7 +10,7 @@ public sealed class PostfixOperatorParslet : IPostfixParslet<OperationNode>
         _opType = operation;
     }
 
-    public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
+    public OperationNode Parse(Parser parser, Token token, ValueNode left) {
         var operatorToken = token as OperatorToken;
 
         Debug.Assert(operatorToken is not null);

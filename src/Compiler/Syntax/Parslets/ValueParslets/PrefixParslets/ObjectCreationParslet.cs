@@ -4,7 +4,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
 {
     public static readonly ObjectCreationParslet Instance = new();
 
-    public ObjectCreationNode Parse(ExpressionParser parser, Token newToken) {
+    public ObjectCreationNode Parse(Parser parser, Token newToken) {
         Debug.Assert(newToken == "new");
 
         var isValid = true;
@@ -33,7 +33,7 @@ public sealed class ObjectCreationParslet : IPrefixParslet<ObjectCreationNode>
         // that errors don't jeopardize the stability of the parser or of later
         // phases
 
-        var type = parser.Consume(Precedence.FuncCall);
+        var type = parser.ConsumeValue(Precedence.FuncCall);
 
         if (type is not NameNode typeName) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {

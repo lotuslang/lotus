@@ -4,9 +4,9 @@ public sealed class PrintParslet : IStatementParslet<PrintNode>
 {
     public static readonly PrintParslet Instance = new();
 
-    public PrintNode Parse(StatementParser parser, Token printToken) {
+    public PrintNode Parse(Parser parser, Token printToken) {
         Debug.Assert(printToken == "print");
 
-        return new PrintNode(printToken, parser.ExpressionParser.Consume());
+        return new PrintNode(printToken, parser.ConsumeValue());
     }
 }

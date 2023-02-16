@@ -90,11 +90,11 @@ partial class Program
         => new(GetStreamForFile(file));
 
     static int HandleParsing(Tokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
-        var parser = new TopLevelParser(tokenizer);
+        var parser = new Parser(tokenizer);
 
         var nodesBuilder = ImmutableArray.CreateBuilder<TopLevelNode>();
 
-        while (parser.TryConsume(out var node)) nodesBuilder.Add(node);
+        while (!parser.EndOfStream) nodesBuilder.Add(parser.ConsumeTopLevel());
 
         nodes = nodesBuilder.ToImmutable();
 

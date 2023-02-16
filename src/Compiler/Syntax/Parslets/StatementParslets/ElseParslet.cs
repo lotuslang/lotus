@@ -4,7 +4,7 @@ public sealed class ElseParslet : IStatementParslet<ElseNode>
 {
     public static readonly ElseParslet Instance = new();
 
-    public ElseNode Parse(StatementParser parser, Token elseToken) {
+    public ElseNode Parse(Parser parser, Token elseToken) {
         Debug.Assert(elseToken == "else");
 
         if (parser.Tokenizer.Peek() == "if") {

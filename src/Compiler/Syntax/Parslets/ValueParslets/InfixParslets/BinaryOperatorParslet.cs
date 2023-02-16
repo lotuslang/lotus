@@ -11,7 +11,7 @@ public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
         _opType = operation;
     }
 
-    public OperationNode Parse(ExpressionParser parser, Token token, ValueNode left) {
+    public OperationNode Parse(Parser parser, Token token, ValueNode left) {
         var operatorToken = token as OperatorToken;
 
         Debug.Assert(operatorToken is not null);
@@ -20,7 +20,7 @@ public sealed class BinaryOperatorParslet : IInfixParslet<OperationNode>
             operatorToken,
             ImmutableArray.Create(
                 left,
-                parser.Consume(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
+                parser.ConsumeValue(Precedence - (operatorToken.IsLeftAssociative ? 0 : 1)) // still is magic to me
             ),
             _opType
         );

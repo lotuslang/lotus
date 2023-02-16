@@ -16,5 +16,5 @@ public abstract record Node : ILocalized
 
     protected Node(Token token) : this(token, token.Location) { }
 
-    protected virtual string DbgStr() => $"[{GetType().Name}]: {Token.Representation}";
+    protected virtual string DbgStr() => $"[{GetType().GetDisplayName()}]: {Token.Representation}";
 }

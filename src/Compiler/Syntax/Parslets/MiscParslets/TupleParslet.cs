@@ -130,14 +130,12 @@ public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
                 });
 
                 // if it's an identifier, we should reconsume it so the error doesn't run over
-                if (parser.Tokenizer.Current.Kind == TokenKind.identifier) {
-                    isValid = false;
-                    parser.Tokenizer.Reconsume();
-                } else if (parser.Tokenizer.Current.Kind == TokenKind.semicolon) {
+                if (parser.Tokenizer.Current.Kind is var kind && kind is TokenKind.identifier or TokenKind.semicolon) {
                     isValid = false;
                     parser.Tokenizer.Reconsume();
 
-                    break;
+                    if (kind is TokenKind.semicolon)
+                        break;
                 } else if (parser.Tokenizer.Peek() == Delim) {
                     isValid = false;
                     _ = parser.Tokenizer.Consume();

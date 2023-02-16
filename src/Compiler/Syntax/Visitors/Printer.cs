@@ -26,7 +26,7 @@ internal sealed partial class Printer
             StatementNode statement => Print(statement),
             TopLevelNode tl => Print(tl),
             _ => throw new NotImplementedException(
-                    $"There's no ToGraphNode() method for type {node.GetType()} or any of its base types"
+                    $"There's no ToGraphNode() method for type {node.GetType().GetDisplayName()} or any of its base types"
                 )
         };
 }

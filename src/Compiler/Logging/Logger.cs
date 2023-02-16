@@ -299,7 +299,7 @@ public static class Logger
                 }
                 break;
             default:
-                sb.Append(String.Join(", ", error.GetType().GenericTypeArguments.Select(t => t.Name)));
+                sb.Append(String.Join(", ", error.GetType().GenericTypeArguments.Select(t => t.GetDisplayName())));
                 break;
         }
 

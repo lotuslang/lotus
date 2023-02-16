@@ -75,7 +75,7 @@ public sealed partial class Parser
         if (currToken.Kind == TokenKind.semicolon)
             return;
 
-        var eMsg = Current.GetType() + "s must be terminated with semicolons ';'";
+        var eMsg = Current.GetType().GetDisplayName() + "s must be terminated with semicolons ';'";
         if (currToken.Kind == TokenKind.EOF) {
             Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
                 Message = eMsg,

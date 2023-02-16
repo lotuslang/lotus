@@ -16,7 +16,7 @@ internal static class ASTUtils
             StatementNode statement => PrintStatement(statement, printTrivia),
             TopLevelNode tl => PrintTopLevel(tl, printTrivia),
             _ => throw new NotImplementedException(
-                    $"There's no ToGraphNode() method for type {node.GetType()} or any of its base types"
+                    $"There's no ToGraphNode() method for type {node.GetType().GetDisplayName()} or any of its base types"
                 )
         };
 

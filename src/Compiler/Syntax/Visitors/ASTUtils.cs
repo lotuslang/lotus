@@ -7,8 +7,6 @@ internal static class ASTUtils
     internal static readonly Printer Printer = new();
     internal static readonly Printer NoTriviaPrinter = new() { PrintTrivia = false };
 
-    internal static readonly ConstantChecker ConstantChecker = new();
-
     public static string PrintNode(Node node) => PrintNode(node, true);
     public static string PrintNode(Node node, bool printTrivia)
         => node switch {
@@ -59,6 +57,4 @@ internal static class ASTUtils
         => PrintToken(tuple.OpeningToken, printTrivia)
         +  MiscUtils.Join(sep, n => transform(n, printTrivia), tuple.Items)
         +  PrintToken(tuple.ClosingToken, printTrivia);
-
-    public static bool IsContant(ValueNode node) => ConstantChecker.IsContant(node);
 }

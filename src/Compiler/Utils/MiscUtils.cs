@@ -34,10 +34,6 @@ public static class MiscUtils
         => new(dic);
 
     [DebuggerStepThrough]
-    public static ReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> list)
-        => new(list.ToArray());
-
-    [DebuggerStepThrough]
         public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
         var count = coll.Count();
 
@@ -74,14 +70,6 @@ public static class MiscUtils
              + '<'
              + Join(", ", GetDisplayName, type.GenericTypeArguments)
              + '>';
-    }
-
-    public static IEnumerable<TEnum> GetMatchingValues<TEnum>(this TEnum flag) where TEnum : struct, Enum {
-        // fixme(utils): hard-code this or drastically improve the performance
-        foreach (var value in Enum.GetValues<TEnum>()) {
-            if (flag.HasFlag(value))
-                yield return value;
-        }
     }
 
     /// <summary>Map from an ASCII char to its hex value, e.g. arr['b'] == 11. 0xFF means it's not a hex digit.</summary>

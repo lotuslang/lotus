@@ -121,6 +121,15 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
     }
 
     private bool MoveBack() {
+        // in case we're at the end, we don't want to move the cursor, since
+        // that would make the next call to Consume/MoveNext read the last
+        // character again instead of an EOF
+        if (EndOfStream) {
+            UpdateCurrent();
+            EndOfStream = false;
+            return true;
+        }
+
         if (_currColIdx - 1 >= 0) {
             _currColIdx--;
             UpdateCurrent();

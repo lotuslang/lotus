@@ -31,8 +31,11 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
                 .SetColor(TopLevel.color)
                 .SetTooltip(TopLevel.tooltip);
 
+    public GraphNode Visit(TopLevelNode node)
+        => node.Token.Kind == TokenKind.EOF ? new GraphNode(0, "<EOF>") : Default(node);
+
     public GraphNode Visit(TopLevelStatementNode node)
-        => ExtraUtils.ToGraphNode(node.Statement);
+        => ToGraphNode(node.Statement);
 
     public GraphNode Visit(ImportNode node) {
         var root = new GraphNode(node.GetHashCode(), "import")

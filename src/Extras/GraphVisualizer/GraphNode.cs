@@ -71,6 +71,9 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     }
 
     public string ToText(HashSet<GraphNode> registry, int tabs = 2) {
+        if (ID == 0)
+            return "";
+
         // Create a new string builder
         var strBuilder = new StringBuilder();
 

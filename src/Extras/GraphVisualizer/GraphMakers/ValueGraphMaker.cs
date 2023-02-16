@@ -33,9 +33,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
             .SetTooltip(Value.tooltip);
 
     public GraphNode Visit(ValueNode node)
-        => new GraphNode(node.GetHashCode(), node.Token.Representation)
-            .SetColor(Value.color)
-            .SetTooltip(Value.tooltip);
+        => node.Token.Kind == TokenKind.EOF ? new GraphNode(0, "<EOF>") : Default(node);
 
     public GraphNode Visit(BoolNode node)
         => Default(node)

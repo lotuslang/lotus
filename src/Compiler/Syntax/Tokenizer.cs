@@ -47,7 +47,7 @@ public sealed partial class Tokenizer
     }
 
     public Token Peek(bool preserveTrivia = false) {
-        var oldLastTok = _lastTok.ShallowClone();
+        var oldLastTok = _lastTok;
         var eos = EndOfStream;
 
         var output = Consume(preserveTrivia);

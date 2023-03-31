@@ -31,7 +31,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     public GraphNode(int id, string text) {
         ID = id;
-        _stringID = ID.ToString();
+        _stringID = ID.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
         Name = text;
         Properties = new Dictionary<string, string>();
         Children = ImmutableArray.CreateBuilder<GraphNode>();

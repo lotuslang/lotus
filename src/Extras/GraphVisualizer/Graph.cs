@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Lotus.Extras.Graphs;
 
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
@@ -53,56 +51,67 @@ public sealed class Graph
     /// </summary>
     /// <returns>A single string of 'dot' representing this entire graph.</returns>
     public string ToText() {
-        // Create a new string builder
-        var strBuilder = new StringBuilder();
+        var sb = new IndentedStringBuilder();
 
         // Append the keyword 'digraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
-        strBuilder.Append("graph ").AppendLine(name);
-        strBuilder.AppendLine("{");
+        sb.Append("graph ").AppendLine(name).Append('{');
+
+        sb.Indent++;
+        sb.AppendLine();
 
         foreach (var property in graphProps) {
-            strBuilder.Append('\t').Append(property.Key).Append("=\"").Append(property.Value).AppendLine("\"");
+            sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');
+            sb.AppendLine();
         }
 
         if (nodeProps.Count != 0) {
-            strBuilder.AppendLine("\tnode[");
+            sb.Append("node[");
+
+            sb.Indent++;
+            sb.AppendLine();
 
             foreach (var property in nodeProps) {
-                strBuilder.Append("\t\t").Append(property.Key).Append("=\"").Append(property.Value).AppendLine("\"");
+                sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');
+                sb.AppendLine();
             }
 
-            strBuilder.AppendLine("\t]\n");
+            sb.Indent--;
+            sb.AppendLine(']');
         }
 
         if (edgeProps.Count != 0) {
-            strBuilder.AppendLine("\tedge [");
+            sb.Append("edge [");
+
+            sb.Indent++;
+            sb.AppendLine();
 
             foreach (var property in edgeProps) {
-                strBuilder.Append("\t\t").Append(property.Key).Append("=\"").Append(property.Value).AppendLine("\"");
+                sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');
+                sb.AppendLine();
             }
 
-            strBuilder.AppendLine("\t]");
+            sb.Indent--;
+            sb.AppendLine(']');
         }
-
-        strBuilder.AppendLine();
 
         // A list of GraphNode to keep track of visited nodes
         var registry = new HashSet<GraphNode>();
 
-        // For each independent tree in this graph
         foreach (var node in rootNodes) {
-            // Add the root node to the registry
-            _ = registry.Add(node);
-
-            // Append the 'dot' representation of this root node to the graph's representation
-            strBuilder.Append('\t').AppendLine(node.ToText(registry));
+            // If the node wasn't already processed
+            if (registry.Add(node))
+               node.AppendText(sb, registry);
         }
 
+        sb.Indent--;
+
         // Close the graph by a closing curly bracket on a new line
-        strBuilder.Append("\n}\n//").Append(GetHashCode()).AppendLine();
+        sb.AppendLine().Append('}')
+          .AppendLine().Append("// ").Append(GetHashCode())
+          .AppendLine();
 
         // Return the string builder
-        return strBuilder.ToString();
+        return sb.ToString();
     }
 
     public void AddGraphProp(string property, string value) {

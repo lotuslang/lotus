@@ -1,4 +1,3 @@
-using System.Text;
 using System.Collections;
 
 namespace Lotus.Extras.Graphs;
@@ -70,35 +69,39 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         return this;
     }
 
-    public string ToText(HashSet<GraphNode> registry, int tabs = 2) {
+    public void AppendText(IndentedStringBuilder sb, HashSet<GraphNode> registry) {
         if (ID == 0)
-            return "";
+            return;
 
-        // Create a new string builder
-        var strBuilder = new StringBuilder();
+        sb.AppendLine();
 
-        // Declare the node : Append the id of the node, and set its label to `name`
-        strBuilder.AppendLine().Append(new string('\t', tabs - 1)).Append(_stringID).Append(" [label=\"").Append(Name).Append('"');
+        // Declare the node: Append the id of the node, and set its label to `name`
+        sb.Append(_stringID).Append(" [label=\"").Append(Name).Append('"');
 
         foreach (var property in Properties) {
-            strBuilder.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('"');
+            sb.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('"');
         }
 
-        strBuilder.AppendLine("]");
+        sb.Append(']');
+        sb.AppendLine();
 
-        if (Children.Count == 0) return strBuilder.ToString();
+        if (Children.Count == 0)
+            return;
+
+        sb.Indent++;
 
         // For each node that is a children of this object
         foreach (var child in Children) {
-            strBuilder.Append(new string('\t', tabs)).Append(_stringID).Append(" -- ").Append(child._stringID);
+            sb.AppendLine();
 
-            // If this child wasn't aready processed, then append its text
+            sb.Append(_stringID).Append(" -- ").Append(child._stringID);
+
+            // If this child wasn't already processed, then append its text
             if (registry.Add(child))
-                strBuilder.Append(new string('\t', tabs)).Append(child.ToText(registry, tabs + 1));
+                child.AppendText(sb, registry);
         }
 
-        // Return the string builder
-        return strBuilder.AppendLine().ToString();
+        sb.Indent--;
     }
 
     public override int GetHashCode() => ID;

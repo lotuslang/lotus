@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace Lotus.Extras.Graphs;
 
@@ -8,21 +9,19 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// <summary>
     /// The unique identifier for this node.
     /// </summary>
-    /// <value>A string representing the ID of this node.</value>
     public int ID { get; }
     private readonly string _stringID;
 
     /// <summary>
     /// The name of this node.
     /// </summary>
-    /// <value>A string representing the name of this node.</value>
     public string Name { get; set; }
 
+    private readonly List<GraphNode> _children;
     /// <summary>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
-    /// <value>A list of GraphNode this node is pointing to, (i.e. children).</value>
-    public ImmutableArray<GraphNode>.Builder Children { get; }
+    public ReadOnlyCollection<GraphNode> Children => _children.AsReadOnly();
 
     public Dictionary<string, string> Properties { get; }
 
@@ -33,7 +32,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         _stringID = ID.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
         Name = text;
         Properties = new Dictionary<string, string>();
-        Children = ImmutableArray.CreateBuilder<GraphNode>();
+        _children = new List<GraphNode>();
     }
 
     /// <summary>
@@ -42,7 +41,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// <param name="node">The node to add as a child.</param>
     public GraphNode Add(GraphNode? node) {
         if (node is not null)
-            Children.Add(node);
+            _children.Add(node);
 
         return this;
     }
@@ -85,13 +84,13 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         sb.Append(']');
         sb.AppendLine();
 
-        if (Children.Count == 0)
+        if (_children.Count == 0)
             return;
 
         sb.Indent++;
 
         // For each node that is a children of this object
-        foreach (var child in Children) {
+        foreach (var child in _children) {
             sb.AppendLine();
 
             sb.Append(_stringID).Append(" -- ").Append(child._stringID);

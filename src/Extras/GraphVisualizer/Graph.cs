@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace Lotus.Extras.Graphs;
 
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
@@ -8,16 +10,14 @@ public sealed class Graph
     /// <summary>
     /// The name of this graph.
     /// </summary>
-    /// <value>A string that represents the name of this graph.</value>
     public ref readonly string Name => ref name;
 
-    private readonly ImmutableArray<GraphNode>.Builder rootNodes;
-
+    private readonly List<GraphNode> _rootNodes;
     /// <summary>
     /// The nodes that are the roots of independent trees.
     /// </summary>
-    /// <value>A List of GraphNode containing every root node.</value>
-    public ImmutableArray<GraphNode> RootNodes => rootNodes.ToImmutable();
+    public ReadOnlyCollection<GraphNode> RootNodes => _rootNodes.AsReadOnly();
+
 
     private readonly Dictionary<string, string> graphProps;
 
@@ -33,7 +33,7 @@ public sealed class Graph
 
     public Graph(string name) {
         this.name = name;
-        rootNodes = ImmutableArray.CreateBuilder<GraphNode>();
+        _rootNodes = new List<GraphNode>();
         graphProps = new Dictionary<string, string>();
         nodeProps = new Dictionary<string, string>();
         edgeProps = new Dictionary<string, string>();
@@ -44,7 +44,7 @@ public sealed class Graph
     /// </summary>
     /// <param name="node">The GraphNode to add.</param>
     public void AddNode(GraphNode node)
-        => rootNodes.Add(node);
+        => _rootNodes.Add(node);
 
     /// <summary>
     /// A representation of this graph in the 'dot' language (https://www.graphviz.org/doc/info/lang.html).
@@ -97,7 +97,7 @@ public sealed class Graph
         // A list of GraphNode to keep track of visited nodes
         var registry = new HashSet<GraphNode>();
 
-        foreach (var node in rootNodes) {
+        foreach (var node in _rootNodes) {
             // If the node wasn't already processed
             if (registry.Add(node))
                node.AppendText(sb, registry);
@@ -137,7 +137,7 @@ public sealed class Graph
     public int GetHashCode(bool includeProps) {
         var code = new DeterministicHashCode();
 
-        foreach (var node in rootNodes) {
+        foreach (var node in _rootNodes) {
             code.Add(node, GraphNode.StructuralComparer);
         }
 

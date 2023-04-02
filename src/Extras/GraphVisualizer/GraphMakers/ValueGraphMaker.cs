@@ -95,7 +95,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
     }
 
     public GraphNode Visit(NameNode node)
-        => new GraphNode(MiscUtils.Join(".", ident => ident.Representation, node.Parts))
+        => new GraphNode(ASTUtils.PrintValue(node, printTrivia: false))
             .SetColor(Ident.color)
             .SetTooltip("name");
 

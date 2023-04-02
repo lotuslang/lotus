@@ -79,7 +79,7 @@ dotnet_diagnostic.RCS1071.severity = none
 dotnet_remove_unnecessary_suppression_exclusions = all:warning
 
 # Custom stuff
-dotnet_fluent_types = System.Text.StringBuilder, Lotus.Utils.IndentedStringBuilder, Lotus.Text.MarkupBuilder, Lotus.Extras.Graphs.GraphNode
+dotnet_fluent_types = System.Text.StringBuilder, Lotus.Utils.IndentedStringBuilder, Lotus.Text.MarkupBuilder, Lotus.Extras.Graphs.GraphNode, Lotus.Extras.Graphs.Graph
 
 #### C# Coding Conventions ####
 

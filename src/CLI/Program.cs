@@ -33,12 +33,13 @@ partial class Program
         _cli = BuildRootCommand();
     }
 
-    static void AddGraphPrelude(Graph g) {
-        g.AddNodeProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("labelloc", "top");
-        g.AddGraphProp("ranksep", "1");
-    }
+    static void AddGraphPrelude(Graph g)
+        => g
+            .SetNodeProp("fontname", "Consolas, monospace")
+            .SetGraphProp("fontname", "Consolas, monospace")
+            .SetGraphProp("labelloc", "top")
+            .SetGraphProp("ranksep", "1")
+            ;
 
     static Graph MakeGraph(FileInfo file, bool force, out int exitCode) {
         var tokenizer = GetTokenizerForFile(file);

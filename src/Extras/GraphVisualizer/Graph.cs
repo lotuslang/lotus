@@ -33,8 +33,8 @@ public sealed class Graph : IEquatable<Graph>
         ID = _numericID.ToString(System.Globalization.CultureInfo.InvariantCulture);
         Name = name;
 
-        AddGraphProp("compound", "true");
-        AddGraphProp("splines", "line");
+        SetGraphProp("compound", "true");
+        SetGraphProp("splines", "line");
     }
 
     public Graph(string name) : this(Random.Shared.Next(), name) { }
@@ -124,23 +124,29 @@ public sealed class Graph : IEquatable<Graph>
         return sb.ToString();
     }
 
-    public void AddGraphProp(string property, string value) {
-        if (String.IsNullOrEmpty(property))
-            return;
-        GraphProps[property] = value;
+    public Graph SetName(string name) {
+        Name = name;
+        return this;
     }
 
-    public void AddNodeProp(string property, string value) {
+    private Graph SetProperty(string property, string value, Dictionary<string, string> propDic) {
         if (String.IsNullOrEmpty(property))
-            return;
-        NodeProps[property] = value;
+            return this;
+
+        if (!propDic.TryAdd(property, value))
+            propDic[property] = value;
+
+        return this;
     }
 
-    public void AddEdgeProp(string property, string value) {
-        if (String.IsNullOrEmpty(property))
-            return;
-        EdgeProps[property] = value;
-    }
+    public Graph SetGraphProp(string property, string value)
+        => SetProperty(property, value, GraphProps);
+
+    public Graph SetNodeProp(string property, string value)
+        => SetProperty(property, value, NodeProps);
+
+    public Graph SetEdgeProp(string property, string value)
+        => SetProperty(property, value, EdgeProps);
 
     public override int GetHashCode()
         => _numericID;

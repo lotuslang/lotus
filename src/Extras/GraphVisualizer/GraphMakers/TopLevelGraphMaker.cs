@@ -27,22 +27,22 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
     private static readonly (string tooltip, string color) TypeDecName = ("type name", "");
 
     public GraphNode Default(TopLevelNode node)
-        =>  new GraphNode(node.GetHashCode(), node.Token.Representation)
+        =>  new GraphNode(node.Token.Representation)
                 .SetColor(TopLevel.color)
                 .SetTooltip(TopLevel.tooltip);
 
     public GraphNode Visit(TopLevelNode node)
-        => node.Token.Kind == TokenKind.EOF ? new GraphNode(0, "<EOF>") : Default(node);
+        => node.Token.Kind == TokenKind.EOF ? new GraphNode("<EOF>") : Default(node);
 
     public GraphNode Visit(TopLevelStatementNode node)
         => ToGraphNode(node.Statement);
 
     public GraphNode Visit(ImportNode node) {
-        var root = new GraphNode(node.GetHashCode(), "import")
+        var root = new GraphNode("import")
             .SetColor(Import.color)
             .SetTooltip(Import.tooltip);
 
-        var importsNode = new GraphNode(node.Names.GetHashCode(), @"import\nnames")
+        var importsNode = new GraphNode(@"import\nnames")
             .SetColor(ImportNames.color)
             .SetTooltip(ImportNames.tooltip);
 
@@ -59,23 +59,20 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(EnumNode node) {
-        var root = new GraphNode(node.GetHashCode(), "enum " + ASTUtils.PrintTypeName(node.Name, printTrivia: false))
+        var root = new GraphNode("enum " + ASTUtils.PrintTypeName(node.Name, printTrivia: false))
             .SetColor(Enum.color)
             .SetTooltip(Enum.tooltip);
 
         if (node.Name.HasParent) {
             root.Add(
-                new GraphNode(
-                    DeterministicHashCode.Combine(node.Name.Parent, "parent"),
-                    "parent"
-                )
+                new GraphNode("parent")
                 .SetColor(EnumParent.color)
                 .SetTooltip(EnumParent.tooltip)
                 .Add(ExtraUtils.ToGraphNode(node.Name.Parent))
             );
         }
 
-        var valuesNode = new GraphNode(node.Values.GetHashCode(), "Values")
+        var valuesNode = new GraphNode("Values")
             .SetColor(EnumValues.color)
             .SetTooltip(EnumValues.tooltip);
 
@@ -89,23 +86,23 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode Visit(NamespaceNode node)
-        => new GraphNode(node.GetHashCode(), "namespace") {
+        => new GraphNode("namespace") {
                 ExtraUtils.ToGraphNode(node.Name).SetTooltip(NamespaceName.tooltip)
             }.SetColor(Namespace.color)
              .SetTooltip(Namespace.tooltip);
 
     public GraphNode Visit(UsingNode node)
-        => new GraphNode(node.GetHashCode(), "using") {
+        => new GraphNode("using") {
                 ExtraUtils.UnionToGraphNode(node.Name)
             }.SetColor(Using.color)
              .SetTooltip(Using.tooltip);
 
     public GraphNode Visit(StructNode node) {
-        var root = new GraphNode(node.GetHashCode(), "struct")
+        var root = new GraphNode("struct")
             .SetColor(Struct.color)
             .SetColor(Struct.tooltip);
 
-        var fields = new GraphNode(node.Fields.GetHashCode(), "Fields")
+        var fields = new GraphNode("Fields")
             .SetColor(StructFields.color)
             .SetTooltip(StructFields.tooltip);
 
@@ -127,7 +124,7 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
     }
 
     public GraphNode ToGraphNode(FromOrigin node)
-        => new GraphNode(node.GetHashCode(), "from") {
+        => new GraphNode("from") {
                ExtraUtils.UnionToGraphNode(node.OriginName)
                    .SetTooltip(FromOrigin.tooltip)
            }.SetColor(From.color)
@@ -140,7 +137,7 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
 
         if (typeDec.HasParent) {
             root.Add(
-                new GraphNode(DeterministicHashCode.Combine(typeDec.Parent, "parent"), "parent") {
+                new GraphNode("parent") {
                     ExtraUtils.ToGraphNode(typeDec.Parent)
                 }
             );

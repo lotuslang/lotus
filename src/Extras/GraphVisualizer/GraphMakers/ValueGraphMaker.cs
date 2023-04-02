@@ -28,12 +28,12 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
     private static readonly (string tooltip, string color) ValueTuple = ("List of values", "");
 
     public GraphNode Default(ValueNode node)
-        => new GraphNode(node.GetHashCode(), node.Token.Representation)
+        => new GraphNode(node.Token.Representation)
             .SetColor(Value.color)
             .SetTooltip(Value.tooltip);
 
     public GraphNode Visit(ValueNode node)
-        => node.Token.Kind == TokenKind.EOF ? new GraphNode(0, "<EOF>") : Default(node);
+        => node.Token.Kind == TokenKind.EOF ? new GraphNode("<EOF>") : Default(node);
 
     public GraphNode Visit(BoolNode node)
         => Default(node)
@@ -46,12 +46,12 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
             .SetTooltip(Char.tooltip);
 
     public GraphNode Visit(ComplexStringNode node) {
-        var root = new GraphNode(node.GetHashCode(), node.Value)
+        var root = new GraphNode(node.Value)
                         .SetColor(ComplexString.color)
                         .SetTooltip(ComplexString.tooltip);
 
         if (node.CodeSections.Length != 0) {
-            var sectionNode = new GraphNode(DeterministicHashCode.Combine(node, "sections"), "code sections");
+            var sectionNode = new GraphNode("code sections");
 
             foreach (var section in node.CodeSections) {
                 sectionNode.Add(ToGraphNode(section));
@@ -67,10 +67,10 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
         GraphNode root;
 
         if (node.Name is IdentNode name) {
-            root = new GraphNode(node.GetHashCode(), name.Value + "(...)");
+            root = new GraphNode(name.Value + "(...)");
         } else {
-            root = new GraphNode(node.GetHashCode(), "call") {
-                new GraphNode(DeterministicHashCode.Combine(node.Name, "function"), "function") {
+            root = new GraphNode("call") {
+                new GraphNode("function") {
                     ToGraphNode(node.Name)
                 },
             };
@@ -80,7 +80,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
             .SetTooltip(FuncCall.tooltip);
 
         if (node.ArgList.Count == 0) {
-            root.Add(new GraphNode(node.ArgList.GetHashCode(), "(no args)"));
+            root.Add(new GraphNode("(no args)"));
 
             return root;
         }
@@ -95,7 +95,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
     }
 
     public GraphNode Visit(NameNode node)
-        => new GraphNode(node.GetHashCode(), MiscUtils.Join(".", ident => ident.Representation, node.Parts))
+        => new GraphNode(MiscUtils.Join(".", ident => ident.Representation, node.Parts))
             .SetColor(Ident.color)
             .SetTooltip("name");
 
@@ -105,7 +105,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
             .SetTooltip(node.Kind.ToString());
 
     public GraphNode Visit(ObjectCreationNode node) {
-        var root = new GraphNode(node.GetHashCode(), "obj creation") {
+        var root = new GraphNode("obj creation") {
             ToGraphNode(node.TypeName)
                 .SetColor(ObjTypeName.color)
                 .SetTooltip(ObjTypeName.tooltip),
@@ -115,7 +115,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
             .SetTooltip(ObjCreation.tooltip);
 
         if (node.Invocation.ArgList.Count == 0) {
-            root.Add(new GraphNode(node.Invocation.ArgList.GetHashCode(), "(no args)"));
+            root.Add(new GraphNode("(no args)"));
 
             return root;
         }
@@ -133,9 +133,9 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
         GraphNode root;
 
         if (node.Token.Representation is "++" or "--") {
-            root = new GraphNode(node.GetHashCode(), (node.OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + node.Token.Representation);
+            root = new GraphNode((node.OperationType.ToString().StartsWith("Postfix") ? "(postfix)" : "(prefix)") + node.Token.Representation);
         } else {
-            root = new GraphNode(node.GetHashCode(), node.Token.Representation);
+            root = new GraphNode(node.Token.Representation);
         }
 
         root.SetColor(Operation.color)
@@ -153,12 +153,12 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
 
     // todo(graph): handle escape sequences (same for Visit(CharNode))
     public GraphNode Visit(StringNode node)
-        => new GraphNode(node.GetHashCode(), "'" + node.Value.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
+        => new GraphNode("'" + node.Value.Replace(@"\", @"\\").Replace("'", @"\'").Replace("\"", "\\\"") + "'")
             .SetColor(String.color)
             .SetTooltip(String.tooltip);
 
     public GraphNode Visit(TupleNode node) {
-        var root = new GraphNode(node.GetHashCode(), node.Count == 0 ? "Empty tuple" : "Tuple with\\n" + node.Count + " elements")
+        var root = new GraphNode(node.Count == 0 ? "Empty tuple" : "Tuple with\\n" + node.Count + " elements")
                         .SetColor(ValueTuple.color)
                         .SetTooltip(ValueTuple.tooltip);
 

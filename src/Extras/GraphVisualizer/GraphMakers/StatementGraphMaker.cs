@@ -38,13 +38,13 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
     private static readonly (string tooltip, string color) SimpleBlock = ("body", "darkviolet");
 
     public GraphNode Default(StatementNode node)
-        => new GraphNode(node.GetHashCode(), node.Token.Representation)
+        => new GraphNode(node.Token.Representation)
             .SetColor(Statement.color)
             .SetTooltip(Statement.tooltip);
 
     public GraphNode Visit(StatementNode node)
         =>  node.Token.Kind == TokenKind.EOF
-                ? new GraphNode(0, "<EOF>").SetProperty("style", "invis")
+                ? new GraphNode("<EOF>").SetProperty("style", "invis")
                 : Default(node);
 
     public GraphNode Visit(BreakNode node)
@@ -58,7 +58,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
             .SetTooltip(Continue.tooltip);
 
     public GraphNode Visit(DeclarationNode node)
-        => new GraphNode(node.GetHashCode(), "var") {
+        => new GraphNode("var") {
                ExtraUtils.ToGraphNode(node.Name)
                     .SetColor(DeclarationName.color)
                     .SetTooltip(DeclarationName.tooltip),
@@ -67,7 +67,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
             .SetTooltip(Declaration.tooltip);
 
     public GraphNode Visit(ElseNode node)
-        => new GraphNode(node.GetHashCode(), "else") {
+        => new GraphNode("else") {
                 node.BlockOrIfNode.Match(ToGraphNode, ToGraphNode)
            }.SetColor(Else.color)
             .SetTooltip(Else.tooltip);
@@ -78,8 +78,8 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                 .SetColor(EmptyStatement.color);
 
     public GraphNode Visit(ForeachNode node)
-        => new GraphNode(node.GetHashCode(), "foreach") {
-               new GraphNode(node.InToken.GetHashCode(), "in") {
+        => new GraphNode("foreach") {
+               new GraphNode("in") {
                     ToGraphNode(node.ItemName),
                     ToGraphNode(node.CollectionRef)
                }.SetTooltip("in iterator"),
@@ -88,17 +88,17 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
             .SetTooltip(Foreach.tooltip);
 
     public GraphNode Visit(ForNode node) {
-        var root = new GraphNode(node.GetHashCode(), "for loop")
+        var root = new GraphNode("for loop")
                         .SetColor(For.color)
                         .SetTooltip(For.tooltip);
 
-        var headerNode = new GraphNode(node.Header.GetHashCode(), "header")
+        var headerNode = new GraphNode("header")
             .SetColor(ForHeader.color)
             .SetTooltip(ForHeader.tooltip);
 
         foreach (var statement in node.Header) {
             if (statement.Token.Kind == TokenKind.EOF)
-                headerNode.Add(new GraphNode(Statement.GetHashCode(), "(empty)"));
+                headerNode.Add(new GraphNode("(empty)"));
             else
                 headerNode.Add(ToGraphNode(statement));
         }
@@ -111,14 +111,14 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
     }
 
     public GraphNode Visit(FunctionDeclarationNode node) {
-        var root = new GraphNode(node.GetHashCode(), "func " + node.FuncName.Representation)
+        var root = new GraphNode("func " + node.FuncName.Representation)
                         .SetColor(FuncDec.color)
                         .SetTooltip(FuncDec.tooltip);
 
         if (node.ParamList.Items.Length == 0) {
-            root.Add(new GraphNode(node.ParamList.GetHashCode(), "(no params)"));
+            root.Add(new GraphNode("(no params)"));
         } else {
-            var parametersNode = new GraphNode(node.ParamList.GetHashCode(), "param")
+            var parametersNode = new GraphNode("param")
                                         .SetColor(FuncDecParameters.color)
                                         .SetTooltip(FuncDecParameters.tooltip);
 
@@ -138,9 +138,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
         }
 
         if (node.HasReturnType) {
-            root.Add(new GraphNode(DeterministicHashCode.Combine(node.ReturnType, node), "return type") { // fixme(graph): Color & Tooltip
-                ToGraphNode(node.ReturnType)
-            });
+            root.Add(new GraphNode("return type") { ToGraphNode(node.ReturnType) });
         }
 
         root.Add(ToGraphNode(node.Body));
@@ -149,8 +147,8 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
     }
 
     public GraphNode Visit(IfNode node) {
-        var root = new GraphNode(node.GetHashCode(), "if") {
-            new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
+        var root = new GraphNode("if") {
+            new GraphNode("condition") {
                 ToGraphNode(node.Condition)
             }.SetColor(IfCondition.color)
              .SetTooltip(IfCondition.tooltip),
@@ -166,13 +164,13 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
     }
 
     public GraphNode Visit(PrintNode node)
-        => new GraphNode(node.GetHashCode(), "print") {
+        => new GraphNode("print") {
                 ToGraphNode(node.Value)
             }.SetColor(Print.color)
              .SetTooltip(Print.tooltip); // fixme(graph): find color
 
     public GraphNode Visit(ReturnNode node) {
-        var root = new GraphNode(node.GetHashCode(), "return")
+        var root = new GraphNode("return")
             .SetColor(Return.color)
             .SetTooltip(Return.tooltip);
 
@@ -187,8 +185,8 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
         => ToGraphNode(node.Value);
 
     public GraphNode Visit(WhileNode node)
-        => new GraphNode(node.GetHashCode(), node.IsDoLoop ? "do-while" : "while") {
-                new GraphNode(DeterministicHashCode.Combine(node, "condition"), "condition") {
+        => new GraphNode(node.IsDoLoop ? "do-while" : "while") {
+                new GraphNode("condition") {
                     ToGraphNode(node.Condition)
                 }.SetColor(WhileCondition.color)
                  .SetTooltip(WhileCondition.tooltip),

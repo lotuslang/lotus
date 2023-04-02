@@ -5,7 +5,7 @@ internal sealed partial class GraphMaker
     private static readonly (string tooltip, string color) Tuple = ("tuple", "");
 
     public GraphNode ToGraphNode<TVal>(Syntax.Tuple<TVal> tuple) where TVal : Node {
-        var root = new GraphNode(tuple.GetHashCode(), "tuple")
+        var root = new GraphNode("tuple")
             .SetColor(Tuple.color)
             .SetTooltip(Tuple.tooltip);
 

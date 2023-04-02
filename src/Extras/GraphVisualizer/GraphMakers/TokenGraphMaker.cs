@@ -9,7 +9,9 @@ internal sealed partial class GraphMaker : ITokenVisitor<GraphNode>
                 .SetColor("lightgrey");
 
     public GraphNode Visit(Token token)
-        => token.Kind == TokenKind.EOF ? new GraphNode("<EOF>") : Default(token);
+        => token.Kind == TokenKind.EOF
+                ? new GraphNode("<EOF>").SetProperty("style", "invis")
+                : Default(token);
 
     public GraphNode Default(TriviaToken? token) => Default(token ?? Token.NULL);
 

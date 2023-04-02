@@ -29,11 +29,6 @@ public static class MiscUtils
     }
 
     [DebuggerStepThrough]
-    public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dic)
-        where TKey : notnull
-        => new(dic);
-
-    [DebuggerStepThrough]
         public static string Join<T>(string separator, Func<T, string> convert, IEnumerable<T> coll) {
         var count = coll.Count();
 

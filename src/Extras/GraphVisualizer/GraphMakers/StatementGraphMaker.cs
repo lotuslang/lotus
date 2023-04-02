@@ -43,7 +43,9 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
             .SetTooltip(Statement.tooltip);
 
     public GraphNode Visit(StatementNode node)
-        => node.Token.Kind == TokenKind.EOF ? new GraphNode(0, "<EOF>") : Default(node);
+        =>  node.Token.Kind == TokenKind.EOF
+                ? new GraphNode(0, "<EOF>").SetProperty("style", "invis")
+                : Default(node);
 
     public GraphNode Visit(BreakNode node)
         => Default(node)

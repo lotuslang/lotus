@@ -125,19 +125,19 @@ public sealed class Graph : IEquatable<Graph>
     }
 
     public void AddGraphProp(string property, string value) {
-        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+        if (String.IsNullOrEmpty(property))
             return;
         GraphProps[property] = value;
     }
 
     public void AddNodeProp(string property, string value) {
-        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+        if (String.IsNullOrEmpty(property))
             return;
         NodeProps[property] = value;
     }
 
     public void AddEdgeProp(string property, string value) {
-        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+        if (String.IsNullOrEmpty(property))
             return;
         EdgeProps[property] = value;
     }

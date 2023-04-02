@@ -98,7 +98,7 @@ public sealed class Graph
 
         // Close the graph by a closing curly bracket on a new line
         sb.AppendLine().Append('}')
-          .AppendLine().Append("// ").Append(GetHashCode())
+          .AppendLine().Append("// ").Append(GetDeterministicHashCode(true))
           .AppendLine();
 
         // Return the string builder
@@ -123,9 +123,10 @@ public sealed class Graph
         EdgeProps[property] = value;
     }
 
-    public override int GetHashCode() => GetHashCode(true);
+    public override int GetHashCode()
+        => _rootNodes.Aggregate(new HashCode(), (hc, n) => { hc.Add(n.GetHashCode()); return hc; }).ToHashCode();
 
-    public int GetHashCode(bool includeProps) {
+    public int GetDeterministicHashCode(bool includeProps) {
         var code = new DeterministicHashCode();
 
         foreach (var node in _rootNodes) {

@@ -25,7 +25,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
     public Dictionary<string, string> Properties { get; }
 
-    public GraphNode(string name) : this(new Random().Next(), name) { }
+    public GraphNode(string name) : this(Random.Shared.Next(), name) { }
 
     public GraphNode(int id, string text) {
         ID = id;

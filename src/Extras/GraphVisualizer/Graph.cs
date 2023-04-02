@@ -10,24 +10,20 @@ public sealed class Graph
     /// </summary>
     public string Name { get; set; }
 
-    private readonly List<GraphNode> _rootNodes;
+    private readonly List<GraphNode> _rootNodes = new();
     /// <summary>
     /// The nodes that are the roots of independent trees.
     /// </summary>
     public ReadOnlyCollection<GraphNode> RootNodes => _rootNodes.AsReadOnly();
 
-    public Dictionary<string, string> GraphProps { get; }
+    public Dictionary<string, string> GraphProps { get; } = new();
 
-    public Dictionary<string, string> NodeProps { get; }
+    public Dictionary<string, string> NodeProps { get; } = new();
 
-    public Dictionary<string, string> EdgeProps { get; }
+    public Dictionary<string, string> EdgeProps { get; } = new();
 
     public Graph(string name) {
         Name = name;
-        _rootNodes = new List<GraphNode>();
-        GraphProps = new Dictionary<string, string>();
-        NodeProps = new Dictionary<string, string>();
-        EdgeProps = new Dictionary<string, string>();
     }
 
     /// <summary>

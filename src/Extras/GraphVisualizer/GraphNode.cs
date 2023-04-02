@@ -17,13 +17,14 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// </summary>
     public string Name { get; set; }
 
-    private readonly List<GraphNode> _children;
+    private readonly List<GraphNode> _children = new();
     /// <summary>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
     public ReadOnlyCollection<GraphNode> Children => _children.AsReadOnly();
 
-    public Dictionary<string, string> Properties { get; }
+    private readonly Dictionary<string, string> _props = new();
+    public ReadOnlyDictionary<string, string> Properties => _props.AsReadOnly();
 
     public GraphNode(string name) : this(Random.Shared.Next(), name) { }
 
@@ -31,8 +32,6 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         _numericID = id;
         ID = _numericID.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
         Name = text;
-        Properties = new Dictionary<string, string>();
-        _children = new List<GraphNode>();
     }
 
     /// <summary>
@@ -50,8 +49,8 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         if (String.IsNullOrEmpty(property))
             return this;
 
-        if (!Properties.TryAdd(property, value)) {
-            Properties[property] = value;
+        if (!_props.TryAdd(property, value)) {
+            _props[property] = value;
         }
 
         return this;
@@ -74,7 +73,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         // Declare the node: Append the id of the node, and set its label to `name`
         sb.Append(ID).Append(" [label=\"").Append(Name).Append('"');
 
-        foreach (var property in Properties) {
+        foreach (var property in _props) {
             sb.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('"');
         }
 

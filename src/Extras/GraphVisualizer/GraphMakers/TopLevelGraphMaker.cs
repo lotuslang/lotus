@@ -44,13 +44,11 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
             .SetColor(Import.color)
             .SetTooltip(Import.tooltip);
 
-        var importsNode = new GraphNode(@"import\nnames")
-            .SetColor(ImportNames.color)
-            .SetTooltip(ImportNames.tooltip);
+        var importsNode = new Graph("imports")
+            .SetGraphProp("color", ImportNames.color);
 
-        foreach (var import in node.Names) {
+        foreach (var import in node.Names)
             importsNode.Add(ExtraUtils.ToGraphNode(import));
-        }
 
         root.Add(importsNode);
 
@@ -74,9 +72,8 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
             );
         }
 
-        var valuesNode = new GraphNode("Values")
-            .SetColor(EnumValues.color)
-            .SetTooltip(EnumValues.tooltip);
+        var valuesNode = new Graph("Values") // todo(graphviz): use record shape for enum values (+struct fields?)
+            .SetGraphProp("color", EnumValues.color);
 
         foreach (var val in node.Values) {
             valuesNode.Add(ExtraUtils.ToGraphNode(val));
@@ -104,9 +101,8 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
             .SetColor(Struct.color)
             .SetColor(Struct.tooltip);
 
-        var fields = new GraphNode("Fields")
-            .SetColor(StructFields.color)
-            .SetTooltip(StructFields.tooltip);
+        var fields = new Graph("Fields")
+            .SetGraphProp("color", StructFields.color);
 
         foreach (var field in node.Fields) {
             var fieldNode = ExtraUtils.ToGraphNode(field.Name);
@@ -139,7 +135,7 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
 
         if (typeDec.HasParent) {
             root.Add(
-                new GraphNode("parent") {
+                new GraphNode("parent") { // todo(graphviz): put custom label on edge and remove useless 'parent' node
                     ExtraUtils.ToGraphNode(typeDec.Parent)
                 }
             );

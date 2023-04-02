@@ -35,7 +35,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
     private static readonly (string tooltip, string color) While = ("(do-)while loop", "pink");
     private static readonly (string tooltip, string color) WhileCondition = ("loop condition", "");
 
-    private static readonly (string tooltip, string color) SimpleBlock = ("body", "darkviolet");
+    private static readonly (string tooltip, string color) SimpleBlock = ("block", "darkviolet");
 
     public GraphNode Default(StatementNode node)
         => new GraphNode(node.Token.Representation)
@@ -66,11 +66,18 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
            }.SetColor(Declaration.color)
             .SetTooltip(Declaration.tooltip);
 
-    public GraphNode Visit(ElseNode node)
-        => new GraphNode("else") {
-                node.BlockOrIfNode.Match(ToGraphNode, ToGraphNode)
-           }.SetColor(Else.color)
+    public GraphNode Visit(ElseNode node) {
+        var root = new GraphNode("else")
+            .SetColor(Else.color)
             .SetTooltip(Else.tooltip);
+
+        if (node.BlockOrIfNode.Is<IfNode>(out var ifNode))
+            root.Add(ToGraphNode(ifNode));
+        else
+            root.Add(ToCluster((Syntax.Tuple<StatementNode>)node.BlockOrIfNode));
+
+        return root;
+    }
 
     public GraphNode Visit(EmptyStatementNode node)
         => Default(node)
@@ -83,7 +90,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                     ToGraphNode(node.ItemName),
                     ToGraphNode(node.CollectionRef)
                }.SetTooltip("in iterator"),
-               ToGraphNode(node.Body),
+               ToCluster(node.Body),
            }.SetColor(Foreach.color)
             .SetTooltip(Foreach.tooltip);
 
@@ -92,9 +99,8 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                         .SetColor(For.color)
                         .SetTooltip(For.tooltip);
 
-        var headerNode = new GraphNode("header")
-            .SetColor(ForHeader.color)
-            .SetTooltip(ForHeader.tooltip);
+        var headerNode = new Graph("header")
+            .SetGraphProp("color", ForHeader.color);
 
         foreach (var statement in node.Header) {
             if (statement.Token.Kind == TokenKind.EOF)
@@ -105,7 +111,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
 
         root.Add(headerNode);
 
-        root.Add(ToGraphNode(node.Body));
+        root.Add(ToCluster(node.Body));
 
         return root;
     }
@@ -115,33 +121,28 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                         .SetColor(FuncDec.color)
                         .SetTooltip(FuncDec.tooltip);
 
-        if (node.ParamList.Items.Length == 0) {
-            root.Add(new GraphNode("(no params)"));
-        } else {
-            var parametersNode = new GraphNode("param")
-                                        .SetColor(FuncDecParameters.color)
-                                        .SetTooltip(FuncDecParameters.tooltip);
+        var parametersNode = new Graph("parameters")
+            .SetGraphProp("color", FuncDecParameters.color);
 
-            foreach (var parameter in node.ParamList.Items) { // fixme(graph): Write tooltips
-                var paramNameNode = ToGraphNode(parameter.Name);
+        foreach (var parameter in node.ParamList.Items) {
+            var paramNameNode = ToGraphNode(parameter.Name);
 
-                paramNameNode.Add(ToGraphNode(parameter.Type));
+            paramNameNode.Add(ToGraphNode(parameter.Type));
 
-                if (parameter.HasDefaultValue) {
-                    paramNameNode.Add(ToGraphNode(parameter.DefaultValue));
-                }
-
-                parametersNode.Add(paramNameNode);
+            if (parameter.HasDefaultValue) {
+                paramNameNode.Add(ToGraphNode(parameter.DefaultValue));
             }
 
-            root.Add(parametersNode);
+            parametersNode.Add(paramNameNode);
         }
+
+        root.Add(parametersNode);
 
         if (node.HasReturnType) {
             root.Add(new GraphNode("return type") { ToGraphNode(node.ReturnType) });
         }
 
-        root.Add(ToGraphNode(node.Body));
+        root.Add(ToCluster(node.Body));
 
         return root;
     }
@@ -152,7 +153,7 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                 ToGraphNode(node.Condition)
             }.SetColor(IfCondition.color)
              .SetTooltip(IfCondition.tooltip),
-            ToGraphNode(node.Body)
+            ToCluster(node.Body)
         }.SetColor(If.color)
          .SetTooltip(If.tooltip); // fixme(graph): Choose color
 
@@ -190,16 +191,20 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
                     ToGraphNode(node.Condition)
                 }.SetColor(WhileCondition.color)
                  .SetTooltip(WhileCondition.tooltip),
-                ToGraphNode(node.Body)
+                ToCluster(node.Body)
             }.SetColor(While.color)
              .SetTooltip(node.IsDoLoop ? "do-while loop" : "while loop");
 
-    public GraphNode Visit(Syntax.Tuple<StatementNode> block)
-        => ToGraphNode<StatementNode>(block)
-                .SetName("body")
-                .SetTooltip(SimpleBlock.tooltip)
-                .SetColor(SimpleBlock.color);
+    public Graph ToCluster(Syntax.Tuple<StatementNode> block) {
+        // it would just call itself forever otherwise, and since it's purely based
+        // on generics, there's no way to specify that we want the "simpler" version
+        Graph ToClusterAsTuple<TVal>(Syntax.Tuple<TVal> tuple) where TVal : Node
+            => ToCluster(tuple);
+
+        return ToClusterAsTuple(block)
+            .SetName(SimpleBlock.tooltip)
+            .SetGraphProp("color", SimpleBlock.color);
+    }
 
     public GraphNode ToGraphNode(StatementNode node) => node.Accept(this);
-    public GraphNode ToGraphNode(Syntax.Tuple<StatementNode> block) => Visit(block);
 }

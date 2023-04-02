@@ -52,15 +52,14 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
                         .SetColor(ComplexString.color)
                         .SetTooltip(ComplexString.tooltip);
 
-        if (node.CodeSections.Length != 0) {
-            var sectionNode = new GraphNode("code sections");
+        var codeSectionCluster = new Graph("code sections")
+            .SetGraphProp("color", ComplexString.color);
 
-            foreach (var section in node.CodeSections) {
-                sectionNode.Add(ToGraphNode(section));
-            }
-
-            root.Add(sectionNode);
+        foreach (var section in node.CodeSections) {
+            codeSectionCluster.Add(ToGraphNode(section));
         }
+
+        root.Add(codeSectionCluster);
 
         return root;
     }
@@ -81,17 +80,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
         root.SetColor(FuncCall.color)
             .SetTooltip(FuncCall.tooltip);
 
-        if (node.ArgList.Count == 0) {
-            root.Add(new GraphNode("(no args)"));
-
-            return root;
-        }
-
-        var argsNode = ToGraphNode(node.ArgList).SetTooltip("arguments");
-
-        argsNode.Name = "args";
-
-        root.Add(argsNode);
+        root.Add(ToCluster(node.ArgList).SetName("args"));
 
         return root;
     }
@@ -116,17 +105,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
         root.SetColor(ObjCreation.color)
             .SetTooltip(ObjCreation.tooltip);
 
-        if (node.Invocation.ArgList.Count == 0) {
-            root.Add(new GraphNode("(no args)"));
-
-            return root;
-        }
-
-        var argsNode = ToGraphNode(node.Invocation.ArgList).SetTooltip("argument");
-
-        argsNode.Name = "args";
-
-        root.Add(argsNode);
+        root.Add(ToCluster(node.Invocation.ArgList).SetName("args"));
 
         return root;
     }

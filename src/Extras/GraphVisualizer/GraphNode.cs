@@ -9,8 +9,8 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// <summary>
     /// The unique identifier for this node.
     /// </summary>
-    public int ID { get; }
-    private readonly string _stringID;
+    public string ID { get; }
+    private readonly int _numericID;
 
     /// <summary>
     /// The name of this node.
@@ -28,8 +28,8 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     public GraphNode(string name) : this(Random.Shared.Next(), name) { }
 
     public GraphNode(int id, string text) {
-        ID = id;
-        _stringID = ID.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+        _numericID = id;
+        ID = _numericID.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
         Name = text;
         Properties = new Dictionary<string, string>();
         _children = new List<GraphNode>();
@@ -69,13 +69,10 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     }
 
     public void AppendText(IndentedStringBuilder sb, HashSet<GraphNode> registry) {
-        if (ID == 0)
-            return;
-
         sb.AppendLine();
 
         // Declare the node: Append the id of the node, and set its label to `name`
-        sb.Append(_stringID).Append(" [label=\"").Append(Name).Append('"');
+        sb.Append(ID).Append(" [label=\"").Append(Name).Append('"');
 
         foreach (var property in Properties) {
             sb.Append(',').Append(property.Key).Append("=\"").Append(property.Value).Append('"');
@@ -93,7 +90,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         foreach (var child in _children) {
             sb.AppendLine();
 
-            sb.Append(_stringID).Append(" -- ").Append(child._stringID);
+            sb.Append(ID).Append(" -- ").Append(child.ID);
 
             // If this child wasn't already processed, then append its text
             if (registry.Add(child))
@@ -103,7 +100,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         sb.Indent--;
     }
 
-    public override int GetHashCode() => ID;
+    public override int GetHashCode() => _numericID;
 
     public IEnumerator<GraphNode> GetEnumerator()
         => Children.GetEnumerator();
@@ -115,7 +112,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         => Equals(obj as GraphNode);
 
     public bool Equals(GraphNode? node)
-        => StructuralComparer.Equals(this, node);
+        => node is not null && GetHashCode() == node.GetHashCode();
 
     public static IEqualityComparer<GraphNode> IDComparer => EqualityComparer<GraphNode>.Default;
     public static IEqualityComparer<GraphNode> StructuralComparer => EqComparer.Instance;
@@ -137,7 +134,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
             code.Add(n.Name, DeterministicStringComparer.Instance);
 
             foreach (var node in n.Children) {
-                code.Add(node, StructuralComparer);
+                code.Add(GetHashCode(node));
             }
 
             return code.ToHashCode();

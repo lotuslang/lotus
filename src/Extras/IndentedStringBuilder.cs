@@ -90,24 +90,19 @@ public sealed class IndentedStringBuilder
         return AppendLine();
     }
 
-    public IndentedStringBuilder AppendLineNoIndent() {
-        _sb.AppendLine();
-        return this;
-    }
-
     public IndentedStringBuilder AppendLineNoIndent(string s) {
         _sb.AppendLine(s);
         return this;
     }
 
     public IndentedStringBuilder AppendLineNoIndent(char c) {
-        _sb.Append(c);
-        return AppendLineNoIndent();
+        _sb.Append(c).AppendLine();
+        return this;
     }
 
     public IndentedStringBuilder AppendLineNoIndent(object o) {
-        _sb.Append(o);
-        return AppendLineNoIndent();
+        _sb.Append(o).AppendLine();
+        return this;
     }
 
     public override string ToString() => _sb.ToString();

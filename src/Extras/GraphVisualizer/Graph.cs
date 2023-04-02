@@ -35,6 +35,7 @@ public sealed class Graph : IEquatable<Graph>
 
         SetGraphProp("compound", "true");
         SetGraphProp("splines", "line");
+        SetGraphProp("color", ""); // set color to default so this won't get affected by parent clusters
     }
 
     public Graph(string name) : this(Random.Shared.Next(), name) { }
@@ -51,6 +52,12 @@ public sealed class Graph : IEquatable<Graph>
 
     public void Add(GraphNode node) => AddNode(node);
     public void Add(Graph graph) => AddCluster(graph);
+
+    public string ToText() {
+        var sb = new IndentedStringBuilder();
+        AppendTo(sb, new(), new(), true);
+        return sb.ToString();
+    }
 
     public void AppendTo(IndentedStringBuilder sb, HashSet<GraphNode> nodeRegistry, HashSet<Graph> graphRegistry, bool isRoot) {
         if (isRoot)
@@ -99,6 +106,8 @@ public sealed class Graph : IEquatable<Graph>
             sb.AppendLine(']');
         }
 
+        AppendOrderEnforcingEdges(sb);
+
         foreach (var node in _rootNodes) {
             // If the node wasn't already processed
             if (nodeRegistry.Add(node))
@@ -118,10 +127,19 @@ public sealed class Graph : IEquatable<Graph>
           .AppendLine();
     }
 
-    public string ToText() {
-        var sb = new IndentedStringBuilder();
-        AppendTo(sb, new(), new(), true);
-        return sb.ToString();
+    private void AppendOrderEnforcingEdges(IndentedStringBuilder sb) {
+        sb.AppendLine("// enforces original node ordering by putting them all on the");
+        sb.AppendLine("// same level/rank and linking them with invisible edges");
+        sb.Append("{rank=same;");
+        foreach (var node in RootNodes) sb.Append(node.ID).Append(';');
+        sb.AppendLine("}");
+
+        // this stop *before* the last one!!
+        for (int i = 0; i < RootNodes.Count - 1; i++) {
+            sb.Append(RootNodes[i].ID).Append(" -- ").Append(RootNodes[i+1].ID).Append(" [style=invis];");
+        }
+
+        sb.AppendLine();
     }
 
     public Graph SetName(string name) {

@@ -68,10 +68,10 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
     public GraphNode Visit(FunctionCallNode node) {
         GraphNode root;
 
-        if (node.Name is IdentNode name) {
-            root = new GraphNode(name.Value + "(...)");
+        if (node.Name is NameNode name) {
+            root = new GraphNode(ASTUtils.PrintValue(name, printTrivia: false) + "(...)");
         } else {
-            root = new GraphNode("call") {
+            root = new GraphNode("func call") {
                 new GraphNode("function") {
                     ToGraphNode(node.Name)
                 },

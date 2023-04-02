@@ -57,7 +57,7 @@ partial class Program
 
         hashVerb.SetHandler(
             GraphHandlerFactory(
-                g => Console.WriteLine(g.GetDeterministicHashCode(true))
+                g => Console.WriteLine(Graph.StructuralComparer.GetHashCode(g))
             ),
             fileArgument,
             forceOption

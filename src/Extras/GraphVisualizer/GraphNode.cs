@@ -17,11 +17,14 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// </summary>
     public string Name { get; set; }
 
-    private readonly List<GraphNode> _children = new();
+    private readonly List<GraphNode> _childNodes = new();
     /// <summary>
     /// The children of this node, i.e. the nodes this node points to.
     /// </summary>
-    public ReadOnlyCollection<GraphNode> Children => _children.AsReadOnly();
+    public ReadOnlyCollection<GraphNode> ChildNodes => _childNodes.AsReadOnly();
+
+    private readonly List<Graph> _childClusters = new();
+    public ReadOnlyCollection<Graph> ChildClusters => _childClusters.AsReadOnly();
 
     private readonly Dictionary<string, string> _props = new();
     public ReadOnlyDictionary<string, string> Properties => _props.AsReadOnly();
@@ -40,7 +43,14 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     /// <param name="node">The node to add as a child.</param>
     public GraphNode Add(GraphNode? node) {
         if (node is not null)
-            _children.Add(node);
+            _childNodes.Add(node);
+
+        return this;
+    }
+
+    public GraphNode Add(Graph? cluster) {
+        if (cluster is not null)
+            _childClusters.Add(cluster);
 
         return this;
     }
@@ -67,7 +77,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         return this;
     }
 
-    public void AppendText(IndentedStringBuilder sb, HashSet<GraphNode> registry) {
+    public void AppendTo(IndentedStringBuilder sb, HashSet<GraphNode> nodeRegistry, HashSet<Graph> graphRegistry) {
         sb.AppendLine();
 
         // Declare the node: Append the id of the node, and set its label to `name`
@@ -80,20 +90,25 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         sb.Append(']');
         sb.AppendLine();
 
-        if (_children.Count == 0)
+        if (_childNodes.Count == 0 && _childClusters.Count == 0)
             return;
 
         sb.Indent++;
 
         // For each node that is a children of this object
-        foreach (var child in _children) {
-            sb.AppendLine();
-
-            sb.Append(ID).Append(" -- ").Append(child.ID);
+        foreach (var child in _childNodes) {
+            Edge.AppendEdgeBetween(sb, this, child);
 
             // If this child wasn't already processed, then append its text
-            if (registry.Add(child))
-                child.AppendText(sb, registry);
+            if (nodeRegistry.Add(child))
+                child.AppendTo(sb, nodeRegistry, graphRegistry);
+        }
+
+        foreach (var cluster in _childClusters) {
+            Edge.AppendEdgeBetween(sb, this, cluster);
+
+            if (graphRegistry.Add(cluster))
+                cluster.AppendTo(sb, nodeRegistry, graphRegistry, false);
         }
 
         sb.Indent--;
@@ -102,7 +117,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     public override int GetHashCode() => _numericID;
 
     public IEnumerator<GraphNode> GetEnumerator()
-        => Children.GetEnumerator();
+        => ChildNodes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
@@ -132,9 +147,11 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
             code.Add(n.Name, DeterministicStringComparer.Instance);
 
-            foreach (var node in n.Children) {
+            foreach (var node in n.ChildNodes)
                 code.Add(GetHashCode(node));
-            }
+
+            foreach (var cluster in n.ChildClusters)
+                code.Add(cluster, Graph.StructuralComparer);
 
             return code.ToHashCode();
         }

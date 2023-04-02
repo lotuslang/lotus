@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 namespace Lotus.Extras.Graphs;
 
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
-public sealed class Graph
+public sealed class Graph : IEquatable<Graph>
 {
     public string ID { get; }
     private readonly int _numericID;
@@ -19,6 +19,9 @@ public sealed class Graph
     /// </summary>
     public ReadOnlyCollection<GraphNode> RootNodes => _rootNodes.AsReadOnly();
 
+    private readonly List<Graph> _rootClusters = new();
+    public ReadOnlyCollection<Graph> RootClusters => _rootClusters.AsReadOnly();
+
     public Dictionary<string, string> GraphProps { get; } = new();
 
     public Dictionary<string, string> NodeProps { get; } = new();
@@ -29,6 +32,9 @@ public sealed class Graph
         _numericID = id;
         ID = _numericID.ToString(System.Globalization.CultureInfo.InvariantCulture);
         Name = name;
+
+        AddGraphProp("compound", "true");
+        AddGraphProp("splines", "line");
     }
 
     public Graph(string name) : this(Random.Shared.Next(), name) { }
@@ -40,15 +46,20 @@ public sealed class Graph
     public void AddNode(GraphNode node)
         => _rootNodes.Add(node);
 
-    /// <summary>
-    /// A representation of this graph in the 'dot' language (https://www.graphviz.org/doc/info/lang.html).
-    /// </summary>
-    /// <returns>A single string of 'dot' representing this entire graph.</returns>
-    public string ToText() {
-        var sb = new IndentedStringBuilder();
+    public void AddCluster(Graph graph)
+        => _rootClusters.Add(graph);
 
-        // Append the keyword 'digraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
-        sb.Append("graph ").Append(ID).AppendLine(" {");
+    public void Add(GraphNode node) => AddNode(node);
+    public void Add(Graph graph) => AddCluster(graph);
+
+    public void AppendTo(IndentedStringBuilder sb, HashSet<GraphNode> nodeRegistry, HashSet<Graph> graphRegistry, bool isRoot) {
+        if (isRoot)
+            sb.Append("graph ").AppendLine(ID);
+        else
+            sb.Append("subgraph cluster_").AppendLine(ID);
+
+        sb.AppendLine('{');
+
         sb.Indent++;
 
         sb.Append("label=\"").Append(Name).AppendLine('"');
@@ -59,7 +70,7 @@ public sealed class Graph
         }
 
         if (NodeProps.Count != 0) {
-            sb.Append("node[");
+            sb.Append("node [");
 
             sb.Indent++;
             sb.AppendLine();
@@ -88,23 +99,28 @@ public sealed class Graph
             sb.AppendLine(']');
         }
 
-        // A list of GraphNode to keep track of visited nodes
-        var registry = new HashSet<GraphNode>();
-
         foreach (var node in _rootNodes) {
             // If the node wasn't already processed
-            if (registry.Add(node))
-               node.AppendText(sb, registry);
+            if (nodeRegistry.Add(node))
+               node.AppendTo(sb, nodeRegistry, graphRegistry);
+        }
+
+        foreach (var cluster in _rootClusters) {
+            if (graphRegistry.Add(cluster))
+                cluster.AppendTo(sb, nodeRegistry, graphRegistry, false);
         }
 
         sb.Indent--;
 
         // Close the graph by a closing curly bracket on a new line
         sb.AppendLine().Append('}')
-          .AppendLine().Append("// ").Append(GetDeterministicHashCode(true))
+          .AppendLine().Append("// ").Append(StructuralComparer.GetHashCode(this))
           .AppendLine();
+    }
 
-        // Return the string builder
+    public string ToText() {
+        var sb = new IndentedStringBuilder();
+        AppendTo(sb, new(), new(), true);
         return sb.ToString();
     }
 
@@ -127,22 +143,41 @@ public sealed class Graph
     }
 
     public override int GetHashCode()
-        => _rootNodes.Aggregate(new HashCode(), (hc, n) => { hc.Add(n.GetHashCode()); return hc; }).ToHashCode();
+        => _numericID;
 
-    public int GetDeterministicHashCode(bool includeProps) {
-        var code = new DeterministicHashCode();
+    public override bool Equals(object? obj)
+        => Equals(obj as Graph);
+    public bool Equals(Graph? other)
+        => other is not null && GetHashCode() == other.GetHashCode();
 
-        foreach (var node in _rootNodes) {
-            code.Add(node, GraphNode.StructuralComparer);
-        }
+    public static IEqualityComparer<Graph> StructuralComparer => EqComparer.Instance;
 
-        if (includeProps) {
-            foreach (var prop in GraphProps.Concat(NodeProps).Concat(EdgeProps)) {
-                code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Key));
-                code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Value));
+    private sealed class EqComparer : EqualityComparer<Graph>
+    {
+        public static readonly EqComparer Instance = new();
+
+        private EqComparer() {}
+
+        public override bool Equals(Graph? g1, Graph? g2)
+            => g1 is null
+                ? g2 is null
+                : g2 is not null && GetHashCode(g1) == GetHashCode(g2);
+
+        public override int GetHashCode(Graph graph) {
+            var code = new DeterministicHashCode();
+
+            foreach (var node in graph.RootNodes)
+                code.Add(node, GraphNode.StructuralComparer);
+
+            foreach (var cluster in graph.RootClusters)
+                code.Add(cluster, this);
+
+            foreach (var prop in graph.GraphProps.Concat(graph.NodeProps).Concat(graph.EdgeProps)) {
+                code.Add(prop.Key, DeterministicStringComparer.Instance);
+                code.Add(prop.Value, DeterministicStringComparer.Instance);
             }
-        }
 
-        return code.ToHashCode();
+            return code.ToHashCode();
+        }
     }
 }

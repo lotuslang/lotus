@@ -47,7 +47,7 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
     }
 
     public GraphNode SetProperty(string property, string value) {
-        if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+        if (String.IsNullOrEmpty(property))
             return this;
 
         if (!Properties.TryAdd(property, value)) {

@@ -5,6 +5,9 @@ namespace Lotus.Extras.Graphs;
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
 public sealed class Graph
 {
+    public string ID { get; }
+    private readonly int _numericID;
+
     /// <summary>
     /// The name of this graph.
     /// </summary>
@@ -22,9 +25,13 @@ public sealed class Graph
 
     public Dictionary<string, string> EdgeProps { get; } = new();
 
-    public Graph(string name) {
+    public Graph(int id, string name) {
+        _numericID = id;
+        ID = _numericID.ToString(System.Globalization.CultureInfo.InvariantCulture);
         Name = name;
     }
+
+    public Graph(string name) : this(Random.Shared.Next(), name) { }
 
     /// <summary>
     /// Adds a new node to this Graph as a root of an independent tree.
@@ -41,10 +48,10 @@ public sealed class Graph
         var sb = new IndentedStringBuilder();
 
         // Append the keyword 'digraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
-        sb.Append("graph ").AppendLine(Name).Append('{');
-
+        sb.Append("graph ").Append(ID).AppendLine(" {");
         sb.Indent++;
-        sb.AppendLine();
+
+        sb.Append("label=\"").Append(Name).AppendLine('"');
 
         foreach (var property in GraphProps) {
             sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');

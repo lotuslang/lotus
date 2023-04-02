@@ -33,30 +33,21 @@ partial class Program
         _cli = BuildRootCommand();
     }
 
-    static void AddGraphPrelude(Graph g, FileInfo file)
-        => AddGraphPrelude(g, Path.GetFileName(file.Name));
-
-    private static void AddGraphPrelude(Graph g, Union<string, FileInfo, Uri> file) {
-        var path = file.Match(
-            str => str,
-            info => info.Name,
-            uri => uri.LocalPath
-        );
-
+    static void AddGraphPrelude(Graph g) {
         g.AddNodeProp("fontname", "Consolas, monospace");
         g.AddGraphProp("fontname", "Consolas, monospace");
-        g.AddGraphProp("label", $"Abstract Syntax Tree of {path}\\n\\n");
         g.AddGraphProp("labelloc", "top");
+        g.AddGraphProp("ranksep", "1");
     }
 
     static Graph MakeGraph(FileInfo file, bool force, out int exitCode) {
         var tokenizer = GetTokenizerForFile(file);
         exitCode = HandleParsing(tokenizer, out var tlNodes);
 
-        var g = new Graph("AST");
+        var g = new Graph($"Abstract Syntax Tree of {Path.GetFileName(file.Name)}\\n\\n");
 
         if (exitCode == 0 || force) {
-            AddGraphPrelude(g, file);
+            AddGraphPrelude(g);
 
             foreach (var node in tlNodes) {
                 g.AddNode(ExtraUtils.ToGraphNode(node));

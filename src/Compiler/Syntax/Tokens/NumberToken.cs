@@ -23,7 +23,6 @@ public sealed record NumberToken : Token
 
     public NumberToken(string repr, object value, LocationRange location, NumberKind numberKind)
         : base(repr, TokenKind.number, location) {
-        _repr = repr;
         Value = value;
         NumberKind = numberKind;
     }

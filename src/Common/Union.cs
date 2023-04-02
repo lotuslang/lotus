@@ -219,8 +219,7 @@ public readonly struct Result<T>
         isOk = true;
     }
 
-    private static readonly Result<T> _err = new();
-    public static ref readonly Result<T> Error => ref _err;
+    public static readonly Result<T> Error = new();
 
     public void OnError(Action act) {
         if (!isOk) act();

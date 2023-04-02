@@ -5,12 +5,10 @@ namespace Lotus.Extras.Graphs;
 [DebuggerDisplay("{name} ({RootNodes.Count} root nodes)")]
 public sealed class Graph
 {
-    private readonly string name;
-
     /// <summary>
     /// The name of this graph.
     /// </summary>
-    public ref readonly string Name => ref name;
+    public string Name { get; set; }
 
     private readonly List<GraphNode> _rootNodes;
     /// <summary>
@@ -18,25 +16,18 @@ public sealed class Graph
     /// </summary>
     public ReadOnlyCollection<GraphNode> RootNodes => _rootNodes.AsReadOnly();
 
+    public Dictionary<string, string> GraphProps { get; }
 
-    private readonly Dictionary<string, string> graphProps;
+    public Dictionary<string, string> NodeProps { get; }
 
-    public ref readonly Dictionary<string, string> GraphProps => ref graphProps;
-
-    private readonly Dictionary<string, string> nodeProps;
-
-    public ref readonly Dictionary<string, string> NodeProps => ref nodeProps;
-
-    private readonly Dictionary<string, string> edgeProps;
-
-    public ref readonly Dictionary<string, string> EdgeProps => ref edgeProps;
+    public Dictionary<string, string> EdgeProps { get; }
 
     public Graph(string name) {
-        this.name = name;
+        Name = name;
         _rootNodes = new List<GraphNode>();
-        graphProps = new Dictionary<string, string>();
-        nodeProps = new Dictionary<string, string>();
-        edgeProps = new Dictionary<string, string>();
+        GraphProps = new Dictionary<string, string>();
+        NodeProps = new Dictionary<string, string>();
+        EdgeProps = new Dictionary<string, string>();
     }
 
     /// <summary>
@@ -54,23 +45,23 @@ public sealed class Graph
         var sb = new IndentedStringBuilder();
 
         // Append the keyword 'digraph' followed by the name of the graph, followed, on a new line, by an opening curly bracket
-        sb.Append("graph ").AppendLine(name).Append('{');
+        sb.Append("graph ").AppendLine(Name).Append('{');
 
         sb.Indent++;
         sb.AppendLine();
 
-        foreach (var property in graphProps) {
+        foreach (var property in GraphProps) {
             sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');
             sb.AppendLine();
         }
 
-        if (nodeProps.Count != 0) {
+        if (NodeProps.Count != 0) {
             sb.Append("node[");
 
             sb.Indent++;
             sb.AppendLine();
 
-            foreach (var property in nodeProps) {
+            foreach (var property in NodeProps) {
                 sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');
                 sb.AppendLine();
             }
@@ -79,13 +70,13 @@ public sealed class Graph
             sb.AppendLine(']');
         }
 
-        if (edgeProps.Count != 0) {
+        if (EdgeProps.Count != 0) {
             sb.Append("edge [");
 
             sb.Indent++;
             sb.AppendLine();
 
-            foreach (var property in edgeProps) {
+            foreach (var property in EdgeProps) {
                 sb.Append(property.Key).Append("=\"").Append(property.Value).Append('"');
                 sb.AppendLine();
             }
@@ -117,19 +108,19 @@ public sealed class Graph
     public void AddGraphProp(string property, string value) {
         if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
             return;
-        graphProps[property] = value;
+        GraphProps[property] = value;
     }
 
     public void AddNodeProp(string property, string value) {
         if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
             return;
-        nodeProps[property] = value;
+        NodeProps[property] = value;
     }
 
     public void AddEdgeProp(string property, string value) {
         if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
             return;
-        edgeProps[property] = value;
+        EdgeProps[property] = value;
     }
 
     public override int GetHashCode() => GetHashCode(true);
@@ -142,11 +133,9 @@ public sealed class Graph
         }
 
         if (includeProps) {
-            foreach (var props in new[] { GraphProps, NodeProps, EdgeProps }) {
-                foreach (var prop in props) {
-                    code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Key));
-                    code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Value));
-                }
+            foreach (var prop in GraphProps.Concat(NodeProps).Concat(EdgeProps)) {
+                code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Key));
+                code.Add(DeterministicStringComparer.Instance.GetHashCode(prop.Value));
             }
         }
 

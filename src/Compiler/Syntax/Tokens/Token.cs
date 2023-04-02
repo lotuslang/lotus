@@ -5,19 +5,17 @@ public record Token : ILocalized
 {
     public static readonly Token NULL = new("", TokenKind.EOF, LocationRange.NULL) { IsValid = false };
 
-    protected TokenKind _kind;
-    public ref readonly TokenKind Kind => ref _kind;
+    public TokenKind Kind { get; }
 
-    protected string _repr;
-    public ref readonly string Representation => ref _repr;
+    public string Representation { get; }
 
     public LocationRange Location { get; init; }
 
     public bool IsValid { get; set; } = true;
 
     public Token(string repr, TokenKind kind, LocationRange location) {
-        _repr = repr;
-        _kind = kind;
+        Representation = repr;
+        Kind = kind;
         Location = location;
     }
 
@@ -111,7 +109,7 @@ public record Token : ILocalized
         => token.Representation;
 
     public static implicit operator ReadOnlySpan<char>(Token token)
-        => token._repr;
+        => token.Representation;
 
     internal Token ShallowClone() => new(this);
 
@@ -121,5 +119,5 @@ public record Token : ILocalized
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 
-    protected virtual string DbgStr() => $"<{_kind}> {_repr} @ {Location}";
+    protected virtual string DbgStr() => $"<{Kind}> {Representation} @ {Location}";
 }

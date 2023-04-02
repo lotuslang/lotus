@@ -6,8 +6,7 @@ public sealed partial class Tokenizer
     private readonly TextStream _input;
     private Token _lastTok = Token.NULL;
 
-    private Token _curr = Token.NULL;
-    public ref readonly Token Current => ref _curr;
+    public Token Current { get; private set; } = Token.NULL;
 
     public Token Default => Token.NULL with { Location = Position };
 
@@ -43,7 +42,7 @@ public sealed partial class Tokenizer
         EndOfStream = Current.Kind == TokenKind.EOF;
 
         _reconsumeStack.Push(Current);
-        _curr = _lastTok;
+        Current = _lastTok;
     }
 
     public Token Peek(bool preserveTrivia = false) {
@@ -55,7 +54,7 @@ public sealed partial class Tokenizer
         EndOfStream = eos;
         _reconsumeStack.Push(output);
 
-        _curr = _lastTok;
+        Current = _lastTok;
         _lastTok = oldLastTok;
 
         return output;
@@ -67,21 +66,21 @@ public sealed partial class Tokenizer
         return !EndOfStream;
     }
 
-    public ref readonly Token Consume(bool preserveTrivia = false) {
-        _lastTok = _curr;
+    public Token Consume(bool preserveTrivia = false) {
+        _lastTok = Current;
 
         // If we are instructed to reconsume the last token, then dequeue a token from the reconsumeQueue and return it
         if (_reconsumeStack.Count != 0) {
-            _curr = _reconsumeStack.Pop();
-            EndOfStream = _curr.Kind == TokenKind.EOF;
-            return ref _curr;
+            Current = _reconsumeStack.Pop();
+            EndOfStream = Current.Kind == TokenKind.EOF;
+            return Current;
         }
 
         // If there is nothing left to consume, return an EOF token
         if (_input.EndOfStream) {
-            _curr = Default;
+            Current = Default;
             EndOfStream = true;
-            return ref _curr;
+            return Current;
         }
 
         var currChar = _input.PeekNextChar();
@@ -89,26 +88,26 @@ public sealed partial class Tokenizer
         if (!preserveTrivia && currChar != ',') {
             var leadingTrivia = ConsumeTrivia();
 
-            _curr = ConsumeTokenCore();
+            Current = ConsumeTokenCore();
 
             if (leadingTrivia != null)
-                _curr.AddLeadingTrivia(leadingTrivia);
+                Current.AddLeadingTrivia(leadingTrivia);
 
             if (_input.PeekNextChar() != '\n') {
                 var trailingTrivia = ConsumeTrivia();
 
                 if (trailingTrivia != null) {
-                    _curr.AddTrailingTrivia(trailingTrivia);
+                    Current.AddTrailingTrivia(trailingTrivia);
                 }
             }
         } else {
-            _curr = ConsumeTokenCore();
+            Current = ConsumeTokenCore();
         }
 
-        if (_curr.Kind == TokenKind.EOF || _input.EndOfStream)
+        if (Current.Kind == TokenKind.EOF || _input.EndOfStream)
             EndOfStream = true;
 
-        return ref _curr;
+        return Current;
     }
 
     public Tokenizer Clone() => new(this);

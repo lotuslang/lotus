@@ -95,6 +95,8 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
 
         sb.Indent++;
 
+        AppendOrderEnforcingEdges(sb);
+
         // For each node that is a children of this object
         foreach (var child in _childNodes) {
             Edge.AppendEdgeBetween(sb, this, child);
@@ -112,6 +114,19 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
         }
 
         sb.Indent--;
+    }
+
+    private void AppendOrderEnforcingEdges(IndentedStringBuilder sb) {
+        sb.Append("{rank=same;");
+        foreach (var node in _childNodes) sb.Append(node.ID).Append(';');
+        sb.AppendLine("}");
+
+        // this stops *before* the last one!!
+        for (int i = 0; i < _childNodes.Count - 1; i++) {
+            sb.Append(_childNodes[i].ID).Append(" -- ").Append(_childNodes[i + 1].ID).Append(" [style=invis];");
+        }
+
+        sb.AppendLine();
     }
 
     public override int GetHashCode() => _numericID;

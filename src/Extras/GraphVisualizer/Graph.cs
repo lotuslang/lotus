@@ -36,6 +36,7 @@ public sealed class Graph : IEquatable<Graph>
         SetGraphProp("compound", "true");
         SetGraphProp("splines", "line");
         SetGraphProp("color", ""); // set color to default so this won't get affected by parent clusters
+        SetGraphProp("style", "");
     }
 
     public Graph(string name) : this(Random.Shared.Next(), name) { }
@@ -109,9 +110,14 @@ public sealed class Graph : IEquatable<Graph>
         AppendOrderEnforcingEdges(sb);
 
         foreach (var node in _rootNodes) {
+            sb.Append("subgraph cluster_").Append(node.ID).AppendLine('{');
+            sb.Indent++;
+            sb.AppendLine("style=invis");
             // If the node wasn't already processed
             if (nodeRegistry.Add(node))
                node.AppendTo(sb, nodeRegistry, graphRegistry);
+            sb.Indent--;
+            sb.AppendLine('}');
         }
 
         foreach (var cluster in _rootClusters) {
@@ -128,13 +134,11 @@ public sealed class Graph : IEquatable<Graph>
     }
 
     private void AppendOrderEnforcingEdges(IndentedStringBuilder sb) {
-        sb.AppendLine("// enforces original node ordering by putting them all on the");
-        sb.AppendLine("// same level/rank and linking them with invisible edges");
         sb.Append("{rank=same;");
         foreach (var node in RootNodes) sb.Append(node.ID).Append(';');
         sb.AppendLine("}");
 
-        // this stop *before* the last one!!
+        // this stops *before* the last one!!
         for (int i = 0; i < RootNodes.Count - 1; i++) {
             sb.Append(RootNodes[i].ID).Append(" -- ").Append(RootNodes[i+1].ID).Append(" [style=invis];");
         }

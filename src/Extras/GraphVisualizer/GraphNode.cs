@@ -102,8 +102,14 @@ public sealed class GraphNode : IEnumerable<GraphNode>, IEquatable<GraphNode>
             Edge.AppendEdgeBetween(sb, this, child);
 
             // If this child wasn't already processed, then append its text
-            if (nodeRegistry.Add(child))
+            if (nodeRegistry.Add(child)) {
+                sb.Append("subgraph cluster_").Append(child.ID).AppendLine('{');
+                sb.Indent++;
+                sb.AppendLine("style=invis");
                 child.AppendTo(sb, nodeRegistry, graphRegistry);
+                sb.Indent--;
+                sb.AppendLine('}');
+            }
         }
 
         foreach (var cluster in _childClusters) {

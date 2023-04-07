@@ -110,14 +110,15 @@ public sealed class Graph : IEquatable<Graph>
         AppendOrderEnforcingEdges(sb);
 
         foreach (var node in _rootNodes) {
-            sb.Append("subgraph cluster_").Append(node.ID).AppendLine('{');
-            sb.Indent++;
-            sb.AppendLine("style=invis");
             // If the node wasn't already processed
-            if (nodeRegistry.Add(node))
+            if (nodeRegistry.Add(node)) {
+                sb.Append("subgraph cluster_").Append(node.ID).AppendLine('{');
+                sb.Indent++;
+                sb.AppendLine("style=invis");
                node.AppendTo(sb, nodeRegistry, graphRegistry);
-            sb.Indent--;
-            sb.AppendLine('}');
+                sb.Indent--;
+                sb.AppendLine('}');
+            }
         }
 
         foreach (var cluster in _rootClusters) {

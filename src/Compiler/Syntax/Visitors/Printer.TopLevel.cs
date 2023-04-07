@@ -5,14 +5,23 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
     public string Default(TopLevelNode node)
         => Print(node.Token);
 
-    public string Visit(TopLevelStatementNode node)
-        => Print(node.Statement);
-
     public string Visit(EnumNode node)
         => PrintModifiers(node.Modifiers)
          + Print(node.EnumToken)
          + Print(node.Name)
          + PrintTuple(node.Values, ",", Print);
+
+    public string Visit(FunctionDeclarationNode node) {
+        var output = Print(node.Token) + Print(node.FuncName) + Print(node.ParamList.OpeningToken);
+
+        output += MiscUtils.Join(",", Print, node.ParamList.Items) + Print(node.ParamList.ClosingToken);
+
+        if (node.HasReturnType) output += Print(node.ColonToken) + Print(node.ReturnType);
+
+        output += Print(node.Body);
+
+        return output;
+    }
 
     public string Visit(ImportNode node)
         => Print(node.Token)
@@ -61,5 +70,5 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
 
     public string Print(TopLevelNode node)
         => node.Accept(this)
-        + (node is not TopLevelStatementNode && LotusFacts.NeedsSemicolon(node) ? ";" : "");
+        + (LotusFacts.NeedsSemicolon(node) ? ";" : "");
 }

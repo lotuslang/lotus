@@ -111,7 +111,6 @@ public static partial class LotusFacts
 
     private static readonly Dictionary<string, IStatementParslet<StatementNode>> _strToStmtParslets = new() {
         { "var", DeclarationParslet.Instance },
-        { "func", FunctionDeclarationParslet.Instance },
         { "return", ReturnParslet.Instance },
         { "foreach", ForeachParslet.Instance },
         { "for", ForParslet.Instance },
@@ -126,6 +125,7 @@ public static partial class LotusFacts
 
     private static readonly Dictionary<string, ITopLevelParslet<TopLevelNode>> _strToTopLevelParslets = new() {
         { "namespace", NamespaceParslet.Instance },
+        { "func", FunctionDeclarationParslet.Instance },
         { "import", ImportParslet.Instance },
         { "using", UsingParslet.Instance },
         { "enum", EnumParslet.Instance },

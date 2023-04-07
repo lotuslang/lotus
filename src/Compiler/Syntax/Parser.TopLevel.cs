@@ -19,8 +19,21 @@ public sealed partial class Parser
             _curr = parslet.Parse(this, currToken, modifiers);
             CheckSemicolon(); // ConsumeStatement already checks for semicolon, so we only do when it's not a stmt
         } else {
-            Tokenizer.Reconsume();
-            _curr = new TopLevelStatementNode(ConsumeStatement());
+            string? notes = null;
+
+            if (LotusFacts.TryGetStatementParslet(currToken, out _)) {
+                notes = "Statements can't be used directly, they must be contained in a function, like main()";
+            }
+
+            // we shouldn't reconsume here, because cause we'd be stuck in an "error->log->parse" loop otherwise
+            Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
+                Value = currToken,
+                Expected = "a function declaration, an import statement, a struct declaration, etc",
+                As = "the start of a top-level construct",
+                ExtraNotes = notes,
+            });
+
+            _curr = CreateFakeTopLevel(currToken);
         }
 
         return (TopLevelNode)_curr;

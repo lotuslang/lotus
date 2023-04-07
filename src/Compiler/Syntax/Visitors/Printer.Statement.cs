@@ -29,18 +29,6 @@ internal sealed partial class Printer : IStatementVisitor<string>
          + PrintTuple(node.Header, ",", stmt => stmt.Accept(this)) // we can't use Print(stmt) since it would insert semicolons
          + Print(node.Body);
 
-    public string Visit(FunctionDeclarationNode node) {
-        var output = Print(node.Token) + Print(node.FuncName) + Print(node.ParamList.OpeningToken);
-
-        output += MiscUtils.Join(",", Print, node.ParamList.Items) + Print(node.ParamList.ClosingToken);
-
-        if (node.HasReturnType) output += Print(node.ColonToken) + Print(node.ReturnType);
-
-        output += Print(node.Body);
-
-        return output;
-    }
-
     public string Visit(IfNode node)
         => Print(node.Token)
          + Print(node.Condition)

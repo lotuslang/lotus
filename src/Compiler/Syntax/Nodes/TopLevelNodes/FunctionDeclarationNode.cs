@@ -7,7 +7,7 @@ public sealed record FunctionDeclarationNode(
     IdentToken FuncName,
     Token Token,
     Token ColonToken
-) : StatementNode(Token, new LocationRange(Token.Location, Body.Location))
+) : TopLevelNode(Token, new LocationRange(Token.Location, Body.Location))
 {
     public new static readonly FunctionDeclarationNode NULL
         = new(
@@ -19,6 +19,8 @@ public sealed record FunctionDeclarationNode(
             Token.NULL
         ) { IsValid = false };
 
+    public ImmutableArray<Token> Modifiers { get; init; }
+
     internal bool isInternal = false;
 
     [MemberNotNullWhen(true, nameof(ReturnType))]
@@ -28,7 +30,7 @@ public sealed record FunctionDeclarationNode(
     [DebuggerStepThrough]
     [DebuggerNonUserCode]
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    public override T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
+    public override T Accept<T>(Visitors.ITopLevelVisitor<T> visitor) => visitor.Visit(this);
 }
 
 /// <summary>You define parameters, you make arguments</summary>

@@ -116,37 +116,6 @@ internal sealed partial class GraphMaker : IStatementVisitor<GraphNode>
         return root;
     }
 
-    public GraphNode Visit(FunctionDeclarationNode node) {
-        var root = new GraphNode("func " + node.FuncName.Representation)
-                        .SetColor(FuncDec.color)
-                        .SetTooltip(FuncDec.tooltip);
-
-        var parametersNode = new Graph("parameters")
-            .SetGraphProp("color", FuncDecParameters.color);
-
-        foreach (var parameter in node.ParamList.Items) {
-            var paramNameNode = ToGraphNode(parameter.Name);
-
-            paramNameNode.Add(ToGraphNode(parameter.Type));
-
-            if (parameter.HasDefaultValue) {
-                paramNameNode.Add(ToGraphNode(parameter.DefaultValue));
-            }
-
-            parametersNode.Add(paramNameNode);
-        }
-
-        root.Add(parametersNode);
-
-        if (node.HasReturnType) {
-            root.Add(new GraphNode("return type") { ToGraphNode(node.ReturnType) });
-        }
-
-        root.Add(ToCluster(node.Body));
-
-        return root;
-    }
-
     public GraphNode Visit(IfNode node) {
         var root = new GraphNode("if") {
             new GraphNode("condition") {

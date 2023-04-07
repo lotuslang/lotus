@@ -17,9 +17,5 @@ public abstract record StatementNode(Token Token, LocationRange Location)
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public virtual T Accept<T>(Visitors.IStatementVisitor<T> visitor) => visitor.Visit(this);
 
-    public static explicit operator TopLevelStatementNode(StatementNode node) => new(node);
-
-    public static explicit operator TopLevelNode(StatementNode node) => (TopLevelStatementNode)node;
-
     internal record Dummy() : StatementNode(Token.NULL, false);
 }

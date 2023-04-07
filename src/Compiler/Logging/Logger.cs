@@ -235,23 +235,6 @@ public static class Logger
                     );
                 }
 
-                if (node is TopLevelStatementNode tlStmtNode) {
-                    return FormatUnexpected(
-                        new UnexpectedError<StatementNode>(
-                            error.Area,
-                            caller: error.Caller,
-                            callerPath: error.CallerPath
-                        ) {
-                            Value = tlStmtNode.Statement,
-                            As = error.As,
-                            In = error.In,
-                            Location = error.Location,
-                            Expected = error.Expected,
-                            Message = error.Message
-                        }
-                    );
-                }
-
                 if (node is StatementExpressionNode stmtExprNode) {
                     return FormatUnexpected(
                         new UnexpectedError<ValueNode>(

@@ -36,9 +36,6 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
                 ? new GraphNode("<EOF>").SetProperty("style", "invis")
                 : Default(node);
 
-    public GraphNode Visit(TopLevelStatementNode node)
-        => ToGraphNode(node.Statement);
-
     public GraphNode Visit(ImportNode node) {
         var root = new GraphNode("import")
             .SetColor(Import.color)
@@ -84,6 +81,37 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
         return root;
     }
 
+    public GraphNode Visit(FunctionDeclarationNode node) {
+        var root = new GraphNode("func " + node.FuncName.Representation)
+                        .SetColor(FuncDec.color)
+                        .SetTooltip(FuncDec.tooltip);
+
+        var parametersNode = new Graph("parameters")
+            .SetGraphProp("color", FuncDecParameters.color);
+
+        foreach (var parameter in node.ParamList.Items) {
+            var paramNameNode = ToGraphNode(parameter.Name);
+
+            paramNameNode.Add(ToGraphNode(parameter.Type));
+
+            if (parameter.HasDefaultValue) {
+                paramNameNode.Add(ToGraphNode(parameter.DefaultValue));
+            }
+
+            parametersNode.Add(paramNameNode);
+        }
+
+        root.Add(parametersNode);
+
+        if (node.HasReturnType) {
+            root.Add(new GraphNode("return type") { ToGraphNode(node.ReturnType) });
+        }
+
+        root.Add(ToCluster(node.Body).SetName(node.FuncName + "()'s body"));
+
+        return root;
+    }
+
     public GraphNode Visit(NamespaceNode node)
         => new GraphNode("namespace") {
                 ExtraUtils.ToGraphNode(node.Name).SetTooltip(NamespaceName.tooltip)
@@ -119,6 +147,18 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
         root.Add(fields);
 
         return root;
+    }
+
+    public GraphNode ToGraphNode(FunctionParameter parameter) {
+        var paramNameNode = ToGraphNode(parameter.Name);
+
+        paramNameNode.Add(ToGraphNode(parameter.Type));
+
+        if (parameter.HasDefaultValue) {
+            paramNameNode.Add(ToGraphNode(parameter.DefaultValue));
+        }
+
+        return paramNameNode;
     }
 
     public GraphNode ToGraphNode(FromOrigin node)

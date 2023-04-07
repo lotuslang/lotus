@@ -7,32 +7,18 @@
  *
  */
 
-arr = [ 36, 1.1d.toString(), 215, "he", true, [ .546e+20, 486513UL], aur, /* wtf */ new String() ];
+import someType from origin.utils;
 
-arr.add([], arr);
+import foo from bar;
 
-print $"hello {"benjamin"} ! Today will be {GetWeather(pressure * 10.644^(temperature-2048))}";
-print "Fun fact: In lotus, you can easily mix expression and strings! "
-    + $"For example, you can write: $\'It's currently {{time.now}}\' and it will replace time.now with {time.now}";
+using std.collections;
 
-print(arr[1][0] == '1');
+public namespace my_space;
 
-print(io.read(test.lts).count('\u0041'));
-
-n   =  5
-    *  ("hello " + "world")
-    ^^ (1 / 3 != 3 / 1)
-    && (6 * 9 == 9 * 6)
-    || !(-6 * -1 == 6)
-    *  (89 < 8 * 9)
-    +  (45 >= 44)
-    %  (-48946f == 4984e2 - 464.13 ? 2d^7 : 2^6)
-    && !true
-    ;
-
-var a = 0;
-
-var b = arr != [] ? arr : [ 0 ];
+internal struct test {
+    private internal someStuff: int;
+    otherStuff: str = "58" + hi;
+}
 
 // NOTE: Function that have parameters with the `type [a, b]` syntax will not be printed
 // exactly as they appear in the file.
@@ -51,49 +37,71 @@ func someFunc() {
     return;
 }
 
-import someType from origin.utils;
+func main() {
 
-import foo from bar;
+    arr = [ 36, 1.1d.toString(), 215, "he", true, [ .546e+20, 486513UL], aur, /* wtf */ new String() ];
 
-using std.collections;
+    arr.add([], arr);
 
-public namespace my_space;
+    print $"hello {"benjamin"} ! Today will be {GetWeather(pressure * 10.644^(temperature-2048))}";
+    print "Fun fact: In lotus, you can easily mix expression and strings! "
+        + $"For example, you can write: $\'It's currently {{time.now}}\' and it will replace time.now with {time.now}";
 
-foreach (item in collection) { }
+    print(arr[1][0] == '1');
 
-foreach (otherItem in otherCollection) {
-    if (collection.contains(otherItem))
-        break;
+    print(io.read(test.lts).count('\u0041'));
 
-    otherItem.markAsBad();
+    n   =  5
+        *  ("hello " + "world")
+        ^^ (1 / 3 != 3 / 1)
+        && (6 * 9 == 9 * 6)
+        || !(-6 * -1 == 6)
+        *  (89 < 8 * 9)
+        +  (45 >= 44)
+        %  (-48946f == 4984e2 - 464.13 ? 2d^7 : 2^6)
+        && !true
+        ;
+
+    var a = 0;
+
+    var b = arr != [] ? arr : [ 0 ];
+
+    foreach (item in collection) { }
+
+    foreach (otherItem in otherCollection) {
+        if (collection.contains(otherItem))
+            break;
+
+        otherItem.markAsBad();
+    }
+
+    for (var i = 0, i < 10, i++) {
+        print(i);
+    }
+
+    for (var j = i, i > 10,) { }
+
+    if (condition)
+        print("it's true");
+    else
+        ;
+
+    if (a || b && c != d + e)
+        print("tf");
+    else if (this.otherCondition()) {
+        print("maybe ?");
+    } else { } // fuck it
+
+    while (str.length < 20) {
+        if (str[-1] == "z") continue;
+
+        str.concat(alphabet[rnd.next(26)], rnd.next(26));
+    }
+
+    do
+        print("still looping");
+    while (_global++ < 13)
 }
-
-for (var i = 0, i < 10, i++) {
-    print(i);
-}
-
-for (var j = i, i > 10,) { }
-
-if (condition)
-    print("it's true");
-else
-    ;
-
-if (a || b && c != d + e)
-    print("tf");
-else if (this.otherCondition()) {
-    print("maybe ?");
-} else { } // fuck it
-
-while (str.length < 20) {
-    if (str[-1] == "z") continue;
-
-    str.concat(alphabet[rnd.next(26)], rnd.next(26));
-}
-
-do
-    print("still looping");
-while (_global++ < 13)
 
 internal enum TokenKind {
     EOF = 0,
@@ -115,13 +123,6 @@ enum TokenKind.trivia::TriviaKind {
     newline,
     character
 }
-
-internal struct test {
-    private internal someStuff: int;
-    otherStuff: str = "58" + hi;
-}
-
-;
 
 /* some /* nested */ comments */
 

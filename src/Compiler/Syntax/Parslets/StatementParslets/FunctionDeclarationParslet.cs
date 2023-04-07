@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDeclarationNode>
+public sealed class FunctionDeclarationParslet : ITopLevelParslet<FunctionDeclarationNode>
 {
     public static readonly FunctionDeclarationParslet Instance = new();
 
@@ -11,7 +11,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             EndingDelimBehaviour = TrailingDelimiterBehaviour.Forbidden,
         };
 
-    public FunctionDeclarationNode Parse(Parser parser, Token funcToken) {
+    public FunctionDeclarationNode Parse(Parser parser, Token funcToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(funcToken == "func");
 
         var isValid = true;
@@ -71,7 +71,7 @@ public sealed class FunctionDeclarationParslet : IStatementParslet<FunctionDecla
             funcName,
             funcToken,
             colonToken
-        ) { IsValid = isValid };
+        ) { IsValid = isValid, Modifiers = modifiers };
     }
 
     static FunctionParameter MakeFuncParameter(ValueNode type, ValueNode paramNameNode) {

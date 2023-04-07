@@ -127,10 +127,13 @@ public sealed class Graph : IEquatable<Graph>
 
         sb.Indent--;
 
-        // Close the graph by a closing curly bracket on a new line
-        sb.AppendLine().Append('}')
-          .AppendLine().Append("// ").Append(StructuralComparer.GetHashCode(this))
-          .AppendLine();
+        sb.AppendLine().AppendLine('}');
+
+        if (isRoot) {
+            // Close the graph by a closing curly bracket on a new line
+            sb.Append("// ").Append(StructuralComparer.GetHashCode(this))
+            .AppendLine();
+        }
     }
 
     private void AppendOrderEnforcingEdges(IndentedStringBuilder sb) {

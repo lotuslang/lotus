@@ -34,6 +34,16 @@ public readonly struct Union<T, U>
         }
     }
 
+    public readonly Union<TResult, UResult> Transform<TResult, UResult>(Func<T, TResult> f, Func<U, UResult> g) {
+        switch (tag) {
+            case 0: return f(t);
+            case 1: return g(u);
+            default:
+                ThrowNoInit();
+                return default!;
+        }
+    }
+
     public readonly bool Is<V>() {
         switch (tag) {
             case 0: return t is V;
@@ -126,6 +136,17 @@ public readonly struct Union<T, U, V>
             default:
                 ThrowNoInit();
                 break;
+        }
+    }
+
+    public readonly Union<TResult, UResult, VResult> Transform<TResult, UResult, VResult>(Func<T, TResult> f, Func<U, UResult> g, Func<V, VResult> h) {
+        switch (tag) {
+            case 0: return f(t);
+            case 1: return g(u);
+            case 2: return h(v);
+            default:
+                ThrowNoInit();
+                return default!;
         }
     }
 
@@ -241,6 +262,9 @@ public readonly struct Result<T>
 
     public readonly TResult Match<TResult>(Func<T, TResult> onOk, Func<TResult> onError)
         => IsOk() ? onOk(Value) : onError();
+
+    public readonly Result<TResult> Transform<TResult>(Func<T, TResult> onOk)
+        => IsOk() ? new(onOk(Value)) : Result<TResult>.Error;
 
     [MemberNotNullWhen(true, nameof(Value))]
     public readonly bool IsOk() => isOk;

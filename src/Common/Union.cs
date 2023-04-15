@@ -16,7 +16,7 @@ public readonly struct Union<T, U>
 
     public Union() => tag = -1;
 
-    public TResult Match<TResult>(Func<T, TResult> f, Func<U, TResult> g) {
+    public readonly TResult Match<TResult>(Func<T, TResult> f, Func<U, TResult> g) {
         switch (tag) {
             case 0: return f(t);
             case 1: return g(u);
@@ -26,7 +26,7 @@ public readonly struct Union<T, U>
         }
     }
 
-    public void Match(Action<T> f, Action<U> g) {
+    public readonly void Match(Action<T> f, Action<U> g) {
         switch (tag) {
             case 0: f(t); break;
             case 1: g(u); break;
@@ -34,7 +34,7 @@ public readonly struct Union<T, U>
         }
     }
 
-    public bool Is<V>() {
+    public readonly bool Is<V>() {
         switch (tag) {
             case 0: return t is V;
             case 1: return u is V;
@@ -44,7 +44,7 @@ public readonly struct Union<T, U>
         }
     }
 
-    public bool Is<V>([NotNullWhen(true)] out V? v) {
+    public readonly bool Is<V>([NotNullWhen(true)] out V? v) {
         v = default;
 
         switch (tag) {
@@ -68,9 +68,9 @@ public readonly struct Union<T, U>
         }
     }
 
-    public void ThrowNoInit() => throw new InvalidOperationException("This union wasn't properly initialized.");
+    private static void ThrowNoInit() => throw new InvalidOperationException("This union wasn't properly initialized.");
 
-    public bool IsNull() => t is null && u is null;
+    public readonly bool IsNull() => t is null && u is null;
 
     public static implicit operator Union<T, U>(T t) => new(t);
     public static implicit operator Union<T, U>(U u) => new(u);
@@ -81,9 +81,9 @@ public readonly struct Union<T, U>
     public static explicit operator T(Union<T, U> union) => union.t;
     public static explicit operator U(Union<T, U> union) => union.u;
 
-    public override string ToString()
+    public readonly override string ToString()
         => Match(t => t?.ToString(), u => u?.ToString())!;
-    public override int GetHashCode()
+    public readonly override int GetHashCode()
         => Match(t => t?.GetHashCode(), u => u?.GetHashCode()) ?? 0;
 }
 
@@ -101,7 +101,7 @@ public readonly struct Union<T, U, V>
     [Obsolete("You should never use Union's parameterless constructor")]
     public Union() => tag = -1;
 
-    public TResult Match<TResult>(Func<T, TResult> f, Func<U, TResult> g, Func<V, TResult> h) {
+    public readonly TResult Match<TResult>(Func<T, TResult> f, Func<U, TResult> g, Func<V, TResult> h) {
         switch (tag) {
             case 0: return f(t);
             case 1: return g(u);
@@ -112,7 +112,7 @@ public readonly struct Union<T, U, V>
         }
     }
 
-    public void Match(Action<T> f, Action<U> g, Action<V> h) {
+    public readonly void Match(Action<T> f, Action<U> g, Action<V> h) {
         switch (tag) {
             case 0:
                 f(t);
@@ -129,7 +129,7 @@ public readonly struct Union<T, U, V>
         }
     }
 
-    public bool Is<W>() {
+    public readonly bool Is<W>() {
         switch (tag) {
             case 0: return t is W;
             case 1: return u is W;
@@ -140,7 +140,7 @@ public readonly struct Union<T, U, V>
         }
     }
 
-    public bool Is<W>([NotNullWhen(true)] out W? w) {
+    public readonly bool Is<W>([NotNullWhen(true)] out W? w) {
         w = default;
 
         switch (tag) {
@@ -171,9 +171,9 @@ public readonly struct Union<T, U, V>
         }
     }
 
-    public void ThrowNoInit() => throw new InvalidOperationException("This union wasn't properly initialized.");
+    private static void ThrowNoInit() => throw new InvalidOperationException("This union wasn't properly initialized.");
 
-    public bool IsNull() => t is null && u is null && v is null;
+    public readonly bool IsNull() => t is null && u is null && v is null;
 
     public static implicit operator Union<T, U, V>(T t) => new(t);
     public static implicit operator Union<T, U, V>(U u) => new(u);
@@ -192,9 +192,9 @@ public readonly struct Union<T, U, V>
     public static explicit operator U(Union<T, U, V> union) => union.u;
     public static explicit operator V(Union<T, U, V> union) => union.v;
 
-    public override string ToString()
+    public readonly override string ToString()
         => Match(t => t?.ToString(), u => u?.ToString(), v => v?.ToString())!;
-    public override int GetHashCode()
+    public readonly override int GetHashCode()
         => Match(t => t?.GetHashCode(), u => u?.GetHashCode(), v => v?.GetHashCode()) ?? 0;
 }
 
@@ -221,25 +221,25 @@ public readonly struct Result<T>
 
     public static readonly Result<T> Error = new();
 
-    public void OnError(Action act) {
+    public readonly void OnError(Action act) {
         if (!isOk) act();
     }
 
-    public T ValueOrDefault(Func<T> onError)
+    public readonly T ValueOrDefault(Func<T> onError)
         => IsOk() ? Value : onError();
 
-    public T ValueOrDefault(T defaultVal)
+    public readonly T ValueOrDefault(T defaultVal)
         => IsOk() ? Value : defaultVal;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Match(Action<T> onOk, Action onError) {
+    public readonly void Match(Action<T> onOk, Action onError) {
         if (IsOk())
             onOk(Value);
         else
             onError();
     }
 
-    public TResult Match<TResult>(Func<T, TResult> onOk, Func<TResult> onError)
+    public readonly TResult Match<TResult>(Func<T, TResult> onOk, Func<TResult> onError)
         => IsOk() ? onOk(Value) : onError();
 
     [MemberNotNullWhen(true, nameof(Value))]
@@ -251,8 +251,8 @@ public readonly struct Result<T>
     public static implicit operator Union<T, None>(Result<T> res)
         => res.IsOk() ? new(res.Value) : new(None.Instance);
 
-    public override string? ToString()
+    public readonly override string? ToString()
         => IsOk() ? Value.ToString() : "";
-    public override int GetHashCode()
+    public readonly override int GetHashCode()
         => IsOk() ? Value.GetHashCode() : 0;
 }

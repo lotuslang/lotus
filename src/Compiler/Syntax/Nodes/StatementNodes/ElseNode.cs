@@ -7,7 +7,7 @@ public sealed record ElseNode(Union<Tuple<StatementNode>, IfNode> BlockOrIfNode,
 
     public Tuple<StatementNode> Body => BlockOrIfNode.Match(b => b, n => n.Body);
 
-    public bool HasIf => BlockOrIfNode.Match(b => false, n => true);
+    public bool HasIf => BlockOrIfNode.Is<IfNode>();
 
     [DebuggerHidden]
     [DebuggerStepThrough]

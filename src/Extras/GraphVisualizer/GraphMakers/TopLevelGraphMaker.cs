@@ -125,7 +125,7 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
              .SetTooltip(Using.tooltip);
 
     public GraphNode Visit(StructNode node) {
-        var root = new GraphNode("struct")
+        var root = new GraphNode("struct " + node.Name.Value)
             .SetColor(Struct.color)
             .SetColor(Struct.tooltip);
 

@@ -2,11 +2,11 @@ namespace Lotus.Text;
 
 #pragma warning disable IDE1006
 [DebuggerDisplay("{DbgStr(),nq}")]
-public record struct Location(int line, int column, string filename = "<std>") : IComparable<Location>, ILocalized
+public readonly record struct Location(int line, int column, string filename = "<std>") : IComparable<Location>, ILocalized
 {
     public static readonly Location NULL = new(-1, -1);
 
-    LocationRange ILocalized.Location => this;
+    readonly LocationRange ILocalized.Location => this;
 
     public override string ToString()
         => $"{filename}({line}:{column})";

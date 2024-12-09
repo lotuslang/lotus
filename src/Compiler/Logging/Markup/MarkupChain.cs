@@ -4,35 +4,40 @@ namespace Lotus.Text;
 
 internal sealed class MarkupChain : IEnumerable<Markup>
 {
-    [DebuggerDisplay("{DbgStr(),nq}")]
+    [DebuggerDisplay("{DbgStr()}")]
     internal sealed class MarkupNode {
         public Markup Value { get; init; }
-        public MarkupNode? Next { get; set; }
-        public MarkupNode? Prev { get; set; }
+        public MarkupNode Next { get; set; }
+        public MarkupNode Prev { get; set; }
 
         public MarkupNode(Markup val, MarkupNode? next = null, MarkupNode? prev = null) {
             Value = val;
-            Next = next;
-            Prev = prev;
+            Next = next ?? this;
+            Prev = prev ?? this;
         }
 
-        private string DbgStr()
-            => (Prev?.Value.DbgStr() ?? "")
-            + " < "
-            + Value.DbgStr()
-            + " > "
-            + (Next?.Value.DbgStr() ?? "");
+        private string DbgStr() {
+            var str = Value.DbgStr();
+
+            if (Prev != this)
+                str = Prev.Value.DbgStr() + " < " + str;
+
+            if (Next != this)
+                str += " > " + Next.Value.DbgStr();
+
+            return str;
+        }
     }
 
     public MarkupNode? First { get; private set; }
 
+    [NotNullIfNotNull(nameof(First))]
     public MarkupNode? Last => First?.Prev;
 
-    public MarkupChain() {}
+    [MemberNotNullWhen(false, nameof(First))]
+    public bool IsEmpty => First is null;
 
-    public MarkupChain(MarkupChain chain) : this() {
-        First = chain.First;
-    }
+    public MarkupChain() {}
 
     public MarkupChain(IEnumerable<Markup> markups) : this() {
         foreach (var item in markups)
@@ -40,38 +45,31 @@ internal sealed class MarkupChain : IEnumerable<Markup>
     }
 
     public void AddLast(Markup mk) {
-        var node = new MarkupNode(mk);
-
         if (First is null) {
-            First = node;
-            First.Next = First.Prev = First;
-        } else {
-            node.Prev = First.Prev;
-            node.Next = First;
-            First.Prev!.Next = node;
-            First.Prev = node;
+            First = new(mk);
+            return;
         }
+
+        var node = new MarkupNode(mk, First, Last);
+        Last!.Next = node;
+        First.Prev = node;
     }
 
     public void AddLast(MarkupNode node) {
         if (First is null) {
             First = node;
         } else {
-            First.Prev!.Next = node;
-
-            if (node.Prev is not null)
-                node.Prev.Next = First;
-
-            var newPrev = node.Prev;
-            node.Prev = First.Prev;
-
-            node.Next ??= First;
-
-            First.Prev = newPrev;
+            var oldLast = Last!;
+            // set last of this chain (first's backref) to the backref of the appended chain
+            First.Prev = node.Prev;
+            // set the forward ref of the old last node
+            oldLast.Next = node;
+            // set the backref of the appended node
+            node.Prev = oldLast;
         }
     }
 
-    public void AddLast(MarkupChain chain) {
+    public void Concat(MarkupChain chain) {
         if (chain.First is not null)
             AddLast(chain.First);
     }

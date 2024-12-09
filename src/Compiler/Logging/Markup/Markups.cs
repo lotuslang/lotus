@@ -5,7 +5,7 @@ internal abstract record Markup
     internal abstract string DbgStr();
 
     [DebuggerStepThrough]
-    [DebuggerDisplay("{DbgStr(),nq}")]
+    [DebuggerDisplay("{DbgStr()}")]
     public sealed record TextFormatMarker(TextFormat Format) : Markup
     {
         public static readonly TextFormatMarker None =
@@ -22,7 +22,7 @@ internal abstract record Markup
     }
 
     [DebuggerStepThrough]
-    [DebuggerDisplay("{DbgStr(),nq}")]
+    [DebuggerDisplay("{DbgStr()}")]
     public sealed record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker ResetBackground =
@@ -38,7 +38,7 @@ internal abstract record Markup
     }
 
     [DebuggerStepThrough]
-    [DebuggerDisplay("{DbgStr(),nq}")]
+    [DebuggerDisplay("{DbgStr()}")]
     public sealed record StyleMarker(Style Style) : Markup
     {
         public static readonly StyleMarker Reset =

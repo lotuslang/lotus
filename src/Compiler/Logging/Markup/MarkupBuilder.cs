@@ -61,8 +61,15 @@ internal sealed class MarkupBuilder
     public MarkupBuilder PopBackground()
         => PopColor(true);
 
-    public MarkupBuilder Append(string text) {
-        _list.AddLast(new Markup.Text(text));
+    public MarkupBuilder Append(string? text) {
+        if (text is not null)
+            _list.AddLast(new Markup.Text(text));
+
+        return this;
+    }
+
+    private MarkupBuilder Append(MarkupChain.MarkupNode node) {
+        _list.AddLast(node);
         return this;
     }
 
@@ -70,70 +77,64 @@ internal sealed class MarkupBuilder
         if (markups._list.First is null)
             return this;
 
-        _list.AddLast(markups._list.First);
+        _list.Concat(markups._list);
 
         return this;
     }
 
-    public MarkupBuilder Append(string text, Style style)
-        =>  PushStyle(style)
+    public MarkupBuilder Append(string? text, Style style)
+        => text is not null
+            ? PushStyle(style)
                 .Append(text)
-                .PopStyle();
+                .PopStyle()
+            : this;
 
-    public MarkupBuilder Append(MarkupBuilder markups, Style style) {
-        if (markups._list.First is null)
-            return this;
+    public MarkupBuilder Append(MarkupBuilder markups, Style style)
+        => markups._list.First is not null
+            ? PushStyle(style)
+                .Append(markups)
+                .PopStyle()
+            : this;
 
-        PushStyle(style);
-        _list.AddLast(markups._list.First);
-        PopStyle();
-
-        return this;
-    }
-
-    public MarkupBuilder Append(string text, TextColor color, bool asBackground = false)
-        =>  PushColor(color, asBackground)
+    public MarkupBuilder Append(string? text, TextColor color, bool asBackground = false)
+        => text is not null
+            ? PushColor(color, asBackground)
                 .Append(text)
-                .PopColor(asBackground);
+                .PopColor(asBackground)
+            : this;
 
-    public MarkupBuilder Append(MarkupBuilder markups, TextColor color, bool asBackground = false) {
-        if (markups._list.First is null)
-            return this;
+    public MarkupBuilder Append(MarkupBuilder markups, TextColor color, bool asBackground = false)
+        => markups._list.First is not null
+            ? PushColor(color, asBackground)
+                .Append(markups)
+                .PopColor(asBackground)
+            : this;
 
-        PushColor(color, asBackground)
-            .Append(markups._list.First)
-            .PopColor(asBackground);
-
-        return this;
-    }
-
-    public MarkupBuilder Append(string text, TextFormat format)
-        => PushTextFormat(format)
+    public MarkupBuilder Append(string? text, TextFormat format)
+        => text is not null
+            ? PushTextFormat(format)
                 .Append(text)
-                .PopTextFormat();
+                .PopTextFormat()
+            : this;
 
-    public MarkupBuilder Append(MarkupBuilder markups, TextFormat format) {
-        if (markups._list.First is null)
-            return this;
-
-        PushTextFormat(format)
-            .Append(markups._list.First)
-            .PopTextFormat();
-
-        return this;
-    }
+    public MarkupBuilder Append(MarkupBuilder markups, TextFormat format)
+        => markups._list.First is not null
+            ? PushTextFormat(format)
+                .Append(markups)
+                .PopTextFormat()
+            : this;
 
     public MarkupBuilder Append(char text) => Append(text.ToString());
-    public MarkupBuilder Append(object obj) => Append(obj.ToString()!);
+    public MarkupBuilder Append(object obj) => Append(obj.ToString());
 
     public MarkupBuilder Append(char text, Style style) => Append(text.ToString(), style);
-    public MarkupBuilder Append(object obj, Style style) => Append(obj.ToString()!, style);
+    public MarkupBuilder Append(object obj, Style style) => Append(obj.ToString(), style);
 
     public MarkupBuilder Append(char text, TextColor color) => Append(text.ToString(), color);
-    public MarkupBuilder Append(object obj, TextColor color) => Append(obj.ToString()!, color);
+    public MarkupBuilder Append(object obj, TextColor color) => Append(obj.ToString(), color);
 
     public MarkupBuilder Append(char text, TextFormat format) => Append(text.ToString(), format);
-    public MarkupBuilder Append(object obj, TextFormat format) => Append(obj.ToString()!, format);
+    public MarkupBuilder Append(object obj, TextFormat format) => Append(obj.ToString(), format);
 
     public MarkupBuilder AppendLine() => Append("\n");
     public MarkupBuilder AppendLine(string text) => Append(text + '\n');
@@ -219,7 +220,7 @@ internal sealed class MarkupBuilder
                     }
 
                     _ = fgColorStack.TryPop(out _);
-                        ReapplyStacks();
+                    ReapplyStacks();
                 }
             } else if (node is Markup.StyleMarker sm) {
                 if (sm != STYLE_POP) {
@@ -229,7 +230,6 @@ internal sealed class MarkupBuilder
                 }
 
                 _ = styleStack.TryPop(out _);
-                ReapplyStacks();
                 ReapplyStacks();
             } else if (node is Markup.TextFormatMarker tfm) {
                 if (tfm != FMT_POP) {

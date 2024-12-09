@@ -26,9 +26,9 @@ internal abstract record Markup
     public sealed record ColorMarker(TextColor Color, bool IsBackground) : Markup
     {
         public static readonly ColorMarker ResetBackground =
-            new(TextColor.ResetColor, true);
+            new(TextColor.Reset, true);
         public static readonly ColorMarker ResetForeground =
-            new(TextColor.ResetColor, false);
+            new(TextColor.Reset, false);
 
         public override string ToString()
             => "\x1b[" + (IsBackground ? Color.GetBGString() : Color.GetFGString()) + 'm';
@@ -44,8 +44,8 @@ internal abstract record Markup
         public static readonly StyleMarker Reset =
             new(
                 new Style(
-                    TextColor.ResetColor,
-                    TextColor.ResetColor,
+                    TextColor.Reset,
+                    TextColor.Reset,
                     TextFormat.Reset
                 )
             );

@@ -78,7 +78,7 @@ public static class Logger
 
                 sb.Append(" " + errorTypeString,
                     new Style(
-                        Foreground: TextColor.RedColor,
+                        Foreground: TextColor.Red,
                         Format: TextFormat.Reset
                     )
                 );
@@ -97,7 +97,7 @@ public static class Logger
             sb.AppendLine("There was an error, please fix it before proceeding.");
         } else if (ErrorCount > 1) {
             sb.Append("There were ");
-            sb.Append(ErrorCount, TextColor.BlueColor);
+            sb.Append(ErrorCount, TextColor.Blue);
             sb.AppendLine(" build errors. Fix them before proceeding.");
         }
 
@@ -328,7 +328,7 @@ public static class Logger
         sb.AppendLine(")");
         sb.PopTextFormat();
 
-        sb.PushForeground(TextColor.BlueColor);
+        sb.PushForeground(TextColor.Blue);
 
         sb.Append(FormatTextAt(location, error));
 

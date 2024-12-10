@@ -27,10 +27,13 @@ public sealed partial class Tokenizer
     private Tokenizer(Tokenizer tokenizer) {
         _reconsumeStack = tokenizer._reconsumeStack.Clone();
         _input = tokenizer._input.Clone();
+        Current = Current with { Location = _input.Position };
+        EndOfStream = tokenizer.EndOfStream;
     }
 
     public Tokenizer(TextStream stream) : this() {
         _input = stream.Clone();
+        Current = Current with { Location = _input.Position };
     }
 
     public void Reconsume() {
@@ -39,10 +42,10 @@ public sealed partial class Tokenizer
             Debug.Assert(!Object.ReferenceEquals(token, Current));
         }
 
-        EndOfStream = Current.Kind == TokenKind.EOF;
-
         _reconsumeStack.Push(Current);
         Current = _lastTok;
+
+        EndOfStream = Current.Kind == TokenKind.EOF;
     }
 
     public Token Peek(bool preserveTrivia = false) {
@@ -104,7 +107,7 @@ public sealed partial class Tokenizer
             Current = ConsumeTokenCore();
         }
 
-        if (Current.Kind == TokenKind.EOF || _input.EndOfStream)
+        if (Current.Kind == TokenKind.EOF)
             EndOfStream = true;
 
         return Current;

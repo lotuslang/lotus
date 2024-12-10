@@ -42,8 +42,7 @@ partial class Program
             ;
 
     static Graph MakeGraph(FileInfo file, bool force, out int exitCode) {
-        var tokenizer = GetTokenizerForFile(file);
-        exitCode = HandleParsing(tokenizer, out var tlNodes);
+        exitCode = HandleParsing(file, out var tlNodes);
 
         var g = new Graph($"Abstract Syntax Tree of {Path.GetFileName(file.Name)}\\n\\n");
 
@@ -80,6 +79,9 @@ partial class Program
 
     static Tokenizer GetTokenizerForFile(FileInfo file)
         => new(GetStreamForFile(file));
+
+    static Parser GetParserForFile(FileInfo file)
+        => new(GetTokenizerForFile(file));
 
     static int HandleParsing(Tokenizer tokenizer, out ImmutableArray<TopLevelNode> nodes) {
         var parser = new Parser(tokenizer);

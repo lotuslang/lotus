@@ -13,6 +13,7 @@ public sealed partial class Parser
 
     public Parser(Tokenizer tokenizer) {
         Tokenizer = tokenizer;
+        _curr = _curr with { Location = tokenizer.Position };
     }
 
     public Parser(TextStream stream) : this(new Tokenizer(stream)) { }

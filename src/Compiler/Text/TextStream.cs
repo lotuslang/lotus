@@ -175,5 +175,5 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
 
     bool IEnumerator.MoveNext() => MoveNext();
     public void Reset() => throw new NotImplementedException();
-    public void Dispose() => throw new NotImplementedException();
+    public void Dispose() {}
 }

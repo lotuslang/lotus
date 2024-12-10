@@ -37,6 +37,14 @@ public sealed partial class Tokenizer
     }
 
     public void Reconsume() {
+        // if we've already reconsumed a token
+        if (_reconsumeStack.Count >= 1) {
+            Logger.Warning(new InternalError(ErrorArea.Tokenizer) {
+                Message = "Tried to reconsume a token twice in a row",
+                Location = Position
+            });
+        }
+
         if (_reconsumeStack.TryPeek(out var token)) {
             // check that we're not gonna reconsume the same token twice
             Debug.Assert(!Object.ReferenceEquals(token, Current));

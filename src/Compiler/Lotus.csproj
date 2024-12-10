@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <RootNamespace>Lotus</RootNamespace>
-    <WarningAsError>IDE0059</WarningAsError>
   </PropertyGroup>
 
   <ItemGroup>

@@ -266,6 +266,9 @@ public readonly struct Result<T>
     public readonly Result<TResult> Transform<TResult>(Func<T, TResult> onOk)
         => IsOk() ? new(onOk(Value)) : Result<TResult>.Error;
 
+    public readonly Result<TResult> Transform<TResult>(Func<T, Result<TResult>> onOk)
+        => IsOk() ? onOk(Value) : Result<TResult>.Error;
+
     [MemberNotNullWhen(true, nameof(Value))]
     public readonly bool IsOk() => isOk;
 

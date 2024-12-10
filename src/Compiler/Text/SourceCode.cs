@@ -6,6 +6,8 @@ namespace Lotus.Text;
 // It takes way longer than it looks to figure out, so please again: beware !
 public sealed class SourceCode
 {
+    public static readonly SourceCode Empty = new(Array.Empty<string>());
+
     public ReadOnlyMemory<string> RawLines { get; }
 
     public SourceCode(string text) {

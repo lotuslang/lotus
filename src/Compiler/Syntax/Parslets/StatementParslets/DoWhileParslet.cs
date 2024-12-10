@@ -42,7 +42,7 @@ public sealed class DoWhileParslet : IStatementParslet<WhileNode>
         var conditionNode = parser.ConsumeValue();
 
         if (conditionNode is not ParenthesizedValueNode condition) {
-            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.TypeChecker) {
+            Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                 Value = conditionNode,
                 As = "a do-while-loop condition",
                 Expected = "a condition between parenthesis (e.g. `(a == b)`)"

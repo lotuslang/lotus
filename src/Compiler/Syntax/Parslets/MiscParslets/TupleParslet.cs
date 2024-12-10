@@ -83,16 +83,17 @@ public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
         do {
             parser.Tokenizer.Reconsume();
 
+            // fixme: check that the parsed value is valid
             if (IsSingleValueParser)
                 itemsBuilder.Add(singleValueParser(parser));
             else
                 itemsBuilder.AddRange(multiValueParser(parser));
 
-            if (parser.Tokenizer.Consume() != Delim) {
-                if (parser.Tokenizer.Current == End) {
+            if (!parser.Tokenizer.TryConsume(out token) || token != Delim) {
+                if (token == End) {
                     if (EndingDelimBehaviour is TrailingDelimiterBehaviour.Required) {
                         Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
-                            Value = parser.Tokenizer.Current,
+                            Value = token,
                             In = In,
                             Expected = "a '" + Delim + "' before the closing '" + End + "'"
                         });
@@ -103,9 +104,8 @@ public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
                     break;
                 }
 
-                if (!isValid || !parser.Current.IsValid) {
+                if (!isValid || !parser.Current.IsValid)
                     continue;
-                }
 
                 if (parser.Tokenizer.Current.Kind == TokenKind.keyword) {
                     parser.Tokenizer.Reconsume();
@@ -178,7 +178,13 @@ public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
         // token we could show the first line/element of the tuple, and then show the end
         // or even where the error occurred (this also goes for earlier errors)
         if (isValid && endingToken != End) { // we probably either got an EOF or a bracket
-            if (endingToken.Kind != TokenKind.EOF) {
+            if (endingToken.Kind == TokenKind.EOF) {
+                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
+                    In = In,
+                    Expected = "an ending delimiter '" + End + "'",
+                    Location = (itemsBuilder.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
+                });
+            } else {
                 Logger.Error(new UnexpectedError<Token>(ErrorArea.Parser) {
                     Value = endingToken,
                     In = In,
@@ -188,14 +194,7 @@ public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
                 if (endingToken == "}") {
                     parser.Tokenizer.Reconsume();
                 }
-            } else {
-                Logger.Error(new UnexpectedEOFError(ErrorArea.Parser) {
-                    In = In,
-                    Expected = "an ending delimiter '" + End + "'",
-                    Location = (itemsBuilder.LastOrDefault() as ILocalized)?.Location ?? startingToken.Location
-                });
             }
-
             isValid = false;
         }
 

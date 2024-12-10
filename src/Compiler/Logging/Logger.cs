@@ -113,7 +113,7 @@ public static class Logger
         // don't apply any formatting if stdout is redirected or use asked
         // for NO_COLOR
 #pragma warning disable RCS1001 // Add braces to if statement
-        if (Console.IsOutputRedirected
+        if (Console.IsErrorRedirected
         ||  Environment.GetEnvironmentVariable("NO_COLOR") is not null and not "")
             return sb.ToString();
 #pragma warning restore RCS1001

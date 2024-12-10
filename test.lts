@@ -13,7 +13,7 @@ import foo from bar;
 
 using std.collections;
 
-public namespace my_space;
+public namespace std.foo.bar.my_space;
 
 internal struct test {
     private internal someStuff: int;
@@ -116,6 +116,7 @@ internal enum TokenKind {
     trivia
 }
 
+/* todo: not doing 'inherited enums' for now
 enum TokenKind.trivia::TriviaKind {
     EOF = 0,
     comment,
@@ -123,6 +124,7 @@ enum TokenKind.trivia::TriviaKind {
     newline,
     character
 }
+*/
 
 /* some /* nested */ comments */
 

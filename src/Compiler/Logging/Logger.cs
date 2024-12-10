@@ -15,6 +15,9 @@ public static class Logger
     public static Dictionary<string, ISourceCodeProvider> providers = new();
 
     public static void RegisterSourceProvider(ISourceCodeProvider prov) {
+        // make sure we're not registering a provider for a non-existant file
+        Debug.Assert(prov.Filename != LocationRange.NULL.filename);
+
         var success = providers.TryAdd(prov.Filename, prov);
 
         Debug.Assert(success);

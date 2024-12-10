@@ -15,7 +15,7 @@ public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts)
     }
 
     public string ToFullString()
-        => String.Join('.', Parts);
+        => String.Join('.', Parts.Select(p => p.Representation));
 
     [DebuggerHidden]
     [DebuggerStepThrough]

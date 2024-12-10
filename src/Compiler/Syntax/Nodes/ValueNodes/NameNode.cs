@@ -14,6 +14,9 @@ public abstract record NameNode(Token Token, ImmutableArray<IdentToken> Parts)
         IsValid = isValid;
     }
 
+    public string ToFullString()
+        => String.Join('.', Parts);
+
     [DebuggerHidden]
     [DebuggerStepThrough]
     [DebuggerNonUserCode]

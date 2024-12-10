@@ -124,10 +124,11 @@ csharp_style_pattern_local_over_anonymous_function = true:suggestion # IDE0039
 csharp_style_prefer_index_operator = true:suggestion # IDE0056
 csharp_style_prefer_range_operator = true:suggestion # IDE0057
 csharp_style_throw_expression = true:suggestion # IDE0016
-csharp_style_unused_value_assignment_preference = discard_variable:error # IDE0059
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion # IDE0059
 dotnet_diagnostics.IDE0059.severity = warning
-csharp_style_unused_value_expression_statement_preference = discard_variable:error # IDE0058
+csharp_style_unused_value_expression_statement_preference = discard_variable:none # IDE0058
 dotnet_diagnostics.IDE0058.severity = warning
+dotnet_diagnostic.IDE0200.severity = none # IDE0200: Remove unnecessary lambda expression
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:suggestion

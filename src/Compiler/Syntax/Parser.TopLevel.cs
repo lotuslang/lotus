@@ -15,13 +15,13 @@ public sealed partial class Parser
 
         // we don't need to update currToken here, since we know it's *not* a modifier
 
-        if (LotusFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
+        if (SyntaxFacts.TryGetTopLevelParslet(currToken, out var parslet)) {
             _curr = parslet.Parse(this, currToken, modifiers);
             CheckSemicolon(); // ConsumeStatement already checks for semicolon, so we only do when it's not a stmt
         } else {
             string? notes = null;
 
-            if (LotusFacts.TryGetStatementParslet(currToken, out _)) {
+            if (SyntaxFacts.TryGetStatementParslet(currToken, out _)) {
                 notes = "Statements can't be used directly, they must be contained in a function, like main()";
             }
 

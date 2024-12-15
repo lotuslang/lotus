@@ -13,9 +13,9 @@ public sealed partial class Parser
         }
 
         var token = Tokenizer.Consume();
-        var tokenKind = LotusFacts.GetExpressionKind(token);
+        var tokenKind = SyntaxFacts.GetExpressionKind(token);
 
-        if (!LotusFacts.IsPrefixOrValueKind(tokenKind)) {
+        if (!SyntaxFacts.IsPrefixOrValueKind(tokenKind)) {
             string? notes = null;
 
             if (token.Kind == TokenKind.EOF) {
@@ -47,25 +47,25 @@ public sealed partial class Parser
             return CreateFakeExpression(token);
         }
 
-        var left = LotusFacts.GetPrefixParslet(tokenKind).Parse(this, token);
+        var left = SyntaxFacts.GetPrefixParslet(tokenKind).Parse(this, token);
 
         if (!Tokenizer.TryConsume(out token))
             return left;
 
-        tokenKind = LotusFacts.GetExpressionKind(token);
+        tokenKind = SyntaxFacts.GetExpressionKind(token);
 
-        if (LotusFacts.IsPostfixKind(tokenKind)) {
-            left = LotusFacts.GetPostfixParslet(tokenKind).Parse(this, token, left);
+        if (SyntaxFacts.IsPostfixKind(tokenKind)) {
+            left = SyntaxFacts.GetPostfixParslet(tokenKind).Parse(this, token, left);
 
             token = Tokenizer.Consume();
-            tokenKind = LotusFacts.GetExpressionKind(token);
+            tokenKind = SyntaxFacts.GetExpressionKind(token);
         }
 
-        while (precedence < LotusFacts.GetPrecedence(tokenKind)) {
-            left = LotusFacts.GetInfixParslet(tokenKind).Parse(this, token, left);
+        while (precedence < SyntaxFacts.GetPrecedence(tokenKind)) {
+            left = SyntaxFacts.GetInfixParslet(tokenKind).Parse(this, token, left);
 
             token = Tokenizer.Consume();
-            tokenKind = LotusFacts.GetExpressionKind(token);
+            tokenKind = SyntaxFacts.GetExpressionKind(token);
         }
 
         Tokenizer.Reconsume();

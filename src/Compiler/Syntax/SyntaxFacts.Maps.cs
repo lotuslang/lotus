@@ -1,8 +1,6 @@
-using Lotus.Syntax;
+namespace Lotus.Syntax;
 
-namespace Lotus;
-
-public static partial class LotusFacts
+public static partial class SyntaxFacts
 {
     private static readonly Dictionary<string, ExpressionKind> _strToExprKinds = new() {
         { "+", ExpressionKind.Plus },
@@ -145,7 +143,7 @@ public static partial class LotusFacts
     };
 
     private static readonly HashSet<string> _keywords;
-    static LotusFacts() {
+    static SyntaxFacts() {
 #pragma warning disable IDE0058
         _keywords = new HashSet<string>();
 

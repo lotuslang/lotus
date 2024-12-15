@@ -1,8 +1,6 @@
-using Lotus.Syntax;
+namespace Lotus.Syntax;
 
-namespace Lotus;
-
-public static partial class LotusFacts
+public static partial class SyntaxFacts
 {
     public static bool IsPrefixOrValueKind(ExpressionKind kind)
         => ((int)kind & ExpressionKindFlags.PREFIX) == ExpressionKindFlags.PREFIX;

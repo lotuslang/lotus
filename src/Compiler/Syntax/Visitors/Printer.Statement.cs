@@ -72,5 +72,5 @@ internal sealed partial class Printer : IStatementVisitor<string>
     public string Print(Tuple<StatementNode> tuple)
         => PrintTuple(tuple, "", Print);
 
-    public string Print(StatementNode node) => node.Accept(this) + (LotusFacts.NeedsSemicolon(node) ? ";" : "");
+    public string Print(StatementNode node) => node.Accept(this) + (SyntaxFacts.NeedsSemicolon(node) ? ";" : "");
 }

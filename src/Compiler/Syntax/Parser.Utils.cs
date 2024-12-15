@@ -19,20 +19,20 @@ public sealed partial class Parser
 
     internal ImmutableArray<Token> ConsumeModifiers() {
         // don't allocate in case there's no modifier at all
-        if (!LotusFacts.IsModifierKeyword(Tokenizer.Peek()))
+        if (!SyntaxFacts.IsModifierKeyword(Tokenizer.Peek()))
             return ImmutableArray<Token>.Empty;
 
         var currToken = Tokenizer.Consume();
 
         // don't allocate a builder for only one token
-        if (!LotusFacts.IsModifierKeyword(Tokenizer.Peek()))
+        if (!SyntaxFacts.IsModifierKeyword(Tokenizer.Peek()))
             return ImmutableArray.Create(currToken);
 
         // otherwise, create a builder and add the current token to it
         var modifierBuilder = ImmutableArray.CreateBuilder<Token>(4);
         modifierBuilder.Add(currToken);
 
-        while (LotusFacts.IsModifierKeyword(Tokenizer.Peek())) {
+        while (SyntaxFacts.IsModifierKeyword(Tokenizer.Peek())) {
             modifierBuilder.Add(Tokenizer.Consume());
         }
 
@@ -60,11 +60,11 @@ public sealed partial class Parser
             case ValueNode:
                 break;
             case StatementNode stmt:
-                if (!LotusFacts.NeedsSemicolon(stmt))
+                if (!SyntaxFacts.NeedsSemicolon(stmt))
                     return;
                 break;
             case TopLevelNode tl:
-                if (!LotusFacts.NeedsSemicolon(tl))
+                if (!SyntaxFacts.NeedsSemicolon(tl))
                     return;
                 break;
         }

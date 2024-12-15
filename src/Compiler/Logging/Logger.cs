@@ -171,7 +171,7 @@ public static class Logger
                     break;
                 }
 
-                var opKind = LotusFacts.GetExpressionKind(opToken);
+                var opKind = SyntaxFacts.GetExpressionKind(opToken);
 
                 switch (opKind) {
                     case ExpressionKind.Array:

@@ -341,7 +341,7 @@ public partial class Tokenizer
             return new BoolToken(outputStr, outputStr == "true", new LocationRange(startPos, _input.Position));
         }
 
-        if (LotusFacts.IsKeyword(outputStr)) {
+        if (SyntaxFacts.IsKeyword(outputStr)) {
             return new Token(outputStr, TokenKind.keyword, new LocationRange(startPos, _input.Position));
         }
 

@@ -12,7 +12,7 @@ public sealed partial class Parser
             return (StatementNode)_curr;
         }
 
-        if (LotusFacts.TryGetStatementParslet(currToken, out var parslet)) {
+        if (SyntaxFacts.TryGetStatementParslet(currToken, out var parslet)) {
             _curr = parslet.Parse(this, currToken);
         } else {
             Tokenizer.Reconsume();

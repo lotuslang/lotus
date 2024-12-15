@@ -1,8 +1,6 @@
-using Lotus.Syntax;
+namespace Lotus.Syntax;
 
-namespace Lotus;
-
-public static partial class LotusFacts
+public static partial class SyntaxFacts
 {
     internal static bool IsStartOfNumber(char c, char nextChar)
         => Char.IsAsciiDigit(c)

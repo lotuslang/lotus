@@ -8,23 +8,24 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
     private readonly struct Line {
         private readonly string _str;
 
-        private readonly bool shouldAddNewline;
+        private readonly bool _shouldAddNewline;
 
-        public readonly int Length => _str.Length + (shouldAddNewline ? 1 : 0);
+        public readonly int Length => _str.Length + (_shouldAddNewline ? 1 : 0);
         public readonly char this[int idx] {
             get {
                 if (idx < _str.Length) {
                     return _str[idx];
                 } else {
-                    Debug.Assert(shouldAddNewline);
-                    return '\n';
+                    if (_shouldAddNewline)
+                        return '\n';
+                    throw new IndexOutOfRangeException();
                 }
             }
         }
 
         public Line(string s, bool shouldAddNewline) {
             _str = s;
-            this.shouldAddNewline = shouldAddNewline;
+            _shouldAddNewline = shouldAddNewline;
         }
     }
 
@@ -65,10 +66,18 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
     public TextStream(ImmutableArray<string> lines, string filename)
         : this(new SourceCode(lines), filename) { }
 
+    // This line is at the end of the stream if:
+    //      - it is beyond the last line
+    //      - it is the last line AND it's empty
+    private bool IsLineAtEndOfStream(int lineIdx)
+        => Source.RawLines.Length == lineIdx
+        || (Source.RawLines.Length == lineIdx + 1
+            && Source.RawLines.Span[lineIdx].Length == 0);
+
     public TextStream(SourceCode source, string filename) {
         Filename = filename;
         Source = source;
-        EndOfStream = Source.RawLines.Length == 0;
+        EndOfStream = IsLineAtEndOfStream(0);
 
         // we need to set the first line for MoveNext/Back to work properly
         _currLine = new(
@@ -95,7 +104,11 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
     private void UpdateCurrent() {
         // don't create a new one each time
         if (_oldLineIdx != _currLineIdx) {
-            _currLine = new(Source.RawLines.Span[_currLineIdx], _currLineIdx + 1 != Source.RawLines.Length);
+            bool isLastLine = _currLineIdx + 1 == Source.RawLines.Length;
+            _currLine = new(
+                Source.RawLines.Span[_currLineIdx],
+                shouldAddNewline: !isLastLine
+            );
             _oldLineIdx = _currLineIdx;
         }
 
@@ -109,7 +122,7 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
             return true;
         }
 
-        if (_currLineIdx + 1 < Source.RawLines.Length) {
+        if (!IsLineAtEndOfStream(_currLineIdx+1)) {
             _currColIdx = 0;
             _currLineIdx++;
             UpdateCurrent();
@@ -140,9 +153,9 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
         if (_currLineIdx - 1 >= 0) {
             _currLineIdx--;
             _currColIdx = 0;
-            UpdateCurrent();
+            UpdateCurrent(); // update to the right line first
             _currColIdx = _currLine.Length - 1;
-            UpdateCurrent();
+            UpdateCurrent(); // then, go to the last character
             EndOfStream = false;
             return true;
         }
@@ -151,7 +164,7 @@ public sealed class TextStream : ISourceCodeProvider, IEnumerable<char>, IEnumer
         if (_currLineIdx == 0 && _currColIdx == 0) {
             _currColIdx--;
             // in case the file is empty, we still need to set EndOfStream
-            EndOfStream = _currLine.Length - 1 == 0;
+            EndOfStream = _currLine.Length - 1 <= 0;
         }
 
         return false;

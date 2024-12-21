@@ -1,0 +1,2524 @@
+graph 589221589
+{
+	label="Abstract Syntax Tree of test.lts\n\n"
+	compound="true"
+	splines="line"
+	color=""
+	style=""
+	fontname="Consolas, monospace"
+	labelloc="top"
+	ranksep="1"
+	node [
+		fontname="Consolas, monospace"
+	]
+	{rank=same;1779829230;1561841182;1093386059;1156193118;148546009;283721939;1002795859;1416950953;683982598;1536159789;557446957;}
+	1779829230 -- 1561841182 [style=invis];1561841182 -- 1093386059 [style=invis];1093386059 -- 1156193118 [style=invis];1156193118 -- 148546009 [style=invis];148546009 -- 283721939 [style=invis];283721939 -- 1002795859 [style=invis];1002795859 -- 1416950953 [style=invis];1416950953 -- 683982598 [style=invis];683982598 -- 1536159789 [style=invis];1536159789 -- 557446957 [style=invis];
+	subgraph cluster_1779829230{
+		style=invis
+
+		1779829230 [label="import",color="fuchsia",tooltip="import statement"]
+			{rank=same;1972608862;}
+
+			1779829230 -- 1972608862
+			subgraph cluster_1972608862{
+				style=invis
+
+				1972608862 [label="from",color="navy",tooltip="from statement"]
+					{rank=same;1695930886;}
+
+					1972608862 -- 1695930886
+					subgraph cluster_1695930886{
+						style=invis
+
+						1695930886 [label="origin.utils",color="grey",tooltip="origin name"]
+					}
+			}
+			1779829230 -- 895843611 [lhead=cluster_804293035]
+			subgraph cluster_804293035
+			{
+				label="imports"
+				compound="true"
+				splines="line"
+				color="peru"
+				style=""
+				{rank=same;895843611;}
+
+				subgraph cluster_895843611{
+					style=invis
+
+					895843611 [label="someType",color="grey",tooltip="name"]
+				}
+
+			}
+	}
+	subgraph cluster_1561841182{
+		style=invis
+
+		1561841182 [label="import",color="fuchsia",tooltip="import statement"]
+			{rank=same;788129015;}
+
+			1561841182 -- 788129015
+			subgraph cluster_788129015{
+				style=invis
+
+				788129015 [label="from",color="navy",tooltip="from statement"]
+					{rank=same;1957408246;}
+
+					788129015 -- 1957408246
+					subgraph cluster_1957408246{
+						style=invis
+
+						1957408246 [label="bar",color="grey",tooltip="origin name"]
+					}
+			}
+			1561841182 -- 177879767 [lhead=cluster_952573737]
+			subgraph cluster_952573737
+			{
+				label="imports"
+				compound="true"
+				splines="line"
+				color="peru"
+				style=""
+				{rank=same;177879767;}
+
+				subgraph cluster_177879767{
+					style=invis
+
+					177879767 [label="foo",color="grey",tooltip="name"]
+				}
+
+			}
+	}
+	subgraph cluster_1093386059{
+		style=invis
+
+		1093386059 [label="using",color="",tooltip="UsingNode"]
+			{rank=same;2026100949;}
+
+			1093386059 -- 2026100949
+			subgraph cluster_2026100949{
+				style=invis
+
+				2026100949 [label="std.collections",color="grey",tooltip="name"]
+			}
+	}
+	subgraph cluster_1156193118{
+		style=invis
+
+		1156193118 [label="namespace",color="cornflowerblue",tooltip="namespace declaration"]
+			{rank=same;1594193601;}
+
+			1156193118 -- 1594193601
+			subgraph cluster_1594193601{
+				style=invis
+
+				1594193601 [label="std.foo.bar.my_space",color="grey",tooltip="namespace name"]
+			}
+	}
+	subgraph cluster_148546009{
+		style=invis
+
+		148546009 [label="struct test",color="StructNode"]
+			{rank=same;}
+
+			148546009 -- 1475886195 [lhead=cluster_618363909]
+			subgraph cluster_618363909
+			{
+				label="Fields"
+				compound="true"
+				splines="line"
+				color=""
+				style=""
+				{rank=same;315806144;1475886195;}
+				315806144 -- 1475886195 [style=invis];
+				subgraph cluster_315806144{
+					style=invis
+
+					315806144 [label="someStuff",color="grey",tooltip="name"]
+						{rank=same;331126581;}
+
+						315806144 -- 331126581
+						subgraph cluster_331126581{
+							style=invis
+
+							331126581 [label="int",color="grey",tooltip="name"]
+						}
+				}
+				subgraph cluster_1475886195{
+					style=invis
+
+					1475886195 [label="otherStuff",color="grey",tooltip="name"]
+						{rank=same;1609508665;40728594;}
+						1609508665 -- 40728594 [style=invis];
+						1475886195 -- 1609508665
+						subgraph cluster_1609508665{
+							style=invis
+
+							1609508665 [label="str",color="grey",tooltip="name"]
+						}
+						1475886195 -- 40728594
+						subgraph cluster_40728594{
+							style=invis
+
+							40728594 [label="+",color="dodgerblue",tooltip="OperationNode"]
+								{rank=same;1506634275;398915965;}
+								1506634275 -- 398915965 [style=invis];
+								40728594 -- 1506634275
+								subgraph cluster_1506634275{
+									style=invis
+
+									1506634275 [label="'58'",color="orange",tooltip="StringNode"]
+								}
+								40728594 -- 398915965
+								subgraph cluster_398915965{
+									style=invis
+
+									398915965 [label="hi",color="grey",tooltip="name"]
+								}
+						}
+				}
+
+			}
+	}
+	subgraph cluster_283721939{
+		style=invis
+
+		283721939 [label="func someFunc1",color="indianred",tooltip="FunctionDeclarationNode"]
+			{rank=same;2090347005;}
+
+			283721939 -- 2090347005
+			subgraph cluster_2090347005{
+				style=invis
+
+				2090347005 [label="return type"]
+					{rank=same;880157707;}
+
+					2090347005 -- 880157707
+					subgraph cluster_880157707{
+						style=invis
+
+						880157707 [label="int",color="grey",tooltip="name"]
+					}
+			}
+			283721939 -- 1251046355 [lhead=cluster_806610709]
+			subgraph cluster_806610709
+			{
+				label="parameters"
+				compound="true"
+				splines="line"
+				color=""
+				style=""
+				{rank=same;2055640009;1640946962;1251046355;359277248;}
+				2055640009 -- 1640946962 [style=invis];1640946962 -- 1251046355 [style=invis];1251046355 -- 359277248 [style=invis];
+				subgraph cluster_2055640009{
+					style=invis
+
+					2055640009 [label="a",color="grey",tooltip="name"]
+						{rank=same;1187234150;}
+
+						2055640009 -- 1187234150
+						subgraph cluster_1187234150{
+							style=invis
+
+							1187234150 [label="char",color="grey",tooltip="name"]
+						}
+				}
+				subgraph cluster_1640946962{
+					style=invis
+
+					1640946962 [label="b",color="grey",tooltip="name"]
+						{rank=same;935183671;}
+
+						1640946962 -- 935183671
+						subgraph cluster_935183671{
+							style=invis
+
+							935183671 [label="string",color="grey",tooltip="name"]
+						}
+				}
+				subgraph cluster_1251046355{
+					style=invis
+
+					1251046355 [label="c",color="grey",tooltip="name"]
+						{rank=same;568311005;}
+
+						1251046355 -- 568311005
+						subgraph cluster_568311005{
+							style=invis
+
+							568311005 [label="string",color="grey",tooltip="name"]
+						}
+				}
+				subgraph cluster_359277248{
+					style=invis
+
+					359277248 [label="d",color="grey",tooltip="name"]
+						{rank=same;59656266;}
+
+						359277248 -- 59656266
+						subgraph cluster_59656266{
+							style=invis
+
+							59656266 [label="int",color="grey",tooltip="name"]
+						}
+				}
+
+			}
+			283721939 -- 58138165 [lhead=cluster_93231985]
+			subgraph cluster_93231985
+			{
+				label="someFunc1()'s body"
+				compound="true"
+				splines="line"
+				color="darkviolet"
+				style=""
+				{rank=same;58138165;}
+
+				subgraph cluster_58138165{
+					style=invis
+
+					58138165 [label="print",color="",tooltip="PrintNode"]
+						{rank=same;279465681;}
+
+						58138165 -- 279465681
+						subgraph cluster_279465681{
+							style=invis
+
+							279465681 [label="+",color="dodgerblue",tooltip="OperationNode"]
+								{rank=same;918381126;91355749;}
+								918381126 -- 91355749 [style=invis];
+								279465681 -- 918381126
+								subgraph cluster_918381126{
+									style=invis
+
+									918381126 [label="+",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;77992276;2072233872;}
+										77992276 -- 2072233872 [style=invis];
+										918381126 -- 77992276
+										subgraph cluster_77992276{
+											style=invis
+
+											77992276 [label="a.toString(...)",color="tomato",tooltip="call to a function"]
+												{rank=same;}
+
+												77992276 -- 1967349277 [lhead=cluster_1577340855]
+												subgraph cluster_1577340855
+												{
+													label="args"
+													compound="true"
+													splines="line"
+													color=""
+													style=""
+													{rank=same;1967349277;}
+
+													subgraph cluster_1967349277{
+														style=invis
+
+														1967349277 [label="_ghost",style="invis"]
+													}
+
+												}
+										}
+										918381126 -- 2072233872
+										subgraph cluster_2072233872{
+											style=invis
+
+											2072233872 [label="b",color="grey",tooltip="name"]
+										}
+								}
+								279465681 -- 91355749
+								subgraph cluster_91355749{
+									style=invis
+
+									91355749 [label="c",color="grey",tooltip="name"]
+								}
+						}
+				}
+
+			}
+	}
+	subgraph cluster_1002795859{
+		style=invis
+
+		1002795859 [label="func someFunc2",color="indianred",tooltip="FunctionDeclarationNode"]
+			{rank=same;}
+
+			1002795859 -- 414667399 [lhead=cluster_121401353]
+			subgraph cluster_121401353
+			{
+				label="parameters"
+				compound="true"
+				splines="line"
+				color=""
+				style=""
+				{rank=same;869209117;414667399;1229001176;}
+				869209117 -- 414667399 [style=invis];414667399 -- 1229001176 [style=invis];
+				subgraph cluster_869209117{
+					style=invis
+
+					869209117 [label="seed",color="grey",tooltip="name"]
+						{rank=same;484976877;}
+
+						869209117 -- 484976877
+						subgraph cluster_484976877{
+							style=invis
+
+							484976877 [label="int",color="grey",tooltip="name"]
+						}
+				}
+				subgraph cluster_414667399{
+					style=invis
+
+					414667399 [label="min",color="grey",tooltip="name"]
+						{rank=same;338081930;1261867810;}
+						338081930 -- 1261867810 [style=invis];
+						414667399 -- 338081930
+						subgraph cluster_338081930{
+							style=invis
+
+							338081930 [label="int",color="grey",tooltip="name"]
+						}
+						414667399 -- 1261867810
+						subgraph cluster_1261867810{
+							style=invis
+
+							1261867810 [label="0",color="",tooltip="Double"]
+						}
+				}
+				subgraph cluster_1229001176{
+					style=invis
+
+					1229001176 [label="max",color="grey",tooltip="name"]
+						{rank=same;1210836755;}
+
+						1229001176 -- 1210836755
+						subgraph cluster_1210836755{
+							style=invis
+
+							1210836755 [label="int",color="grey",tooltip="name"]
+						}
+				}
+
+			}
+			1002795859 -- 1789727388 [lhead=cluster_1151816300]
+			subgraph cluster_1151816300
+			{
+				label="someFunc2()'s body"
+				compound="true"
+				splines="line"
+				color="darkviolet"
+				style=""
+				{rank=same;1789727388;}
+
+				subgraph cluster_1789727388{
+					style=invis
+
+					1789727388 [label="return",color="brown",tooltip="return statement"]
+						{rank=same;580740417;}
+
+						1789727388 -- 580740417
+						subgraph cluster_580740417{
+							style=invis
+
+							580740417 [label="func call",color="tomato",tooltip="call to a function"]
+								{rank=same;565424548;}
+
+								580740417 -- 565424548
+								subgraph cluster_565424548{
+									style=invis
+
+									565424548 [label="function"]
+										{rank=same;2007917441;}
+
+										565424548 -- 2007917441
+										subgraph cluster_2007917441{
+											style=invis
+
+											2007917441 [label=".",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;1636360232;990137715;}
+												1636360232 -- 990137715 [style=invis];
+												2007917441 -- 1636360232
+												subgraph cluster_1636360232{
+													style=invis
+
+													1636360232 [label="obj creation",color="indigo",tooltip="object creation/ctor call"]
+														{rank=same;92164140;}
+
+														1636360232 -- 92164140
+														subgraph cluster_92164140{
+															style=invis
+
+															92164140 [label="Random",color="",tooltip="class name"]
+														}
+														1636360232 -- 1607842202 [lhead=cluster_2100991805]
+														subgraph cluster_2100991805
+														{
+															label="args"
+															compound="true"
+															splines="line"
+															color=""
+															style=""
+															{rank=same;1607842202;}
+
+															subgraph cluster_1607842202{
+																style=invis
+
+																1607842202 [label="seed",color="grey",tooltip="name"]
+															}
+
+														}
+												}
+												2007917441 -- 990137715
+												subgraph cluster_990137715{
+													style=invis
+
+													990137715 [label="next",color="grey",tooltip="name"]
+												}
+										}
+								}
+								580740417 -- 1310474143 [lhead=cluster_2091726892]
+								subgraph cluster_2091726892
+								{
+									label="args"
+									compound="true"
+									splines="line"
+									color=""
+									style=""
+									{rank=same;1440852676;1310474143;}
+									1440852676 -- 1310474143 [style=invis];
+									subgraph cluster_1440852676{
+										style=invis
+
+										1440852676 [label="min",color="grey",tooltip="name"]
+									}
+									subgraph cluster_1310474143{
+										style=invis
+
+										1310474143 [label="max",color="grey",tooltip="name"]
+									}
+
+								}
+						}
+				}
+
+			}
+	}
+	subgraph cluster_1416950953{
+		style=invis
+
+		1416950953 [label="func someFunc",color="indianred",tooltip="FunctionDeclarationNode"]
+			{rank=same;}
+
+			1416950953 -- 486666562 [lhead=cluster_58755742]
+			subgraph cluster_58755742
+			{
+				label="parameters"
+				compound="true"
+				splines="line"
+				color=""
+				style=""
+				{rank=same;486666562;}
+
+				subgraph cluster_486666562{
+					style=invis
+
+					486666562 [label="_ghost",style="invis"]
+				}
+
+			}
+			1416950953 -- 787513844 [lhead=cluster_2095244342]
+			subgraph cluster_2095244342
+			{
+				label="someFunc()'s body"
+				compound="true"
+				splines="line"
+				color="darkviolet"
+				style=""
+				{rank=same;2091974816;787513844;}
+				2091974816 -- 787513844 [style=invis];
+				subgraph cluster_2091974816{
+					style=invis
+
+					2091974816 [label="print",color="",tooltip="PrintNode"]
+						{rank=same;93098766;}
+
+						2091974816 -- 93098766
+						subgraph cluster_93098766{
+							style=invis
+
+							93098766 [label="'called!'",color="orange",tooltip="StringNode"]
+						}
+				}
+				subgraph cluster_787513844{
+					style=invis
+
+					787513844 [label="return",color="brown",tooltip="return statement"]
+				}
+
+			}
+	}
+	subgraph cluster_683982598{
+		style=invis
+
+		683982598 [label="func main",color="indianred",tooltip="FunctionDeclarationNode"]
+			{rank=same;}
+
+			683982598 -- 668484054 [lhead=cluster_809234931]
+			subgraph cluster_809234931
+			{
+				label="parameters"
+				compound="true"
+				splines="line"
+				color=""
+				style=""
+				{rank=same;668484054;}
+
+				subgraph cluster_668484054{
+					style=invis
+
+					668484054 [label="_ghost",style="invis"]
+				}
+
+			}
+			683982598 -- 169794998 [lhead=cluster_1701437828]
+			subgraph cluster_1701437828
+			{
+				label="main()'s body"
+				compound="true"
+				splines="line"
+				color="darkviolet"
+				style=""
+				{rank=same;1770336543;994396663;2090977501;264988145;1262509036;180969710;1565740777;2008630079;169794998;1946675929;758091207;972357851;219263170;13471545;1383866886;550428058;1532772105;}
+				1770336543 -- 994396663 [style=invis];994396663 -- 2090977501 [style=invis];2090977501 -- 264988145 [style=invis];264988145 -- 1262509036 [style=invis];1262509036 -- 180969710 [style=invis];180969710 -- 1565740777 [style=invis];1565740777 -- 2008630079 [style=invis];2008630079 -- 169794998 [style=invis];169794998 -- 1946675929 [style=invis];1946675929 -- 758091207 [style=invis];758091207 -- 972357851 [style=invis];972357851 -- 219263170 [style=invis];219263170 -- 13471545 [style=invis];13471545 -- 1383866886 [style=invis];1383866886 -- 550428058 [style=invis];550428058 -- 1532772105 [style=invis];
+				subgraph cluster_1770336543{
+					style=invis
+
+					1770336543 [label="=",color="dodgerblue",tooltip="OperationNode"]
+						{rank=same;1255988446;1486507340;}
+						1255988446 -- 1486507340 [style=invis];
+						1770336543 -- 1255988446
+						subgraph cluster_1255988446{
+							style=invis
+
+							1255988446 [label="arr",color="grey",tooltip="name"]
+						}
+						1770336543 -- 1486507340
+						subgraph cluster_1486507340{
+							style=invis
+
+							1486507340 [label="Tuple with\n8 elements",color="",tooltip="List of values"]
+								{rank=same;1757781708;400155988;1099595582;1839181290;2089830869;2037170859;1854265828;607997980;}
+								1757781708 -- 400155988 [style=invis];400155988 -- 1099595582 [style=invis];1099595582 -- 1839181290 [style=invis];1839181290 -- 2089830869 [style=invis];2089830869 -- 2037170859 [style=invis];2037170859 -- 1854265828 [style=invis];1854265828 -- 607997980 [style=invis];
+								1486507340 -- 1757781708
+								subgraph cluster_1757781708{
+									style=invis
+
+									1757781708 [label="36",color="",tooltip="Double"]
+								}
+								1486507340 -- 400155988
+								subgraph cluster_400155988{
+									style=invis
+
+									400155988 [label="func call",color="tomato",tooltip="call to a function"]
+										{rank=same;397671440;}
+
+										400155988 -- 397671440
+										subgraph cluster_397671440{
+											style=invis
+
+											397671440 [label="function"]
+												{rank=same;1825578505;}
+
+												397671440 -- 1825578505
+												subgraph cluster_1825578505{
+													style=invis
+
+													1825578505 [label=".",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;147178424;2039450744;}
+														147178424 -- 2039450744 [style=invis];
+														1825578505 -- 147178424
+														subgraph cluster_147178424{
+															style=invis
+
+															147178424 [label="1.1d",color="",tooltip="Double"]
+														}
+														1825578505 -- 2039450744
+														subgraph cluster_2039450744{
+															style=invis
+
+															2039450744 [label="toString",color="grey",tooltip="name"]
+														}
+												}
+										}
+										400155988 -- 1824811911 [lhead=cluster_1599006384]
+										subgraph cluster_1599006384
+										{
+											label="args"
+											compound="true"
+											splines="line"
+											color=""
+											style=""
+											{rank=same;1824811911;}
+
+											subgraph cluster_1824811911{
+												style=invis
+
+												1824811911 [label="_ghost",style="invis"]
+											}
+
+										}
+								}
+								1486507340 -- 1099595582
+								subgraph cluster_1099595582{
+									style=invis
+
+									1099595582 [label="215",color="",tooltip="Double"]
+								}
+								1486507340 -- 1839181290
+								subgraph cluster_1839181290{
+									style=invis
+
+									1839181290 [label="'he'",color="orange",tooltip="StringNode"]
+								}
+								1486507340 -- 2089830869
+								subgraph cluster_2089830869{
+									style=invis
+
+									2089830869 [label="true",color="teal",tooltip="bool literal"]
+								}
+								1486507340 -- 2037170859
+								subgraph cluster_2037170859{
+									style=invis
+
+									2037170859 [label="Tuple with\n2 elements",color="",tooltip="List of values"]
+										{rank=same;1749640654;899780045;}
+										1749640654 -- 899780045 [style=invis];
+										2037170859 -- 1749640654
+										subgraph cluster_1749640654{
+											style=invis
+
+											1749640654 [label=".546e+20",color="",tooltip="Double"]
+										}
+										2037170859 -- 899780045
+										subgraph cluster_899780045{
+											style=invis
+
+											899780045 [label="486513UL",color="",tooltip="Double"]
+										}
+								}
+								1486507340 -- 1854265828
+								subgraph cluster_1854265828{
+									style=invis
+
+									1854265828 [label="aur",color="grey",tooltip="name"]
+								}
+								1486507340 -- 607997980
+								subgraph cluster_607997980{
+									style=invis
+
+									607997980 [label="obj creation",color="indigo",tooltip="object creation/ctor call"]
+										{rank=same;891369626;}
+
+										607997980 -- 891369626
+										subgraph cluster_891369626{
+											style=invis
+
+											891369626 [label="String",color="",tooltip="class name"]
+										}
+										607997980 -- 24755138 [lhead=cluster_187670587]
+										subgraph cluster_187670587
+										{
+											label="args"
+											compound="true"
+											splines="line"
+											color=""
+											style=""
+											{rank=same;24755138;}
+
+											subgraph cluster_24755138{
+												style=invis
+
+												24755138 [label="_ghost",style="invis"]
+											}
+
+										}
+								}
+						}
+				}
+				subgraph cluster_994396663{
+					style=invis
+
+					994396663 [label="arr.add(...)",color="tomato",tooltip="call to a function"]
+						{rank=same;}
+
+						994396663 -- 389295634 [lhead=cluster_1681638342]
+						subgraph cluster_1681638342
+						{
+							label="args"
+							compound="true"
+							splines="line"
+							color=""
+							style=""
+							{rank=same;1055311308;389295634;}
+							1055311308 -- 389295634 [style=invis];
+							subgraph cluster_1055311308{
+								style=invis
+
+								1055311308 [label="Empty tuple",color="",tooltip="List of values"]
+							}
+							subgraph cluster_389295634{
+								style=invis
+
+								389295634 [label="arr",color="grey",tooltip="name"]
+							}
+
+						}
+				}
+				subgraph cluster_2090977501{
+					style=invis
+
+					2090977501 [label="print",color="",tooltip="PrintNode"]
+						{rank=same;1756351314;}
+
+						2090977501 -- 1756351314
+						subgraph cluster_1756351314{
+							style=invis
+
+							1756351314 [label="hello {} ! Today will be {}",color="darkorange",tooltip="Complex string literal"]
+								{rank=same;}
+
+								1756351314 -- 1862885742 [lhead=cluster_1815552603]
+								subgraph cluster_1815552603
+								{
+									label="code sections"
+									compound="true"
+									splines="line"
+									color="darkorange"
+									style=""
+									{rank=same;1547832990;1862885742;}
+									1547832990 -- 1862885742 [style=invis];
+									subgraph cluster_1547832990{
+										style=invis
+
+										1547832990 [label="'benjamin'",color="orange",tooltip="StringNode"]
+									}
+									subgraph cluster_1862885742{
+										style=invis
+
+										1862885742 [label="GetWeather(...)",color="tomato",tooltip="call to a function"]
+											{rank=same;}
+
+											1862885742 -- 272572611 [lhead=cluster_1264472532]
+											subgraph cluster_1264472532
+											{
+												label="args"
+												compound="true"
+												splines="line"
+												color=""
+												style=""
+												{rank=same;272572611;}
+
+												subgraph cluster_272572611{
+													style=invis
+
+													272572611 [label="*",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;1415956890;753149211;}
+														1415956890 -- 753149211 [style=invis];
+														272572611 -- 1415956890
+														subgraph cluster_1415956890{
+															style=invis
+
+															1415956890 [label="pressure",color="grey",tooltip="name"]
+														}
+														272572611 -- 753149211
+														subgraph cluster_753149211{
+															style=invis
+
+															753149211 [label="^",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;1565630775;1544618436;}
+																1565630775 -- 1544618436 [style=invis];
+																753149211 -- 1565630775
+																subgraph cluster_1565630775{
+																	style=invis
+
+																	1565630775 [label="10.644",color="",tooltip="Double"]
+																}
+																753149211 -- 1544618436
+																subgraph cluster_1544618436{
+																	style=invis
+
+																	1544618436 [label="-",color="dodgerblue",tooltip="OperationNode"]
+																		{rank=same;1219181064;1802568473;}
+																		1219181064 -- 1802568473 [style=invis];
+																		1544618436 -- 1219181064
+																		subgraph cluster_1219181064{
+																			style=invis
+
+																			1219181064 [label="temperature",color="grey",tooltip="name"]
+																		}
+																		1544618436 -- 1802568473
+																		subgraph cluster_1802568473{
+																			style=invis
+
+																			1802568473 [label="2048",color="",tooltip="Double"]
+																		}
+																}
+														}
+												}
+
+											}
+									}
+
+								}
+						}
+				}
+				subgraph cluster_264988145{
+					style=invis
+
+					264988145 [label="print",color="",tooltip="PrintNode"]
+						{rank=same;1529021079;}
+
+						264988145 -- 1529021079
+						subgraph cluster_1529021079{
+							style=invis
+
+							1529021079 [label="+",color="dodgerblue",tooltip="OperationNode"]
+								{rank=same;1112260534;905931906;}
+								1112260534 -- 905931906 [style=invis];
+								1529021079 -- 1112260534
+								subgraph cluster_1112260534{
+									style=invis
+
+									1112260534 [label="'Fun fact: In lotus, you can easily mix expression and strings! '",color="orange",tooltip="StringNode"]
+								}
+								1529021079 -- 905931906
+								subgraph cluster_905931906{
+									style=invis
+
+									905931906 [label="For example, you can write: $'It's currently {time.now}' and it will replace time.now with {}",color="darkorange",tooltip="Complex string literal"]
+										{rank=same;}
+
+										905931906 -- 773030880 [lhead=cluster_1179938792]
+										subgraph cluster_1179938792
+										{
+											label="code sections"
+											compound="true"
+											splines="line"
+											color="darkorange"
+											style=""
+											{rank=same;773030880;}
+
+											subgraph cluster_773030880{
+												style=invis
+
+												773030880 [label="time.now",color="grey",tooltip="name"]
+											}
+
+										}
+								}
+						}
+				}
+				subgraph cluster_1262509036{
+					style=invis
+
+					1262509036 [label="print",color="",tooltip="PrintNode"]
+						{rank=same;1103629093;}
+
+						1262509036 -- 1103629093
+						subgraph cluster_1103629093{
+							style=invis
+
+							1103629093 [label="==",color="dodgerblue",tooltip="OperationNode"]
+								{rank=same;1049850740;1359872154;}
+								1049850740 -- 1359872154 [style=invis];
+								1103629093 -- 1049850740
+								subgraph cluster_1049850740{
+									style=invis
+
+									1049850740 [label="[",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;335694649;1896735231;}
+										335694649 -- 1896735231 [style=invis];
+										1049850740 -- 335694649
+										subgraph cluster_335694649{
+											style=invis
+
+											335694649 [label="[",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;2048748905;1059164844;}
+												2048748905 -- 1059164844 [style=invis];
+												335694649 -- 2048748905
+												subgraph cluster_2048748905{
+													style=invis
+
+													2048748905 [label="arr",color="grey",tooltip="name"]
+												}
+												335694649 -- 1059164844
+												subgraph cluster_1059164844{
+													style=invis
+
+													1059164844 [label="1",color="",tooltip="Double"]
+												}
+										}
+										1049850740 -- 1896735231
+										subgraph cluster_1896735231{
+											style=invis
+
+											1896735231 [label="0",color="",tooltip="Double"]
+										}
+								}
+								1103629093 -- 1359872154
+								subgraph cluster_1359872154{
+									style=invis
+
+									1359872154 [label="1",color="lightorange",tooltip="char literal"]
+								}
+						}
+				}
+				subgraph cluster_180969710{
+					style=invis
+
+					180969710 [label="print",color="",tooltip="PrintNode"]
+						{rank=same;1343215003;}
+
+						180969710 -- 1343215003
+						subgraph cluster_1343215003{
+							style=invis
+
+							1343215003 [label="func call",color="tomato",tooltip="call to a function"]
+								{rank=same;1244985157;}
+
+								1343215003 -- 1244985157
+								subgraph cluster_1244985157{
+									style=invis
+
+									1244985157 [label="function"]
+										{rank=same;595847308;}
+
+										1244985157 -- 595847308
+										subgraph cluster_595847308{
+											style=invis
+
+											595847308 [label=".",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;323804599;260769631;}
+												323804599 -- 260769631 [style=invis];
+												595847308 -- 323804599
+												subgraph cluster_323804599{
+													style=invis
+
+													323804599 [label="io.read(...)",color="tomato",tooltip="call to a function"]
+														{rank=same;}
+
+														323804599 -- 1114228521 [lhead=cluster_1022262963]
+														subgraph cluster_1022262963
+														{
+															label="args"
+															compound="true"
+															splines="line"
+															color=""
+															style=""
+															{rank=same;1114228521;}
+
+															subgraph cluster_1114228521{
+																style=invis
+
+																1114228521 [label="test.lts",color="grey",tooltip="name"]
+															}
+
+														}
+												}
+												595847308 -- 260769631
+												subgraph cluster_260769631{
+													style=invis
+
+													260769631 [label="count",color="grey",tooltip="name"]
+												}
+										}
+								}
+								1343215003 -- 1575610191 [lhead=cluster_763211477]
+								subgraph cluster_763211477
+								{
+									label="args"
+									compound="true"
+									splines="line"
+									color=""
+									style=""
+									{rank=same;1575610191;}
+
+									subgraph cluster_1575610191{
+										style=invis
+
+										1575610191 [label="\u0041",color="lightorange",tooltip="char literal"]
+									}
+
+								}
+						}
+				}
+				subgraph cluster_1565740777{
+					style=invis
+
+					1565740777 [label="=",color="dodgerblue",tooltip="OperationNode"]
+						{rank=same;1641991140;1055093308;}
+						1641991140 -- 1055093308 [style=invis];
+						1565740777 -- 1641991140
+						subgraph cluster_1641991140{
+							style=invis
+
+							1641991140 [label="n",color="grey",tooltip="name"]
+						}
+						1565740777 -- 1055093308
+						subgraph cluster_1055093308{
+							style=invis
+
+							1055093308 [label="||",color="dodgerblue",tooltip="OperationNode"]
+								{rank=same;9474431;922098862;}
+								9474431 -- 922098862 [style=invis];
+								1055093308 -- 9474431
+								subgraph cluster_9474431{
+									style=invis
+
+									9474431 [label="&&",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;1133560198;953703329;}
+										1133560198 -- 953703329 [style=invis];
+										9474431 -- 1133560198
+										subgraph cluster_1133560198{
+											style=invis
+
+											1133560198 [label="^^",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;358283802;1009838600;}
+												358283802 -- 1009838600 [style=invis];
+												1133560198 -- 358283802
+												subgraph cluster_358283802{
+													style=invis
+
+													358283802 [label="*",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;407028451;1999327340;}
+														407028451 -- 1999327340 [style=invis];
+														358283802 -- 407028451
+														subgraph cluster_407028451{
+															style=invis
+
+															407028451 [label="5",color="",tooltip="Double"]
+														}
+														358283802 -- 1999327340
+														subgraph cluster_1999327340{
+															style=invis
+
+															1999327340 [label="+",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;1328544674;538666370;}
+																1328544674 -- 538666370 [style=invis];
+																1999327340 -- 1328544674
+																subgraph cluster_1328544674{
+																	style=invis
+
+																	1328544674 [label="'hello '",color="orange",tooltip="StringNode"]
+																}
+																1999327340 -- 538666370
+																subgraph cluster_538666370{
+																	style=invis
+
+																	538666370 [label="'world'",color="orange",tooltip="StringNode"]
+																}
+														}
+												}
+												1133560198 -- 1009838600
+												subgraph cluster_1009838600{
+													style=invis
+
+													1009838600 [label="!=",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;2051788481;2005840727;}
+														2051788481 -- 2005840727 [style=invis];
+														1009838600 -- 2051788481
+														subgraph cluster_2051788481{
+															style=invis
+
+															2051788481 [label="/",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;826657976;842042004;}
+																826657976 -- 842042004 [style=invis];
+																2051788481 -- 826657976
+																subgraph cluster_826657976{
+																	style=invis
+
+																	826657976 [label="1",color="",tooltip="Double"]
+																}
+																2051788481 -- 842042004
+																subgraph cluster_842042004{
+																	style=invis
+
+																	842042004 [label="3",color="",tooltip="Double"]
+																}
+														}
+														1009838600 -- 2005840727
+														subgraph cluster_2005840727{
+															style=invis
+
+															2005840727 [label="/",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;1070119791;1530141403;}
+																1070119791 -- 1530141403 [style=invis];
+																2005840727 -- 1070119791
+																subgraph cluster_1070119791{
+																	style=invis
+
+																	1070119791 [label="3",color="",tooltip="Double"]
+																}
+																2005840727 -- 1530141403
+																subgraph cluster_1530141403{
+																	style=invis
+
+																	1530141403 [label="1",color="",tooltip="Double"]
+																}
+														}
+												}
+										}
+										9474431 -- 953703329
+										subgraph cluster_953703329{
+											style=invis
+
+											953703329 [label="==",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;1090246207;1085265063;}
+												1090246207 -- 1085265063 [style=invis];
+												953703329 -- 1090246207
+												subgraph cluster_1090246207{
+													style=invis
+
+													1090246207 [label="*",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;1471659676;1374645054;}
+														1471659676 -- 1374645054 [style=invis];
+														1090246207 -- 1471659676
+														subgraph cluster_1471659676{
+															style=invis
+
+															1471659676 [label="6",color="",tooltip="Double"]
+														}
+														1090246207 -- 1374645054
+														subgraph cluster_1374645054{
+															style=invis
+
+															1374645054 [label="9",color="",tooltip="Double"]
+														}
+												}
+												953703329 -- 1085265063
+												subgraph cluster_1085265063{
+													style=invis
+
+													1085265063 [label="*",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;1415392828;1916739495;}
+														1415392828 -- 1916739495 [style=invis];
+														1085265063 -- 1415392828
+														subgraph cluster_1415392828{
+															style=invis
+
+															1415392828 [label="9",color="",tooltip="Double"]
+														}
+														1085265063 -- 1916739495
+														subgraph cluster_1916739495{
+															style=invis
+
+															1916739495 [label="6",color="",tooltip="Double"]
+														}
+												}
+										}
+								}
+								1055093308 -- 922098862
+								subgraph cluster_922098862{
+									style=invis
+
+									922098862 [label="&&",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;18087408;54439553;}
+										18087408 -- 54439553 [style=invis];
+										922098862 -- 18087408
+										subgraph cluster_18087408{
+											style=invis
+
+											18087408 [label="+",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;311629807;1962050908;}
+												311629807 -- 1962050908 [style=invis];
+												18087408 -- 311629807
+												subgraph cluster_311629807{
+													style=invis
+
+													311629807 [label="*",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;301253392;453417666;}
+														301253392 -- 453417666 [style=invis];
+														311629807 -- 301253392
+														subgraph cluster_301253392{
+															style=invis
+
+															301253392 [label="!",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;911402090;}
+
+																301253392 -- 911402090
+																subgraph cluster_911402090{
+																	style=invis
+
+																	911402090 [label="==",color="dodgerblue",tooltip="OperationNode"]
+																		{rank=same;1923646611;1855634676;}
+																		1923646611 -- 1855634676 [style=invis];
+																		911402090 -- 1923646611
+																		subgraph cluster_1923646611{
+																			style=invis
+
+																			1923646611 [label="*",color="dodgerblue",tooltip="OperationNode"]
+																				{rank=same;2104367438;1692957930;}
+																				2104367438 -- 1692957930 [style=invis];
+																				1923646611 -- 2104367438
+																				subgraph cluster_2104367438{
+																					style=invis
+
+																					2104367438 [label="-",color="dodgerblue",tooltip="OperationNode"]
+																						{rank=same;1138582409;}
+
+																						2104367438 -- 1138582409
+																						subgraph cluster_1138582409{
+																							style=invis
+
+																							1138582409 [label="6",color="",tooltip="Double"]
+																						}
+																				}
+																				1923646611 -- 1692957930
+																				subgraph cluster_1692957930{
+																					style=invis
+
+																					1692957930 [label="-",color="dodgerblue",tooltip="OperationNode"]
+																						{rank=same;931789018;}
+
+																						1692957930 -- 931789018
+																						subgraph cluster_931789018{
+																							style=invis
+
+																							931789018 [label="1",color="",tooltip="Double"]
+																						}
+																				}
+																		}
+																		911402090 -- 1855634676
+																		subgraph cluster_1855634676{
+																			style=invis
+
+																			1855634676 [label="6",color="",tooltip="Double"]
+																		}
+																}
+														}
+														311629807 -- 453417666
+														subgraph cluster_453417666{
+															style=invis
+
+															453417666 [label="<",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;1549279730;34152420;}
+																1549279730 -- 34152420 [style=invis];
+																453417666 -- 1549279730
+																subgraph cluster_1549279730{
+																	style=invis
+
+																	1549279730 [label="89",color="",tooltip="Double"]
+																}
+																453417666 -- 34152420
+																subgraph cluster_34152420{
+																	style=invis
+
+																	34152420 [label="*",color="dodgerblue",tooltip="OperationNode"]
+																		{rank=same;1769093465;1191332780;}
+																		1769093465 -- 1191332780 [style=invis];
+																		34152420 -- 1769093465
+																		subgraph cluster_1769093465{
+																			style=invis
+
+																			1769093465 [label="8",color="",tooltip="Double"]
+																		}
+																		34152420 -- 1191332780
+																		subgraph cluster_1191332780{
+																			style=invis
+
+																			1191332780 [label="9",color="",tooltip="Double"]
+																		}
+																}
+														}
+												}
+												18087408 -- 1962050908
+												subgraph cluster_1962050908{
+													style=invis
+
+													1962050908 [label="%",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;1105562686;1999984216;}
+														1105562686 -- 1999984216 [style=invis];
+														1962050908 -- 1105562686
+														subgraph cluster_1105562686{
+															style=invis
+
+															1105562686 [label=">=",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;296085072;1606159711;}
+																296085072 -- 1606159711 [style=invis];
+																1105562686 -- 296085072
+																subgraph cluster_296085072{
+																	style=invis
+
+																	296085072 [label="45",color="",tooltip="Double"]
+																}
+																1105562686 -- 1606159711
+																subgraph cluster_1606159711{
+																	style=invis
+
+																	1606159711 [label="44",color="",tooltip="Double"]
+																}
+														}
+														1962050908 -- 1999984216
+														subgraph cluster_1999984216{
+															style=invis
+
+															1999984216 [label="?",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;771406864;1484664083;291095618;}
+																771406864 -- 1484664083 [style=invis];1484664083 -- 291095618 [style=invis];
+																1999984216 -- 771406864
+																subgraph cluster_771406864{
+																	style=invis
+
+																	771406864 [label="==",color="dodgerblue",tooltip="OperationNode"]
+																		{rank=same;1076508434;1429237225;}
+																		1076508434 -- 1429237225 [style=invis];
+																		771406864 -- 1076508434
+																		subgraph cluster_1076508434{
+																			style=invis
+
+																			1076508434 [label="-",color="dodgerblue",tooltip="OperationNode"]
+																				{rank=same;976650119;}
+
+																				1076508434 -- 976650119
+																				subgraph cluster_976650119{
+																					style=invis
+
+																					976650119 [label="48946f",color="",tooltip="Float"]
+																				}
+																		}
+																		771406864 -- 1429237225
+																		subgraph cluster_1429237225{
+																			style=invis
+
+																			1429237225 [label="-",color="dodgerblue",tooltip="OperationNode"]
+																				{rank=same;1579494758;252496508;}
+																				1579494758 -- 252496508 [style=invis];
+																				1429237225 -- 1579494758
+																				subgraph cluster_1579494758{
+																					style=invis
+
+																					1579494758 [label="4984e2",color="",tooltip="Double"]
+																				}
+																				1429237225 -- 252496508
+																				subgraph cluster_252496508{
+																					style=invis
+
+																					252496508 [label="464.13",color="",tooltip="Double"]
+																				}
+																		}
+																}
+																1999984216 -- 1484664083
+																subgraph cluster_1484664083{
+																	style=invis
+
+																	1484664083 [label="^",color="dodgerblue",tooltip="OperationNode"]
+																		{rank=same;1196899410;1938485520;}
+																		1196899410 -- 1938485520 [style=invis];
+																		1484664083 -- 1196899410
+																		subgraph cluster_1196899410{
+																			style=invis
+
+																			1196899410 [label="2d",color="",tooltip="Double"]
+																		}
+																		1484664083 -- 1938485520
+																		subgraph cluster_1938485520{
+																			style=invis
+
+																			1938485520 [label="7",color="",tooltip="Double"]
+																		}
+																}
+																1999984216 -- 291095618
+																subgraph cluster_291095618{
+																	style=invis
+
+																	291095618 [label="^",color="dodgerblue",tooltip="OperationNode"]
+																		{rank=same;1076784535;1173998256;}
+																		1076784535 -- 1173998256 [style=invis];
+																		291095618 -- 1076784535
+																		subgraph cluster_1076784535{
+																			style=invis
+
+																			1076784535 [label="2",color="",tooltip="Double"]
+																		}
+																		291095618 -- 1173998256
+																		subgraph cluster_1173998256{
+																			style=invis
+
+																			1173998256 [label="6",color="",tooltip="Double"]
+																		}
+																}
+														}
+												}
+										}
+										922098862 -- 54439553
+										subgraph cluster_54439553{
+											style=invis
+
+											54439553 [label="!",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;888475742;}
+
+												54439553 -- 888475742
+												subgraph cluster_888475742{
+													style=invis
+
+													888475742 [label="true",color="teal",tooltip="bool literal"]
+												}
+										}
+								}
+						}
+				}
+				subgraph cluster_2008630079{
+					style=invis
+
+					2008630079 [label="var",color="palegreen",tooltip="DeclarationNode"]
+						{rank=same;2018522889;346785293;}
+						2018522889 -- 346785293 [style=invis];
+						2008630079 -- 2018522889
+						subgraph cluster_2018522889{
+							style=invis
+
+							2018522889 [label="a",color="",tooltip="variable name"]
+						}
+						2008630079 -- 346785293
+						subgraph cluster_346785293{
+							style=invis
+
+							346785293 [label="0",color="",tooltip="Double"]
+						}
+				}
+				subgraph cluster_169794998{
+					style=invis
+
+					169794998 [label="var",color="palegreen",tooltip="DeclarationNode"]
+						{rank=same;1215362500;2012898987;}
+						1215362500 -- 2012898987 [style=invis];
+						169794998 -- 1215362500
+						subgraph cluster_1215362500{
+							style=invis
+
+							1215362500 [label="b",color="",tooltip="variable name"]
+						}
+						169794998 -- 2012898987
+						subgraph cluster_2012898987{
+							style=invis
+
+							2012898987 [label="?",color="dodgerblue",tooltip="OperationNode"]
+								{rank=same;1935186566;1613584956;1656797435;}
+								1935186566 -- 1613584956 [style=invis];1613584956 -- 1656797435 [style=invis];
+								2012898987 -- 1935186566
+								subgraph cluster_1935186566{
+									style=invis
+
+									1935186566 [label="!=",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;595924013;436476238;}
+										595924013 -- 436476238 [style=invis];
+										1935186566 -- 595924013
+										subgraph cluster_595924013{
+											style=invis
+
+											595924013 [label="arr",color="grey",tooltip="name"]
+										}
+										1935186566 -- 436476238
+										subgraph cluster_436476238{
+											style=invis
+
+											436476238 [label="Empty tuple",color="",tooltip="List of values"]
+										}
+								}
+								2012898987 -- 1613584956
+								subgraph cluster_1613584956{
+									style=invis
+
+									1613584956 [label="arr",color="grey",tooltip="name"]
+								}
+								2012898987 -- 1656797435
+								subgraph cluster_1656797435{
+									style=invis
+
+									1656797435 [label="Tuple with\n1 elements",color="",tooltip="List of values"]
+										{rank=same;72098628;}
+
+										1656797435 -- 72098628
+										subgraph cluster_72098628{
+											style=invis
+
+											72098628 [label="0",color="",tooltip="Double"]
+										}
+								}
+						}
+				}
+				subgraph cluster_1946675929{
+					style=invis
+
+					1946675929 [label="foreach",color="pink",tooltip="foreach loop"]
+						{rank=same;1527154938;}
+
+						1946675929 -- 1527154938
+						subgraph cluster_1527154938{
+							style=invis
+
+							1527154938 [label="in",tooltip="in iterator"]
+								{rank=same;1782812369;430625599;}
+								1782812369 -- 430625599 [style=invis];
+								1527154938 -- 1782812369
+								subgraph cluster_1782812369{
+									style=invis
+
+									1782812369 [label="item",color="grey",tooltip="name"]
+								}
+								1527154938 -- 430625599
+								subgraph cluster_430625599{
+									style=invis
+
+									430625599 [label="collection",color="grey",tooltip="name"]
+								}
+						}
+						1946675929 -- 447127983 [lhead=cluster_452066197]
+						subgraph cluster_452066197
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;447127983;}
+
+							subgraph cluster_447127983{
+								style=invis
+
+								447127983 [label="_ghost",style="invis"]
+							}
+
+						}
+				}
+				subgraph cluster_758091207{
+					style=invis
+
+					758091207 [label="foreach",color="pink",tooltip="foreach loop"]
+						{rank=same;2006121794;}
+
+						758091207 -- 2006121794
+						subgraph cluster_2006121794{
+							style=invis
+
+							2006121794 [label="in",tooltip="in iterator"]
+								{rank=same;1585597858;1394292370;}
+								1585597858 -- 1394292370 [style=invis];
+								2006121794 -- 1585597858
+								subgraph cluster_1585597858{
+									style=invis
+
+									1585597858 [label="otherItem",color="grey",tooltip="name"]
+								}
+								2006121794 -- 1394292370
+								subgraph cluster_1394292370{
+									style=invis
+
+									1394292370 [label="otherCollection",color="grey",tooltip="name"]
+								}
+						}
+						758091207 -- 341378892 [lhead=cluster_480178302]
+						subgraph cluster_480178302
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;75045631;341378892;}
+							75045631 -- 341378892 [style=invis];
+							subgraph cluster_75045631{
+								style=invis
+
+								75045631 [label="if",color="",tooltip="if statement"]
+									{rank=same;1772966680;}
+
+									75045631 -- 1772966680
+									subgraph cluster_1772966680{
+										style=invis
+
+										1772966680 [label="condition",color="",tooltip="if condition"]
+											{rank=same;2069196262;}
+
+											1772966680 -- 2069196262
+											subgraph cluster_2069196262{
+												style=invis
+
+												2069196262 [label="collection.contains(...)",color="tomato",tooltip="call to a function"]
+													{rank=same;}
+
+													2069196262 -- 159090165 [lhead=cluster_141746744]
+													subgraph cluster_141746744
+													{
+														label="args"
+														compound="true"
+														splines="line"
+														color=""
+														style=""
+														{rank=same;159090165;}
+
+														subgraph cluster_159090165{
+															style=invis
+
+															159090165 [label="otherItem",color="grey",tooltip="name"]
+														}
+
+													}
+											}
+									}
+									75045631 -- 222751423 [lhead=cluster_1298155623]
+									subgraph cluster_1298155623
+									{
+										label="block"
+										compound="true"
+										splines="line"
+										color="darkviolet"
+										style=""
+										{rank=same;222751423;}
+
+										subgraph cluster_222751423{
+											style=invis
+
+											222751423 [label="break",color="",tooltip="break keyword"]
+										}
+
+									}
+							}
+							subgraph cluster_341378892{
+								style=invis
+
+								341378892 [label="otherItem.markAsBad(...)",color="tomato",tooltip="call to a function"]
+									{rank=same;}
+
+									341378892 -- 485166409 [lhead=cluster_1943760778]
+									subgraph cluster_1943760778
+									{
+										label="args"
+										compound="true"
+										splines="line"
+										color=""
+										style=""
+										{rank=same;485166409;}
+
+										subgraph cluster_485166409{
+											style=invis
+
+											485166409 [label="_ghost",style="invis"]
+										}
+
+									}
+							}
+
+						}
+				}
+				subgraph cluster_972357851{
+					style=invis
+
+					972357851 [label="for loop",color="",tooltip="for loop"]
+						{rank=same;}
+
+						972357851 -- 1814568196 [lhead=cluster_258997260]
+						subgraph cluster_258997260
+						{
+							label="header"
+							compound="true"
+							splines="line"
+							color="deepskyblue"
+							style=""
+							{rank=same;964700892;1814568196;698205686;}
+							964700892 -- 1814568196 [style=invis];1814568196 -- 698205686 [style=invis];
+							subgraph cluster_964700892{
+								style=invis
+
+								964700892 [label="var",color="palegreen",tooltip="DeclarationNode"]
+									{rank=same;1268831644;252074304;}
+									1268831644 -- 252074304 [style=invis];
+									964700892 -- 1268831644
+									subgraph cluster_1268831644{
+										style=invis
+
+										1268831644 [label="i",color="",tooltip="variable name"]
+									}
+									964700892 -- 252074304
+									subgraph cluster_252074304{
+										style=invis
+
+										252074304 [label="0",color="",tooltip="Double"]
+									}
+							}
+							subgraph cluster_1814568196{
+								style=invis
+
+								1814568196 [label="<",color="dodgerblue",tooltip="OperationNode"]
+									{rank=same;992958833;876746308;}
+									992958833 -- 876746308 [style=invis];
+									1814568196 -- 992958833
+									subgraph cluster_992958833{
+										style=invis
+
+										992958833 [label="i",color="grey",tooltip="name"]
+									}
+									1814568196 -- 876746308
+									subgraph cluster_876746308{
+										style=invis
+
+										876746308 [label="10",color="",tooltip="Double"]
+									}
+							}
+							subgraph cluster_698205686{
+								style=invis
+
+								698205686 [label="(postfix)++",color="dodgerblue",tooltip="OperationNode"]
+									{rank=same;1536337717;}
+
+									698205686 -- 1536337717
+									subgraph cluster_1536337717{
+										style=invis
+
+										1536337717 [label="i",color="grey",tooltip="name"]
+									}
+							}
+
+						}
+						972357851 -- 1458829168 [lhead=cluster_1827373450]
+						subgraph cluster_1827373450
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;1458829168;}
+
+							subgraph cluster_1458829168{
+								style=invis
+
+								1458829168 [label="print",color="",tooltip="PrintNode"]
+									{rank=same;880398474;}
+
+									1458829168 -- 880398474
+									subgraph cluster_880398474{
+										style=invis
+
+										880398474 [label="i",color="grey",tooltip="name"]
+									}
+							}
+
+						}
+				}
+				subgraph cluster_219263170{
+					style=invis
+
+					219263170 [label="for loop",color="",tooltip="for loop"]
+						{rank=same;}
+
+						219263170 -- 1476313388 [lhead=cluster_162948631]
+						subgraph cluster_162948631
+						{
+							label="header"
+							compound="true"
+							splines="line"
+							color="deepskyblue"
+							style=""
+							{rank=same;75493431;1476313388;2037885713;}
+							75493431 -- 1476313388 [style=invis];1476313388 -- 2037885713 [style=invis];
+							subgraph cluster_75493431{
+								style=invis
+
+								75493431 [label="var",color="palegreen",tooltip="DeclarationNode"]
+									{rank=same;1952444709;1067495373;}
+									1952444709 -- 1067495373 [style=invis];
+									75493431 -- 1952444709
+									subgraph cluster_1952444709{
+										style=invis
+
+										1952444709 [label="j",color="",tooltip="variable name"]
+									}
+									75493431 -- 1067495373
+									subgraph cluster_1067495373{
+										style=invis
+
+										1067495373 [label="i",color="grey",tooltip="name"]
+									}
+							}
+							subgraph cluster_1476313388{
+								style=invis
+
+								1476313388 [label=">",color="dodgerblue",tooltip="OperationNode"]
+									{rank=same;82581781;2019908799;}
+									82581781 -- 2019908799 [style=invis];
+									1476313388 -- 82581781
+									subgraph cluster_82581781{
+										style=invis
+
+										82581781 [label="i",color="grey",tooltip="name"]
+									}
+									1476313388 -- 2019908799
+									subgraph cluster_2019908799{
+										style=invis
+
+										2019908799 [label="10",color="",tooltip="Double"]
+									}
+							}
+							subgraph cluster_2037885713{
+								style=invis
+
+								2037885713 [label="(empty)"]
+							}
+
+						}
+						219263170 -- 1691564793 [lhead=cluster_1533013330]
+						subgraph cluster_1533013330
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;1691564793;}
+
+							subgraph cluster_1691564793{
+								style=invis
+
+								1691564793 [label="_ghost",style="invis"]
+							}
+
+						}
+				}
+				subgraph cluster_13471545{
+					style=invis
+
+					13471545 [label="if",color="",tooltip="if statement"]
+						{rank=same;1328610724;700015761;}
+						1328610724 -- 700015761 [style=invis];
+						13471545 -- 1328610724
+						subgraph cluster_1328610724{
+							style=invis
+
+							1328610724 [label="condition",color="",tooltip="if condition"]
+								{rank=same;1235953156;}
+
+								1328610724 -- 1235953156
+								subgraph cluster_1235953156{
+									style=invis
+
+									1235953156 [label="condition",color="grey",tooltip="name"]
+								}
+						}
+						13471545 -- 700015761
+						subgraph cluster_700015761{
+							style=invis
+
+							700015761 [label="else",color="",tooltip="else branch"]
+								{rank=same;}
+
+								700015761 -- 175593449 [lhead=cluster_1778852674]
+								subgraph cluster_1778852674
+								{
+									label="block"
+									compound="true"
+									splines="line"
+									color="darkviolet"
+									style=""
+									{rank=same;175593449;}
+
+									subgraph cluster_175593449{
+										style=invis
+
+										175593449 [label=";",color="",tooltip="empty statement"]
+									}
+
+								}
+						}
+						13471545 -- 22741031 [lhead=cluster_370004873]
+						subgraph cluster_370004873
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;22741031;}
+
+							subgraph cluster_22741031{
+								style=invis
+
+								22741031 [label="print",color="",tooltip="PrintNode"]
+									{rank=same;869393197;}
+
+									22741031 -- 869393197
+									subgraph cluster_869393197{
+										style=invis
+
+										869393197 [label="'it\'s true'",color="orange",tooltip="StringNode"]
+									}
+							}
+
+						}
+				}
+				subgraph cluster_1383866886{
+					style=invis
+
+					1383866886 [label="if",color="",tooltip="if statement"]
+						{rank=same;87626695;702007383;}
+						87626695 -- 702007383 [style=invis];
+						1383866886 -- 87626695
+						subgraph cluster_87626695{
+							style=invis
+
+							87626695 [label="condition",color="",tooltip="if condition"]
+								{rank=same;1594001486;}
+
+								87626695 -- 1594001486
+								subgraph cluster_1594001486{
+									style=invis
+
+									1594001486 [label="||",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;670993214;23160033;}
+										670993214 -- 23160033 [style=invis];
+										1594001486 -- 670993214
+										subgraph cluster_670993214{
+											style=invis
+
+											670993214 [label="a",color="grey",tooltip="name"]
+										}
+										1594001486 -- 23160033
+										subgraph cluster_23160033{
+											style=invis
+
+											23160033 [label="&&",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;1068470046;1013133994;}
+												1068470046 -- 1013133994 [style=invis];
+												23160033 -- 1068470046
+												subgraph cluster_1068470046{
+													style=invis
+
+													1068470046 [label="b",color="grey",tooltip="name"]
+												}
+												23160033 -- 1013133994
+												subgraph cluster_1013133994{
+													style=invis
+
+													1013133994 [label="!=",color="dodgerblue",tooltip="OperationNode"]
+														{rank=same;774167975;887073835;}
+														774167975 -- 887073835 [style=invis];
+														1013133994 -- 774167975
+														subgraph cluster_774167975{
+															style=invis
+
+															774167975 [label="c",color="grey",tooltip="name"]
+														}
+														1013133994 -- 887073835
+														subgraph cluster_887073835{
+															style=invis
+
+															887073835 [label="+",color="dodgerblue",tooltip="OperationNode"]
+																{rank=same;1149653843;1729543060;}
+																1149653843 -- 1729543060 [style=invis];
+																887073835 -- 1149653843
+																subgraph cluster_1149653843{
+																	style=invis
+
+																	1149653843 [label="d",color="grey",tooltip="name"]
+																}
+																887073835 -- 1729543060
+																subgraph cluster_1729543060{
+																	style=invis
+
+																	1729543060 [label="e",color="grey",tooltip="name"]
+																}
+														}
+												}
+										}
+								}
+						}
+						1383866886 -- 702007383
+						subgraph cluster_702007383{
+							style=invis
+
+							702007383 [label="else",color="",tooltip="else branch"]
+								{rank=same;1371152660;}
+
+								702007383 -- 1371152660
+								subgraph cluster_1371152660{
+									style=invis
+
+									1371152660 [label="if",color="",tooltip="if statement"]
+										{rank=same;1603443690;1192628132;}
+										1603443690 -- 1192628132 [style=invis];
+										1371152660 -- 1603443690
+										subgraph cluster_1603443690{
+											style=invis
+
+											1603443690 [label="condition",color="",tooltip="if condition"]
+												{rank=same;1911667223;}
+
+												1603443690 -- 1911667223
+												subgraph cluster_1911667223{
+													style=invis
+
+													1911667223 [label="this.otherCondition(...)",color="tomato",tooltip="call to a function"]
+														{rank=same;}
+
+														1911667223 -- 646692802 [lhead=cluster_1640794380]
+														subgraph cluster_1640794380
+														{
+															label="args"
+															compound="true"
+															splines="line"
+															color=""
+															style=""
+															{rank=same;646692802;}
+
+															subgraph cluster_646692802{
+																style=invis
+
+																646692802 [label="_ghost",style="invis"]
+															}
+
+														}
+												}
+										}
+										1371152660 -- 1192628132
+										subgraph cluster_1192628132{
+											style=invis
+
+											1192628132 [label="else",color="",tooltip="else branch"]
+												{rank=same;}
+
+												1192628132 -- 1387663890 [lhead=cluster_1885915939]
+												subgraph cluster_1885915939
+												{
+													label="block"
+													compound="true"
+													splines="line"
+													color="darkviolet"
+													style=""
+													{rank=same;1387663890;}
+
+													subgraph cluster_1387663890{
+														style=invis
+
+														1387663890 [label="_ghost",style="invis"]
+													}
+
+												}
+										}
+										1371152660 -- 977181898 [lhead=cluster_1391116352]
+										subgraph cluster_1391116352
+										{
+											label="block"
+											compound="true"
+											splines="line"
+											color="darkviolet"
+											style=""
+											{rank=same;977181898;}
+
+											subgraph cluster_977181898{
+												style=invis
+
+												977181898 [label="print",color="",tooltip="PrintNode"]
+													{rank=same;346961193;}
+
+													977181898 -- 346961193
+													subgraph cluster_346961193{
+														style=invis
+
+														346961193 [label="'maybe ?'",color="orange",tooltip="StringNode"]
+													}
+											}
+
+										}
+								}
+						}
+						1383866886 -- 1095411469 [lhead=cluster_2123568902]
+						subgraph cluster_2123568902
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;1095411469;}
+
+							subgraph cluster_1095411469{
+								style=invis
+
+								1095411469 [label="print",color="",tooltip="PrintNode"]
+									{rank=same;481017316;}
+
+									1095411469 -- 481017316
+									subgraph cluster_481017316{
+										style=invis
+
+										481017316 [label="'tf'",color="orange",tooltip="StringNode"]
+									}
+							}
+
+						}
+				}
+				subgraph cluster_550428058{
+					style=invis
+
+					550428058 [label="while",color="pink",tooltip="while loop"]
+						{rank=same;1571978010;}
+
+						550428058 -- 1571978010
+						subgraph cluster_1571978010{
+							style=invis
+
+							1571978010 [label="condition",color="",tooltip="loop condition"]
+								{rank=same;1913749606;}
+
+								1571978010 -- 1913749606
+								subgraph cluster_1913749606{
+									style=invis
+
+									1913749606 [label="<",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;525482802;503227238;}
+										525482802 -- 503227238 [style=invis];
+										1913749606 -- 525482802
+										subgraph cluster_525482802{
+											style=invis
+
+											525482802 [label="str.length",color="grey",tooltip="name"]
+										}
+										1913749606 -- 503227238
+										subgraph cluster_503227238{
+											style=invis
+
+											503227238 [label="20",color="",tooltip="Double"]
+										}
+								}
+						}
+						550428058 -- 2142770042 [lhead=cluster_897465234]
+						subgraph cluster_897465234
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;653110481;2142770042;}
+							653110481 -- 2142770042 [style=invis];
+							subgraph cluster_653110481{
+								style=invis
+
+								653110481 [label="if",color="",tooltip="if statement"]
+									{rank=same;1334786451;}
+
+									653110481 -- 1334786451
+									subgraph cluster_1334786451{
+										style=invis
+
+										1334786451 [label="condition",color="",tooltip="if condition"]
+											{rank=same;667878560;}
+
+											1334786451 -- 667878560
+											subgraph cluster_667878560{
+												style=invis
+
+												667878560 [label="==",color="dodgerblue",tooltip="OperationNode"]
+													{rank=same;785566702;1935429988;}
+													785566702 -- 1935429988 [style=invis];
+													667878560 -- 785566702
+													subgraph cluster_785566702{
+														style=invis
+
+														785566702 [label="[",color="dodgerblue",tooltip="OperationNode"]
+															{rank=same;1880757332;16901397;}
+															1880757332 -- 16901397 [style=invis];
+															785566702 -- 1880757332
+															subgraph cluster_1880757332{
+																style=invis
+
+																1880757332 [label="str",color="grey",tooltip="name"]
+															}
+															785566702 -- 16901397
+															subgraph cluster_16901397{
+																style=invis
+
+																16901397 [label="-",color="dodgerblue",tooltip="OperationNode"]
+																	{rank=same;131308489;}
+
+																	16901397 -- 131308489
+																	subgraph cluster_131308489{
+																		style=invis
+
+																		131308489 [label="1",color="",tooltip="Double"]
+																	}
+															}
+													}
+													667878560 -- 1935429988
+													subgraph cluster_1935429988{
+														style=invis
+
+														1935429988 [label="'z'",color="orange",tooltip="StringNode"]
+													}
+											}
+									}
+									653110481 -- 1002474343 [lhead=cluster_1714083516]
+									subgraph cluster_1714083516
+									{
+										label="block"
+										compound="true"
+										splines="line"
+										color="darkviolet"
+										style=""
+										{rank=same;1002474343;}
+
+										subgraph cluster_1002474343{
+											style=invis
+
+											1002474343 [label="continue",color="",tooltip="continue keyword"]
+										}
+
+									}
+							}
+							subgraph cluster_2142770042{
+								style=invis
+
+								2142770042 [label="str.concat(...)",color="tomato",tooltip="call to a function"]
+									{rank=same;}
+
+									2142770042 -- 1452573744 [lhead=cluster_1632268986]
+									subgraph cluster_1632268986
+									{
+										label="args"
+										compound="true"
+										splines="line"
+										color=""
+										style=""
+										{rank=same;1877048179;1452573744;}
+										1877048179 -- 1452573744 [style=invis];
+										subgraph cluster_1877048179{
+											style=invis
+
+											1877048179 [label="[",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;629011137;1416015588;}
+												629011137 -- 1416015588 [style=invis];
+												1877048179 -- 629011137
+												subgraph cluster_629011137{
+													style=invis
+
+													629011137 [label="alphabet",color="grey",tooltip="name"]
+												}
+												1877048179 -- 1416015588
+												subgraph cluster_1416015588{
+													style=invis
+
+													1416015588 [label="rnd.next(...)",color="tomato",tooltip="call to a function"]
+														{rank=same;}
+
+														1416015588 -- 666613419 [lhead=cluster_1558040936]
+														subgraph cluster_1558040936
+														{
+															label="args"
+															compound="true"
+															splines="line"
+															color=""
+															style=""
+															{rank=same;666613419;}
+
+															subgraph cluster_666613419{
+																style=invis
+
+																666613419 [label="26",color="",tooltip="Double"]
+															}
+
+														}
+												}
+										}
+										subgraph cluster_1452573744{
+											style=invis
+
+											1452573744 [label="rnd.next(...)",color="tomato",tooltip="call to a function"]
+												{rank=same;}
+
+												1452573744 -- 146102853 [lhead=cluster_1265787291]
+												subgraph cluster_1265787291
+												{
+													label="args"
+													compound="true"
+													splines="line"
+													color=""
+													style=""
+													{rank=same;146102853;}
+
+													subgraph cluster_146102853{
+														style=invis
+
+														146102853 [label="26",color="",tooltip="Double"]
+													}
+
+												}
+										}
+
+									}
+							}
+
+						}
+				}
+				subgraph cluster_1532772105{
+					style=invis
+
+					1532772105 [label="do-while",color="pink",tooltip="do-while loop"]
+						{rank=same;1185890890;}
+
+						1532772105 -- 1185890890
+						subgraph cluster_1185890890{
+							style=invis
+
+							1185890890 [label="condition",color="",tooltip="loop condition"]
+								{rank=same;2110310314;}
+
+								1185890890 -- 2110310314
+								subgraph cluster_2110310314{
+									style=invis
+
+									2110310314 [label="<",color="dodgerblue",tooltip="OperationNode"]
+										{rank=same;516004796;119896512;}
+										516004796 -- 119896512 [style=invis];
+										2110310314 -- 516004796
+										subgraph cluster_516004796{
+											style=invis
+
+											516004796 [label="(postfix)++",color="dodgerblue",tooltip="OperationNode"]
+												{rank=same;1764802902;}
+
+												516004796 -- 1764802902
+												subgraph cluster_1764802902{
+													style=invis
+
+													1764802902 [label="_global",color="grey",tooltip="name"]
+												}
+										}
+										2110310314 -- 119896512
+										subgraph cluster_119896512{
+											style=invis
+
+											119896512 [label="13",color="",tooltip="Double"]
+										}
+								}
+						}
+						1532772105 -- 130749015 [lhead=cluster_403567388]
+						subgraph cluster_403567388
+						{
+							label="block"
+							compound="true"
+							splines="line"
+							color="darkviolet"
+							style=""
+							{rank=same;130749015;}
+
+							subgraph cluster_130749015{
+								style=invis
+
+								130749015 [label="print",color="",tooltip="PrintNode"]
+									{rank=same;124721893;}
+
+									130749015 -- 124721893
+									subgraph cluster_124721893{
+										style=invis
+
+										124721893 [label="'still looping'",color="orange",tooltip="StringNode"]
+									}
+							}
+
+						}
+				}
+
+			}
+	}
+	subgraph cluster_1536159789{
+		style=invis
+
+		1536159789 [label="enum TokenKind",color="",tooltip="EnumNode"]
+			{rank=same;}
+
+			1536159789 -- 485994977 [lhead=cluster_811084443]
+			subgraph cluster_811084443
+			{
+				label="Values"
+				compound="true"
+				splines="line"
+				color=""
+				style=""
+				{rank=same;1695263323;1090832117;1046108786;1516985180;1692915896;485994977;1430001846;880875494;1868761093;1244736045;}
+				1695263323 -- 1090832117 [style=invis];1090832117 -- 1046108786 [style=invis];1046108786 -- 1516985180 [style=invis];1516985180 -- 1692915896 [style=invis];1692915896 -- 485994977 [style=invis];485994977 -- 1430001846 [style=invis];1430001846 -- 880875494 [style=invis];880875494 -- 1868761093 [style=invis];1868761093 -- 1244736045 [style=invis];
+				subgraph cluster_1695263323{
+					style=invis
+
+					1695263323 [label="=",color="dodgerblue",tooltip="OperationNode"]
+						{rank=same;932019847;1651209532;}
+						932019847 -- 1651209532 [style=invis];
+						1695263323 -- 932019847
+						subgraph cluster_932019847{
+							style=invis
+
+							932019847 [label="EOF",color="grey",tooltip="name"]
+						}
+						1695263323 -- 1651209532
+						subgraph cluster_1651209532{
+							style=invis
+
+							1651209532 [label="0",color="",tooltip="Double"]
+						}
+				}
+				subgraph cluster_1090832117{
+					style=invis
+
+					1090832117 [label="delimiter",color="grey",tooltip="name"]
+				}
+				subgraph cluster_1046108786{
+					style=invis
+
+					1046108786 [label="identifier",color="grey",tooltip="name"]
+				}
+				subgraph cluster_1516985180{
+					style=invis
+
+					1516985180 [label="number",color="grey",tooltip="name"]
+				}
+				subgraph cluster_1692915896{
+					style=invis
+
+					1692915896 [label="bool",color="grey",tooltip="name"]
+				}
+				subgraph cluster_485994977{
+					style=invis
+
+					485994977 [label="string",color="grey",tooltip="name"]
+				}
+				subgraph cluster_1430001846{
+					style=invis
+
+					1430001846 [label="operator",color="grey",tooltip="name"]
+				}
+				subgraph cluster_880875494{
+					style=invis
+
+					880875494 [label="keyword",color="grey",tooltip="name"]
+				}
+				subgraph cluster_1868761093{
+					style=invis
+
+					1868761093 [label="semicolon",color="grey",tooltip="name"]
+				}
+				subgraph cluster_1244736045{
+					style=invis
+
+					1244736045 [label="trivia",color="grey",tooltip="name"]
+				}
+
+			}
+	}
+	subgraph cluster_557446957{
+		style=invis
+
+		557446957 [label="<EOF>",style="invis"]
+	}
+
+}
+// -85844871
+

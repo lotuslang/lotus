@@ -14,11 +14,6 @@ public sealed partial class Tokenizer
 
     public bool EndOfStream { get; private set; }
 
-    private Tokenizer() {
-        _reconsumeStack = new Stack<Token>(2);
-        _input = new(ImmutableArray<string>.Empty, "");
-    }
-
     private Tokenizer(IEnumerable<Token> tokens, string filename) {
         _reconsumeStack = new Stack<Token>(tokens.Reverse());
         _input = new TextStream(ImmutableArray<string>.Empty, filename);
@@ -31,7 +26,8 @@ public sealed partial class Tokenizer
         EndOfStream = tokenizer.EndOfStream;
     }
 
-    public Tokenizer(TextStream stream) : this() {
+    public Tokenizer(TextStream stream) {
+        _reconsumeStack = new Stack<Token>(2);
         _input = stream.Clone();
         Current = Current with { Location = _input.Position };
     }

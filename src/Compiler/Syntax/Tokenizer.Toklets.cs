@@ -261,7 +261,7 @@ public partial class Tokenizer
         (escapedChar, rawCharString) = currChar switch {
             '\\' => ('\\', @"\\"),
             '\'' => ('\'', @"\'"),
-            '"' => ('"', "\""),
+            '"' => ('"', "\\\""),
             '0' => ('\0', @"\0"),
             'a' => ('\a', @"\a"),
             'b' => ('\b', @"\b"),

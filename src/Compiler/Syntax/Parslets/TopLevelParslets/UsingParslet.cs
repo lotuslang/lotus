@@ -15,7 +15,7 @@ public sealed class UsingParslet : ITopLevelParslet<UsingNode>
             out var importVal
         );
 
-        if(!isValid) {
+        if (!isValid) {
             Logger.Error(new UnexpectedError<ValueNode>(ErrorArea.Parser) {
                 Value = importVal,
                 In = "a using statement",

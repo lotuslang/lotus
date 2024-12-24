@@ -57,6 +57,20 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
          + (node.Fields.Count != 0 ? ";" : "")
          + Print(node.Fields.ClosingToken);
 
+    public string Visit(TraitNode node) {
+        var output = PrintModifiers(node.Modifiers)
+                + Print(node.Token)
+                + Print(node.Name)
+                + Print(node.OpeningBracket);
+
+        foreach (var func in node.Functions)
+            output += Print(func) + ";";
+
+        output += Print(node.ClosingBracket);
+
+        return output;
+    }
+
     public string Print(FromOrigin node)
         => Print(node.FromToken)
          + Print(node.OriginName);

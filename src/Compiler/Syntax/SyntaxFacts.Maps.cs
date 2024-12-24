@@ -129,6 +129,7 @@ public static partial class SyntaxFacts
         { "using", UsingParslet.Instance },
         { "enum", EnumParslet.Instance },
         { "struct", StructParslet.Instance },
+        { "trait", TraitParslet.Instance },
     };
 
     private static readonly HashSet<string> _modifiers = new() {

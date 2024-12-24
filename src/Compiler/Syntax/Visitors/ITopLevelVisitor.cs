@@ -12,4 +12,5 @@ public interface ITopLevelVisitor<out T>
     T Visit(UsingNode node) => Default(node);
     T Visit(EnumNode node) => Default(node);
     T Visit(StructNode node) => Default(node);
+    T Visit(TraitNode node) => Default(node);
 }

@@ -116,6 +116,11 @@ internal enum TokenKind {
     trivia
 }
 
+trait Testable {
+    func firstTry();
+    func secondTest(int a, str b);
+}
+
 /* todo: not doing 'inherited enums' for now
 enum TokenKind.trivia::TriviaKind {
     EOF = 0,

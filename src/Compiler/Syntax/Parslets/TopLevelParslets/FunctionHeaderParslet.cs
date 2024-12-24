@@ -1,8 +1,8 @@
 namespace Lotus.Syntax;
 
-public sealed class FunctionDeclarationParslet : ITopLevelParslet<FunctionDeclarationNode>
+public sealed class FunctionHeaderParslet : ITopLevelParslet<FunctionHeaderNode>
 {
-    public static readonly FunctionDeclarationParslet Instance = new();
+    public static readonly FunctionHeaderParslet Instance = new();
 
     private static readonly TupleParslet<FunctionParameter> _paramListParslet
         = new(ParseFuncParam) {
@@ -11,7 +11,7 @@ public sealed class FunctionDeclarationParslet : ITopLevelParslet<FunctionDeclar
             EndingDelimBehaviour = TrailingDelimiterBehaviour.Forbidden,
         };
 
-    public FunctionDeclarationNode Parse(Parser parser, Token funcToken, ImmutableArray<Token> modifiers) {
+    public FunctionHeaderNode Parse(Parser parser, Token funcToken, ImmutableArray<Token> modifiers) {
         Debug.Assert(funcToken == "func");
 
         var isValid = true;
@@ -60,17 +60,12 @@ public sealed class FunctionDeclarationParslet : ITopLevelParslet<FunctionDeclar
             }
         }
 
-        // consume a simple block
-        var block = parser.ConsumeStatementBlock(areOneLinersAllowed: false);
-
-        // return a new FunctionDeclarationNode with 'block' as the value, 'parameters' as the list of params, and funcName as the name
-        return new FunctionDeclarationNode(
-            block,
-            paramList,
-            returnType,
-            funcName,
+        return new(
             funcToken,
-            colonToken
+            funcName,
+            paramList,
+            colonToken,
+            returnType
         ) { IsValid = isValid, Modifiers = modifiers };
     }
 

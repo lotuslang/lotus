@@ -53,22 +53,21 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
          + Print(node.Token)
          + Print(node.Name)
          + Print(node.Fields.OpeningToken)
-         + MiscUtils.Join(
-                "; ",
-                (field) => PrintModifiers(field.Modifiers)
-                         + Print(field.Name)
-                         + ": "
-                         + Print(field.Type)
-                         + Print(field.EqualSign ?? Token.NULL)
-                         + Print(field.DefaultValue ?? ValueNode.NULL),
-                node.Fields.Items
-            )
+         + MiscUtils.Join("; ", Print, node.Fields.Items)
          + (node.Fields.Count != 0 ? ";" : "")
          + Print(node.Fields.ClosingToken);
 
     public string Print(FromOrigin node)
         => Print(node.FromToken)
          + Print(node.OriginName);
+
+    public string Print(StructField field)
+        => PrintModifiers(field.Modifiers)
+         + Print(field.Name)
+         + ": "
+         + Print(field.Type)
+         + Print(field.EqualSign ?? Token.NULL)
+         + Print(field.DefaultValue ?? ValueNode.NULL);
 
     public string Print(TypeDecName typeDec)
         => !typeDec.HasParent

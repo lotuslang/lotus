@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Lotus.Syntax.Visitors;
 
 internal sealed partial class Printer : ITopLevelVisitor<string>
@@ -11,17 +13,27 @@ internal sealed partial class Printer : ITopLevelVisitor<string>
          + Print(node.Name)
          + PrintTuple(node.Values, ",", Print);
 
-    public string Visit(FunctionDeclarationNode node) {
-        var output = Print(node.Token) + Print(node.FuncName) + Print(node.ParamList.OpeningToken);
+    public string Visit(FunctionHeaderNode node) {
+        var output = new StringBuilder();
 
-        output += MiscUtils.Join(",", Print, node.ParamList.Items) + Print(node.ParamList.ClosingToken);
+        output.Append(Print(node.Token));
+        output.Append(Print(node.Name));
+        output.Append(Print(node.Parameters.OpeningToken));
 
-        if (node.HasReturnType) output += Print(node.ColonToken) + Print(node.ReturnType);
+        output.AppendJoin(",", node.Parameters.Items.Select(Print));
 
-        output += Print(node.Body);
+        output.Append(Print(node.Parameters.ClosingToken));
 
-        return output;
+        if (node.HasReturnType) {
+            output.Append(Print(node.ColonToken));
+            output.Append(Print(node.ReturnType));
+        }
+
+        return output.ToString();
     }
+
+    public string Visit(FunctionDefinitionNode node)
+        => Print(node.Header) + Print(node.Body);
 
     public string Visit(ImportNode node)
         => Print(node.Token)

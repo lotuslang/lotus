@@ -124,7 +124,7 @@ public static partial class SyntaxFacts
 
     private static readonly Dictionary<string, ITopLevelParslet<TopLevelNode>> _strToTopLevelParslets = new() {
         { "namespace", NamespaceParslet.Instance },
-        { "func", FunctionDeclarationParslet.Instance },
+        { "func", FunctionDefinitionParslet.Instance },
         { "import", ImportParslet.Instance },
         { "using", UsingParslet.Instance },
         { "enum", EnumParslet.Instance },

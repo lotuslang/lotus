@@ -81,15 +81,15 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
         return root;
     }
 
-    public GraphNode Visit(FunctionDeclarationNode node) {
-        var root = new GraphNode("func " + node.FuncName.Representation)
+    public GraphNode Visit(FunctionHeaderNode node) {
+        var root = new GraphNode("func " + node.Name.Representation)
                         .SetColor(FuncDec.color)
                         .SetTooltip(FuncDec.tooltip);
 
         var parametersNode = new Graph("parameters")
             .SetGraphProp("color", FuncDecParameters.color);
 
-        foreach (var parameter in node.ParamList.Items) {
+        foreach (var parameter in node.Parameters.Items) {
             var paramNameNode = ToGraphNode(parameter.Name);
 
             paramNameNode.Add(ToGraphNode(parameter.Type));
@@ -103,14 +103,17 @@ internal sealed partial class GraphMaker : ITopLevelVisitor<GraphNode>
 
         root.Add(parametersNode);
 
-        if (node.HasReturnType) {
+        if (node.HasReturnType)
             root.Add(new GraphNode("return type") { ToGraphNode(node.ReturnType) });
-        }
-
-        root.Add(ToCluster(node.Body).SetName(node.FuncName + "()'s body"));
 
         return root;
     }
+
+    public GraphNode Visit(FunctionDefinitionNode node)
+        => ToGraphNode(node.Header)
+            .Add(ToCluster(node.Body)
+                .SetName(node.Name + "()'s body")
+            );
 
     public GraphNode Visit(NamespaceNode node)
         => new GraphNode("namespace") {

@@ -10,6 +10,8 @@ public sealed record FunctionDefinitionNode(
 
     public ImmutableArray<Token> Modifiers { get; init; }
 
+    public IdentToken Name => Header.Name;
+
     internal bool isInternal = false;
 
     [DebuggerHidden]

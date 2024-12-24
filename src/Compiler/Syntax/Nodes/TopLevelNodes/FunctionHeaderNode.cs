@@ -23,6 +23,7 @@ public sealed record FunctionHeaderNode(
 
     public ImmutableArray<Token> Modifiers { get; init; }
 
+    [MemberNotNullWhen(true, nameof(ColonToken), nameof(ReturnType))]
     public bool HasReturnType => ReturnType is not null;
 
     [DebuggerHidden]

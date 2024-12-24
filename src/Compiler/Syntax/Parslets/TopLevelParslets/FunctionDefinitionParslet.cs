@@ -2,6 +2,8 @@ namespace Lotus.Syntax;
 
 public sealed class FunctionDefinitionParslet : ITopLevelParslet<FunctionDefinitionNode>
 {
+    public static readonly FunctionDefinitionParslet Instance = new();
+
     private FunctionHeaderParslet _funcHeaderParslet = FunctionHeaderParslet.Instance;
 
     public FunctionDefinitionNode Parse(Parser parser, Token funcToken, ImmutableArray<Token> modifiers) {

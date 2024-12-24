@@ -39,8 +39,8 @@ public sealed partial class Parser
         return (TopLevelNode)_curr;
     }
 
-    public TypeDecName ConsumeTypeDeclarationName() {
-        var typeName = ConsumeValue<NameNode>(IdentNode.NULL, @as: "the name of a type");
+    public TypeDecName ConsumeTypeDeclarationName(string @as = "the name of a type") {
+        var typeName = ConsumeValue<NameNode>(IdentNode.NULL, @as: @as);
 
         var parent = NameNode.NULL;
         var colonToken = Token.NULL;
@@ -49,7 +49,7 @@ public sealed partial class Parser
             colonToken = Tokenizer.Consume();
             parent = typeName;
 
-            typeName = ConsumeValue<IdentNode>(IdentNode.NULL, @as: "the name of the new type");
+            typeName = ConsumeValue<IdentNode>(IdentNode.NULL, @as: @as);
         }
 
         bool isValid = typeName.IsValid;
@@ -58,7 +58,7 @@ public sealed partial class Parser
             Logger.Error(new NotANameError(ErrorArea.Parser) {
                 Value = (ValueNode)Current,
                 Expected = "an identifier",
-                As = "the name of a new type"
+                As = @as
             });
 
             isValid = false;

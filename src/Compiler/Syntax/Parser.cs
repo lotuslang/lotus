@@ -33,7 +33,7 @@ public sealed partial class Parser
     public Result<TNode> TryConsumeValue<TNode>(out ValueNode asNode) where TNode : ValueNode
         => (asNode = ConsumeValue()) as TNode ?? Result<TNode>.Error;
 
-    public TNode ConsumeValue<TNode>(TNode defaultVal, Action<Node> errorHandler) where TNode : ValueNode {
+    public TNode ConsumeValue<TNode>(TNode defaultVal, Action<ValueNode> errorHandler) where TNode : ValueNode {
         var errCount = Logger.ErrorCount;
         if (!TryConsumeValue<TNode>(out var output, out var val)) {
             while (errCount < Logger.ErrorCount)

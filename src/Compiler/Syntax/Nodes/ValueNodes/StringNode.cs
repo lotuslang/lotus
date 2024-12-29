@@ -2,16 +2,12 @@ using System.Runtime.CompilerServices;
 
 namespace Lotus.Syntax;
 
-public record StringNode(StringToken Token)
-: ValueNode(Token, Token.IsValid)
+public sealed record StringNode(StringToken Token)
+    : ValueNode(Token)
 {
     public new StringToken Token { get => Unsafe.As<StringToken>(base.Token); init => base.Token = value; }
 
     public string Value => Token.Representation;
-
-    protected StringNode(StringToken token, bool isValid) : this(token) {
-        IsValid = isValid;
-    }
 
     public new static readonly StringNode NULL = new(StringToken.NULL);
 

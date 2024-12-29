@@ -85,6 +85,7 @@ public static partial class SyntaxFacts
         // values
         { ExpressionKind.Number,        NumberLiteralParslet.Instance },
         { ExpressionKind.String,        StringLiteralParslet.Instance },
+        { ExpressionKind.ComplexString, ComplexStringParslet.Instance },
         { ExpressionKind.Identifier,    IdentifierParslet.Instance },
         { ExpressionKind.Char,          CharLiteralParslet.Instance },
         { ExpressionKind.Boolean,       BoolLiteralParslet.Instance },

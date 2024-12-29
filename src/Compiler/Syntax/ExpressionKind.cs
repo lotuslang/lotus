@@ -18,43 +18,44 @@ public enum ExpressionKind {
     NotAnExpr = 0,
 
     // values
-    Number      = ExpressionKindFlags.VALUE,
-    String      = Number + 1,
-    Identifier  = String + 1,
-    Boolean     = Identifier + 1,
-    Char        = Boolean + 1,
+    Number        = ExpressionKindFlags.VALUE,
+    String        = Number + 1,
+    ComplexString = String + 1,
+    Identifier    = ComplexString + 1,
+    Boolean       = Identifier + 1,
+    Char          = Boolean + 1,
 
     // value+infix
-    LeftParen   = ExpressionKindFlags.VALUE | ExpressionKindFlags.INFIX,
+    LeftParen     = ExpressionKindFlags.VALUE | ExpressionKindFlags.INFIX,
 
     // prefix only op
-    Not         = ExpressionKindFlags.PREFIX,
-    New         = Not + 1,
+    Not           = ExpressionKindFlags.PREFIX,
+    New           = Not + 1,
 
     // prefix+infix ops
-    Plus        = ExpressionKindFlags.PREFIX | ExpressionKindFlags.INFIX,
-    Minus       = Plus + 1,
-    Array       = Minus + 1,
+    Plus          = ExpressionKindFlags.PREFIX | ExpressionKindFlags.INFIX,
+    Minus         = Plus + 1,
+    Array         = Minus + 1,
 
     // prefix+postfix ops
-    Increment   = ExpressionKindFlags.PREFIX | ExpressionKindFlags.POSTFIX,
-    Decrement   = Increment + 1,
+    Increment     = ExpressionKindFlags.PREFIX | ExpressionKindFlags.POSTFIX,
+    Decrement     = Increment + 1,
 
     // infix
-    Multiply    = ExpressionKindFlags.INFIX,
-    Divide      = Multiply + 1,
-    Modulo      = Divide + 1,
-    Power       = Modulo + 1,
-    Access      = Power + 1,
-    Eq          = Access + 1,
-    NotEq       = Eq + 1,
-    Or          = NotEq + 1,
-    And         = Or + 1,
-    Xor         = And + 1,
-    Greater     = Xor + 1,
-    Less        = Greater + 1,
-    GreaterOrEq = Less + 1,
-    LessOrEq    = GreaterOrEq + 1,
-    Assignment  = LessOrEq + 1,
-    Ternary     = Assignment + 1,
+    Multiply      = ExpressionKindFlags.INFIX,
+    Divide        = Multiply + 1,
+    Modulo        = Divide + 1,
+    Power         = Modulo + 1,
+    Access        = Power + 1,
+    Eq            = Access + 1,
+    NotEq         = Eq + 1,
+    Or            = NotEq + 1,
+    And           = Or + 1,
+    Xor           = And + 1,
+    Greater       = Xor + 1,
+    Less          = Greater + 1,
+    GreaterOrEq   = Less + 1,
+    LessOrEq      = GreaterOrEq + 1,
+    Assignment    = LessOrEq + 1,
+    Ternary       = Assignment + 1,
 }

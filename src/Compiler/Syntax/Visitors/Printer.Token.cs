@@ -14,34 +14,35 @@ internal sealed partial class Printer : ITokenVisitor<string>
         => PrintLeadingTrivia(token) + '"' + token.Representation + '"' + PrintTrailingTrivia(token);
 
     public string Visit(ComplexStringToken token) {
-        if (token.CodeSections.Length == 0)
-            return Visit((StringToken)token);
-
-        // the capacity is just the minimum + a guess
-        var output = new StringBuilder("$\"", capacity: token.Representation.Length + (token.CodeSections.Length * 10));
-
-        var str = token.Representation;
-        var sections = token.CodeSections;
-        var currSectionIdx = 0; // tracks the next code section we could insert
-
-        for (var i = 0; i < token.Representation.Length; i++) {
-            if (currSectionIdx >= sections.Length || sections[currSectionIdx].StringOffset != i) {
-                output.Append(str[i]);
-                continue;
-            }
-
-            output.Append('{');
-
-            foreach (var sectionToken in sections[currSectionIdx].Tokens)
-                output.Append(Print(sectionToken));
-
-            output.Append('}');
-
-            i++; // we don't wanna consume the '}' in the repr
-            currSectionIdx++;
+        if (token.CodeSections.IsEmpty) {
+            return PrintLeadingTrivia(token)
+                + '"'
+                + token.Representation
+                + '"'
+                + PrintTrailingTrivia(token);
         }
 
-        return output.ToString() + '"';
+        // the capacity is just the minimum + a guess
+        var output = new StringBuilder(PrintLeadingTrivia(token));
+        output.Append("$\"");
+
+        foreach (var (text, code) in Enumerable.Zip(token.TextSections, token.CodeSections)) {
+            output.Append(text);
+
+            output.Append('{');
+            foreach (var sectionToken in code.Tokens)
+                output.Append(Print(sectionToken));
+            output.Append('}');
+        }
+
+        // there's always one more text section than code (even if it might be empty)
+        Debug.Assert(token.TextSections.Length == token.CodeSections.Length + 1);
+        output.Append(token.TextSections[^1]);
+
+        output.Append('"');
+        output.Append(PrintTrailingTrivia(token));
+
+        return output.ToString();
     }
 
     public string Visit(Token token) {

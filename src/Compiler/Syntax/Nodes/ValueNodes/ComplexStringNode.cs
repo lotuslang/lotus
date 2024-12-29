@@ -1,21 +1,21 @@
+using System.Runtime.CompilerServices;
+
 namespace Lotus.Syntax;
 
-public sealed record ComplexStringNode : StringNode
+public sealed record ComplexStringNode(
+    ComplexStringToken Token,
+    ImmutableArray<ValueNode> CodeSections
+) : ValueNode(Token)
 {
-    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, ImmutableArray<ValueNode>.Empty) { IsValid = false };
+    public new static readonly ComplexStringNode NULL = new(ComplexStringToken.NULL, []) { IsValid = false };
 
-    public ImmutableArray<ValueNode> CodeSections;
+    public new ComplexStringToken Token { get => Unsafe.As<ComplexStringToken>(base.Token); init => base.Token = value; }
 
-    // can't be moved to normal record decl because StringToken.Token's type is incompatible
-    public ComplexStringNode(ComplexStringToken token, ImmutableArray<ValueNode> codeSections)
-        : base(token)
-    {
-        CodeSections = codeSections;
-    }
+    public ImmutableArray<string> TextSections => Token.TextSections;
 
     [DebuggerHidden]
     [DebuggerStepThrough]
     [DebuggerNonUserCode]
-    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override T Accept<T>(Visitors.IValueVisitor<T> visitor) => visitor.Visit(this);
 }

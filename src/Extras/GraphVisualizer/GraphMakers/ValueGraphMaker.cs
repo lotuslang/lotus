@@ -48,7 +48,7 @@ internal sealed partial class GraphMaker : IValueVisitor<GraphNode>
             .SetTooltip(Char.tooltip);
 
     public GraphNode Visit(ComplexStringNode node) {
-        var root = new GraphNode(node.Value)
+        var root = new GraphNode(node.Token.Representation)
                         .SetColor(ComplexString.color)
                         .SetTooltip(ComplexString.tooltip);
 

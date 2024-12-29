@@ -1,13 +1,13 @@
 namespace Lotus.Syntax;
 
 public sealed record ComplexStringToken(
-    string Representation,
+    ImmutableArray<string> TextSections,
     ImmutableArray<InterpolatedSection> CodeSections,
     LocationRange Location
 )
-: StringToken(Representation, Location)
+    : Token(String.Join("{}", TextSections), TokenKind.complexString, Location)
 {
-    public new static readonly ComplexStringToken NULL = new("", ImmutableArray<InterpolatedSection>.Empty, LocationRange.NULL) { IsValid = false };
+    public new static readonly ComplexStringToken NULL = new([], [], LocationRange.NULL) { IsValid = false };
 
     [DebuggerHidden]
     [DebuggerStepThrough]
@@ -16,16 +16,14 @@ public sealed record ComplexStringToken(
     public override T Accept<T>(Visitors.ITokenVisitor<T> visitor) => visitor.Visit(this);
 }
 
-public readonly struct InterpolatedSection : ILocalized {
-    public readonly int StringOffset;
-    public readonly ImmutableArray<Token> Tokens;
-    public readonly LocationRange Location { get; }
-
-    public InterpolatedSection(int offset, ImmutableArray<Token> tokens, LocationRange location) {
-        StringOffset = offset;
-        Tokens = tokens;
-        Location = location;
-    }
+public readonly struct InterpolatedSection(
+    int offset,
+    ImmutableArray<Token> tokens,
+    LocationRange location
+) : ILocalized {
+    public readonly int StringOffset = offset;
+    public readonly ImmutableArray<Token> Tokens = tokens;
+    public readonly LocationRange Location => location;
 
     public int TokenCount => Tokens.Length;
 

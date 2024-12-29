@@ -31,6 +31,8 @@ public static partial class SyntaxFacts
                 return ExpressionKind.Char;
             case TokenKind.@string:
                 return ExpressionKind.String;
+            case TokenKind.complexString:
+                return ExpressionKind.ComplexString;
             case TokenKind.EOF:
                 return ExpressionKind.NotAnExpr;
         }

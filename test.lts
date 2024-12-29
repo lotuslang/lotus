@@ -45,7 +45,7 @@ func main() {
 
     print $"hello {"benjamin"} ! Today will be {GetWeather(pressure * 10.644^(temperature-2048))}";
     print "Fun fact: In lotus, you can easily mix expression and strings! "
-        + $"For example, you can write: $\'It's currently {{time.now}}\' and it will replace time.now with {time.now}";
+        + $"For example, you can write: $\'It's currently \{time.now\}\' and it will replace time.now with {time.now}";
 
     print(arr[1][0] == '1');
 

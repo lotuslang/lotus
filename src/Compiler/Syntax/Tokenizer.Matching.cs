@@ -21,7 +21,7 @@ public partial class Tokenizer
             case '@':
                 return ConsumeIdentToken();
             case '$' when _input.PeekNextChar() is '"' :
-                return ConsumeStringToken(isComplex: true);
+                return ConsumeComplexStringToken();
             case '"':
                 return ConsumeStringToken();
             case '\'':

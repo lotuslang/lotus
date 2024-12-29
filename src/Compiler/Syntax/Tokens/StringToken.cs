@@ -1,6 +1,6 @@
 namespace Lotus.Syntax;
 
-public record StringToken(string Representation, LocationRange Location)
+public sealed record StringToken(string Representation, LocationRange Location)
 : Token(Representation, TokenKind.@string, Location)
 {
     public new static readonly StringToken NULL = new("", LocationRange.NULL) { IsValid = false };

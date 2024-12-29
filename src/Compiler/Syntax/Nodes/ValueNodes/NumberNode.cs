@@ -3,13 +3,13 @@ using System.Runtime.CompilerServices;
 namespace Lotus.Syntax;
 
 public sealed record NumberNode(NumberToken Token)
-: ValueNode(Token, Token.IsValid)
+    : LiteralNode(Token)
 {
     public new static readonly NumberNode NULL = new(NumberToken.NULL);
 
-    public new NumberToken Token { get => Unsafe.As<NumberToken>(base.Token); init => base.Token = value; }
+    public override object Value => Token.Value;
 
-    public object Value => Token.Value;
+    public new NumberToken Token { get => Unsafe.As<NumberToken>(base.Token); init => base.Token = value; }
 
     public NumberKind Kind => Token.NumberKind;
 

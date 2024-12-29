@@ -6,8 +6,10 @@ public interface IValueVisitor<out T>
 
     T Visit(ValueNode node) => Default(node);
 
-    T Visit(BoolNode node) => Default(node);
-    T Visit(CharNode node) => Default(node);
+    T Visit(LiteralNode node) => Default(node);
+    T Visit(BoolNode node) => Visit(node as LiteralNode);
+    T Visit(CharNode node) => Visit(node as LiteralNode);
+    T Visit(StringNode node) => Visit(node as LiteralNode);
     T Visit(ComplexStringNode node) => Default(node);
     T Visit(FunctionCallNode node) => Default(node);
     T Visit(NameNode node) => Default(node);
@@ -17,6 +19,5 @@ public interface IValueVisitor<out T>
     T Visit(ObjectCreationNode node) => Default(node);
     T Visit(OperationNode node) => Default(node);
     T Visit(ParenthesizedValueNode node) => Default(node);
-    T Visit(StringNode node) => Default(node);
     T Visit(TupleNode node) => Default(node);
 }

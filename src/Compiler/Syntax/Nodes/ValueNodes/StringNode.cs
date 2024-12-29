@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 namespace Lotus.Syntax;
 
 public sealed record StringNode(StringToken Token)
-    : ValueNode(Token)
+    : LiteralNode(Token)
 {
     public new StringToken Token { get => Unsafe.As<StringToken>(base.Token); init => base.Token = value; }
 
-    public string Value => Token.Representation;
+    public override string Value => Token.Representation;
 
     public new static readonly StringNode NULL = new(StringToken.NULL);
 

@@ -2,13 +2,14 @@ using System.Runtime.CompilerServices;
 
 namespace Lotus.Syntax;
 
-public sealed record CharNode(CharToken Token) : ValueNode(Token, Token.IsValid)
+public sealed record CharNode(CharToken Token) : LiteralNode(Token)
 {
     public new static readonly CharNode NULL = new(CharToken.NULL);
 
-    public new CharToken Token { get => Unsafe.As<CharToken>(base.Token); init => base.Token = value; }
+    public override object Value => Token.Value;
+    public char RawValue => Token.Value;
 
-    public char Value => Token.Value;
+    public new CharToken Token { get => Unsafe.As<CharToken>(base.Token); init => base.Token = value; }
 
     [DebuggerHidden]
     [DebuggerStepThrough]

@@ -1,6 +1,6 @@
 namespace Lotus.Semantics;
 
-public class TypeInfo(SemanticUnit unit)
+public abstract class TypeInfo(SemanticUnit unit)
     : SymbolInfo(unit)
 {
     public virtual SpecialType SpecialType => SpecialType.None;

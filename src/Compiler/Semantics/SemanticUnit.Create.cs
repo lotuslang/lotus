@@ -16,9 +16,29 @@ public partial class SemanticUnit
     public SemanticUnit(IEnumerable<SyntaxTree> trees) : this() {
         foreach (var tree in trees)
             IsValid &= TryAddTree(tree);
+
+        IsValid &= BindDefinitions();
     }
 
-    internal bool TryAddTree(SyntaxTree tree) {
+    // we first want to add the declarations to the scope
+    // and then fill-in (resolve) the actual type of everything.
+    // To implement that, we have a list of pending "fillings"
+    // that need to be done; each time we process a new declaration,
+    // we just queue up an action that will be executed after every
+    // declaration has been added to the scope. only then can we start
+    // resolving type names and stuff
+    private List<Func<bool>> _bindingCallbacks = [];
+    private bool BindDefinitions() {
+        bool isValid = true;
+
+        foreach (var callback in _bindingCallbacks)
+            isValid &= callback();
+
+        return isValid;
+
+    }
+
+    private bool TryAddTree(SyntaxTree tree) {
         var ns = GetOrAddTreeNamespace(tree);
         Console.WriteLine($"Tree for file '{tree.Location.filename}' is in namespace {ns}");
 
@@ -28,26 +48,17 @@ public partial class SemanticUnit
 
         var isValid = true;
 
-        // we first want to add the declarations to the scope
-        // and then fill-in (resolve) the actual type of everything.
-        // To implement that, we have a list of pending "fillings"
-        // that need to be done; each time we process a new declaration,
-        // we just queue up an action that will be executed after every
-        // declaration has been added to the scope. only then can we start
-        // resolving type names and stuff
-        var fillingActions = new List<Func<Scope, bool>>();
-
-        // todo: as a slight enhancement of the above, maybe we can
-        // already fill-in the field names (or value names for enums)
-        // during the initial declaration, but we'll live the resolving
-        // of types and default values and such to later.
+        // todo: as a slight enhancement, maybe we can already fill-in
+        // the field names (or value names for enums) during the initial
+        // declaration, but we'll live the resolving of types and default
+        // values and such to later.
 
         foreach (var node in tree.TopNodes) {
             switch (node) {
                 case EnumNode enumNode:
                     var enumType = Factory.GetEmptyEnumSymbol(enumNode);
                     isValid &= ns.TryAdd(enumType);
-                    fillingActions.Add(scope => {
+                    _bindingCallbacks.Add(() => {
                         Factory.BindEnumSymbol(enumType, enumNode, fileScope);
                         return enumType.IsValid;
                     });
@@ -55,28 +66,29 @@ public partial class SemanticUnit
                 case StructNode structNode:
                     var structType = Factory.GetEmptyStructSymbol(structNode);
                     isValid &= ns.TryAdd(structType);
-                    fillingActions.Add(scope => {
+                    _bindingCallbacks.Add(() => {
                         Factory.BindStructSymbol(structType, structNode, fileScope);
                         return structType.IsValid;
                     });
                     break;
-                case FunctionDefinitionNode funcNode:
-                    var func = Factory.GetEmptyFunctionSymbol(funcNode.Header);
+                case FunctionDefinitionNode funcDefNode:
+                    var func = Factory.GetEmptyFunctionSymbol(funcDefNode.Header);
                     isValid &= ns.TryAdd(func);
-                    fillingActions.Add(scope => {
+                    _bindingCallbacks.Add(() => {
                         Factory.BindFunctionSymbol(func, funcDefNode.Header, fileScope);
                         return func.IsValid;
                     });
                     break;
+                case TraitNode traitNode:
+                    // todo(sem): process trait nodes in TryAddTree
+                    break;
                 default:
                     // the other nodes are just imports, usings, and namespaces
                     // so we can just ignore those for now
+                    Debug.Assert(node is ImportNode or NamespaceNode or UsingNode, $"Can't process {node.GetType().Name}");
                     continue;
             }
         }
-
-        foreach (var action in fillingActions)
-            isValid &= action(fileScope);
 
         return isValid;
     }

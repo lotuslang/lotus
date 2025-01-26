@@ -29,7 +29,6 @@ public class NamespaceInfo(string name, SemanticUnit unit)
     private Dictionary<string, UserTypeInfo> _types = [];
     public IEnumerable<UserTypeInfo> Types => _types.Values;
     internal bool TryAdd(UserTypeInfo type) {
-        Debug.Assert(type.ContainingNamespace is null);
         type.ContainingNamespace = this;
 
         if (_types.TryAdd(type.Name, type))
@@ -49,7 +48,6 @@ public class NamespaceInfo(string name, SemanticUnit unit)
     private Dictionary<string, FunctionInfo> _funcs = [];
     public IEnumerable<FunctionInfo> Functions => _funcs.Values;
     internal bool TryAdd(FunctionInfo func) {
-        Debug.Assert(func.ContainingNamespace is null);
         func.ContainingNamespace = this;
 
         if (_funcs.TryAdd(func.Name, func))

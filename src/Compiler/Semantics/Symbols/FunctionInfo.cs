@@ -14,7 +14,7 @@ public class FunctionInfo(string name, LocationRange loc, SemanticUnit unit)
 
     public string Name => name;
 
-    public NamespaceInfo? ContainingNamespace { get; set; }
+    public NamespaceInfo? ContainingNamespace { get; set; } = unit.Global;
 
     public TypeInfo ReturnType { get; set; } = new ErrorTypeInfo("<" + name + "$type>", unit);
 

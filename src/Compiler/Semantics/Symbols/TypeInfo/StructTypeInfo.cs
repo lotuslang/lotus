@@ -11,6 +11,8 @@ public sealed class StructTypeInfo(string name, LocationRange loc, SemanticUnit 
     public IReadOnlyCollection<FieldInfo> Fields => _fields.Values;
 
     internal bool TryAddField(FieldInfo field) {
+        Debug.Assert(_ctor is null, "tried to a field after the ctor was constructed, which is too late");
+
         if (_fields.TryAdd(field.Name, field))
             return true;
 
@@ -22,6 +24,22 @@ public sealed class StructTypeInfo(string name, LocationRange loc, SemanticUnit 
         });
 
         return false;
+    }
+
+    private FunctionInfo? _ctor = null;
+    public FunctionInfo Constructor {
+        get {
+            if (_ctor is null) {
+                _ctor = new FunctionInfo(Name, Location, Unit) {
+                    ReturnType = this,
+                };
+
+                foreach (var field in Fields)
+                    _ctor.TryAdd(new(field.Name, field.Type, _ctor, field.Location, Unit));
+            }
+
+            return _ctor;
+        }
     }
 
     private StructScope? _scope = null;

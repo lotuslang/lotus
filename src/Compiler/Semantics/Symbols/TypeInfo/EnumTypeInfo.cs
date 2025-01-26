@@ -25,7 +25,7 @@ public sealed class EnumTypeInfo(string name, LocationRange loc, SemanticUnit un
     }
 
     private EnumScope? _scope = null;
-    Scope IScope.Scope => _scope ?? new(this);
+    Scope IScope.Scope => _scope ??= new(this);
     private sealed class EnumScope(EnumTypeInfo @this) : Scope {
         public override SymbolInfo? Get(string name) {
             if (@this._values.TryGetValue(name, out var val))

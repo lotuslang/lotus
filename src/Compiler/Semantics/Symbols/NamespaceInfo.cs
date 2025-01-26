@@ -69,7 +69,7 @@ public class NamespaceInfo(string name, SemanticUnit unit)
     public NamespaceInfo? ContainingNamespace { get; set; } = null;
 
     private NamespaceScope? _scope = null;
-    Scope IScope.Scope => _scope ?? new(this);
+    Scope IScope.Scope => _scope ??= new(this);
 
     internal sealed class NamespaceScope(NamespaceInfo @this) : Scope {
         public override SymbolInfo? Get(string name) {

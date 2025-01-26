@@ -48,7 +48,7 @@ public partial class SemanticUnit
                     var enumType = Factory.GetEmptyEnumSymbol(enumNode);
                     isValid &= ns.TryAdd(enumType);
                     fillingActions.Add(scope => {
-                        Factory.FillEnumSymbol(enumType, enumNode, scope);
+                        Factory.BindEnumSymbol(enumType, enumNode, fileScope);
                         return enumType.IsValid;
                     });
                     break;
@@ -56,7 +56,7 @@ public partial class SemanticUnit
                     var structType = Factory.GetEmptyStructSymbol(structNode);
                     isValid &= ns.TryAdd(structType);
                     fillingActions.Add(scope => {
-                        Factory.FillStructSymbol(structType, structNode, scope);
+                        Factory.BindStructSymbol(structType, structNode, fileScope);
                         return structType.IsValid;
                     });
                     break;
@@ -64,7 +64,7 @@ public partial class SemanticUnit
                     var func = Factory.GetEmptyFunctionSymbol(funcNode.Header);
                     isValid &= ns.TryAdd(func);
                     fillingActions.Add(scope => {
-                        Factory.FillFunctionSymbol(func, funcNode.Header, scope);
+                        Factory.BindFunctionSymbol(func, funcDefNode.Header, fileScope);
                         return func.IsValid;
                     });
                     break;

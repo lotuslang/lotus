@@ -10,7 +10,7 @@ internal sealed partial class SymbolFactory(SemanticUnit unit)
     public EnumTypeInfo GetEmptyEnumSymbol(EnumNode node)
         => new(node.Name.TypeName.Value, node.Location, _unit);
 
-    public void FillEnumSymbol(EnumTypeInfo enumType, EnumNode node, Scope _) {
+    public void BindEnumSymbol(EnumTypeInfo enumType, EnumNode node, Scope _) {
         // todo: support enums with parents
 
         foreach (var value in node.Values) {
@@ -32,7 +32,7 @@ internal sealed partial class SymbolFactory(SemanticUnit unit)
     public StructTypeInfo GetEmptyStructSymbol(StructNode node)
         => new(node.Name.Value, node.Location, _unit);
 
-    public void FillStructSymbol(StructTypeInfo structType, StructNode node, Scope scope) {
+    public void BindStructSymbol(StructTypeInfo structType, StructNode node, Scope scope) {
         foreach (var fieldDecl in node.Fields) {
             bool isValid = true;
 
@@ -60,7 +60,7 @@ internal sealed partial class SymbolFactory(SemanticUnit unit)
     public FunctionInfo GetEmptyFunctionSymbol(FunctionHeaderNode node)
         => new(node.Name, node.Location, _unit);
 
-    public void FillFunctionSymbol(
+    public void BindFunctionSymbol(
         FunctionInfo function,
         FunctionHeaderNode node,
         Scope scope

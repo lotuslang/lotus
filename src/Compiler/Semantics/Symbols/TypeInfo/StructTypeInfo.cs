@@ -18,7 +18,7 @@ public sealed class StructTypeInfo(string name, LocationRange loc, SemanticUnit 
             TargetSymbol = field,
             ExistingSymbol = _fields[field.Name],
             ContainingSymbol = this,
-            In = "struct declaration"
+            In = "a struct declaration"
         });
 
         return false;

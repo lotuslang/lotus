@@ -176,7 +176,7 @@ public sealed class FunctionHeaderParslet : ITopLevelParslet<FunctionHeaderNode>
             var paramType = typeNameArray.Operands.FirstOrDefault(ValueNode.NULL);
 
             // if there's less than 2 names (illegal)
-            if (typeNameArray.Operands.Length < 2) { // fixme(utils): We should really make a helper for wrong-numbered things
+            if (typeNameArray.Operands.Length < 2) { // fixme(parsing): We should really make a helper for wrong-numbered things
                 var errorLoc = paramType.Location;
 
                 if (typeNameArray.Operands.Length == 0) {

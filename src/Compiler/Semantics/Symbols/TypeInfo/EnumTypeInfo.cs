@@ -18,7 +18,7 @@ public sealed class EnumTypeInfo(string name, LocationRange loc, SemanticUnit un
             TargetSymbol = val,
             ExistingSymbol = _values[val.Name],
             ContainingSymbol = this,
-            In = "enum declaration",
+            In = "an enum declaration",
         });
 
         return false;

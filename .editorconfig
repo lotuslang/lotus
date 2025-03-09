@@ -223,3 +223,9 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix =
 dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+# IDE0305: Simplify collection initialization
+dotnet_style_prefer_collection_expression = never # when_types_exactly_match
+
+# IDE0130: Namespace does not match folder structure
+dotnet_style_namespace_match_folder = false

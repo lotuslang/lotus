@@ -152,7 +152,7 @@ public class TupleParslet<TValue> : IParslet<Tuple<TValue>>
             //           ----------------------^--------------
             //                      literally right there
             if (parser.Tokenizer.Peek() == End) {
-                if (EndingDelimBehaviour is TrailingDelimiterBehaviour.Accepted or TrailingDelimiterBehaviour.Required) {
+                if (EndingDelimBehaviour is not TrailingDelimiterBehaviour.Forbidden) {
                     _ = parser.Tokenizer.Consume();
                     break;
                 }
